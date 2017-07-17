@@ -1,12 +1,13 @@
-package xyz.upperlevel.uppercore.gui;
+package xyz.upperlevel.uppercore.scoreboard;
 
 import lombok.Data;
+import lombok.Getter;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.util.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,37 +17,32 @@ import java.util.Map;
 import java.util.logging.Level;
 
 @Data
-public class GuiRegistry {
+public class ScoreboardRegistry {
 
     private final Plugin plugin;
     private final File folder;
-    private final Map<String, Gui> guis = new HashMap<>();
+    private final Map<String, Scoreboard> scoreboards = new HashMap<>();
 
-    public GuiRegistry(Plugin plugin) {
+    public ScoreboardRegistry(Plugin plugin) {
         this.plugin = plugin;
-        this.folder = new File(plugin.getDataFolder(), "guis");
-        GuiManager.register(plugin, this);
+        this.folder = new File(plugin.getDataFolder(), "scoreboards");
+        ScoreboardSystem.register(this);
     }
 
-    public void register(String id, Gui gui) {
-        guis.put(id, gui);
-        GuiManager.register(plugin, id, gui);
+    public void register(Scoreboard scoreboard) {
+        scoreboards.put(scoreboard.getId(), scoreboard);
+        ScoreboardSystem.register(scoreboard);
     }
 
-    public Gui get(String id) {
-        return guis.get(id);
+    public Scoreboard get(String id) {
+        return scoreboards.get(id);
     }
 
-    public Collection<Gui> getGuis() {
-        return guis.values();
+    public Collection<Scoreboard> getScoreboards() {
+        return scoreboards.values();
     }
 
-    /**
-     * Loads the given gui file configuration.
-     *
-     * @param file loads the given file
-     */
-    public Gui load(File file) {
+    public Scoreboard load(File file) {
         FileConfiguration config = new YamlConfiguration();
         try {
             config.load(file);
@@ -58,9 +54,9 @@ public class GuiRegistry {
             return null;
         }
         String id = file.getName().replaceFirst("[.][^.]+$", "");
-        ChestGui gui;
+        Scoreboard scoreboard;
         try {
-            gui = ChestGui.deserialize(plugin, id, Config.wrap(config));
+            scoreboard = Scoreboard.deserialize(plugin, id, Config.wrap(config));
         } catch (InvalidGuiConfigurationException e) {
             plugin.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
             return null;
@@ -68,19 +64,13 @@ public class GuiRegistry {
             plugin.getLogger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
             return null;
         }
-        register(id, gui);
+        register(scoreboard);
         plugin.getLogger().log(Level.INFO, "Successfully loaded gui " + id);
-        return gui;
+        return scoreboard;
     }
 
-    /**
-     * Loads a folder that contains gui configurations.
-     * This will not delete present guis.
-     *
-     * @param folder the folder to load
-     */
     public void loadFolder(File folder) {
-        plugin.getLogger().info("Attempting to load guis at: \"" + folder.getPath() + "\"");
+        plugin.getLogger().info("Attempting to load scoreboards at: \"" + folder.getPath() + "\"");
         if (folder.exists()) {
             if (folder.isDirectory()) {
                 File[] files = folder.listFiles();
@@ -102,7 +92,7 @@ public class GuiRegistry {
         }
     }
 
-    public void loadDefaultFolder() {
+    public void loadFolder() {
         loadFolder(folder);
     }
 }

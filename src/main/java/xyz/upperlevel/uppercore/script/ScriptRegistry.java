@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.script;
 
 import com.google.common.io.Files;
+import lombok.Data;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 
@@ -15,12 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+@Data
 public class ScriptRegistry {
+
     private final Plugin plugin;
+    private final File folder;
     private final Map<String, Script> scripts = new HashMap<>();
 
     public ScriptRegistry(Plugin plugin) {
         this.plugin = plugin;
+        this.folder = new File(plugin.getDataFolder(), "scripts");
         ScriptSystem.instance().register(plugin, this);
     }
 
@@ -29,10 +34,13 @@ public class ScriptRegistry {
         ScriptSystem.instance().register(plugin, id, gui);
     }
 
-    public void clearScripts() {
-        scripts.clear();
+    public Script get(String id) {
+        return scripts.get(id);
     }
 
+    public Collection<Script> getScripts() {
+        return scripts.values();
+    }
 
     public boolean load(String id, Script script) throws ScriptException {
         return scripts.putIfAbsent(id, script) == null;
@@ -69,13 +77,14 @@ public class ScriptRegistry {
     }
 
     public void loadFolder(File folder) {
+        plugin.getLogger().info("Attempting to load scripts at: \"" + folder.getPath() + "\"");
         if (!folder.isDirectory()) {
-            Uppercore.logger().severe("Error: " + folder + " isn't a folder");
+            plugin.getLogger().severe("Error: " + folder + " isn't a folder");
             return;
         }
         File[] files = folder.listFiles();
         if (files == null) {
-            Uppercore.logger().severe("Error reading files in " + folder);
+            plugin.getLogger().severe("Error reading files in " + folder);
             return;
         }
         for (File file : files) {
@@ -83,27 +92,23 @@ public class ScriptRegistry {
             try {
                 res = load(file);
             } catch (FileNotFoundException e) {
-                Uppercore.logger().severe("Cannot find file " + e);
+                plugin.getLogger().severe("Cannot find file " + e);
                 continue;
             } catch (ScriptException e) {
-                Uppercore.logger().log(Level.SEVERE, "Script error in file " + file.getName(), e);
+                plugin.getLogger().log(Level.SEVERE, "Script error in file " + file.getName(), e);
                 continue;
             } catch (Exception e) {
-                Uppercore.logger().log(Level.SEVERE, "Unknown error while reading script " + file.getName(), e);
+                plugin.getLogger().log(Level.SEVERE, "Unknown error while reading script " + file.getName(), e);
                 continue;
             }
             if (res == null)
-                Uppercore.logger().severe("Cannot load file " + file.getName() + ": id already used!");
+                plugin.getLogger().severe("Cannot load file " + file.getName() + ": id already used!");
             else
-                Uppercore.logger().info("Loaded script " + file.getName() + " with " + res.getEngine().getClass().getSimpleName() + (res instanceof PrecompiledScript ? " (compiled)" : ""));
+                plugin.getLogger().info("Loaded script " + file.getName() + " with " + res.getEngine().getClass().getSimpleName() + (res instanceof PrecompiledScript ? " (compiled)" : ""));
         }
     }
 
-    public Script get(String id) {
-        return scripts.get(id);
-    }
-
-    public Collection<Script> get() {
-        return scripts.values();
+    public void loadDefaultFolder() {
+        loadFolder(folder);
     }
 }

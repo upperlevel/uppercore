@@ -54,7 +54,7 @@ public final class GuiManager {
     public static Gui getGui(Plugin plugin, String id) {
         GuiRegistry reg = registries.get(plugin);
         if (reg != null)
-            return reg.getGui(id);
+            return reg.get(id);
         return null;
     }
 

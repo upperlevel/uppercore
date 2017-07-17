@@ -13,7 +13,6 @@ import xyz.upperlevel.uppercore.gui.Icon;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
@@ -65,7 +64,7 @@ public class HotbarManager {
     public static Hotbar getHotbar(Plugin plugin, String id) {
         HotbarRegistry reg = registries.get(plugin);
         if (reg != null)
-            return reg.getHotbar(id);
+            return reg.get(id);
         return hotbars.get(id);
     }
 

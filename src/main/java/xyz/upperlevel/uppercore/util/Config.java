@@ -56,6 +56,10 @@ public interface Config {
         return ((Map<String, Object>) get(key))::get;
     }
 
+    default <T> List<T> getList(String key) {
+        return (List<T>) get(key);
+    }
+
     default List<String> getStringList(String key) {
         return (List<String>) get(key);
     }

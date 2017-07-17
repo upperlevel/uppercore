@@ -19,14 +19,13 @@ import java.util.logging.Level;
 public class HotbarRegistry implements Listener {
 
     private final Plugin plugin;
-
+    private final File folder;
     private final Map<String, Hotbar> hotbars = new HashMap<>();
-    private final Set<Hotbar> onJoin = new HashSet<>();
 
     public HotbarRegistry(Plugin plugin) {
         this.plugin = plugin;
+        this.folder = new File(plugin.getDataFolder(), "hotbars");
         HotbarManager.register(plugin, this);
-        Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
     }
 
     /**
@@ -37,12 +36,10 @@ public class HotbarRegistry implements Listener {
      */
     public void register(String id, Hotbar hotbar) {
         hotbars.put(id, hotbar);
-        if (hotbar.isOnJoin())
-            onJoin.add(hotbar);
         HotbarManager.register(plugin, id, hotbar);
     }
 
-    public Hotbar getHotbar(String id) {
+    public Hotbar get(String id) {
         return hotbars.get(id);
     }
 
@@ -80,6 +77,7 @@ public class HotbarRegistry implements Listener {
      * @param folder the folder where to load the hotbars
      */
     public void loadFolder(File folder) {
+        plugin.getLogger().info("Attempting to load hotbars at: \"" + folder.getPath() + "\"");
         if (folder.exists()) {
             if (folder.isDirectory()) {
                 File[] files = folder.listFiles();
@@ -100,8 +98,8 @@ public class HotbarRegistry implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        onJoin.forEach(hotbar -> hotbar.give(e.getPlayer()));
+
+    public void loadDefaultFolder() {
+        loadFolder(folder);
     }
 }
