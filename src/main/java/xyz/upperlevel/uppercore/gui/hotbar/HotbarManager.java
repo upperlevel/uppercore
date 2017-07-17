@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
+import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
+
 public class HotbarManager {
 
     private static final Map<String, Hotbar> hotbars = new HashMap<>();
@@ -38,14 +41,6 @@ public class HotbarManager {
                 quitPlayer(e.getPlayer());
             }
         }, Uppercore.get());
-    }
-
-    private static String adaptId(String id) {
-        return id.toLowerCase(Locale.ENGLISH);
-    }
-
-    private static String obtainId(Plugin plugin, String id) {
-        return adaptId(plugin.getName() + ":" + id);
     }
 
     public static void register(Plugin plugin, String id, Hotbar hotbar) {

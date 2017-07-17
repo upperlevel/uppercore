@@ -12,6 +12,8 @@ import xyz.upperlevel.uppercore.gui.events.*;
 import java.util.*;
 
 import static java.util.Locale.ENGLISH;
+import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
+import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
 
 /**
  * This manager is the class that manages the player histories in a stack-like system
@@ -35,14 +37,6 @@ public final class GuiManager {
     private static boolean called = false;
 
     private GuiManager() {
-    }
-
-    private static String adaptId(String id) {
-        return id.toLowerCase(Locale.ENGLISH);
-    }
-
-    private static String obtainId(Plugin plugin, String id) {
-        return adaptId((plugin.getName() + ":" + id));
     }
 
     public static void register(Plugin plugin, String id, Gui gui) {

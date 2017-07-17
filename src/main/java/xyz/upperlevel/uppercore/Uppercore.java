@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore;
 
 import lombok.Getter;
+import org.bstats.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.command.UppercoreCommand;
 import xyz.upperlevel.uppercore.script.ScriptSystem;
@@ -17,15 +18,25 @@ public class Uppercore extends JavaPlugin {
 
     private ScriptSystem scriptSystem;
 
+    private Metrics metrics;
+
     @Override
     public void onEnable() {
         instance = this;
 
+        //Metrics setup
+        metrics = new Metrics(this);
+
+        //ScriptSystem setup
         File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
         if (!scriptsConfigFile.exists())
             saveResource(SCRIPT_CONFIG, false);
         scriptSystem = new ScriptSystem(new File(getDataFolder(), "engines"), scriptsConfigFile);
 
+        //Metrics custom data setup
+        scriptSystem.setupMetrics(metrics);
+
+        //Command setup
         new UppercoreCommand().subscribe();
     }
 
