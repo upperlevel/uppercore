@@ -151,6 +151,10 @@ public class ScriptSystem {
         });
     }
 
+    public static ScriptRegistry subscribe(Plugin plugin) {
+        return new ScriptRegistry(plugin);
+    }
+
     public static ScriptSystem instance() {
         return Uppercore.get().getScriptSystem();
     }

@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarManager;
+import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.script.Script;
 
@@ -58,7 +58,7 @@ public class RequireAction extends Action<RequireAction> {
 
     private boolean hasHotbar(Player player, PlaceholderValue<String> hotbar) {
         final String id = hotbar.get(player);
-        return HotbarManager.isHolding(player, HotbarManager.getHotbar(id));
+        return HotbarSystem.isHolding(player, HotbarSystem.getHotbar(id));
     }
 
     private boolean testScript(Player player, String id) {

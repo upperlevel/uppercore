@@ -22,15 +22,16 @@ public class GuiRegistry {
     private final File folder;
     private final Map<String, Gui> guis = new HashMap<>();
 
-    public GuiRegistry(Plugin plugin) {
+    GuiRegistry(Plugin plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder(), "guis");
         GuiSystem.register(plugin, this);
     }
 
-    public void register(String id, Gui gui) {
+    public GuiRegistry register(String id, Gui gui) {
         guis.put(id, gui);
         GuiSystem.register(plugin, id, gui);
+        return this;
     }
 
     public Gui get(String id) {

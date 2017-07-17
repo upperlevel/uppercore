@@ -23,7 +23,7 @@ public class ScriptRegistry {
     private final File folder;
     private final Map<String, Script> scripts = new HashMap<>();
 
-    public ScriptRegistry(Plugin plugin) {
+    ScriptRegistry(Plugin plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder(), "scripts");
         ScriptSystem.instance().register(plugin, this);

@@ -203,12 +203,12 @@ public class Hotbar {
     public boolean give(Player player) {
         if (permission != null && !player.hasPermission(permission))
             return false;
-        HotbarManager.getView(player).addHotbar(this);
+        HotbarSystem.getView(player).addHotbar(this);
         return true;
     }
 
     public boolean remove(Player player) {
-        return HotbarManager.getView(player).removeHotbar(this);
+        return HotbarSystem.getView(player).removeHotbar(this);
     }
 
     /**

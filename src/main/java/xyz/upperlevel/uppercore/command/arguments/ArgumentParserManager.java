@@ -4,6 +4,8 @@ import lombok.NonNull;
 import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
 import xyz.upperlevel.uppercore.command.arguments.exceptions.UnparsableTypeException;
 import xyz.upperlevel.uppercore.command.arguments.impl.*;
+import xyz.upperlevel.uppercore.gui.arguments.GuiArgumentParser;
+import xyz.upperlevel.uppercore.gui.hotbar.arguments.HotbarArgumentParser;
 
 import java.util.*;
 

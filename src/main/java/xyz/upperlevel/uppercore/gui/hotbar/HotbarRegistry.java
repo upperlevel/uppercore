@@ -1,11 +1,8 @@
 package xyz.upperlevel.uppercore.gui.hotbar;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
@@ -22,10 +19,10 @@ public class HotbarRegistry implements Listener {
     private final File folder;
     private final Map<String, Hotbar> hotbars = new HashMap<>();
 
-    public HotbarRegistry(Plugin plugin) {
+    HotbarRegistry(Plugin plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder(), "hotbars");
-        HotbarManager.register(plugin, this);
+        HotbarSystem.register(plugin, this);
     }
 
     /**
@@ -36,7 +33,7 @@ public class HotbarRegistry implements Listener {
      */
     public void register(String id, Hotbar hotbar) {
         hotbars.put(id, hotbar);
-        HotbarManager.register(plugin, id, hotbar);
+        HotbarSystem.register(plugin, id, hotbar);
     }
 
     public Hotbar get(String id) {

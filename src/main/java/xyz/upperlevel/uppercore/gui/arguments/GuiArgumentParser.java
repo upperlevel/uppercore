@@ -1,18 +1,18 @@
-package xyz.upperlevel.uppercore.command.arguments.impl;
+package xyz.upperlevel.uppercore.gui.arguments;
 
 import xyz.upperlevel.uppercore.command.arguments.ArgumentParser;
 import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
-import xyz.upperlevel.uppercore.gui.hotbar.Hotbar;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarManager;
+import xyz.upperlevel.uppercore.gui.Gui;
+import xyz.upperlevel.uppercore.gui.GuiSystem;
 
 import java.util.Collections;
 import java.util.List;
 
-public class HotbarArgumentParser implements ArgumentParser {
+public class GuiArgumentParser implements ArgumentParser {
 
     @Override
     public List<Class<?>> getParsable() {
-        return Collections.singletonList(Hotbar.class);
+        return Collections.singletonList(Gui.class);
     }
 
     @Override
@@ -22,9 +22,9 @@ public class HotbarArgumentParser implements ArgumentParser {
 
     @Override
     public Object parse(Class<?> type, List<String> args) throws ParseException {
-        Hotbar h = HotbarManager.getHotbar(args.get(0));
-        if (h == null)
-            throw new ParseException(args.get(0), "hotbar");
-        return h;
+        Gui gui = GuiSystem.get(args.get(0));
+        if (gui == null)
+            throw new ParseException(args.get(0), "gui");
+        return gui;
     }
 }

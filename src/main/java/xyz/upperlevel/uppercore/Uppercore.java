@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore;
 import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.uppercore.command.UppercoreCommand;
+import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
 import xyz.upperlevel.uppercore.script.ScriptSystem;
 
 import java.io.File;

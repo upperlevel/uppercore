@@ -18,17 +18,17 @@ import java.util.Map;
 import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
 import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
 
-public class HotbarManager {
+public class HotbarSystem {
 
     private static final Map<String, Hotbar> hotbars = new HashMap<>();
     private static final Map<Plugin, HotbarRegistry> registries = new HashMap<>();
     private static final Map<Player, HotbarView> views = new HashMap<>();
 
-    private HotbarManager() {
+    private HotbarSystem() {
     }
 
     static {
-        Bukkit.getOnlinePlayers().forEach(HotbarManager::joinPlayer);
+        Bukkit.getOnlinePlayers().forEach(HotbarSystem::joinPlayer);
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onJoin(PlayerJoinEvent e) {
@@ -142,7 +142,11 @@ public class HotbarManager {
     }
 
     public static void clearAll() {
-        views.keySet().forEach(HotbarManager::remove);
+        views.keySet().forEach(HotbarSystem::remove);
         views.clear();
+    }
+
+    public static HotbarRegistry subscribe(Plugin plugin) {
+        return new HotbarRegistry(plugin);
     }
 }

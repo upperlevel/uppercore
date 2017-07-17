@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarManager;
+import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 import xyz.upperlevel.uppercore.gui.hotbar.HotbarView;
 
 public class GuiEventListener implements Listener {
@@ -22,7 +22,7 @@ public class GuiEventListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     protected void onPlayerClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        HotbarView h = HotbarManager.getView(player);
+        HotbarView h = HotbarSystem.getView(player);
         if (e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
             //isIconSlot is really fast but it only works with the main player inventory where the first 9 indexes are
             //for the hotbar. this isn't exactly the main inventory but it works as well
@@ -41,7 +41,7 @@ public class GuiEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     protected void onPlayerQuit(PlayerQuitEvent e) {
-        HotbarManager.getView(e.getPlayer()).clear();
+        HotbarSystem.getView(e.getPlayer()).clear();
     }
 
 
@@ -59,23 +59,23 @@ public class GuiEventListener implements Listener {
         } catch (Error ignored) {
         }
         if (e.getAction() != Action.PHYSICAL)
-            HotbarManager.onClick(e); // this method cancels the event by himself
+            HotbarSystem.onClick(e); // this method cancels the event by himself
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
-        HotbarView h = HotbarManager.getView(e.getPlayer());
+        HotbarView h = HotbarSystem.getView(e.getPlayer());
         if (h != null && h.isIconSlot(e.getPlayer().getInventory().getHeldItemSlot()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
-        HotbarManager.getView(e.getPlayer()).print();
+        HotbarSystem.getView(e.getPlayer()).print();
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        HotbarManager.getView(e.getEntity());
+        HotbarSystem.getView(e.getEntity());
     }
 }

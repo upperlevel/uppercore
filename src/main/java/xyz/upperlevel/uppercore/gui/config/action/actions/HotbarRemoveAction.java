@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
 import xyz.upperlevel.uppercore.gui.hotbar.Hotbar;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarManager;
+import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
@@ -29,7 +29,7 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
     @Override
     public void run(Player player) {
         String barId = id.get(player);
-        Hotbar hotbar = HotbarManager.getHotbar(getPlugin(), barId);
+        Hotbar hotbar = HotbarSystem.getHotbar(getPlugin(), barId);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + barId + "\"");
             return;

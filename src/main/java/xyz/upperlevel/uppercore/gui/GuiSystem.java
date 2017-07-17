@@ -287,4 +287,8 @@ public final class GuiSystem {
     public static Map<Player, LinkedList<Gui>> getHistories() {
         return Collections.unmodifiableMap(histories);
     }
+
+    public static GuiRegistry subscribe(Plugin plugin) {
+        return new GuiRegistry(plugin);
+    }
 }

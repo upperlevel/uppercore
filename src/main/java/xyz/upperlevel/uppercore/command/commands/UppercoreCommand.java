@@ -1,8 +1,9 @@
-package xyz.upperlevel.uppercore.command;
+package xyz.upperlevel.uppercore.command.commands;
 
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.gui.commands.GuiCommand;
-import xyz.upperlevel.uppercore.gui.commands.HotbarCommand;
+import xyz.upperlevel.uppercore.gui.hotbar.commands.HotbarCommand;
 
 public class UppercoreCommand extends NodeCommand {
 
