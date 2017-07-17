@@ -139,9 +139,7 @@ public class ScriptSystem {
                 Map<String, Long> counts = get().values()
                         .stream()
                         .collect(
-                                Collectors.groupingBy(s -> s.getEngine().getClass().getSimpleName()
-                                                .replaceFirst("ScriptEngine", "")
-                                                .toLowerCase(Locale.ENGLISH),
+                                Collectors.groupingBy(s -> getEngineName(s.getEngine()),
                                         Collectors.counting())
                         );
                 for (Map.Entry<String, Long> e : counts.entrySet())
@@ -157,5 +155,11 @@ public class ScriptSystem {
 
     public static ScriptSystem instance() {
         return Uppercore.get().getScriptSystem();
+    }
+
+    public static String getEngineName(ScriptEngine engine) {
+        return engine.getClass().getSimpleName()
+                .replaceFirst("ScriptEngine", "")
+                .toLowerCase(Locale.ENGLISH);
     }
 }

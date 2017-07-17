@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -38,8 +39,8 @@ public class ScriptRegistry {
         return scripts.get(id);
     }
 
-    public Collection<Script> getScripts() {
-        return scripts.values();
+    public Map<String, Script> getScripts() {
+        return Collections.unmodifiableMap(scripts);
     }
 
     public boolean load(String id, Script script) throws ScriptException {
