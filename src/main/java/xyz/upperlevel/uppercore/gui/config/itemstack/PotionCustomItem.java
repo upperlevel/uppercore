@@ -10,8 +10,8 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PotionCustomItem extends CustomItem {
+
     private PotionType type;
     private PlaceholderValue<Color> customColor;
     private List<PotionEffect> customEffects;

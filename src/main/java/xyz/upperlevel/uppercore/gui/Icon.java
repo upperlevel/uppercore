@@ -7,15 +7,16 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.ActionType;
 import xyz.upperlevel.uppercore.gui.config.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +74,7 @@ public class Icon {
         }
 
         @SuppressWarnings("unchecked")
-        public static IconClick deserialize(Config config) {
+        public static IconClick deserialize(Plugin plugin, Config config) {
             IconClick res = new IconClick();
             res.permission = (String) config.get("permission");
             res.noPermissionError = config.getMessage("no-permission-message", "You don't have permission!");
@@ -88,7 +89,7 @@ public class Icon {
                 res.actions = Collections.emptyList();
             else
                 res.actions = actions.stream()
-                        .map(ActionType::deserialize)
+                        .map(obj -> ActionType.deserialize(plugin, obj))
                         .collect(Collectors.toList());
             return res;
         }
@@ -148,7 +149,7 @@ public class Icon {
             link.run((Player) e.getWhoClicked());
     }
 
-    public static Icon deserialize(Config config) {
+    public static Icon deserialize(Plugin plugin, Config config) {
         Icon result = new Icon();
         try {
             if (config.has("update-interval"))
@@ -156,7 +157,7 @@ public class Icon {
             if (config.has("item"))
                 result.display = CustomItem.deserialize(config.getConfigRequired("item"));
             if (config.has("click"))
-                result.link = IconClick.deserialize(config.getConfig("click"));
+                result.link = IconClick.deserialize(plugin, config.getConfig("click"));
             return result;
         } catch (InvalidGuiConfigurationException e) {
             e.addLocalizer("in gui display");

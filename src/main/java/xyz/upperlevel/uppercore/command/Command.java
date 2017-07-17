@@ -3,14 +3,14 @@ package xyz.upperlevel.uppercore.command;
 import lombok.Data;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import xyz.upperlevel.uppercore.command.args.ArgumentParserManager;
-import xyz.upperlevel.uppercore.command.args.exceptions.ParseException;
-import xyz.upperlevel.uppercore.command.args.exceptions.UnparsableTypeException;
-import xyz.upperlevel.uppercore.command.exceptions.CommandSyntaxException;
-import xyz.upperlevel.uppercore.command.exceptions.InternalCommandException;
-import xyz.upperlevel.uppercore.command.exceptions.NoCommandFoundException;
+import org.bukkit.command.PluginCommand;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.command.arguments.ArgumentParserManager;
+import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
+import xyz.upperlevel.uppercore.command.arguments.exceptions.UnparsableTypeException;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +23,7 @@ import static lombok.AccessLevel.NONE;
 import static org.bukkit.ChatColor.*;
 
 @Data
-public abstract class Command {
+public abstract class Command implements CommandExecutor {
 
     private NodeCommand parent;
 
@@ -48,7 +48,7 @@ public abstract class Command {
     }
 
     /**
-     * Adds the given alias to this command.
+     * Adds the given alias to this commands.
      *
      * @param alias the alias to add
      */
@@ -58,7 +58,7 @@ public abstract class Command {
     }
 
     /**
-     * Adds aliases to this command.
+     * Adds aliases to this commands.
      *
      * @param aliases the aliases to add
      */
@@ -68,7 +68,7 @@ public abstract class Command {
     }
 
     /**
-     * Adds the given aliases to this command.
+     * Adds the given aliases to this commands.
      *
      * @param aliases the alaises to add
      */
@@ -96,8 +96,17 @@ public abstract class Command {
         return helplines.computeIfAbsent(sender.getClass(), type -> getUsage(sender, format) + " " + (format ? GRAY : "") + description);
     }
 
+    public String getUsage() {
+        System.out.println("usage: " + getUsage(null, false));
+        return getUsage(null, false);
+    }
+
+    public String getUsage(boolean format) {
+        return getUsage(null, format);
+    }
+
     /**
-     * Gets the command complete usage depending from the given sender.
+     * Gets the commands complete usage depending from the given sender.
      *
      * @param sender the sender to build the usage for
      * @param format the usage have to be colored?
@@ -129,22 +138,49 @@ public abstract class Command {
         return (format && this.sender.isCorrect(sender) ? AQUA : RED) + usage.toString();
     }
 
+    private static boolean isSenderCorrect(Optional optional, CommandSender sender) {
+        for (Sender other : optional.sender())
+            if (other.isCorrect(sender))
+                return true;
+        return false;
+    }
+
+    private static String getFormattedValues(Optional optional) {
+        if (optional == null)
+            return null;
+        StringJoiner jnr = new StringJoiner(", ");
+        for (String value : optional.value())
+            jnr.add(value);
+        if (jnr.length() == 0)
+            return null;
+        else if (jnr.length() == 1)
+            return jnr.toString();
+        else
+            return "{" + jnr.toString() + "}";
+    }
+
     public String getHelplineArgs(CommandSender sender, boolean format) {
         if (executor == null)
             return null;
         StringJoiner usage = new StringJoiner(" ");
         for (int i = 1; i < executor.getParameters().length; i++) {
             Parameter parameter = executor.getParameters()[i];
-            Optional opt = parameter.getDeclaredAnnotation(Optional.class);
+            Optional optional = parameter.getDeclaredAnnotation(Optional.class);
 
             StringJoiner value;
-            if (opt != null && opt.sender().isCorrect(sender))
+            if (optional != null && isSenderCorrect(optional, sender))
                 value = new StringJoiner(" ", "[", "]");
             else
                 value = new StringJoiner(" ", "<", ">");
-            Argument arg = parameter.getDeclaredAnnotation(Argument.class);
-            value.add((arg != null ? arg.value() : parameter.getName()) + (opt != null && !opt.value().isEmpty() ? "=" + opt.value() : ""));
 
+            Argument argument = parameter.getDeclaredAnnotation(Argument.class);
+            StringBuilder arg = new StringBuilder();
+            arg.append((argument != null ? argument.value() : parameter.getName()));
+            if (optional != null) {
+                String values = getFormattedValues(optional);
+                arg.append((values != null ? "=" + values : ""));
+            }
+            value.add(arg);
             usage.add(value.toString());
         }
         if (usage.length() == 0)
@@ -155,22 +191,18 @@ public abstract class Command {
 
     private boolean isOptional(CommandSender sender, Parameter parameter) {
         Optional opt = parameter.getDeclaredAnnotation(Optional.class);
-        return opt != null && opt.sender().isCorrect(sender);
+        return opt != null && isSenderCorrect(opt, sender);
     }
 
-    private Object processOptional(ArgumentParserManager parser, CommandSender sender, Parameter parameter) {
+    private Object processOptional(Parameter parameter) throws ParseException {
         Optional opt = parameter.getDeclaredAnnotation(Optional.class);
-        if (parser.getArgumentsCount(parameter.getType()) > 1)
+        int needed = ArgumentParserManager.getArgumentsCount(parameter.getType());
+        if (opt.value().length < needed)
             return null;
-        try {
-            return parser.parse(parameter.getType(), Collections.singletonList(opt.value()));
-        } catch (ParseException ignored) {
-            return null;
-        }
+        return ArgumentParserManager.parse(parameter.getType(), Arrays.asList(opt.value()));
     }
 
-    public void execute(ArgumentParserManager parser, CommandSender sender, List<String> args)
-            throws CommandSyntaxException, NoCommandFoundException, InternalCommandException {
+    public void execute(CommandSender sender, List<String> args) {
         if (executor == null)
             return;
         List<Object> result = new ArrayList<>();
@@ -180,41 +212,62 @@ public abstract class Command {
             Parameter parameter = executor.getParameters()[i];
             Class<?> type = parameter.getType();
             if (arg >= args.size()) {
-                if (isOptional(sender, parameter))
-                    result.add(processOptional(parser, sender, parameter));
-                else {
+                if (isOptional(sender, parameter)) {
+                    try {
+                        result.add(processOptional(parameter));
+                    } catch (ParseException e) {
+                        sender.sendMessage(e.getMessageFormatted());
+                        return;
+                    }
+                } else {
                     TextUtil.sendMessages(sender, asList(
-                            RED + "Command syntax exception. " + GOLD + "You may use the command like this:",
+                            RED + "Command syntax exception. " + GOLD + "You may use the commands like this:",
                             getUsage(sender, true)
                     ));
                     return;
                 }
             } else {
-                if (parser.isParsable(type)) {
-                    int used = parser.getArgumentsCount(type);
+                if (ArgumentParserManager.isParsable(type)) {
+                    int used = ArgumentParserManager.getArgumentsCount(type);
                     if (used < 0)
                         used = args.size() - arg;
                     try {
-                        result.add(parser.parse(type, args.subList(arg, arg + used)));
+                        result.add(ArgumentParserManager.parse(type, args.subList(arg, arg + used)));
                     } catch (ParseException e) {
-                        if (isOptional(sender, parameter)) {
-                            // puts default optional value
-                            result.add(processOptional(parser, sender, parameter));
-                        } else {
-                            sender.sendMessage(e.getMessageFormatted());
-                            return;
-                        }
+                        sender.sendMessage(e.getMessageFormatted());
+                        return;
                     }
                     arg += used;
                 } else
-                    throw new UnparsableTypeException("Unparsable type \"" + type.getName() + "\" in \"" + getClass().getName() + "\"");
+                    throw new UnparsableTypeException("Unparsable type \"" + type.getName() + "\" in commands \"" + getName() + "\"");
             }
         }
         try {
             executor.invoke(this, result.toArray());
         } catch (IllegalAccessException ignored) {
         } catch (InvocationTargetException e) {
-            throw new InternalCommandException();
+            e.printStackTrace();
+            sender.sendMessage(RED + "An error occurred during the execution of this commands.");
         }
+    }
+
+    /**
+     * Subscribes the commands to Bukkit commands list.
+     * The commands must be registered in plugin.yml by its name.
+     */
+    public void subscribe() {
+        PluginCommand cmd = Bukkit.getPluginCommand(getName());
+        if (cmd == null) {
+            Uppercore.logger().severe("Command not found in plugin.yml: \"" + getName() + "\"");
+            return;
+        }
+        setDescription(cmd.getDescription());
+        cmd.setExecutor(this);
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+        execute(sender, Arrays.asList(args));
+        return true;
     }
 }

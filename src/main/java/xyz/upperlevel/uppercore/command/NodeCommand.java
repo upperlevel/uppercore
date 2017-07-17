@@ -2,10 +2,6 @@ package xyz.upperlevel.uppercore.command;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
-import xyz.upperlevel.uppercore.command.args.ArgumentParserManager;
-import xyz.upperlevel.uppercore.command.exceptions.CommandSyntaxException;
-import xyz.upperlevel.uppercore.command.exceptions.InternalCommandException;
-import xyz.upperlevel.uppercore.command.exceptions.NoCommandFoundException;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.*;
@@ -41,8 +37,8 @@ public abstract class NodeCommand extends Command {
     }
 
     @Override
-    public void execute(ArgumentParserManager parser, CommandSender sender, List<String> args) throws CommandSyntaxException, NoCommandFoundException, InternalCommandException {
-        super.execute(parser, sender, args);
+    public void execute(CommandSender sender, List<String> args) {
+        super.execute(sender, args);
         if (args.isEmpty()) {
             helpCmd.run(sender, 1);
             return;
@@ -50,12 +46,12 @@ public abstract class NodeCommand extends Command {
         Command cmd = getCommand(args.get(0));
         if (cmd == null) {
             TextUtil.sendMessages(sender, asList(
-                    RED + "No command found for \"" + LIGHT_PURPLE + args.get(0) + RED + "\". " + GOLD + "To see all commands use:",
+                    RED + "No commands found for \"" + LIGHT_PURPLE + args.get(0) + RED + "\". " + GOLD + "To see all commands use:",
                     getUsage(sender, true)
             ));
             return;
         }
-        cmd.execute(parser, sender, args.subList(1, args.size()));
+        cmd.execute(sender, args.subList(1, args.size()));
     }
 
     public class HelpCommand extends Command {
@@ -75,7 +71,7 @@ public abstract class NodeCommand extends Command {
 
             int pages = TextUtil.getPages(1, entries.size(), 0);
             List<String> header = singletonList(
-                    GOLD + "Help for command \"" + NodeCommand.this.getName() + "\" " +
+                    GOLD + "Help for commands \"" + NodeCommand.this.getName() + "\" " +
                             (page == 1 ? RED : GREEN) + "[<]" +
                             GOLD + " " + page + "/" + pages + " " +
                             (page == pages ? RED : GREEN) + "[>]" +

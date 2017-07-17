@@ -4,27 +4,27 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.Nms;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
-import xyz.upperlevel.uppercore.gui.config.action.BaseActionType.Parameter;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
 
+@Getter
 public class BroadcastAction extends Action<BroadcastAction> {
+
     public static final BroadcastActionType TYPE = new BroadcastActionType();
-    @Getter
+
     private final PlaceholderValue<String> message;
-    @Getter
     private final String permission;
-    @Getter
     private final boolean raw;
 
-    public BroadcastAction(PlaceholderValue<String> message, String permission, boolean raw) {
-        super(TYPE);
+    public BroadcastAction(Plugin plugin, PlaceholderValue<String> message, String permission, boolean raw) {
+        super(plugin, TYPE);
         this.message = message;
         this.permission = permission;
         this.raw = raw;
@@ -63,9 +63,10 @@ public class BroadcastAction extends Action<BroadcastAction> {
         }
 
         @Override
-        public BroadcastAction create(Map<String, Object> pars) {
+        public BroadcastAction create(Plugin plugin, Map<String, Object> pars) {
             return new BroadcastAction(
-                    PlaceHolderUtil.process((String) pars.get("message")),
+                    plugin,
+                    PlaceholderUtil.process((String) pars.get("message")),
                     (String) pars.get("permission"),
                     (boolean) pars.get("raw")
             );

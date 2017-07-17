@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
+@Getter
 public class InvalidGuiConfigurationException extends RuntimeException{
-    @Getter
+
     private List<String> localizers;
-    @Getter
     private final String configError;
 
     public InvalidGuiConfigurationException(String configError, String... localizers) {

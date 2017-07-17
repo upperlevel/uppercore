@@ -9,9 +9,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,8 +36,8 @@ public class CustomItem {
         amount = PlaceholderValue.intValue(String.valueOf(item.getAmount()));
 
         ItemMeta meta = item.getItemMeta();
-        displayName = meta.hasDisplayName() ? PlaceholderValue.strValue(meta.getDisplayName()) : null;
-        lore = meta.hasLore() ? meta.getLore().stream().map(PlaceholderValue::strValue).collect(Collectors.toList()) : new ArrayList<>();
+        displayName = meta.hasDisplayName() ? PlaceholderValue.stringValue(meta.getDisplayName()) : null;
+        lore = meta.hasLore() ? meta.getLore().stream().map(PlaceholderValue::stringValue).collect(Collectors.toList()) : new ArrayList<>();
         flags = new ArrayList<>(meta.getItemFlags());
         for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
             enchantments.put(entry.getKey(), PlaceholderValue.intValue(String.valueOf(entry.getValue())));
@@ -66,14 +66,14 @@ public class CustomItem {
     public static CustomItem deserialize(Config config) {
         Material mat = config.getMaterialRequired("type");
         PlaceholderValue<Short> data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
-        PlaceholderValue<Integer> amount = PlaceHolderUtil.parseInt(config.getString("amount", "1"));
+        PlaceholderValue<Integer> amount = PlaceholderUtil.parseInt(config.getString("amount", "1"));
 
         PlaceholderValue<String> displayName = config.getMessage("name");
         List<PlaceholderValue<String>> lores;
         if (config.has("lore")) {
             lores = ((Collection<String>) config.getCollection("lore"))
                     .stream()
-                    .map(PlaceHolderUtil::process)
+                    .map(PlaceholderUtil::process)
                     .collect(Collectors.toList());
         } else lores = Collections.emptyList();
         List<ItemFlag> flags;

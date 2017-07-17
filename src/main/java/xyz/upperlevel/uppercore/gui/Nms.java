@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Nms {
+
     private static final String version;
 
     private static final Method getNmsComponent;
@@ -66,7 +67,6 @@ public class Nms {
             handleException(e);
         }
     }
-
 
 
     protected static void handleException(Exception e) {

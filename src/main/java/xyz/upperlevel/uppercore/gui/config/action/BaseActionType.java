@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.config.action.exceptions.BadParameterUseException;
 import xyz.upperlevel.uppercore.gui.config.action.exceptions.RequiredParameterNotFoundException;
 
@@ -22,14 +23,14 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T load(Object config) {
+    public T load(Plugin plugin, Object config) {
         if (parameters == null)
             throw new IllegalStateException("ActionType's parameters not initialized!");
         if (parameters.size() == 0) {//No parameter
-            return create(Collections.emptyMap());
+            return create(plugin, Collections.emptyMap());
         } else if (config == null) {//No parameter
             if (requiredArgs == 0)
-                return create(Collections.emptyMap());
+                return create(plugin, Collections.emptyMap());
             else
                 throw new RequiredParameterNotFoundException(getFirstRequired().name);
         } else if (config instanceof Map) {//Multiple parameter
@@ -46,13 +47,13 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
                                     return null;
                             }
                         } else
-                            v = p.parser.load(v);
+                            v = p.parser.load(plugin, v);
                         return Maps.immutableEntry(p.name, v);
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            return create(pars);
+            return create(plugin, pars);
         } else {//One parameter
             if (requiredArgs == 1) {
                 Map<String, Object> pars = parameters.values().stream()
@@ -60,13 +61,13 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
                             Object v = p.required ? config : p.defValue;
                             if (v == null)
                                 return null;
-                            v = p.parser.load(v);
+                            v = p.parser.load(plugin, v);
                             return Maps.immutableEntry(p.name, v);
                         })
                         .filter(Objects::nonNull)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-                return create(pars);
+                return create(plugin, pars);
             } else
                 throw new BadParameterUseException();
         }
@@ -76,7 +77,7 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
         return parameters.values().stream().filter(Parameter::isRequired).findFirst().orElse(null);
     }
 
-    public abstract T create(Map<String, Object> parameters);
+    public abstract T create(Plugin plugin, Map<String, Object> parameters);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -86,20 +87,23 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
                 .stream()
                 .map(p -> {
                     Object v = raw.get(p.name);
-                    if(v == null) {
-                        if(p.isRequired())
+                    if (v == null) {
+                        if (p.isRequired())
                             throw new IllegalStateException("Required parameter not given! name: " + p.name);
                         return null;
                     }
-                    if(Objects.equals(v, p.defValue))
+                    if (Objects.equals(v, p.defValue))
                         return null;
                     return Maps.immutableEntry(p.name, p.parser.save(v));
                 })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         switch (toSave.size()) {
-            case 0: return null;
-            case 1: return toSave.values().iterator().next();
-            default: return toSave;
+            case 0:
+                return null;
+            case 1:
+                return toSave.values().iterator().next();
+            default:
+                return toSave;
         }
     }
 
@@ -168,9 +172,9 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
         protected void fillToString(StringJoiner joiner) {
             joiner.add("name: " + name);
             joiner.add("parser: " + parser.getClass().getSimpleName());
-            if(defValue != null)
+            if (defValue != null)
                 joiner.add("def: " + defValue);
-            if(required)
+            if (required)
                 joiner.add("required");
         }
     }

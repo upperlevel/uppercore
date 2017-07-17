@@ -10,21 +10,23 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import xyz.upperlevel.uppercore.gui.Gui;
 
-@RequiredArgsConstructor
+@Getter
 public class GuiClickEvent extends Event implements Cancellable {
+
     private static final HandlerList handlers = new HandlerList();
 
-    @Getter
+    private final InventoryClickEvent click;
+    private final Player player;
+    private final Gui gui;
+
     @Setter
     private boolean cancelled;
 
-    @Getter
-    private final InventoryClickEvent click;
-    @Getter
-    private final Player player;
-    @Getter
-    private final Gui gui;
-
+    public GuiClickEvent(InventoryClickEvent click, Player player, Gui gui) {
+        this.click = click;
+        this.player = player;
+        this.gui = gui;
+    }
 
     @Override
     public HandlerList getHandlers() {

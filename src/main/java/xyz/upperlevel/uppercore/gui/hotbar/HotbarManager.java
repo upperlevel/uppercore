@@ -1,28 +1,92 @@
 package xyz.upperlevel.uppercore.gui.hotbar;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.Icon;
-import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
 
-import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class HotbarManager {
 
     private static final Map<String, Hotbar> hotbars = new HashMap<>();
+    private static final Map<Plugin, HotbarRegistry> registries = new HashMap<>();
     private static final Map<Player, HotbarView> views = new HashMap<>();
+
+    private HotbarManager() {
+    }
+
+    static {
+        Bukkit.getOnlinePlayers().forEach(HotbarManager::joinPlayer);
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onJoin(PlayerJoinEvent e) {
+                joinPlayer(e.getPlayer());
+            }
+
+            @EventHandler
+            public void onQuit(PlayerQuitEvent e) {
+                quitPlayer(e.getPlayer());
+            }
+        }, Uppercore.get());
+    }
+
+    private static String adaptId(String id) {
+        return id.toLowerCase(Locale.ENGLISH);
+    }
+
+    private static String obtainId(Plugin plugin, String id) {
+        return adaptId(plugin.getName() + ":" + id);
+    }
+
+    public static void register(Plugin plugin, String id, Hotbar hotbar) {
+        hotbars.put(obtainId(plugin, id), hotbar);
+    }
+
+    public static void register(Plugin plugin, HotbarRegistry registry) {
+        registries.put(plugin, registry);
+    }
+
+    public static HotbarRegistry getRegistry(Plugin plugin) {
+        return registries.get(plugin);
+    }
+
+    /**
+     * Gets hotbar of plugin from id.
+     *
+     * @param plugin the plugin
+     * @param id     the id
+     * @return the hotbar found
+     */
+    public static Hotbar getHotbar(Plugin plugin, String id) {
+        HotbarRegistry reg = registries.get(plugin);
+        if (reg != null)
+            return reg.getHotbar(id);
+        return hotbars.get(id);
+    }
+
+    /**
+     * Gets hotbar from formatted id {@code ("[plugin]:[id]")}.
+     *
+     * @param id the formatted id
+     * @return the hotbar found
+     */
+    public static Hotbar getHotbar(String id) {
+        return hotbars.get(adaptId(id));
+    }
+
+    public static Collection<Hotbar> getHotbars() {
+        return hotbars.values();
+    }
 
     private static void joinPlayer(Player player) {
         HotbarView v = new HotbarView(player);
@@ -38,126 +102,13 @@ public class HotbarManager {
     }
 
     /**
-     * Must be called, initializes the plugin.
-     */
-    public static void initialize() {
-        // registers a hotbar for all players online and registers a listener
-        // to register or removeHotbar join and quit players
-        Bukkit.getOnlinePlayers().forEach(HotbarManager::joinPlayer);
-        Bukkit.getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            public void onJoin(PlayerJoinEvent e) {
-                joinPlayer(e.getPlayer());
-            }
-
-            @EventHandler
-            public void onQuit(PlayerQuitEvent e) {
-                quitPlayer(e.getPlayer());
-            }
-        }, Uppercore.get());
-    }
-
-    /**
-     * Registers the given hotbar with the associated id.
-     *
-     * @param id     the id of the hotbar to register
-     * @param hotbar the hotbar to register
-     */
-    public static void register(String id, Hotbar hotbar) {
-        hotbars.put(id, hotbar);
-    }
-
-    /**
-     * Registers the given hotbar.
-     *
-     * @param hotbar the hotbar to register
-     */
-    public static void register(Hotbar hotbar) {
-        hotbars.put(hotbar.getId(), hotbar);
-    }
-
-    /**
-     * Unregisters the hotbar by its id.
-     *
-     * @param id the id of the hotbar to removeHotbar
-     * @return the hotbar removed
-     */
-    public static Hotbar unregister(String id) {
-        return hotbars.remove(id);
-    }
-
-    public static Hotbar unregister(Hotbar hotbar) {
-        return hotbars.remove(hotbar.getId());
-    }
-
-    /**
-     * Gets a hotbar by its id.
-     *
-     * @param id the id of the hotbar
-     * @return the hotbar fetched
-     */
-    public static Hotbar get(String id) {
-        return hotbars.get(id);
-    }
-
-    /**
      * Gets a hotbar view by its player.
      *
      * @param player the player holding the hotbar
      * @return the hotbar held
      */
-    public static HotbarView get(Player player) {
+    public static HotbarView getView(Player player) {
         return views.computeIfAbsent(player, HotbarView::new);
-    }
-
-    /**
-     * Loads a new hotbar from the given file.
-     *
-     * @param file the file where to load the hotbar
-     * @return the hotbar loaded
-     */
-    public static Hotbar load(File file) {
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        final String id = file.getName().replaceFirst("[.][^.]+$", "");
-        Hotbar hotbar;
-        try {
-            hotbar = Hotbar.deserialize(id, Config.wrap(config));
-        } catch (InvalidGuiConfigurationException e) {
-            Uppercore.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
-            return null;
-        } catch (Exception e) {
-            Uppercore.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
-            return null;
-        }
-        register(id, hotbar);
-        Uppercore.logger().log(Level.INFO, "Successfully loaded hotbar " + id);
-        return hotbar;
-    }
-
-    /**
-     * Loads all hotbars found in the given folder.
-     *
-     * @param folder the folder where to load the hotbars
-     */
-    public static void loadFolder(File folder) {
-        if (folder.exists()) {
-            if (folder.isDirectory()) {
-                File[] files = folder.listFiles();
-                if (files == null) {
-                    Uppercore.logger().severe("Error while reading " + folder + " files");
-                    return;
-                }
-                for (File file : files)
-                    load(file);
-            } else
-                Uppercore.logger().severe("\"" + folder.getName() + "\" isn't a folder!");
-        } else {
-            try {
-                folder.mkdirs();
-            } catch (Exception e) {
-                Uppercore.logger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
-            }
-        }
     }
 
     /**
@@ -168,7 +119,7 @@ public class HotbarManager {
      * @return true if is holding the passed hotbar, otherwise false
      */
     public static boolean isHolding(Player player, Hotbar hotbar) {
-        return get(player).isHolding(hotbar);
+        return getView(player).isHolding(hotbar);
     }
 
     /**
@@ -177,7 +128,7 @@ public class HotbarManager {
      * @param player the player
      */
     public static void remove(Player player) {
-        get(player).clear();
+        getView(player).clear();
     }
 
     public static boolean onClick(PlayerInteractEvent event) {
@@ -189,7 +140,7 @@ public class HotbarManager {
     }
 
     public static boolean onClick(Player player, int slot) {
-        Icon icon = get(player).getIcon(slot);
+        Icon icon = getView(player).getIcon(slot);
         if (icon == null || icon.getLink() == null)
             return false;
         icon.getLink().run(player);

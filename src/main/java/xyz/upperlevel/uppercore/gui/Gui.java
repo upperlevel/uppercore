@@ -2,15 +2,29 @@ package xyz.upperlevel.uppercore.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.link.Link;
+
+import java.util.Locale;
 
 public interface Gui extends Link {
 
-    /**
-     * An unique id for this gui.
-     * @return the unique id
-     */
+    Plugin getPlugin();
+
+    void setPlugin(Plugin plugin);
+
     String getId();
+
+    void setId(String id);
+
+    default boolean isIdentified() {
+        return getPlugin() != null && getId() != null;
+    }
+
+    default String getGlobalId() {
+        if (!isIdentified()) return null;
+        return (getPlugin().getName() + ":" + getId()).toLowerCase(Locale.ENGLISH);
+    }
 
     /**
      * Called when a player clicks on the inventory
@@ -44,6 +58,6 @@ public interface Gui extends Link {
      */
     @Override
     default void run(Player player) {
-        GuiManager.open(player, this);
+        GuiManager.openGui(player, this);
     }
 }

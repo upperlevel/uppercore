@@ -4,24 +4,26 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
 
+@Getter
 public class PlaySoundAction extends Action<PlaySoundAction> {
+
     public static final SoundActionType TYPE = new SoundActionType();
-    @Getter
+
     private final Sound sound;
-    @Getter
     private final PlaceholderValue<Float> volume, pitch;
 
 
-    public PlaySoundAction(Sound sound, PlaceholderValue<Float> volume, PlaceholderValue<Float> pitch) {
-        super(TYPE);
+    public PlaySoundAction(Plugin plugin, Sound sound, PlaceholderValue<Float> volume, PlaceholderValue<Float> pitch) {
+        super(plugin, TYPE);
         this.sound = sound;
         this.volume = volume;
         this.pitch = pitch;
@@ -45,11 +47,12 @@ public class PlaySoundAction extends Action<PlaySoundAction> {
         }
 
         @Override
-        public PlaySoundAction create(Map<String, Object> pars) {
+        public PlaySoundAction create(Plugin plugin, Map<String, Object> pars) {
             return new PlaySoundAction(
+                    plugin,
                     (Sound) pars.get("sound"),
-                    PlaceHolderUtil.parseFloat(pars.get("volume")),
-                    PlaceHolderUtil.parseFloat(pars.get("pitch"))
+                    PlaceholderUtil.parseFloat(pars.get("volume")),
+                    PlaceholderUtil.parseFloat(pars.get("pitch"))
             );
         }
 

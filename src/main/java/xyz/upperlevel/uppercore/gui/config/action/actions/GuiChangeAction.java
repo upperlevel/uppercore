@@ -3,52 +3,57 @@ package xyz.upperlevel.uppercore.gui.config.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.Gui;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
 
 public class GuiChangeAction extends Action<GuiChangeAction> {
+
     public static final GuiChangeActionType TYPE = new GuiChangeActionType();
+
     @Getter
     private final PlaceholderValue<String> guiId;
 
-    public GuiChangeAction(PlaceholderValue<String> guiId) {
-        super(TYPE);
+    public GuiChangeAction(Plugin plugin, PlaceholderValue<String> guiId) {
+        super(plugin, TYPE);
         this.guiId = guiId;
     }
 
     @Override
     public void run(Player player) {
-        Gui gui =  GuiManager.get(guiId.get(player));
-        if(gui == null) {
+        String guiId = this.guiId.get(player);
+        Gui gui = GuiManager.getGui(guiId);
+        if (gui == null) {
             Uppercore.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;
         }
 
-        GuiManager.change(player, gui);
+        GuiManager.changeGui(player, gui);
     }
 
 
     public static class GuiChangeActionType extends BaseActionType<GuiChangeAction> {
 
         public GuiChangeActionType() {
-            super("gui-change");
+            super("change-gui");
             setParameters(
                     Parameter.of("id", Parser.strValue(), true)
             );
         }
 
         @Override
-        public GuiChangeAction create(Map<String, Object> pars) {
+        public GuiChangeAction create(Plugin plugin, Map<String, Object> pars) {
             return new GuiChangeAction(
-                    PlaceHolderUtil.process((String) pars.get("id"))
+                    plugin,
+                    PlaceholderUtil.process((String) pars.get("id"))
             );
         }
 

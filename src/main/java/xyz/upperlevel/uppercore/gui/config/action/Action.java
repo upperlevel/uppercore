@@ -1,11 +1,12 @@
 package xyz.upperlevel.uppercore.gui.config.action;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.link.Link;
 
-@RequiredArgsConstructor
+@Data
 public abstract class Action<T extends Action<T>> implements Link {
-    @Getter
+
+    private final Plugin plugin;
     private final ActionType<T> type;
 }

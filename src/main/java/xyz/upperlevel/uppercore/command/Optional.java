@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Optional {
 
-    String value() default "";
+    String[] value() default {};
 
-    Sender sender() default Sender.ALL;
+    Sender[] sender() default Sender.ALL;
 }

@@ -6,8 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collection;
 import java.util.List;
@@ -95,7 +95,7 @@ public interface Config {
 
     default PlaceholderValue<String> getMessage(String key, String def) {
         String message = getString(key, def);
-        return message == null ? null : PlaceHolderUtil.process(message);
+        return message == null ? null : PlaceholderUtil.process(message);
     }
 
     default PlaceholderValue<String> getMessage(String key) {
@@ -103,7 +103,7 @@ public interface Config {
     }
 
     default PlaceholderValue<String> getMessageRequired(String key) {
-        return PlaceHolderUtil.process(getStringRequired(key));
+        return PlaceholderUtil.process(getStringRequired(key));
     }
 
 

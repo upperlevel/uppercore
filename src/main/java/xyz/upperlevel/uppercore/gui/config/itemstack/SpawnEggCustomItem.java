@@ -7,13 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
 import java.util.Map;
 
 public class SpawnEggCustomItem extends CustomItem {
+
     private EntityType type;
 
     public SpawnEggCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,

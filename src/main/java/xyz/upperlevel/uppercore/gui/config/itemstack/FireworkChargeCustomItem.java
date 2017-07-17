@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
 import xyz.upperlevel.uppercore.gui.config.util.ConfigUtils;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collection;
 import java.util.List;

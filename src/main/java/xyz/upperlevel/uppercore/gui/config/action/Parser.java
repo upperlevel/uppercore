@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.gui.config.action;
 
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
@@ -12,15 +13,16 @@ import java.util.Locale;
 import java.util.Map;
 
 public interface Parser<T> {
-    T load(Object o);
+
+    T load(Plugin plugin, Object object);
 
     Object save(T t);
 
     static Parser<String> strValue() {
         return new Parser<String>() {
             @Override
-            public String load(Object o) {
-                return o.toString();
+            public String load(Plugin plugin, Object object) {
+                return object.toString();
             }
 
             @Override
@@ -33,13 +35,13 @@ public interface Parser<T> {
     static Parser<Short> shortValue() {
         return new Parser<Short>() {
             @Override
-            public Short load(Object o) {
-                if(o instanceof Number)
-                    return ((Number) o).shortValue();
-                else if(o instanceof String)
-                    return Short.parseShort((String) o);
+            public Short load(Plugin plugin, Object object) {
+                if (object instanceof Number)
+                    return ((Number) object).shortValue();
+                else if (object instanceof String)
+                    return Short.parseShort((String) object);
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as short");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as short");
             }
 
             @Override
@@ -52,13 +54,13 @@ public interface Parser<T> {
     static Parser<Integer> intValue() {
         return new Parser<Integer>() {
             @Override
-            public Integer load(Object o) {
-                if(o instanceof Number)
-                    return ((Number) o).intValue();
-                else if(o instanceof String)
-                    return Integer.parseInt((String) o);
+            public Integer load(Plugin plugin, Object object) {
+                if (object instanceof Number)
+                    return ((Number) object).intValue();
+                else if (object instanceof String)
+                    return Integer.parseInt((String) object);
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as int");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as int");
             }
 
             @Override
@@ -71,13 +73,13 @@ public interface Parser<T> {
     static Parser<Long> longValue() {
         return new Parser<Long>() {
             @Override
-            public Long load(Object o) {
-                if(o instanceof Number)
-                    return ((Number) o).longValue();
-                else if(o instanceof String)
-                    return Long.parseLong((String) o);
+            public Long load(Plugin plugin, Object object) {
+                if (object instanceof Number)
+                    return ((Number) object).longValue();
+                else if (object instanceof String)
+                    return Long.parseLong((String) object);
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as short");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as short");
             }
 
             @Override
@@ -90,13 +92,13 @@ public interface Parser<T> {
     static Parser<Float> floatValue() {
         return new Parser<Float>() {
             @Override
-            public Float load(Object o) {
-                if(o instanceof Number)
-                    return ((Number) o).floatValue();
-                else if(o instanceof String)
-                    return Float.parseFloat((String) o);
+            public Float load(Plugin plugin, Object object) {
+                if (object instanceof Number)
+                    return ((Number) object).floatValue();
+                else if (object instanceof String)
+                    return Float.parseFloat((String) object);
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as short");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as short");
             }
 
             @Override
@@ -109,13 +111,13 @@ public interface Parser<T> {
     static Parser<Double> doubleValue() {
         return new Parser<Double>() {
             @Override
-            public Double load(Object o) {
-                if(o instanceof Number)
-                    return ((Number) o).doubleValue();
-                else if(o instanceof String)
-                    return Double.parseDouble((String) o);
+            public Double load(Plugin plugin, Object object) {
+                if (object instanceof Number)
+                    return ((Number) object).doubleValue();
+                else if (object instanceof String)
+                    return Double.parseDouble((String) object);
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as short");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as short");
             }
 
             @Override
@@ -128,10 +130,10 @@ public interface Parser<T> {
     static Parser<Boolean> boolValue() {
         return new Parser<Boolean>() {
             @Override
-            public Boolean load(Object raw) {
-                if(raw instanceof Boolean) {
+            public Boolean load(Plugin plugin, Object raw) {
+                if (raw instanceof Boolean) {
                     return (Boolean) raw;
-                } else if(raw instanceof String){
+                } else if (raw instanceof String) {
                     switch (((String) raw).toLowerCase()) {
                         case "no":
                         case "false":
@@ -140,7 +142,7 @@ public interface Parser<T> {
                         case "true":
                             return true;
                     }
-                } else if(raw instanceof Number) {
+                } else if (raw instanceof Number) {
                     return ((Number) raw).intValue() == 1;
                 }
                 throw new IllegalArgumentException("Cannot parse " + raw + " as short");
@@ -157,11 +159,11 @@ public interface Parser<T> {
     static Parser<List<Action>> actionsValue() {
         return new Parser<List<Action>>() {
             @Override
-            public List<Action> load(Object o) {
-                if(o instanceof Collection)
-                    return ActionType.deserialize((Collection<Map<String, Object>>)o);
+            public List<Action> load(Plugin plugin, Object object) {
+                if (object instanceof Collection)
+                    return ActionType.deserialize(plugin, (Collection<Map<String, Object>>) object);
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as short");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as short");
             }
 
             @Override
@@ -175,13 +177,13 @@ public interface Parser<T> {
         return new Parser<CustomItem>() {
             @Override
             @SuppressWarnings("unchecked")
-            public CustomItem load(Object o) {
-                if(o instanceof ItemStack)
-                    return new CustomItem((ItemStack) o);
-                else if(o instanceof Map)
-                    return CustomItem.deserialize(Config.wrap((Map<String, Object>) o));
+            public CustomItem load(Plugin plugin, Object object) {
+                if (object instanceof ItemStack)
+                    return new CustomItem((ItemStack) object);
+                else if (object instanceof Map)
+                    return CustomItem.deserialize(Config.wrap((Map<String, Object>) object));
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as Item");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as Item");
             }
 
             @Override
@@ -194,13 +196,13 @@ public interface Parser<T> {
     static Parser<Sound> soundValue() {
         return new Parser<Sound>() {
             @Override
-            public Sound load(Object o) {
-                if(o instanceof Sound)
-                    return (Sound) o;
-                else if(o instanceof String)
-                    return Sound.valueOf(((String) o).replace(' ', '_').toUpperCase(Locale.ENGLISH));
+            public Sound load(Plugin plugin, Object object) {
+                if (object instanceof Sound)
+                    return (Sound) object;
+                else if (object instanceof String)
+                    return Sound.valueOf(((String) object).replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as sound");
+                    throw new IllegalArgumentException("Cannot parse " + object + " as sound");
             }
 
             @Override
@@ -214,13 +216,13 @@ public interface Parser<T> {
         return new Parser<T>() {
             @Override
             @SuppressWarnings("unchecked")
-            public T load(Object o) {
-                if(clazz.isInstance(o)) {
-                    return (T) o;
-                } else if(o instanceof String) {
-                    return Enum.valueOf(clazz, ((String) o).replace(' ', '_').toUpperCase(Locale.ENGLISH));
+            public T load(Plugin plugin, Object object) {
+                if (clazz.isInstance(object)) {
+                    return (T) object;
+                } else if (object instanceof String) {
+                    return Enum.valueOf(clazz, ((String) object).replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 } else
-                    throw new IllegalArgumentException("Cannot parse " + o + " as " + clazz.getSimpleName());
+                    throw new IllegalArgumentException("Cannot parse " + object + " as " + clazz.getSimpleName());
             }
 
             @Override

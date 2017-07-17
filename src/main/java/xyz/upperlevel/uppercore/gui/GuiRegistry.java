@@ -1,0 +1,100 @@
+package xyz.upperlevel.uppercore.gui;
+
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
+import xyz.upperlevel.uppercore.gui.config.util.Config;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
+public class GuiRegistry {
+
+    private final Plugin plugin;
+    private final Map<String, Gui> guis = new HashMap<>();
+
+    public GuiRegistry(Plugin plugin) {
+        this.plugin = plugin;
+        GuiManager.register(plugin, this);
+    }
+
+    public void register(String id, Gui gui) {
+        guis.put(id, gui);
+        GuiManager.register(plugin, id, gui);
+    }
+
+    /**
+     * Loads the given gui file configuration.
+     *
+     * @param file loads the given file
+     */
+    public Gui load(File file) {
+        FileConfiguration config = new YamlConfiguration();
+        try {
+            config.load(file);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Error while loading the file \"" + file + "\"", e);
+            return null;
+        } catch (InvalidConfigurationException e) {
+            plugin.getLogger().log(Level.SEVERE, "Invalid configuration in file \"" + file + "\":", e);
+            return null;
+        }
+        String id = file.getName().replaceFirst("[.][^.]+$", "");
+        ChestGui gui;
+        try {
+            gui = ChestGui.deserialize(plugin, id, Config.wrap(config));
+        } catch (InvalidGuiConfigurationException e) {
+            plugin.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
+            return null;
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
+            return null;
+        }
+        register(id, gui);
+        plugin.getLogger().log(Level.INFO, "Successfully loaded gui " + id);
+        return gui;
+    }
+
+    /**
+     * Loads a folder that contains gui configurations.
+     * This will not delete present guis.
+     *
+     * @param folder the folder to load
+     */
+    public void loadFolder(File folder) {
+        if (folder.exists()) {
+            if (folder.isDirectory()) {
+                File[] files = folder.listFiles();
+                if (files == null) {
+                    plugin.getLogger().severe("Error while reading " + folder + " files");
+                    return;
+                }
+                for (File file : files)
+                    load(file);
+            } else {
+                plugin.getLogger().severe("\"" + folder.getName() + "\" isn't a folder!");
+            }
+        } else {
+            try {
+                folder.mkdirs();
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
+            }
+        }
+    }
+
+    public Gui getGui(String id) {
+        return guis.get(id);
+    }
+
+    public Collection<Gui> getGuis() {
+        return guis.values();
+    }
+}

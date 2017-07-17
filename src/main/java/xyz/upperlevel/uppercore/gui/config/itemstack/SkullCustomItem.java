@@ -6,13 +6,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
 import java.util.Map;
 
 public class SkullCustomItem extends CustomItem {
+
     private PlaceholderValue<String> skullOwner;
 
     public SkullCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
@@ -35,7 +36,7 @@ public class SkullCustomItem extends CustomItem {
                              PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                              List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
                              Config config) {
-        PlaceholderValue<String> skullOwner = PlaceholderValue.strValue(config.getString("owner"));
+        PlaceholderValue<String> skullOwner = PlaceholderValue.stringValue(config.getString("owner"));
         return new SkullCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 skullOwner

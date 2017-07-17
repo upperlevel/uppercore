@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.gui.config.action.actions;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
@@ -10,8 +11,8 @@ import java.util.Map;
 public class GuiReloadAction extends Action<GuiReloadAction> {
     public static final GuiReloadActionType TYPE = new GuiReloadActionType();
 
-    public GuiReloadAction() {
-        super(TYPE);
+    public GuiReloadAction(Plugin plugin) {
+        super(plugin, TYPE);
     }
 
     @Override
@@ -22,13 +23,13 @@ public class GuiReloadAction extends Action<GuiReloadAction> {
     public static class GuiReloadActionType extends BaseActionType<GuiReloadAction> {
 
         public GuiReloadActionType() {
-            super("gui-reload");
+            super("reload-gui");
             setParameters();
         }
 
         @Override
-        public GuiReloadAction create(Map<String, Object> parameters) {
-            return new GuiReloadAction();
+        public GuiReloadAction create(Plugin plugin, Map<String, Object> parameters) {
+            return new GuiReloadAction(plugin);
         }
 
         @Override

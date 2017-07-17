@@ -5,19 +5,18 @@ import lombok.Data;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.Icon;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Data
 public class Hotbar {
 
+    private Plugin plugin;
     private String id;
 
     private Icon[] icons = new Icon[9];
@@ -30,15 +29,20 @@ public class Hotbar {
     private boolean onJoin;
 
     public Hotbar() {
-        this(null);
     }
 
-    public Hotbar(String id) {
+    public Hotbar(Plugin plugin, String id) {
+        this.plugin = plugin;
         this.id = id;
     }
 
-    public boolean hasId() {
-        return id != null;
+    public boolean isIdentified() {
+        return plugin != null && id != null;
+    }
+
+    public String getGlobalId() {
+        if (!isIdentified()) return null;
+        return (plugin.getName() + ":" + id).toLowerCase(Locale.ENGLISH);
     }
 
     /**
@@ -199,26 +203,25 @@ public class Hotbar {
     public boolean give(Player player) {
         if (permission != null && !player.hasPermission(permission))
             return false;
-        HotbarManager.get(player).addHotbar(this);
+        HotbarManager.getView(player).addHotbar(this);
         return true;
     }
 
     public boolean remove(Player player) {
-        return HotbarManager.get(player).removeHotbar(this);
+        return HotbarManager.getView(player).removeHotbar(this);
     }
 
     /**
      * Deserializes the hotbar by the given id and the given config.
      *
-     * @param id     the id of the hotbar deserialized
      * @param config the config where load the hotbar
      * @return the hotbar created
      */
-    public static Hotbar deserialize(String id, Config config) {
-        Hotbar hotbar = new Hotbar(id);
+    public static Hotbar deserialize(Plugin plugin, String id, Config config) {
+        Hotbar hotbar = new Hotbar(plugin, id);
         hotbar.permission = (String) config.get("permission");
         for (Config section : config.getConfigList("icons")) {
-            Icon icon = Icon.deserialize(section);
+            Icon icon = Icon.deserialize(plugin, section);
             int slot = section.getInt("slot", -1);
             if (slot == -1)
                 hotbar.noSlotIcons.add(icon);
@@ -256,11 +259,6 @@ public class Hotbar {
 
         public Builder(Hotbar hotbar) {
             this.hotbar = hotbar;
-        }
-
-        public Builder id(String id) {
-            hotbar.setId(id);
-            return this;
         }
 
         public Builder permission(String permission) {

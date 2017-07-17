@@ -7,9 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceHolderUtil;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FireworkCustomItem extends CustomItem {
+
     private List<FireworkEffect> effects;
     private PlaceholderValue<Integer> power;
 
@@ -48,7 +49,7 @@ public class FireworkCustomItem extends CustomItem {
                 .stream()
                 .map(c -> FireworkChargeCustomItem.parse(Config.wrap(c)))
                 .collect(Collectors.toList());
-        PlaceholderValue<Integer> power = PlaceHolderUtil.parseInt(config.getStringRequired("power"));
+        PlaceholderValue<Integer> power = PlaceholderUtil.parseInt(config.getStringRequired("power"));
         return new FireworkCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 effects, power

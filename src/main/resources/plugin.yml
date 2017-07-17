@@ -3,5 +3,5 @@ version: 1.0
 main: xyz.upperlevel.uppercore.Uppercore
 author: [upperlevel]
 commands:
-  test:
-    description: hey
+  uppercore:
+    description: 'Commands for Uppercore.'

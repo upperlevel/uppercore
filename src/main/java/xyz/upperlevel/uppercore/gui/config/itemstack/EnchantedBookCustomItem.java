@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class EnchantedBookCustomItem extends CustomItem {
+
     private Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments;
 
     public EnchantedBookCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,

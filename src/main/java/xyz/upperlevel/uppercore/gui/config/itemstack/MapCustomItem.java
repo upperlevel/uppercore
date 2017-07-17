@@ -7,13 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
-import xyz.upperlevel.uppercore.gui.config.placeholders.PlaceholderValue;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
 import java.util.Map;
 
 public class MapCustomItem extends CustomItem {
+
     private boolean scaling;
     private PlaceholderValue<String> displayLocName;
     private PlaceholderValue<Color> displayMapColor;
@@ -45,7 +46,7 @@ public class MapCustomItem extends CustomItem {
                                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
                                               Config config) {
         boolean scaling = config.getBool("scaling", false);
-        PlaceholderValue<String> displayLocName = PlaceholderValue.strValue(config.getString("location-name"));
+        PlaceholderValue<String> displayLocName = PlaceholderValue.stringValue(config.getString("location-name"));
         PlaceholderValue<Color> displayMapColor = PlaceholderValue.colorValue(config.getString("map-color"));
         return new MapCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
