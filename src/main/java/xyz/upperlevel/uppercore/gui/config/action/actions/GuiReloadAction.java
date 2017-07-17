@@ -2,7 +2,7 @@ package xyz.upperlevel.uppercore.gui.config.action.actions;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.GuiManager;
+import xyz.upperlevel.uppercore.gui.GuiSystem;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 
@@ -17,7 +17,7 @@ public class GuiReloadAction extends Action<GuiReloadAction> {
 
     @Override
     public void run(Player player) {
-        GuiManager.reprint(player);
+        GuiSystem.reprint(player);
     }
 
     public static class GuiReloadActionType extends BaseActionType<GuiReloadAction> {

@@ -1,20 +1,19 @@
 package xyz.upperlevel.uppercore.gui;
 
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.link.Link;
 
 public class GuiAction {
 
     public static Link close() {
-        return GuiManager::closeGui;
+        return GuiSystem::close;
     }
 
     public static Link back() {
-        return GuiManager::backGui;
+        return GuiSystem::back;
     }
 
     public static Link change(Gui gui) {
-        return p -> GuiManager.changeGui(p, gui);
+        return p -> GuiSystem.change(p, gui);
     }
 
 

@@ -25,12 +25,12 @@ public class GuiRegistry {
     public GuiRegistry(Plugin plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder(), "guis");
-        GuiManager.register(plugin, this);
+        GuiSystem.register(plugin, this);
     }
 
     public void register(String id, Gui gui) {
         guis.put(id, gui);
-        GuiManager.register(plugin, id, gui);
+        GuiSystem.register(plugin, id, gui);
     }
 
     public Gui get(String id) {

@@ -2,7 +2,7 @@ package xyz.upperlevel.uppercore.gui.config.action.actions;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.GuiManager;
+import xyz.upperlevel.uppercore.gui.GuiSystem;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 
@@ -18,7 +18,7 @@ public class GuiBackAction extends Action<GuiBackAction> {
 
     @Override
     public void run(Player player) {
-        GuiManager.backGui(player);
+        GuiSystem.back(player);
     }
 
     public static class GuiBackActionType extends BaseActionType<GuiBackAction> {

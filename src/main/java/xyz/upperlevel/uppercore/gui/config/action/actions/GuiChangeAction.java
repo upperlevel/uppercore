@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.Gui;
-import xyz.upperlevel.uppercore.gui.GuiManager;
+import xyz.upperlevel.uppercore.gui.GuiSystem;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
@@ -30,13 +30,13 @@ public class GuiChangeAction extends Action<GuiChangeAction> {
     @Override
     public void run(Player player) {
         String guiId = this.guiId.get(player);
-        Gui gui = GuiManager.getGui(guiId);
+        Gui gui = GuiSystem.get(guiId);
         if (gui == null) {
             Uppercore.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;
         }
 
-        GuiManager.changeGui(player, gui);
+        GuiSystem.change(player, gui);
     }
 
 

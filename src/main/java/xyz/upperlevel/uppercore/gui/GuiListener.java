@@ -14,16 +14,16 @@ public class GuiListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        GuiManager.closeGui(e.getPlayer());
+        GuiSystem.close(e.getPlayer());
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if (e.getPlayer() instanceof Player && !GuiManager.isCalled()) {
+        if (e.getPlayer() instanceof Player && !GuiSystem.isCalled()) {
             //Cannot call Inventory actions in an inventory event
             Bukkit.getScheduler().runTaskLater(
                     Uppercore.get(),
-                    () -> GuiManager.backGui((Player) e.getPlayer()),
+                    () -> GuiSystem.back((Player) e.getPlayer()),
                     0
             );
         }
@@ -32,9 +32,9 @@ public class GuiListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.getClickedInventory() == e.getInventory())
-            GuiManager.onClick(e);
+            GuiSystem.onClick(e);
         if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-            if (GuiManager.getHistory((Player) e.getWhoClicked()) != null)
+            if (GuiSystem.getHistory((Player) e.getWhoClicked()) != null)
                 e.setCancelled(true);
         }
     }
