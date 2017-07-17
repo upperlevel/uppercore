@@ -21,7 +21,8 @@ public class GuiEventListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     protected void onPlayerClick(InventoryClickEvent e) {
-        HotbarView h = HotbarManager.getView((Player) e.getWhoClicked());
+        Player player = (Player) e.getWhoClicked();
+        HotbarView h = HotbarManager.getView(player);
         if (e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
             //isIconSlot is really fast but it only works with the main player inventory where the first 9 indexes are
             //for the hotbar. this isn't exactly the main inventory but it works as well
@@ -33,7 +34,7 @@ public class GuiEventListener implements Listener {
 
         if (h != null && (h.isIcon(e.getCurrentItem()) || h.isIcon((e.getCursor())))) {//TODO use normal slots
             e.setCancelled(true);
-            ((Player) e.getWhoClicked()).updateInventory();
+            player.updateInventory();
         }
 
     }
@@ -47,7 +48,7 @@ public class GuiEventListener implements Listener {
     // TODO
     //@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     //protected void onCustomBookOpen(CustomBookOpenEvent e) {
-    //    GuiManager.closeGui(e.getPlayer());
+    //    GuiSystem.closeGui(e.getPlayer());
     //}
 
     @EventHandler

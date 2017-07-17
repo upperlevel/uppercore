@@ -7,28 +7,28 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.events.*;
 
 import java.util.*;
 
-import static java.util.Locale.ENGLISH;
 import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
 import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
 
 /**
  * This manager is the class that manages the player histories in a stack-like system
  * it has multiple operations for interacting with the Gui stack:
- * openGui: appends the gui to the stack
- * closeGui: clears the stack
- * backGui: removes the last gui from the stack
- * changeGui: backGui + openGui
+ * open: appends the gui to the stack
+ * close: clears the stack
+ * back: removes the last gui from the stack
+ * change: back + open
  * It's suggested NOT to chain operations when not needed, it could cause client flickering
  * <p>
  * This system does not support recursion
  */
-public final class GuiManager {
+public final class GuiSystem {
 
-    private static final Map<String, Gui> guis = new HashMap<>();
+    private static final Map<String, Gui> guis = new HashMap<>();//This class uses a lot of optimizations in the HashMap!
     private static final Map<Plugin, GuiRegistry> registries = new HashMap<>();
 
     private static final Map<Player, LinkedList<Gui>> histories = new HashMap<>();
@@ -36,7 +36,7 @@ public final class GuiManager {
     @Getter
     private static boolean called = false;
 
-    private GuiManager() {
+    private GuiSystem() {
     }
 
     public static void register(Plugin plugin, String id, Gui gui) {
@@ -47,11 +47,11 @@ public final class GuiManager {
         registries.put(plugin, registry);
     }
 
-    public static Gui getGui(String id) {
+    public static Gui get(String id) {
         return guis.get(adaptId(id));
     }
 
-    public static Gui getGui(Plugin plugin, String id) {
+    public static Gui get(Plugin plugin, String id) {
         GuiRegistry reg = registries.get(plugin);
         if (reg != null)
             return reg.getGui(id);
@@ -62,7 +62,7 @@ public final class GuiManager {
         return registries.get(plugin);
     }
 
-    public static Collection<Gui> getGuis() {
+    public static Collection<Gui> get() {
         return guis.values();
     }
 
@@ -73,7 +73,7 @@ public final class GuiManager {
      * @param gui         the gui to be opened
      * @param closeOthers if give to true the GUI histories would be cleaned
      */
-    public static void openGui(Player player, Gui gui, boolean closeOthers) {
+    public static void open(Player player, Gui gui, boolean closeOthers) {
         if (called) return;
         called = true;
         try {
@@ -107,8 +107,8 @@ public final class GuiManager {
      * @param player the player that is opening the api
      * @param gui    the gui to be opened
      */
-    public static void openGui(Player player, Gui gui) {
-        openGui(player, gui, false);
+    public static void open(Player player, Gui gui) {
+        open(player, gui, false);
     }
 
     /**
@@ -116,7 +116,7 @@ public final class GuiManager {
      *
      * @param player the player
      */
-    public static void closeGui(Player player) {
+    public static void close(Player player) {
         if (called) return;
         called = true;
         try {
@@ -159,31 +159,38 @@ public final class GuiManager {
      *
      * @param player the player
      */
-    public static void backGui(Player player) {
+    public static void back(Player player) {
         if (called) return;
         called = true;
         try {
-            LinkedList<Gui> g = histories.get(player);
-            if (g == null || g.isEmpty())
-                return;
+            histories.computeIfPresent(player, (p, g) -> {
+                //computeIfPresent is a method that, if the entry is found permits to the code to replace
+                //the value with another one or, to remove it if the replaced value is null
+                //In this code is used as a removeIf: if(the history is empty) remove /*return null*/ else don't remove /*return history*
 
-            Gui oldGui = g.pop();
-            Gui gui = g.peek();
+                if (g.isEmpty())//This should never be true
+                    return null;//remove the history from the map
+                Gui oldGui = g.pop();
+                Gui gui = g.peek();
 
-            GuiBackEvent event = new GuiBackEvent(player, gui, oldGui);
-            Bukkit.getPluginManager().callEvent(event);
+                GuiBackEvent event = new GuiBackEvent(player, gui, oldGui);
+                Bukkit.getPluginManager().callEvent(event);
 
-            if (event.isCancelled()) {
-                g.push(oldGui);
-                return;
-            }
+                if (event.isCancelled()) {
+                    g.push(oldGui);
+                    return g;//Don't remove
+                }
 
-            oldGui.onClose(player);
-            if (!g.isEmpty()) {
-                gui.onOpen(player);
-                gui.show(player);
-            } else
-                player.closeInventory();
+                oldGui.onClose(player);
+                if (!g.isEmpty()) {
+                    gui.onOpen(player);
+                    gui.show(player);
+                    return g;//Don't remove
+                } else {
+                    player.closeInventory();
+                    return null;//remove
+                }
+            });
         } finally {
             called = false;
         }
@@ -195,7 +202,7 @@ public final class GuiManager {
      * @param player the player
      * @param gui    the Gui that will be appended instead of the last one
      */
-    public static void changeGui(Player player, Gui gui) {
+    public static void change(Player player, Gui gui) {
         if (called) return;
         called = true;
         try {

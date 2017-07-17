@@ -58,6 +58,6 @@ public interface Gui extends Link {
      */
     @Override
     default void run(Player player) {
-        GuiManager.openGui(player, this);
+        GuiSystem.open(player, this);
     }
 }

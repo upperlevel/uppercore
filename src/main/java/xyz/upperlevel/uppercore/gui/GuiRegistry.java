@@ -4,7 +4,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
 
@@ -22,12 +21,12 @@ public class GuiRegistry {
 
     public GuiRegistry(Plugin plugin) {
         this.plugin = plugin;
-        GuiManager.register(plugin, this);
+        GuiSystem.register(plugin, this);
     }
 
     public void register(String id, Gui gui) {
         guis.put(id, gui);
-        GuiManager.register(plugin, id, gui);
+        GuiSystem.register(plugin, id, gui);
     }
 
     /**

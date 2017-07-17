@@ -8,7 +8,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 import xyz.upperlevel.uppercore.gui.config.util.Config;
@@ -212,7 +211,7 @@ public class ChestGui implements Gui {
                         return task;
                     });
                 } else if (this.updateInterval < 0) {//If there isn't any updater because the old updateInterval wasn't valid
-                    GuiManager.getHistories().entrySet()
+                    GuiSystem.getHistories().entrySet()
                             .stream()
                             .filter(e -> e.getValue().peek() == this)
                             .forEach((e) -> startUpdateTask(e.getKey()));
@@ -253,7 +252,7 @@ public class ChestGui implements Gui {
     }
 
     protected void onUpdate(Player player) {
-        GuiManager.reprint(player);
+        GuiSystem.reprint(player);
     }
 
     @Override

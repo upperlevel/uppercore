@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.*;
 import xyz.upperlevel.uppercore.gui.Gui;
-import xyz.upperlevel.uppercore.gui.GuiManager;
+import xyz.upperlevel.uppercore.gui.GuiSystem;
 
 public class OpenGuiCommand extends Command {
 
@@ -17,6 +17,6 @@ public class OpenGuiCommand extends Command {
     public void run(CommandSender sender, @Argument("gui") Gui gui, @Argument("player") @Optional(sender = Sender.PLAYER) Player player) {
         if (player == null)
             player = (Player) sender;
-        GuiManager.openGui(player, gui);
+        GuiSystem.open(player, gui);
     }
 }

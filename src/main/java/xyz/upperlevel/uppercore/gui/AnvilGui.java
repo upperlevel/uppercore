@@ -38,7 +38,7 @@ public class AnvilGui implements Gui {
 
     private String onAnvilClick(Player player, String input) {
         //We don't want the GUI to close:
-        //Once we return null the AnvilGui will closeGui the GUI and the GuiManager will listen that closeGui event
+        //Once we return null the AnvilGui will close the GUI and the GuiSystem will listen that close event
         //all AFTER that the onClick is executed
         final String str = listener.onClick(player, input);
         return str == null ? "" : str;

@@ -7,7 +7,7 @@ import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.Executor;
 import xyz.upperlevel.uppercore.command.Optional;
 import xyz.upperlevel.uppercore.gui.Gui;
-import xyz.upperlevel.uppercore.gui.GuiManager;
+import xyz.upperlevel.uppercore.gui.GuiSystem;
 import xyz.upperlevel.uppercore.gui.GuiRegistry;
 
 import java.util.Collection;
@@ -26,10 +26,10 @@ public class GuiListCommand extends Command {
     public void run(CommandSender sender, @Argument("plugin") @Optional Plugin plugin) {
         Collection<Gui> guis;
         if (plugin != null) {
-            GuiRegistry reg = GuiManager.getRegistry(plugin);
+            GuiRegistry reg = GuiSystem.getRegistry(plugin);
             guis = reg.getGuis();
         } else
-            guis = GuiManager.getGuis();
+            guis = GuiSystem.get();
         StringJoiner str = new StringJoiner(GRAY + ", ");
         for (Gui gui : guis)
             str.add(AQUA + gui.getGlobalId());
