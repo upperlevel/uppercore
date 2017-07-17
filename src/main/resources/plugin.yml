@@ -1,7 +1,9 @@
-name: Uppercore
-version: 1.0
-main: xyz.upperlevel.uppercore.Uppercore
-author: [upperlevel]
+name: ${project.name}
+version: ${project.version}
+main: ${mainClass}
+author: upperlevel
+description: ${project.description}
+
 commands:
   uppercore:
     description: 'Commands for Uppercore.'
