@@ -25,10 +25,10 @@ public class ScriptListCommand extends Command {
     public void run(CommandSender sender, @Argument("plugin") @Optional Plugin plugin) {
         Collection<String> scriptNames;
         if (plugin != null) {
-            ScriptRegistry reg = ScriptSystem.instance().getRegistry(plugin);
+            ScriptRegistry reg = ScriptSystem.getRegistry(plugin);
             scriptNames = reg.getScripts().keySet();
         } else
-            scriptNames = ScriptSystem.instance().get().keySet();
+            scriptNames = ScriptSystem.get().keySet();
         StringJoiner str = new StringJoiner(GRAY + ", ");
         for (String name : scriptNames)
             str.add(AQUA + name);

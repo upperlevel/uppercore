@@ -21,7 +21,7 @@ public interface Script {
         final Thread currentThread = Thread.currentThread();
         final ClassLoader oldLoader = currentThread.getContextClassLoader();
         try {
-            currentThread.setContextClassLoader(Uppercore.get().getScriptSystem().getClassLoader());
+            currentThread.setContextClassLoader(ScriptSystem.getClassLoader());
             Bindings b = createBindings();
             b.put("player", player);
             b.put("placeholder", (Function<String, String>) str -> PlaceholderUtil.resolvePlaceholders(player, str));

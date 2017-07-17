@@ -27,12 +27,12 @@ public class ScriptRegistry {
     ScriptRegistry(Plugin plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder(), "scripts");
-        ScriptSystem.instance().register(plugin, this);
+        ScriptSystem.register(plugin, this);
     }
 
     public void register(String id, Script gui) {
         scripts.put(id, gui);
-        ScriptSystem.instance().register(plugin, id, gui);
+        ScriptSystem.register(plugin, id, gui);
     }
 
     public Script get(String id) {
@@ -48,8 +48,7 @@ public class ScriptRegistry {
     }
 
     public Script load(String id, String script, String ext) throws ScriptException {
-        final ScriptSystem system = ScriptSystem.instance();
-        final String engineName = system.getExtensionsToEngineName().get(ext);
+        final String engineName = ScriptSystem.getExtensionsToEngineName().get(ext);
         if (engineName == null)
             throw new IllegalArgumentException("Cannot find engine for \"" + ext + "\"");
         ScriptEngine engine;
@@ -57,8 +56,8 @@ public class ScriptRegistry {
             final Thread currentThread = Thread.currentThread();
             final ClassLoader oldLoader = currentThread.getContextClassLoader();
             try {
-                currentThread.setContextClassLoader(Uppercore.get().getScriptSystem().getClassLoader());
-                engine = system.getEngineManager().getEngineByName(engineName);
+                currentThread.setContextClassLoader(ScriptSystem.getClassLoader());
+                engine = ScriptSystem.getEngineManager().getEngineByName(engineName);
             } finally {
                 currentThread.setContextClassLoader(oldLoader);
             }

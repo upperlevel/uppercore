@@ -16,8 +16,6 @@ public class Uppercore extends JavaPlugin {
 
     private static Uppercore instance;
 
-    private ScriptSystem scriptSystem;
-
     private Metrics metrics;
 
     @Override
@@ -31,10 +29,10 @@ public class Uppercore extends JavaPlugin {
         File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
         if (!scriptsConfigFile.exists())
             saveResource(SCRIPT_CONFIG, false);
-        scriptSystem = new ScriptSystem(new File(getDataFolder(), "engines"), scriptsConfigFile);
+        ScriptSystem.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
 
         //Metrics custom data setup
-        scriptSystem.setupMetrics(metrics);
+        ScriptSystem.setupMetrics(metrics);
 
         //Command setup
         new UppercoreCommand().subscribe();

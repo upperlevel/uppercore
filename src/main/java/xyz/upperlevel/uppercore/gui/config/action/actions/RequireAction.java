@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.gui.config.action.Parser;
 import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.script.Script;
+import xyz.upperlevel.uppercore.script.ScriptSystem;
 
 import javax.script.ScriptException;
 import java.util.Collections;
@@ -62,7 +63,7 @@ public class RequireAction extends Action<RequireAction> {
     }
 
     private boolean testScript(Player player, String id) {
-        Script script = Uppercore.get().getScriptSystem().get(id);
+        Script script = ScriptSystem.get(id);
         if (script == null) {
             Uppercore.logger().severe("Cannot find script '" + id + "'");
             return true;

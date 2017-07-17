@@ -25,20 +25,21 @@ import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
 
 public class ScriptSystem {
 
-    private final File classPath;
+    @Getter
+    private static File classPath;
 
     @Getter
-    private final ClassLoader classLoader;
+    private static ClassLoader classLoader;
     @Getter
-    private final ScriptEngineManager engineManager;
+    private static ScriptEngineManager engineManager;
     @Getter
-    private Map<String, String> extensionsToEngineName;
+    private static Map<String, String> extensionsToEngineName;
 
     private static final Map<String, Script> scripts = new HashMap<>();
     private static final Map<Plugin, ScriptRegistry> registries = new HashMap<>();
 
-    public ScriptSystem(File classPath, File scriptEngineConfig) {
-        this.classPath = classPath;
+    public static void load(File classPath, File scriptEngineConfig) {
+        ScriptSystem.classPath = classPath;
         {//Create classLoader
             File[] files = classPath.listFiles();
             URL[] urls;
@@ -57,7 +58,7 @@ public class ScriptSystem {
                         .filter(Objects::nonNull)
                         .toArray(URL[]::new);
 
-            classLoader = new URLClassLoader(urls, getClass().getClassLoader());
+            classLoader = new URLClassLoader(urls, ScriptSystem.class.getClassLoader());
         }
         engineManager = new ScriptEngineManager(classLoader);
         {//Print found engines
@@ -91,7 +92,7 @@ public class ScriptSystem {
         reloadConfig(scriptEngineConfig);
     }
 
-    public void reloadConfig(File configFile) {
+    public static void reloadConfig(File configFile) {
         extensionsToEngineName = new HashMap<>();
 
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
@@ -100,11 +101,11 @@ public class ScriptSystem {
             extensionsToEngineName.put(obj.getKey(), obj.getValue().toString());
     }
 
-    public void register(Plugin plugin, String id, Script script) {
+    public static void register(Plugin plugin, String id, Script script) {
         scripts.put(obtainId(plugin, id), script);
     }
 
-    public void register(Plugin plugin, ScriptRegistry registry) {
+    public static void register(Plugin plugin, ScriptRegistry registry) {
         registries.put(plugin, registry);
     }
 
@@ -119,19 +120,19 @@ public class ScriptSystem {
         return null;
     }
 
-    public Map<String, Script> get() {
+    public static Map<String, Script> get() {
         return Collections.unmodifiableMap(scripts);
     }
 
-    public ScriptRegistry getRegistry(Plugin plugin) {
+    public static ScriptRegistry getRegistry(Plugin plugin) {
         return registries.get(plugin);
     }
 
-    public Map<Plugin, ScriptRegistry> getRegistries() {
+    public static Map<Plugin, ScriptRegistry> getRegistries() {
         return Collections.unmodifiableMap(registries);
     }
 
-    public void setupMetrics(Metrics metrics) {
+    public static void setupMetrics(Metrics metrics) {
         metrics.addCustomChart(new Metrics.AdvancedPie("script_engines_used") {
 
             @Override
@@ -153,13 +154,13 @@ public class ScriptSystem {
         return new ScriptRegistry(plugin);
     }
 
-    public static ScriptSystem instance() {
-        return Uppercore.get().getScriptSystem();
-    }
-
     public static String getEngineName(ScriptEngine engine) {
         return engine.getClass().getSimpleName()
                 .replaceFirst("ScriptEngine", "")
                 .toLowerCase(Locale.ENGLISH);
     }
+
+
+
+    private ScriptSystem(){}
 }
