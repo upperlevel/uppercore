@@ -11,11 +11,10 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import java.util.Map;
 
 import static java.util.Locale.ENGLISH;
+import static xyz.upperlevel.uppercore.scoreboard.BoardUtil.MAX_LINES;
 
 @Data
-public class Scoreboard implements Identifiable {
-
-    public static final int MAX_LINES = 15;
+public class Board implements Identifiable {
 
     private Plugin plugin;
     private String id;
@@ -23,15 +22,13 @@ public class Scoreboard implements Identifiable {
     private PlaceholderValue<String> title;
     private final PlaceholderValue<String>[] lines = new PlaceholderValue[MAX_LINES]; // :(
 
-    public Scoreboard(Plugin plugin, String id) {
+    public Board(Plugin plugin, String id) {
         this.plugin = plugin;
         this.id = id.toLowerCase(ENGLISH);
     }
 
-    // SCOREBOARD
-
     public void setTitle(String title) {
-        setTitle(PlaceholderValue.stringValue(title));
+        setTitle(PlaceholderUtil.process(title));
     }
 
     public void setTitle(PlaceholderValue<String> title) {
@@ -70,16 +67,14 @@ public class Scoreboard implements Identifiable {
         return lines[index];
     }
 
-    public ScoreboardView open(Player player) {
-        ScoreboardView view = ScoreboardSystem.view(player);
-        view.setScoreboard(this);
+    public BoardView open(Player player) {
+        BoardView view = ScoreboardSystem.view(player);
+        view.setBoard(this);
         return view;
     }
 
-    // SERIALIZATION
-
-    public static Scoreboard deserialize(Plugin plugin, String id, Config config) {
-        Scoreboard result = new Scoreboard(plugin, id);
+    public static Board deserialize(Plugin plugin, String id, Config config) {
+        Board result = new Board(plugin, id);
         result.setTitle(config.getStringRequired("title"));
         for (Object line : config.getListRequired("lines")) {
             if (line instanceof String) {

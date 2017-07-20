@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.scoreboard.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.Argument;
@@ -23,6 +22,6 @@ public class ScoreboardRemoveCommand extends Command {
         if (player == null)
             player = (Player) sender;
         ScoreboardSystem.remove(player);
-        sender.sendMessage(GREEN  + "Scoreboard clear to \"" + player.getName() + "\".");
+        sender.sendMessage(GREEN  + "Board clear to \"" + player.getName() + "\".");
     }
 }

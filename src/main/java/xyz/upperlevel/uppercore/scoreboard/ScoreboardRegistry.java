@@ -19,7 +19,7 @@ public class ScoreboardRegistry {
 
     private final Plugin plugin;
     private final File folder;
-    private final Map<String, Scoreboard> scoreboards = new HashMap<>();
+    private final Map<String, Board> scoreboards = new HashMap<>();
 
     ScoreboardRegistry(Plugin plugin) {
         this.plugin = plugin;
@@ -27,20 +27,20 @@ public class ScoreboardRegistry {
         ScoreboardSystem.register(this);
     }
 
-    public void register(Scoreboard scoreboard) {
-        scoreboards.put(scoreboard.getId(), scoreboard);
-        ScoreboardSystem.register(scoreboard);
+    public void register(Board board) {
+        scoreboards.put(board.getId(), board);
+        ScoreboardSystem.register(board);
     }
 
-    public Scoreboard get(String id) {
+    public Board get(String id) {
         return scoreboards.get(id);
     }
 
-    public Collection<Scoreboard> getScoreboards() {
+    public Collection<Board> getScoreboards() {
         return scoreboards.values();
     }
 
-    public Scoreboard load(File file) {
+    public Board load(File file) {
         FileConfiguration config = new YamlConfiguration();
         try {
             config.load(file);
@@ -52,9 +52,9 @@ public class ScoreboardRegistry {
             return null;
         }
         String id = file.getName().replaceFirst("[.][^.]+$", "");
-        Scoreboard scoreboard;
+        Board board;
         try {
-            scoreboard = Scoreboard.deserialize(plugin, id, Config.wrap(config));
+            board = Board.deserialize(plugin, id, Config.wrap(config));
         } catch (InvalidConfigurationException e) {
             plugin.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
             return null;
@@ -62,9 +62,9 @@ public class ScoreboardRegistry {
             plugin.getLogger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
             return null;
         }
-        register(scoreboard);
+        register(board);
         plugin.getLogger().log(Level.INFO, "Successfully loaded gui " + id);
-        return scoreboard;
+        return board;
     }
 
     public void loadFolder(File folder) {

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
@@ -14,13 +15,24 @@ import java.util.Map;
 
 public final class ScoreboardSystem {
 
-    private static final Map<String, Scoreboard> scoreboardsById = new HashMap<>();
+    private static final Map<String, Board> scoreboardsById = new HashMap<>();
     private static final Map<Plugin, ScoreboardRegistry> registriesByPlugin = new HashMap<>();
 
-    private static final Map<Player, ScoreboardView> views = new HashMap<>();
+    private static final Map<Player, BoardView> views = new HashMap<>();
+
+    private static void onPlayerJoin(Player p) {
+        views.put(p, new BoardView(p));
+    }
 
     public static void initialize() {
+        Bukkit.getOnlinePlayers().forEach(ScoreboardSystem::onPlayerJoin);
         Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onPlayerJoin(PlayerJoinEvent e) {
+                ScoreboardSystem.onPlayerJoin(e.getPlayer());
+                System.out.println("REGISTERED " + e.getPlayer().getName() + "...");
+            }
+
             @EventHandler
             public void onPlayerQuit(PlayerQuitEvent e) {
                 views.remove(e.getPlayer());
@@ -28,8 +40,8 @@ public final class ScoreboardSystem {
         }, Uppercore.get());
     }
 
-    static void register(Scoreboard scoreboard) {
-        scoreboardsById.put(scoreboard.getGlobalId(), scoreboard);
+    static void register(Board board) {
+        scoreboardsById.put(board.getGlobalId(), board);
     }
 
     static void register(ScoreboardRegistry registry) {
@@ -40,34 +52,34 @@ public final class ScoreboardSystem {
         return registriesByPlugin.get(plugin);
     }
 
-    public static Scoreboard get(String id) {
+    public static Board get(String id) {
         return scoreboardsById.get(id);
     }
 
-    public static Scoreboard get(Plugin plugin, String id) {
+    public static Board get(Plugin plugin, String id) {
         ScoreboardRegistry registry = get(plugin);
         if (registry != null)
             return registry.get(id);
         return null;
     }
 
-    public static ScoreboardView getView(Player player) {
+    public static BoardView view(Player player) {
         return views.get(player);
     }
 
-    public static ScoreboardView set(Player player, Scoreboard scoreboard) {
-        ScoreboardView result = views.computeIfAbsent(player, ScoreboardView::new);
-        result.setScoreboard(scoreboard);
+    public static BoardView set(Player player, Board board) {
+        BoardView result = views.computeIfAbsent(player, BoardView::new);
+        result.setBoard(board);
         return result;
     }
 
     public static void remove(Player player) {
-        ScoreboardView res = getView(player);
+        BoardView res = view(player);
         if (res == null) return;
         res.clear();
     }
 
-    public static Collection<Scoreboard> getScoreboards() {
+    public static Collection<Board> getScoreboards() {
         return scoreboardsById.values();
     }
 
