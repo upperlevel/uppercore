@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public interface PlaceholderValue<T> {
 
-    T get(Player player);
+    T resolve(Player player);
 
     String toString();
 
@@ -74,7 +74,7 @@ public interface PlaceholderValue<T> {
         private final T value;
 
         @Override
-        public T get(Player player) {
+        public T resolve(Player player) {
             return value;
         }
 
@@ -95,7 +95,7 @@ public interface PlaceholderValue<T> {
         private final T onError;
 
         @Override
-        public T get(Player player) {
+        public T resolve(Player player) {
             final String real = PlaceholderUtil.resolvePlaceholders(player, value);
             try {
                 return parser.apply(real);
@@ -117,7 +117,7 @@ public interface PlaceholderValue<T> {
         private final String value;
 
         @Override
-        public String get(Player player) {
+        public String resolve(Player player) {
             return PlaceholderUtil.resolvePlaceholders(player, value);
         }
 

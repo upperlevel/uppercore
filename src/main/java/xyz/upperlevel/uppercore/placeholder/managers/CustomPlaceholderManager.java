@@ -1,21 +1,33 @@
 package xyz.upperlevel.uppercore.placeholder.managers;
 
+import me.clip.placeholderapi.PlaceholderHook;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderManager;
 import xyz.upperlevel.uppercore.placeholder.managers.customs.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static xyz.upperlevel.uppercore.Uppercore.get;
+
 public class CustomPlaceholderManager implements PlaceholderManager {
+
     public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%(.*?)%");
 
-    private Map<String, CustomPlaceholder> placeholders = new HashMap<>();
+    private Map<String, Placeholder> placeholders = new HashMap<>();
 
     public CustomPlaceholderManager() {
         addDefaults();
+    }
+
+    @Override
+    public void register(Plugin plugin, Placeholder placeholder) {
+        placeholders.put(placeholder.getId(), placeholder);
     }
 
     @Override
@@ -30,17 +42,35 @@ public class CustomPlaceholderManager implements PlaceholderManager {
     }
 
     @Override
-    public String apply(Player player, String string) {
-        StringBuffer buffer = new StringBuffer();
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(string);
-        while (matcher.find()) {
-            final String key = matcher.group(1);
-            final String replacement = findReplacement(player, key);
-            if (replacement != null)
-                matcher.appendReplacement(buffer, replacement);
+    public String apply(Player player, String text) {
+        if (text != null && placeholders != null && !placeholders.isEmpty()) {
+            Matcher placeholderMatcher = PLACEHOLDER_PATTERN.matcher(text);
+            Collection<Placeholder> values = placeholders.values();
+            while (true) {
+                String format;
+                int index;
+                do {
+                    do {
+                        if (!placeholderMatcher.find()) {
+                            return ChatColor.translateAlternateColorCodes('&', text);
+                        }
+
+                        format = placeholderMatcher.group(1);
+                        index = format.indexOf("_");
+                    } while (index <= 0);
+                } while (index >= format.length());
+
+                String pl = format.substring(0, index);
+                String identifier = format.substring(index + 1);
+
+                for (Placeholder value : values) {
+                    if (pl.equalsIgnoreCase(value.getId()))
+                        text = value.resolve(player, identifier);
+                }
+            }
+        } else {
+            return text;
         }
-        matcher.appendTail(buffer);
-        return buffer.toString();
     }
 
     @Override
@@ -49,22 +79,18 @@ public class CustomPlaceholderManager implements PlaceholderManager {
     }
 
     public String findReplacement(Player player, String key) {
-        CustomPlaceholder pl = placeholders.get(key.toLowerCase());
-        return pl != null ? pl.get(player) : null;
-    }
-
-    public void addPlaceholder(CustomPlaceholder placeholder) {
-        placeholders.put(placeholder.id(), placeholder);
+        Placeholder pl = placeholders.get(key.toLowerCase());
+        return pl != null ? pl.resolve(player, "") : null;
     }
 
     public void addDefaults() {
-        addPlaceholder(new PlayerDisplayNamePlaceholder());
-        addPlaceholder(new PlayerFoodPlaceholder());
-        addPlaceholder(new PlayerHealthPlaceholder());
-        addPlaceholder(new PlayerLevelPlaceholder());
-        addPlaceholder(new PlayerNamePlaceholder());
-        addPlaceholder(new PlayerSaturationPlaceholder());
-        addPlaceholder(new VaultBalancePlaceholder());
-        addPlaceholder(new PlayerWorldPlaceholder());
+        register(get(), new PlayerDisplayNamePlaceholder());
+        register(get(), new PlayerFoodPlaceholder());
+        register(get(), new PlayerHealthPlaceholder());
+        register(get(), new PlayerLevelPlaceholder());
+        register(get(), new PlayerNamePlaceholder());
+        register(get(), new PlayerSaturationPlaceholder());
+        register(get(), new VaultBalancePlaceholder());
+        register(get(), new PlayerWorldPlaceholder());
     }
 }

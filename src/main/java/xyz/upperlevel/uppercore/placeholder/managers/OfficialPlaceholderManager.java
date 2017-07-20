@@ -2,12 +2,35 @@ package xyz.upperlevel.uppercore.placeholder.managers;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
+import me.clip.placeholderapi.external.EZPlaceholderHook;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderManager;
 
 import java.util.Map;
 
 public class OfficialPlaceholderManager implements PlaceholderManager {
+
+    private static class OfficialPlaceholderAdapter extends EZPlaceholderHook {
+
+        private final Placeholder placeholder;
+
+        public OfficialPlaceholderAdapter(Plugin plugin, Placeholder placeholder) {
+            super(plugin, placeholder.getId());
+            this.placeholder = placeholder;
+        }
+
+        @Override
+        public String onPlaceholderRequest(Player player, String identifier) {
+            return placeholder.resolve(player, identifier);
+        }
+    }
+
+    @Override
+    public void register(Plugin plugin, Placeholder placeholder) {
+        new OfficialPlaceholderAdapter(plugin, placeholder).hook();
+    }
 
     @Override
     public boolean hasPlaceholders(String string) {

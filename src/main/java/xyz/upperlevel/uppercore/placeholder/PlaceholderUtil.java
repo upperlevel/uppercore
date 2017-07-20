@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.placeholder.managers.CustomPlaceholderManager;
 import xyz.upperlevel.uppercore.placeholder.managers.OfficialPlaceholderManager;
@@ -76,6 +77,10 @@ public final class PlaceholderUtil {
             manager = new CustomPlaceholderManager();
             Uppercore.logger().warning("Cannot find PlaceholderAPI");
         }
+    }
+
+    public static void register(Plugin plugin, Placeholder placeholder) {
+        manager.register(plugin, placeholder);
     }
 
     public static PlaceholderValue<String> process(String message) {
