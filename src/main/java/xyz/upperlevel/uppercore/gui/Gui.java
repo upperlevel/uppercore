@@ -11,11 +11,7 @@ public interface Gui extends Link {
 
     Plugin getPlugin();
 
-    void setPlugin(Plugin plugin);
-
     String getId();
-
-    void setId(String id);
 
     default boolean isIdentified() {
         return getPlugin() != null && getId() != null;

@@ -22,50 +22,15 @@ public class ChestGui implements Gui {
 
     private final Map<Player, UpdaterTask> updaters = new HashMap<>();
 
-    private Plugin plugin;
-    private String id;
+    private final Plugin plugin;
+    private final String id;
 
     private PlaceholderValue<String> title;
     private int size;
     private InventoryType type;
     private Icon[] icons;
 
-    public ChestGui() {
-        this(54, "");
-    }
-
-    public ChestGui(Plugin plugin, String id) {
-        this(54, "");
-        this.plugin = plugin;
-        this.id = id;
-    }
-
-    public ChestGui(int size, String title) {
-        this(null, size, title);
-    }
-
-    public ChestGui(int size) {
-        this(null, size);
-    }
-
-    public ChestGui(InventoryType type) {
-        this(null, type);
-    }
-
     private int updateInterval = -1;
-
-    // used just when deserialize
-    private ChestGui(String id) {
-        this.id = id;
-    }
-
-    public ChestGui(String id, InventoryType type) {
-        this(id, type, type.getDefaultTitle());
-    }
-
-    public ChestGui(String id, int size) {
-        this(id, size, InventoryType.CHEST.getDefaultTitle());
-    }
 
     /**
      * Initializes the gui by its size and title. The id can be set to null if not needed.
@@ -74,7 +39,8 @@ public class ChestGui implements Gui {
      * @param size  the size of the gui
      * @param title the title of the gui
      */
-    public ChestGui(String id, int size, String title) {
+    public ChestGui(Plugin plugin, String id, int size, String title) {
+        this.plugin = plugin;
         this.id = id;
         this.title = PlaceholderValue.stringValue(title);
         this.size = size;
@@ -89,12 +55,36 @@ public class ChestGui implements Gui {
      * @param type  the type of the gui
      * @param title the title of the gui
      */
-    public ChestGui(String id, InventoryType type, String title) {
+    public ChestGui(Plugin plugin, String id, InventoryType type, String title) {
+        this.plugin = plugin;
         this.id = id;
         this.type = type;
         this.title = PlaceholderValue.stringValue(title);
         this.icons = new Icon[type.getDefaultSize()];
         onSetup();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected ChestGui(Plugin plugin, String id, Config config) {
+        this(plugin, id, -1, config.getStringRequired("title"));
+        if (config.has("type")) {
+            type = config.getEnum("type", InventoryType.class);
+            icons = new Icon[type.getDefaultSize()];
+        } else if (config.has("size")) {
+            size = config.getInt("size");
+            if (size % 9 != 0) {
+                plugin.getLogger().warning("In gui " + id + ": size must be a multiple of 9");
+                size = GuiSize.min(size);
+            }
+            icons = new Icon[size];
+        } else
+            throw new InvalidConfigurationException("Both 'type' and 'size' are empty!");
+        updateInterval = config.getInt("update-interval", -1);
+        title = config.getMessageRequired("title");
+        for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("icons")) {
+            Icon item = Icon.deserialize(plugin, Config.wrap(data));
+            icons[(int) data.get("slot")] = item;
+        }
     }
 
     public boolean hasId() {
@@ -297,53 +287,27 @@ public class ChestGui implements Gui {
     @SuppressWarnings("unchecked")
     public static ChestGui deserialize(Plugin plugin, String id, Config config) {
         try {
-            ChestGui res = new ChestGui(plugin, id);
-            if (config.has("type")) {
-                res.type = config.getEnum("type", InventoryType.class);
-                res.size = -1;
-                res.icons = new Icon[res.type.getDefaultSize()];
-            } else if (config.has("size")) {
-                res.type = null;
-                res.size = config.getInt("size");
-                if (res.size % 9 != 0) {
-                    plugin.getLogger().warning("In gui " + id + ": size must be a multiple of 9");
-                    res.size = GuiSize.min(res.size);
-                }
-                res.icons = new Icon[res.size];
-            } else
-                throw new InvalidConfigurationException("Both 'type' and 'size' are empty!");
-            res.updateInterval = config.getInt("update-interval", -1);
-            res.title = config.getMessageRequired("title");
-            for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("icons")) {
-                Icon item = Icon.deserialize(plugin, Config.wrap(data));
-                res.icons[(int) data.get("slot")] = item;
-            }
-            return res;
+            return new ChestGui(plugin, id, config);
         } catch (InvalidConfigurationException e) {
             e.addLocalizer("in gui " + id);
             throw e;
         }
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static Builder builder(Plugin plugin, String id) {
+        return new Builder(plugin, id);
     }
 
     public static class Builder {
 
         private final ChestGui gui;
 
-        public Builder() {
-            gui = new ChestGui();
+        public Builder(Plugin plugin, String id) {
+            gui = new ChestGui(plugin, id, -1, "");
         }
 
         public Builder(ChestGui gui) {
             this.gui = gui;
-        }
-
-        public Builder id(String id) {
-            gui.setId(id);
-            return this;
         }
 
         public Builder type(InventoryType type) {
