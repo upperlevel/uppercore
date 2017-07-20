@@ -1,12 +1,10 @@
 package xyz.upperlevel.uppercore.config;
 
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.util.SerializationUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -501,6 +499,12 @@ public interface Config {
         } catch (ClassCastException e) {
             throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
+    }
+
+    //--------------------------Location
+
+    default Location getLocation(String key) {
+        return SerializationUtil.deserializeLocation(getConfig(key));
     }
 
     static void requiredPropertyNotFound(String key) {
