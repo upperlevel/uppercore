@@ -82,7 +82,13 @@ public class BoardView {
 
         public void remove() {
             text = null;
-            BoardView.this.updateLines();
+            if (entry != null) {
+                entries.remove(entry);
+                handle.resetScores(entry);
+                prefix = null;
+                entry = null;
+                suffix = null;
+            }
         }
 
         public void forcePrint() {

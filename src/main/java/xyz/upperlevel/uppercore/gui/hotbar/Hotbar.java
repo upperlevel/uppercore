@@ -36,6 +36,21 @@ public class Hotbar {
         this.id = id;
     }
 
+    public Hotbar(Plugin plugin, String id, Config config) {
+        this(plugin, id);
+        permission = (String) config.get("permission");
+        if (config.has("icons"))
+            for (Config section : config.getConfigList("icons")) {
+                Icon icon = Icon.deserialize(plugin, section);
+                int slot = section.getInt("slot", -1);
+                if (slot == -1)
+                    noSlotIcons.add(icon);
+                else
+                    icons[slot] = icon;
+            }
+        onJoin = config.getBool("on-join", false);
+    }
+
     public boolean isIdentified() {
         return plugin != null && id != null;
     }
@@ -211,20 +226,6 @@ public class Hotbar {
         return HotbarSystem.view(player).removeHotbar(this);
     }
 
-    public void deserialize(Config config) {
-        permission = (String) config.get("permission");
-        if (config.has("icons"))
-            for (Config section : config.getConfigList("icons")) {
-                Icon icon = Icon.deserialize(plugin, section);
-                int slot = section.getInt("slot", -1);
-                if (slot == -1)
-                    noSlotIcons.add(icon);
-                else
-                    icons[slot] = icon;
-            }
-        onJoin = config.getBool("on-join", false);
-    }
-
     /**
      * Deserializes the hotbar by the given id and the given config.
      *
@@ -232,9 +233,7 @@ public class Hotbar {
      * @return the hotbar created
      */
     public static Hotbar deserialize(Plugin plugin, String id, Config config) {
-        Hotbar hotbar = new Hotbar(plugin, id);
-        hotbar.deserialize(config);
-        return hotbar;
+        return new Hotbar(plugin, id, config);
     }
 
     public static class HotbarOutOfSpaceException extends RuntimeException {
