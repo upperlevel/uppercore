@@ -203,12 +203,26 @@ public class Hotbar {
     public boolean give(Player player) {
         if (permission != null && !player.hasPermission(permission))
             return false;
-        HotbarSystem.getView(player).addHotbar(this);
+        HotbarSystem.view(player).addHotbar(this);
         return true;
     }
 
     public boolean remove(Player player) {
-        return HotbarSystem.getView(player).removeHotbar(this);
+        return HotbarSystem.view(player).removeHotbar(this);
+    }
+
+    public void deserialize(Config config) {
+        permission = (String) config.get("permission");
+        if (config.has("icons"))
+            for (Config section : config.getConfigList("icons")) {
+                Icon icon = Icon.deserialize(plugin, section);
+                int slot = section.getInt("slot", -1);
+                if (slot == -1)
+                    noSlotIcons.add(icon);
+                else
+                    icons[slot] = icon;
+            }
+        onJoin = config.getBool("on-join", false);
     }
 
     /**
@@ -219,16 +233,7 @@ public class Hotbar {
      */
     public static Hotbar deserialize(Plugin plugin, String id, Config config) {
         Hotbar hotbar = new Hotbar(plugin, id);
-        hotbar.permission = (String) config.get("permission");
-        for (Config section : config.getConfigList("icons")) {
-            Icon icon = Icon.deserialize(plugin, section);
-            int slot = section.getInt("slot", -1);
-            if (slot == -1)
-                hotbar.noSlotIcons.add(icon);
-            else
-                hotbar.icons[slot] = icon;
-        }
-        hotbar.onJoin = config.getBool("on-join", false);
+        hotbar.deserialize(config);
         return hotbar;
     }
 

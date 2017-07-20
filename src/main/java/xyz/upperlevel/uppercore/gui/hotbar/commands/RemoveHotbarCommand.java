@@ -19,7 +19,7 @@ public class RemoveHotbarCommand extends Command {
     public void run(CommandSender sender, @Argument("hotbar") Hotbar hotbar, @Argument("player") @Optional(sender = Sender.PLAYER) Player player) {
         if (player == null)
             player = (Player) sender;
-        HotbarSystem.getView(player).removeHotbar(hotbar);
+        HotbarSystem.view(player).removeHotbar(hotbar);
         sender.sendMessage(GREEN + "Hotbar \"" + hotbar.getGlobalId() + "\" removed from \"" + player.getName() + "\".");
     }
 }

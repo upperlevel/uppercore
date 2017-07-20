@@ -2,14 +2,13 @@ package xyz.upperlevel.uppercore.config;
 
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.omg.CORBA.DynAnyPackage.Invalid;
+import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
@@ -128,7 +127,7 @@ public interface Config {
         try {
             raw = get(key);
         } catch (ClassCastException e) {
-            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in: \"" + key + "\"");
         }
         return raw == null ? null : raw.toString();
     }
@@ -143,6 +142,48 @@ public interface Config {
         if (str == null)
             requiredPropertyNotFound(key);
         return str;
+    }
+
+    //--------------------------StringList
+
+    default List<String> getStringList(String key) {
+        List<String> res;
+        try {
+            res = (List<String>) get(key);
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Invalid value in: \"" + key + "\"");
+        }
+        return res;
+    }
+
+    default List<String> getStringList(String key, List<String> def) {
+        List<String> res = getStringList(key);
+        return res != null ? res : def;
+    }
+
+    default List<String> getStringListRequired(String key) {
+        List<String> res = getStringList(key);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
+    }
+
+    //--------------------------List
+
+    default <T> List<T> getList(String key) {
+        return (List<T>) get(key);
+    }
+
+    default <T> List<T> getList(String key, List<T> def) {
+        List<T> res = getList(key);
+        return res != null ? res : def;
+    }
+
+    default <T> List<T> getListRequired(String key) {
+        List<T> res = getList(key);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
     }
 
     //-----------------------Message (String + placeholder + colors)
@@ -421,24 +462,6 @@ public interface Config {
         return res;
     }
 
-    //------------------------List
-
-    default <T> List<T> getList(String key) {
-        return (List<T>) get(key);
-    }
-
-    default <T> List<T> getList(String key, List<T> list) {
-        List<T> res = getList(key);
-        return res == null ? list : res;
-    }
-
-    default <T> List<T> getListRequired(String key) {
-        List<T> res = getList(key);
-        if (res == null)
-            requiredPropertyNotFound(key);
-        return res;
-    }
-
     //------------------------Config
 
     default Config getConfig(String key, Map<String, Object> def) {
@@ -503,8 +526,71 @@ public interface Config {
 
     //--------------------------Location
 
+    default Location getLocation(String key, Location def) {
+        try {
+            return SerializationUtil.deserializeLocation(getConfig(key));
+        } catch (Exception e) {
+            return def;
+        }
+    }
+
     default Location getLocation(String key) {
-        return SerializationUtil.deserializeLocation(getConfig(key));
+        return getLocation(key, null);
+    }
+
+    default Location getLocationRequired(String key) {
+        Location l = getLocation(key);
+        if (l == null)
+            requiredPropertyNotFound(key);
+        return l;
+    }
+
+    //--------------------------LocationList
+
+    default List<Location> getLocationList(String key, List<Location> def) {
+        List<Config> cfgs = getConfigList(key);
+        List<Location> res = new ArrayList<>();
+        if (cfgs == null)
+            return def;
+        try {
+            for (Config cfg : cfgs)
+                res.add(SerializationUtil.deserializeLocation(cfg));
+        } catch (Exception e) {
+            return def;
+        }
+        return res;
+    }
+
+    default List<Location> getLocationList(String key) {
+        return getLocationList(key, null);
+    }
+
+    default List<Location> getLocationListRequired(String key) {
+        List<Location> res = getLocationList(key);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
+    }
+
+    //--------------------------CustomItem
+
+    default CustomItem getCustomItem(String key, CustomItem def) {
+        try {
+            return CustomItem.deserialize(getConfig(key));
+        } catch (Exception e) {
+            return def;
+        }
+    }
+
+    default CustomItem getCustomItem(String key) {
+        return getCustomItem(key, null);
+    }
+
+    default CustomItem getCustomItemRequired(String key) {
+        CustomItem itm = getCustomItem(key);
+        if (itm == null)
+            requiredPropertyNotFound(key);
+        return itm;
     }
 
     static void requiredPropertyNotFound(String key) {

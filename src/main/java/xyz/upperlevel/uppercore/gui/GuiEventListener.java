@@ -22,7 +22,7 @@ public class GuiEventListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     protected void onPlayerClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        HotbarView h = HotbarSystem.getView(player);
+        HotbarView h = HotbarSystem.view(player);
         if (e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
             //isIconSlot is really fast but it only works with the main player inventory where the first 9 indexes are
             //for the hotbar. this isn't exactly the main inventory but it works as well
@@ -41,7 +41,7 @@ public class GuiEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     protected void onPlayerQuit(PlayerQuitEvent e) {
-        HotbarSystem.getView(e.getPlayer()).clear();
+        HotbarSystem.view(e.getPlayer()).clear();
     }
 
 
@@ -64,18 +64,18 @@ public class GuiEventListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
-        HotbarView h = HotbarSystem.getView(e.getPlayer());
+        HotbarView h = HotbarSystem.view(e.getPlayer());
         if (h != null && h.isIconSlot(e.getPlayer().getInventory().getHeldItemSlot()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
-        HotbarSystem.getView(e.getPlayer()).print();
+        HotbarSystem.view(e.getPlayer()).print();
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        HotbarSystem.getView(e.getEntity());
+        HotbarSystem.view(e.getEntity());
     }
 }

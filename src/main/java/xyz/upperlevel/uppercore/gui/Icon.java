@@ -131,6 +131,10 @@ public class Icon {
         this.link = link;
     }
 
+    public Icon(CustomItem display) {
+        this.display = display;
+    }
+
     public Icon(CustomItem display, Link link) {
         this.display = display;
         this.link = link;

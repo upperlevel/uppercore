@@ -8,6 +8,7 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Locale.ENGLISH;
@@ -21,6 +22,9 @@ public class Board implements Identifiable {
 
     private PlaceholderValue<String> title;
     private final PlaceholderValue<String>[] lines = new PlaceholderValue[MAX_LINES]; // :(
+
+    public Board() {
+    }
 
     public Board(Plugin plugin, String id) {
         this.plugin = plugin;
@@ -76,14 +80,17 @@ public class Board implements Identifiable {
     public static Board deserialize(Plugin plugin, String id, Config config) {
         Board result = new Board(plugin, id);
         result.setTitle(config.getStringRequired("title"));
-        for (Object line : config.getListRequired("lines")) {
-            if (line instanceof String) {
-                result.addLine((String) line);
-            } else if (line instanceof Map) {
-                result.setLine(
-                        (int) ((Map) line).get("index"),
-                        (String) ((Map) line).get("text")
-                );
+        List<String> lines = config.getList("lines");
+        if (lines != null) {
+            for (Object line : lines) {
+                if (line instanceof String) {
+                    result.addLine((String) line);
+                } else if (line instanceof Map) {
+                    result.setLine(
+                            (int) ((Map) line).get("index"),
+                            (String) ((Map) line).get("text")
+                    );
+                }
             }
         }
         return result;

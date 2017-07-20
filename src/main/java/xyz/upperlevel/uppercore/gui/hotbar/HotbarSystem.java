@@ -104,7 +104,7 @@ public class HotbarSystem {
      * @param player the player holding the hotbar
      * @return the hotbar held
      */
-    public static HotbarView getView(Player player) {
+    public static HotbarView view(Player player) {
         return views.computeIfAbsent(player, HotbarView::new);
     }
 
@@ -116,7 +116,7 @@ public class HotbarSystem {
      * @return true if is holding the passed hotbar, otherwise false
      */
     public static boolean isHolding(Player player, Hotbar hotbar) {
-        return getView(player).isHolding(hotbar);
+        return view(player).isHolding(hotbar);
     }
 
     /**
@@ -125,7 +125,7 @@ public class HotbarSystem {
      * @param player the player
      */
     public static void remove(Player player) {
-        getView(player).clear();
+        view(player).clear();
     }
 
     public static boolean onClick(PlayerInteractEvent event) {
@@ -137,7 +137,7 @@ public class HotbarSystem {
     }
 
     public static boolean onClick(Player player, int slot) {
-        Icon icon = getView(player).getIcon(slot);
+        Icon icon = view(player).getIcon(slot);
         if (icon == null || icon.getLink() == null)
             return false;
         icon.getLink().run(player);
