@@ -2,18 +2,17 @@ package xyz.upperlevel.uppercore.command.arguments.impl;
 
 import xyz.upperlevel.uppercore.command.arguments.ArgumentParser;
 import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
+import xyz.upperlevel.uppercore.script.Script;
+import xyz.upperlevel.uppercore.script.ScriptSystem;
 
+import java.util.Collections;
 import java.util.List;
 
-import static java.lang.Integer.parseInt;
-import static java.lang.Long.parseLong;
-import static java.util.Arrays.asList;
-
-public class LongArgumentParser implements ArgumentParser {
+public class ScriptArgumentParser implements ArgumentParser {
 
     @Override
     public List<Class<?>> getParsable() {
-        return asList(Long.class, long.class);
+        return Collections.singletonList(Script.class);
     }
 
     @Override
@@ -23,10 +22,9 @@ public class LongArgumentParser implements ArgumentParser {
 
     @Override
     public Object parse(Class<?> type, List<String> args) throws ParseException {
-        try {
-            return parseLong(args.get(0));
-        } catch (Exception e) {
-            throw new ParseException(args.get(0), "number");
-        }
+        Script s = ScriptSystem.get(args.get(0));
+        if (s == null)
+            throw new ParseException(args.get(0), "script");
+        return s;
     }
 }

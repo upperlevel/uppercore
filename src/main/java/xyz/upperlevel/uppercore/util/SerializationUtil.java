@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import xyz.upperlevel.uppercore.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;

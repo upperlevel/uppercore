@@ -1,18 +1,32 @@
 package xyz.upperlevel.uppercore.scoreboard;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScoreboardSystem {
+public final class ScoreboardSystem {
 
     private static final Map<String, Scoreboard> scoreboardsById = new HashMap<>();
     private static final Map<Plugin, ScoreboardRegistry> registriesByPlugin = new HashMap<>();
 
     private static final Map<Player, ScoreboardView> views = new HashMap<>();
+
+    public static void initialize() {
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onPlayerQuit(PlayerQuitEvent e) {
+                views.remove(e.getPlayer());
+            }
+        }, Uppercore.get());
+    }
 
     static void register(Scoreboard scoreboard) {
         scoreboardsById.put(scoreboard.getGlobalId(), scoreboard);
@@ -42,9 +56,9 @@ public class ScoreboardSystem {
     }
 
     public static ScoreboardView set(Player player, Scoreboard scoreboard) {
-        ScoreboardView res = views.computeIfAbsent(player, p -> new ScoreboardView(player, scoreboard));
-        res.setScoreboard(scoreboard);
-        return res;
+        ScoreboardView result = views.computeIfAbsent(player, ScoreboardView::new);
+        result.setScoreboard(scoreboard);
+        return result;
     }
 
     public static void remove(Player player) {
@@ -59,5 +73,9 @@ public class ScoreboardSystem {
 
     public static Collection<ScoreboardRegistry> getRegistries() {
         return registriesByPlugin.values();
+    }
+
+    public static ScoreboardRegistry subscribe(Plugin plugin) {
+        return new ScoreboardRegistry(plugin);
     }
 }

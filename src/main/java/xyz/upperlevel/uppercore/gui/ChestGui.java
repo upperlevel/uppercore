@@ -8,9 +8,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -311,7 +311,7 @@ public class ChestGui implements Gui {
                 }
                 res.icons = new Icon[res.size];
             } else
-                throw new InvalidGuiConfigurationException("Both 'type' and 'size' are empty!");
+                throw new InvalidConfigurationException("Both 'type' and 'size' are empty!");
             res.updateInterval = config.getInt("update-interval", -1);
             res.title = config.getMessageRequired("title");
             for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("icons")) {
@@ -319,7 +319,7 @@ public class ChestGui implements Gui {
                 res.icons[(int) data.get("slot")] = item;
             }
             return res;
-        } catch (InvalidGuiConfigurationException e) {
+        } catch (InvalidConfigurationException e) {
             e.addLocalizer("in gui " + id);
             throw e;
         }

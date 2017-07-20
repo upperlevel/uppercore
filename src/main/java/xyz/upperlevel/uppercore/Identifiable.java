@@ -2,6 +2,10 @@ package xyz.upperlevel.uppercore;
 
 import org.bukkit.plugin.Plugin;
 
+import java.util.Locale;
+
+import static java.util.Locale.ENGLISH;
+
 public interface Identifiable {
 
     Plugin getPlugin();
@@ -18,6 +22,6 @@ public interface Identifiable {
     }
 
     static String getGlobalId(Plugin plugin, String id) {
-        return plugin.getName() + ":" + id;
+        return (plugin.getName() + ":" + id).toLowerCase(ENGLISH);
     }
 }

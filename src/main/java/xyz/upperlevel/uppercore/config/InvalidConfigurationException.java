@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config;
+package xyz.upperlevel.uppercore.config;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.StringJoiner;
 
 @Getter
-public class InvalidGuiConfigurationException extends RuntimeException{
+public class InvalidConfigurationException extends RuntimeException{
 
     private List<String> localizers;
     private final String configError;
 
-    public InvalidGuiConfigurationException(String configError, String... localizers) {
+    public InvalidConfigurationException(String configError, String... localizers) {
         super(configError);
         this.configError = configError;
         this.localizers = new ArrayList<>(Arrays.asList(localizers));

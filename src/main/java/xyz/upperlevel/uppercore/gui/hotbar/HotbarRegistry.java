@@ -5,8 +5,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.Config;
 
 import java.io.File;
 import java.util.*;
@@ -56,7 +56,7 @@ public class HotbarRegistry implements Listener {
         Hotbar hotbar;
         try {
             hotbar = Hotbar.deserialize(plugin, id, Config.wrap(config));
-        } catch (InvalidGuiConfigurationException e) {
+        } catch (InvalidConfigurationException e) {
             Uppercore.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
             return null;
         } catch (Exception e) {

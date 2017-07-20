@@ -1,12 +1,11 @@
 package xyz.upperlevel.uppercore.gui;
 
 import lombok.Data;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class GuiRegistry {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Error while loading the file \"" + file + "\"", e);
             return null;
-        } catch (InvalidConfigurationException e) {
+        } catch (org.bukkit.configuration.InvalidConfigurationException e) {
             plugin.getLogger().log(Level.SEVERE, "Invalid configuration in file \"" + file + "\":", e);
             return null;
         }
@@ -62,7 +61,7 @@ public class GuiRegistry {
         ChestGui gui;
         try {
             gui = ChestGui.deserialize(plugin, id, Config.wrap(config));
-        } catch (InvalidGuiConfigurationException e) {
+        } catch (InvalidConfigurationException e) {
             plugin.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
             return null;
         } catch (Exception e) {

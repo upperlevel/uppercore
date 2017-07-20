@@ -9,12 +9,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.ActionType;
 import xyz.upperlevel.uppercore.gui.config.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -159,7 +159,7 @@ public class Icon {
             if (config.has("click"))
                 result.link = IconClick.deserialize(plugin, config.getConfig("click"));
             return result;
-        } catch (InvalidGuiConfigurationException e) {
+        } catch (InvalidConfigurationException e) {
             e.addLocalizer("in gui display");
             throw e;
         }

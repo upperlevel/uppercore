@@ -1,9 +1,9 @@
-package xyz.upperlevel.uppercore.command.arguments.impl;
+package xyz.upperlevel.uppercore.command.arguments;
 
-import xyz.upperlevel.uppercore.command.arguments.ArgumentParser;
-import xyz.upperlevel.uppercore.command.arguments.ArgumentParserManager;
-import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
-import xyz.upperlevel.uppercore.command.arguments.exceptions.UnparsableTypeException;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
+import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
+import xyz.upperlevel.uppercore.command.argument.exceptions.UnparsableTypeException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,8 +32,8 @@ public class Array1dArgumentParser implements ArgumentParser {
 
         List<Object> result = new ArrayList<>();
         for (int i = 0; i < args.size();) {
-            int used = ArgumentParserManager.getArgumentsCount(comp);
-            result.add(ArgumentParserManager.parse(comp, args.subList(i, i + used)));
+            int used = ArgumentParserSystem.getArgumentsCount(comp);
+            result.add(ArgumentParserSystem.parse(comp, args.subList(i, i + used)));
             i += used;
         }
         return result.toArray((Object[]) newInstance(comp, result.size()));

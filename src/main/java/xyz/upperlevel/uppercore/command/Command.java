@@ -8,9 +8,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.command.arguments.ArgumentParserManager;
-import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
-import xyz.upperlevel.uppercore.command.arguments.exceptions.UnparsableTypeException;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
+import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
+import xyz.upperlevel.uppercore.command.argument.exceptions.UnparsableTypeException;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -196,10 +196,10 @@ public abstract class Command implements CommandExecutor {
 
     private Object processOptional(Parameter parameter) throws ParseException {
         Optional opt = parameter.getDeclaredAnnotation(Optional.class);
-        int needed = ArgumentParserManager.getArgumentsCount(parameter.getType());
+        int needed = ArgumentParserSystem.getArgumentsCount(parameter.getType());
         if (opt.value().length < needed)
             return null;
-        return ArgumentParserManager.parse(parameter.getType(), Arrays.asList(opt.value()));
+        return ArgumentParserSystem.parse(parameter.getType(), Arrays.asList(opt.value()));
     }
 
     public void execute(CommandSender sender, List<String> args) {
@@ -227,12 +227,12 @@ public abstract class Command implements CommandExecutor {
                     return;
                 }
             } else {
-                if (ArgumentParserManager.isParsable(type)) {
-                    int used = ArgumentParserManager.getArgumentsCount(type);
+                if (ArgumentParserSystem.isParsable(type)) {
+                    int used = ArgumentParserSystem.getArgumentsCount(type);
                     if (used < 0)
                         used = args.size() - arg;
                     try {
-                        result.add(ArgumentParserManager.parse(type, args.subList(arg, arg + used)));
+                        result.add(ArgumentParserSystem.parse(type, args.subList(arg, arg + used)));
                     } catch (ParseException e) {
                         sender.sendMessage(e.getMessageFormatted());
                         return;

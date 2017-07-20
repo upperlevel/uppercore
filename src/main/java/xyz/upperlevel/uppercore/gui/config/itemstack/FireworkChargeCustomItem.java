@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
-import xyz.upperlevel.uppercore.gui.config.util.ConfigUtils;
+import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigUtils;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static xyz.upperlevel.uppercore.gui.config.util.ConfigUtils.parseFireworkEffectType;
+import static xyz.upperlevel.uppercore.config.ConfigUtils.parseFireworkEffectType;
 
 
 public class FireworkChargeCustomItem extends CustomItem {

@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.gui.Icon;
 
 import java.util.Collection;
@@ -27,7 +28,7 @@ public class HotbarSystem {
     private HotbarSystem() {
     }
 
-    static {
+    public static void initialize() {
         Bukkit.getOnlinePlayers().forEach(HotbarSystem::joinPlayer);
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
@@ -40,6 +41,8 @@ public class HotbarSystem {
                 quitPlayer(e.getPlayer());
             }
         }, Uppercore.get());
+
+        ArgumentParserSystem.register();
     }
 
     public static void register(Plugin plugin, String id, Hotbar hotbar) {

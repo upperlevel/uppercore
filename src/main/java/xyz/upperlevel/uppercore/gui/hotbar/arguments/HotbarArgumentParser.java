@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore.gui.hotbar.arguments;
 
-import xyz.upperlevel.uppercore.command.arguments.ArgumentParser;
-import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
+import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 import xyz.upperlevel.uppercore.gui.hotbar.Hotbar;
 import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 

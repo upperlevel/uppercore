@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.Icon;
-import xyz.upperlevel.uppercore.gui.config.util.Config;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
 
 import java.util.*;

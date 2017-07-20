@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.config.util.ConfigUtils;
+import xyz.upperlevel.uppercore.config.ConfigUtils;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

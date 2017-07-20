@@ -1,6 +1,6 @@
-package xyz.upperlevel.uppercore.command.arguments;
+package xyz.upperlevel.uppercore.command.argument;
 
-import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
+import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command.arguments.exceptions;
+package xyz.upperlevel.uppercore.command.argument.exceptions;
 
 import lombok.Getter;
 

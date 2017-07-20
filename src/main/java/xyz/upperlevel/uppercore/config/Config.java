@@ -1,11 +1,10 @@
-package xyz.upperlevel.uppercore.gui.config.util;
+package xyz.upperlevel.uppercore.config;
 
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -15,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public interface Config {
 
     Object get(String key);
@@ -42,14 +42,14 @@ public interface Config {
         try {
             raw = (String) get(key);
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
         if (raw == null)
             return def;
         else {
             try {
                 return ConfigUtils.parseDye(raw);
-            } catch (InvalidGuiConfigurationException e) {
+            } catch (InvalidConfigurationException e) {
                 e.addLocalizer("in property \"" + key + "\"");
                 throw e;
             }
@@ -67,6 +67,62 @@ public interface Config {
         return color;
     }
 
+    //------------------------Float
+
+    default Float getFloat(String key) {
+        Number res;
+        try {
+            res = ((Number) get(key));
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
+        }
+        return res == null ? null : res.floatValue();
+    }
+
+    default float getFloat(String key, float def) {
+        Float res = getFloat(key);
+        return res != null ? res : def;
+    }
+
+    default float getFloatRequired(String key) {
+        Object raw = get(key);
+        if (raw == null)
+            requiredPropertyNotFound(key);
+        try {
+            return ((Number) get(key)).intValue();
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
+        }
+    }
+
+    //------------------------Double
+
+    default Double getDouble(String key) {
+        Number res;
+        try {
+            res = ((Number) get(key));
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
+        }
+        return res == null ? null : res.doubleValue();
+    }
+
+    default double getDouble(String key, double def) {
+        Double res = getDouble(key);
+        return res != null ? res : def;
+    }
+
+    default double getDoubleRequired(String key) {
+        Object raw = get(key);
+        if (raw == null)
+            requiredPropertyNotFound(key);
+        try {
+            return ((Number) get(key)).intValue();
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
+        }
+    }
+
     //------------------------String
 
     default String getString(String key) {
@@ -74,7 +130,7 @@ public interface Config {
         try {
             raw = get(key);
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
         return raw == null ? null : raw.toString();
     }
@@ -114,7 +170,7 @@ public interface Config {
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
         return res == null ? null : res.intValue();
     }
@@ -131,7 +187,7 @@ public interface Config {
         try {
             return ((Number) get(key)).intValue();
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
     }
 
@@ -142,7 +198,7 @@ public interface Config {
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
         return res == null ? null : res.shortValue();
     }
@@ -159,7 +215,7 @@ public interface Config {
         try {
             return ((Number) get(key)).shortValue();
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
     }
 
@@ -170,7 +226,7 @@ public interface Config {
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
         return res == null ? null : res.longValue();
     }
@@ -187,7 +243,7 @@ public interface Config {
         try {
             return ((Number) get(key)).longValue();
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
     }
 
@@ -210,7 +266,7 @@ public interface Config {
         } else if (raw instanceof Number) {
             return ((Number) raw).intValue() == 1;
         }
-        throw new InvalidGuiConfigurationException("Invalid boolean in \"" + key + "\"");
+        throw new InvalidConfigurationException("Invalid boolean in \"" + key + "\"");
     }
 
     default boolean getBool(String key, boolean def) {
@@ -234,7 +290,7 @@ public interface Config {
         try {
             return Enum.valueOf(clazz, raw);
         } catch (IllegalArgumentException e) {
-            throw new InvalidGuiConfigurationException("Cannot find \"" + clazz.getSimpleName().toLowerCase() + "\" \"" + raw + "\"");
+            throw new InvalidConfigurationException("Cannot find \"" + clazz.getSimpleName().toLowerCase() + "\" \"" + raw + "\"");
         }
     }
 
@@ -257,14 +313,14 @@ public interface Config {
         try {
             raw = (String) get(key);
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
         if (raw == null)
             return def;
         else {
             try {
                 return ConfigUtils.parseColor(raw);
-            } catch (InvalidGuiConfigurationException e) {
+            } catch (InvalidConfigurationException e) {
                 e.addLocalizer("in property \"" + key + "\"");
                 throw e;
             }
@@ -289,7 +345,7 @@ public interface Config {
         try {
             raw = (String) get(key);
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
         if (raw == null)
             return def;
@@ -297,7 +353,7 @@ public interface Config {
             try {
                 return Sound.valueOf(key.toUpperCase(Locale.ENGLISH));
             } catch (IllegalArgumentException e) {
-                throw new InvalidGuiConfigurationException("Cannot find sound \"" + raw + "\"");
+                throw new InvalidConfigurationException("Cannot find sound \"" + raw + "\"");
             }
         }
     }
@@ -326,9 +382,9 @@ public interface Config {
             else if (raw instanceof String) {
                 res = Material.getMaterial(((String) raw).replace(' ', '_').toUpperCase());
             } else
-                throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+                throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
             if (res == null)
-                throw new InvalidGuiConfigurationException("Cannot find material \"" + raw + "\"");
+                throw new InvalidConfigurationException("Cannot find material \"" + raw + "\"");
             else return res;
         }
     }
@@ -351,7 +407,7 @@ public interface Config {
         try {
             return (Map<String, Object>) get(key);
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
     }
 
@@ -367,6 +423,24 @@ public interface Config {
         return res;
     }
 
+    //------------------------List
+
+    default <T> List<T> getList(String key) {
+        return (List<T>) get(key);
+    }
+
+    default <T> List<T> getList(String key, List<T> list) {
+        List<T> res = getList(key);
+        return res == null ? list : res;
+    }
+
+    default <T> List<T> getListRequired(String key) {
+        List<T> res = getList(key);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
+    }
+
     //------------------------Config
 
     default Config getConfig(String key, Map<String, Object> def) {
@@ -374,7 +448,6 @@ public interface Config {
         return config != null ? Config.wrap(config) : null;
     }
 
-    @SuppressWarnings("unchecked")//-_-
     default Config getConfig(String key) {
         return getConfig(key, null);
     }
@@ -411,7 +484,7 @@ public interface Config {
         try {
             return ((Collection) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
     }
 
@@ -426,16 +499,15 @@ public interface Config {
         try {
             return ((Collection) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidGuiConfigurationException("Invalid value in \"" + key + "\"");
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
         }
     }
 
     static void requiredPropertyNotFound(String key) {
-        throw new InvalidGuiConfigurationException("Cannot find property \"" + key + "\"");
+        throw new InvalidConfigurationException("Cannot find property \"" + key + "\"");
     }
 
     static Config wrap(Map<String, Object> map) {
-        //I <3 java 8
         return map::get;
     }
 

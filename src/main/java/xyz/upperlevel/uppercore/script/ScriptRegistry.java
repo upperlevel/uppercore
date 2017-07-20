@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -26,20 +27,20 @@ public class ScriptRegistry {
     ScriptRegistry(Plugin plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder(), "scripts");
-        ScriptSystem.instance().register(plugin, this);
+        ScriptSystem.register(plugin, this);
     }
 
     public void register(String id, Script gui) {
         scripts.put(id, gui);
-        ScriptSystem.instance().register(plugin, id, gui);
+        ScriptSystem.register(plugin, id, gui);
     }
 
     public Script get(String id) {
         return scripts.get(id);
     }
 
-    public Collection<Script> getScripts() {
-        return scripts.values();
+    public Map<String, Script> getScripts() {
+        return Collections.unmodifiableMap(scripts);
     }
 
     public boolean load(String id, Script script) throws ScriptException {
@@ -47,8 +48,7 @@ public class ScriptRegistry {
     }
 
     public Script load(String id, String script, String ext) throws ScriptException {
-        final ScriptSystem system = ScriptSystem.instance();
-        final String engineName = system.getExtensionsToEngineName().get(ext);
+        final String engineName = ScriptSystem.getExtensionsToEngineName().get(ext);
         if (engineName == null)
             throw new IllegalArgumentException("Cannot find engine for \"" + ext + "\"");
         ScriptEngine engine;
@@ -56,8 +56,8 @@ public class ScriptRegistry {
             final Thread currentThread = Thread.currentThread();
             final ClassLoader oldLoader = currentThread.getContextClassLoader();
             try {
-                currentThread.setContextClassLoader(Uppercore.get().getScriptSystem().getClassLoader());
-                engine = system.getEngineManager().getEngineByName(engineName);
+                currentThread.setContextClassLoader(ScriptSystem.getClassLoader());
+                engine = ScriptSystem.getEngineManager().getEngineByName(engineName);
             } finally {
                 currentThread.setContextClassLoader(oldLoader);
             }

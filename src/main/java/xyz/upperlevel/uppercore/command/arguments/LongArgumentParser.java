@@ -1,18 +1,19 @@
-package xyz.upperlevel.uppercore.command.arguments.impl;
+package xyz.upperlevel.uppercore.command.arguments;
 
-import xyz.upperlevel.uppercore.command.arguments.ArgumentParser;
-import xyz.upperlevel.uppercore.command.arguments.exceptions.ParseException;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
+import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 
 import java.util.List;
 
-import static java.lang.Byte.parseByte;
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
 import static java.util.Arrays.asList;
 
-public class ByteArgumentParser implements ArgumentParser {
+public class LongArgumentParser implements ArgumentParser {
 
     @Override
     public List<Class<?>> getParsable() {
-        return asList(Byte.class, byte.class);
+        return asList(Long.class, long.class);
     }
 
     @Override
@@ -23,7 +24,7 @@ public class ByteArgumentParser implements ArgumentParser {
     @Override
     public Object parse(Class<?> type, List<String> args) throws ParseException {
         try {
-            return parseByte(args.get(0));
+            return parseLong(args.get(0));
         } catch (Exception e) {
             throw new ParseException(args.get(0), "number");
         }

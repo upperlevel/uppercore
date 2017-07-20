@@ -10,6 +10,7 @@ import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.script.Script;
+import xyz.upperlevel.uppercore.script.ScriptSystem;
 
 import javax.script.Bindings;
 import javax.script.ScriptException;
@@ -34,7 +35,7 @@ public class ScriptAction extends Action<ScriptAction> {
     @Override
     public void run(Player player) {
         if (script == null) {
-            script = Uppercore.get().getScriptSystem().get(id);
+            script = ScriptSystem.get(id);
             if (script == null) {
                 Uppercore.logger().severe("Cannot find script \"" + id + "\"");
                 script = Script.EMPTY;

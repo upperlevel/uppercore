@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.config.InvalidGuiConfigurationException;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.action.actions.*;
 
 import java.util.Collection;
@@ -71,7 +71,7 @@ public abstract class ActionType<T extends Action> {
         if (config instanceof Map) {
             Map<String, Object> c = (Map<String, Object>) config;
             if (c.size() > 1)
-                throw new InvalidGuiConfigurationException("cannot have more than one action for now");
+                throw new InvalidConfigurationException("cannot have more than one action for now");
             Map.Entry<String, Object> action = c.entrySet().iterator().next();
             String type = action.getKey();
             if (type == null)
@@ -87,7 +87,7 @@ public abstract class ActionType<T extends Action> {
                 throw new IllegalArgumentException("Cannot find action \"" + type + "\" in " + types.keySet());
             return t.load(plugin, null);//No argument
         } else
-            throw new InvalidGuiConfigurationException("Invalid value type");
+            throw new InvalidConfigurationException("Invalid value type");
     }
 
     public static <T extends Action<T>> Map<String, Object> serialize(T action) {
