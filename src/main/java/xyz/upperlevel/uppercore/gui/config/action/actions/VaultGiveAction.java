@@ -33,7 +33,7 @@ public class VaultGiveAction extends Action<VaultGiveAction> {
             Uppercore.logger().severe("Cannot find vault's economy!");
             return;
         }
-        economy.depositPlayer(player, value.get(player));
+        economy.depositPlayer(player, value.resolve(player));
     }
 
 

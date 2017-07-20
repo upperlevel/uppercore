@@ -3,6 +3,7 @@ version: ${project.version}
 main: ${mainClass}
 author: upperlevel
 description: ${project.description}
+softdepend: [PlaceholderAPI]
 
 commands:
   uppercore:

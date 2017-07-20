@@ -30,9 +30,9 @@ public class MessageAction extends Action<MessageAction> {
     @Override
     public void run(Player player) {
         if (!raw)
-            player.sendMessage(message.get(player));
+            player.sendMessage(message.resolve(player));
         else
-            Nms.sendJson(player, message.get(player));
+            Nms.sendJson(player, message.resolve(player));
     }
 
 

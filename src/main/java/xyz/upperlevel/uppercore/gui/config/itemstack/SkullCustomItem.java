@@ -29,7 +29,7 @@ public class SkullCustomItem extends CustomItem {
         super.processMeta(player, m);
         SkullMeta meta = (SkullMeta) m;
         if(skullOwner != null)
-            meta.setOwner(skullOwner.get(player));
+            meta.setOwner(skullOwner.resolve(player));
     }
 
     public static SkullCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,

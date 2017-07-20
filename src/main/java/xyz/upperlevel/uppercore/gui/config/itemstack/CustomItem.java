@@ -44,7 +44,7 @@ public class CustomItem {
     }
 
     public ItemStack toItemStack(Player player) {
-        ItemStack item = new ItemStack(type, amount.get(player), data.get(player));
+        ItemStack item = new ItemStack(type, amount.resolve(player), data.resolve(player));
         ItemMeta meta = item.getItemMeta();
 
         processMeta(player, meta);
@@ -55,11 +55,11 @@ public class CustomItem {
 
     public void processMeta(Player player, ItemMeta meta) {
         if (displayName != null)
-            meta.setDisplayName(displayName.get(player));
-        meta.setLore(lore.stream().map(m -> m.get(player)).collect(Collectors.toList()));
+            meta.setDisplayName(displayName.resolve(player));
+        meta.setLore(lore.stream().map(m -> m.resolve(player)).collect(Collectors.toList()));
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
         for (Map.Entry<Enchantment, PlaceholderValue<Integer>> ench : enchantments.entrySet())
-            meta.addEnchant(ench.getKey(), ench.getValue().get(player), true);
+            meta.addEnchant(ench.getKey(), ench.getValue().resolve(player), true);
     }
 
     @SuppressWarnings("unchecked")

@@ -58,7 +58,7 @@ public class RequireAction extends Action<RequireAction> {
     }
 
     private boolean hasHotbar(Player player, PlaceholderValue<String> hotbar) {
-        final String id = hotbar.get(player);
+        final String id = hotbar.resolve(player);
         return HotbarSystem.isHolding(player, HotbarSystem.getHotbar(id));
     }
 

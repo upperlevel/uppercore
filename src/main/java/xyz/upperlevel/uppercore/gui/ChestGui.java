@@ -278,9 +278,9 @@ public class ChestGui implements Gui {
     public Inventory create(Player player) {
         Inventory inv;
         if (type != null)
-            inv = Bukkit.createInventory(null, type, title.get(player));
+            inv = Bukkit.createInventory(null, type, title.resolve(player));
         else
-            inv = Bukkit.createInventory(null, size, title.get(player));
+            inv = Bukkit.createInventory(null, size, title.resolve(player));
         for (int slot = 0; slot < icons.length; slot++)
             if (icons[slot] != null)
                 inv.setItem(slot, icons[slot].getDisplay().toItemStack(player));

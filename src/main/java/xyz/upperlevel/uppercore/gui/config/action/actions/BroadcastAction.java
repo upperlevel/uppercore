@@ -34,11 +34,11 @@ public class BroadcastAction extends Action<BroadcastAction> {
     public void run(Player player) {
         if(!raw) {
             if (permission != null)
-                Bukkit.broadcast(message.get(player), permission);
+                Bukkit.broadcast(message.resolve(player), permission);
             else
-                Bukkit.broadcastMessage(message.get(player));
+                Bukkit.broadcastMessage(message.resolve(player));
         } else {
-            Object packet = Nms.jsonPacket(message.get(player));
+            Object packet = Nms.jsonPacket(message.resolve(player));
             if(permission != null) {
                 for(Player p : Bukkit.getOnlinePlayers())
                     if(p.hasPermission(permission))

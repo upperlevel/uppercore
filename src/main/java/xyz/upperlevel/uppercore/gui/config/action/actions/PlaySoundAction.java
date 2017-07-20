@@ -31,7 +31,7 @@ public class PlaySoundAction extends Action<PlaySoundAction> {
 
     @Override
     public void run(Player player) {
-        player.playSound(player.getLocation(), sound, volume.get(player), pitch.get(player));
+        player.playSound(player.getLocation(), sound, volume.resolve(player), pitch.resolve(player));
     }
 
 

@@ -33,7 +33,7 @@ public class GuiOpenAction extends Action<GuiOpenAction> {
 
     @Override
     public void run(Player player) {
-        String guiId = this.guiId.get(player);
+        String guiId = this.guiId.resolve(player);
         Gui gui = GuiSystem.get(getPlugin(), guiId);
         if (gui == null) {
             Uppercore.logger().severe("Cannot find gui \"" + guiId + "\"");

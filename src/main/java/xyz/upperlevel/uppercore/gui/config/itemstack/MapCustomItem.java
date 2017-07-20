@@ -36,9 +36,9 @@ public class MapCustomItem extends CustomItem {
         MapMeta meta = (MapMeta) m;
         meta.setScaling(scaling);
         if(displayLocName != null)
-            meta.setLocationName(displayLocName.get(player));
+            meta.setLocationName(displayLocName.resolve(player));
         if(displayMapColor != null)
-            meta.setColor(displayMapColor.get(player));
+            meta.setColor(displayMapColor.resolve(player));
     }
 
     public static MapCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,

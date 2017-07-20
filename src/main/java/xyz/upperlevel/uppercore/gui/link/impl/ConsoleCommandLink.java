@@ -19,6 +19,6 @@ public class ConsoleCommandLink implements Link {
 
     @Override
     public void run(Player player) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.get(player));
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.resolve(player));
     }
 }

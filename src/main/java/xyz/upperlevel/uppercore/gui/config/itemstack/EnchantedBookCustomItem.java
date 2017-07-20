@@ -32,7 +32,7 @@ public class EnchantedBookCustomItem extends CustomItem {
         super.processMeta(player, m);
         EnchantmentStorageMeta meta = (EnchantmentStorageMeta) m;
         for(Map.Entry<Enchantment, PlaceholderValue<Integer>> ench : storedEnchantments.entrySet())
-            meta.addStoredEnchant(ench.getKey(), ench.getValue().get(player), true);
+            meta.addStoredEnchant(ench.getKey(), ench.getValue().resolve(player), true);
     }
 
     @SuppressWarnings("unchecked")

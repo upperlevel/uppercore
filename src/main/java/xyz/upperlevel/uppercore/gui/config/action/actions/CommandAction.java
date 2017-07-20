@@ -29,7 +29,7 @@ public class CommandAction extends Action<CommandAction> {
 
     @Override
     public void run(Player player) {
-        executor.execute(player, command.get(player));
+        executor.execute(player, command.resolve(player));
     }
 
 

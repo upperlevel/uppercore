@@ -29,7 +29,7 @@ public class GuiChangeAction extends Action<GuiChangeAction> {
 
     @Override
     public void run(Player player) {
-        String guiId = this.guiId.get(player);
+        String guiId = this.guiId.resolve(player);
         Gui gui = GuiSystem.get(guiId);
         if (gui == null) {
             Uppercore.logger().severe("Cannot find gui \"" + guiId + "\"");

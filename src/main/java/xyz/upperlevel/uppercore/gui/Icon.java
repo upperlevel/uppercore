@@ -45,7 +45,7 @@ public class Icon {
 
         public boolean checkPermission(Player player) {
             if (permission != null && !player.hasPermission(permission)) {
-                player.sendMessage(noPermissionError.get(player));
+                player.sendMessage(noPermissionError.resolve(player));
                 if (noPermissionSound != null)
                     player.playSound(player.getLocation(), noPermissionSound, 1.0f, 1.0f);
                 return false;
@@ -54,7 +54,7 @@ public class Icon {
         }
 
         public boolean pay(Player player) {
-            double c = cost.get(player);
+            double c = cost.resolve(player);
             if (c > 0) {
                 Economy eco = EconomyManager.getEconomy();
                 if (eco == null) {
@@ -63,7 +63,7 @@ public class Icon {
                 }
                 EconomyResponse res = eco.withdrawPlayer(player, c);
                 if (!res.transactionSuccess()) {
-                    player.sendMessage(noMoneyError.get(player));
+                    player.sendMessage(noMoneyError.resolve(player));
                     if (noMoneySound != null)
                         player.playSound(player.getLocation(), noMoneySound, 1.0f, 1.0f);
                     Uppercore.logger().log(Level.INFO, res.errorMessage);

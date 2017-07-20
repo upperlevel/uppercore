@@ -39,7 +39,7 @@ public class VaultTakeAction extends Action<VaultTakeAction> {
             Uppercore.logger().severe("Cannot find vault's economy!");
             return;
         }
-        if (economy.withdrawPlayer(player, value.get(player)).transactionSuccess()) {
+        if (economy.withdrawPlayer(player, value.resolve(player)).transactionSuccess()) {
             for (Action a : actions)
                 a.run(player);
         } else

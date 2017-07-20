@@ -34,7 +34,7 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
 
     @Override
     public void run(Player player) {
-        String hotbarId = id.get(player);
+        String hotbarId = id.resolve(player);
         Hotbar hotbar = HotbarSystem.getHotbar(getPlugin(), hotbarId);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + hotbarId + "\"");

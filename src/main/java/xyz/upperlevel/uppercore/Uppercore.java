@@ -7,6 +7,7 @@ import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
 import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 import xyz.upperlevel.uppercore.gui.hotbar.arguments.HotbarArgumentParser;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.scoreboard.ScoreboardSystem;
 import xyz.upperlevel.uppercore.script.ScriptSystem;
 
@@ -29,6 +30,8 @@ public class Uppercore extends JavaPlugin {
         //Metrics setup
         metrics = new Metrics(this);
 
+        PlaceholderUtil.tryHook();
+
         //ScriptSystem setup
         File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
         if (!scriptsConfigFile.exists())
@@ -40,7 +43,6 @@ public class Uppercore extends JavaPlugin {
 
         //Command setup
         ArgumentParserSystem.initialize();
-
         HotbarSystem.initialize();
         ScoreboardSystem.initialize();
 

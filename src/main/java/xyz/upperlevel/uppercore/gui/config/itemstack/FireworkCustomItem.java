@@ -37,7 +37,7 @@ public class FireworkCustomItem extends CustomItem {
         meta.clearEffects();
         meta.addEffects(effects);
         if(power != null)
-            meta.setPower(power.get(player));
+            meta.setPower(power.resolve(player));
     }
 
     @SuppressWarnings("unchecked")

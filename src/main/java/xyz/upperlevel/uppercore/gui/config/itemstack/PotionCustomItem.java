@@ -41,7 +41,7 @@ public class PotionCustomItem extends CustomItem {
         if(type != null)
             meta.setBasePotionData(new PotionData(type));
         if(customColor != null)
-            meta.setColor(customColor.get(player));
+            meta.setColor(customColor.resolve(player));
         meta.clearCustomEffects();
         for(PotionEffect e : customEffects)
             meta.addCustomEffect(e, true);

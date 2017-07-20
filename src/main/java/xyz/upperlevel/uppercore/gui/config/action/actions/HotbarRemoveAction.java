@@ -28,7 +28,7 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
 
     @Override
     public void run(Player player) {
-        String barId = id.get(player);
+        String barId = id.resolve(player);
         Hotbar hotbar = HotbarSystem.getHotbar(getPlugin(), barId);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + barId + "\"");

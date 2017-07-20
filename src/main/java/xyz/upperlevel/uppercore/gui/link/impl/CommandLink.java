@@ -18,6 +18,6 @@ public class CommandLink implements Link {
 
     @Override
     public void run(Player player) {
-        player.performCommand(command.get(player));
+        player.performCommand(command.resolve(player));
     }
 }

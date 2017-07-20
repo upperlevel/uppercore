@@ -30,7 +30,7 @@ public class LeatherArmorCustomItem extends CustomItem {
         super.processMeta(player, m);
         LeatherArmorMeta meta = (LeatherArmorMeta) m;
         if(color != null)
-            meta.setColor(color.get(player));
+            meta.setColor(color.resolve(player));
     }
 
     public static LeatherArmorCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
