@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Identifiable;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -29,6 +31,24 @@ public class Board implements Identifiable {
     public Board(Plugin plugin, String id) {
         this.plugin = plugin;
         this.id = id.toLowerCase(ENGLISH);
+    }
+
+    public Board(Plugin plugin, String id, Config config) {
+        this(plugin, id);
+        title = PlaceholderValue.stringValue(config.getStringRequired("title"));
+        List<String> lines = config.getList("lines");
+        if (lines != null) {
+            for (Object line : lines) {
+                if (line instanceof String) {
+                    addLine((String) line);
+                } else if (line instanceof Map) {
+                    setLine(
+                            (int) ((Map) line).get("index"),
+                            (String) ((Map) line).get("text")
+                    );
+                }
+            }
+        }
     }
 
     public void setTitle(String title) {
@@ -78,21 +98,11 @@ public class Board implements Identifiable {
     }
 
     public static Board deserialize(Plugin plugin, String id, Config config) {
-        Board result = new Board(plugin, id);
-        result.setTitle(config.getStringRequired("title"));
-        List<String> lines = config.getList("lines");
-        if (lines != null) {
-            for (Object line : lines) {
-                if (line instanceof String) {
-                    result.addLine((String) line);
-                } else if (line instanceof Map) {
-                    result.setLine(
-                            (int) ((Map) line).get("index"),
-                            (String) ((Map) line).get("text")
-                    );
-                }
-            }
+        try {
+            return new Board(plugin, id, config);
+        } catch (InvalidConfigurationException e) {
+            e.addLocalizer("in scoreboard " + id);
+            throw e;
         }
-        return result;
     }
 }

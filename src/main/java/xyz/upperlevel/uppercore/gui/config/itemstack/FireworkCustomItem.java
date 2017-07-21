@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,11 +46,12 @@ public class FireworkCustomItem extends CustomItem {
                                      PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                      List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
                                      Config config) {
-        List<FireworkEffect> effects = ((Collection<Map<String, Object>>)config.getCollectionRequired("effects"))
+        List<FireworkEffect> effects = ((Collection<Map<String, Object>>)config.getCollection("effects", Collections.emptyList()))
                 .stream()
                 .map(c -> FireworkChargeCustomItem.parse(Config.wrap(c)))
                 .collect(Collectors.toList());
-        PlaceholderValue<Integer> power = PlaceholderUtil.parseInt(config.getStringRequired("power"));
+        String rawPower = config.getString("power");
+        PlaceholderValue<Integer> power = rawPower == null ? null : PlaceholderUtil.parseInt(rawPower);
         return new FireworkCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments,
                 effects, power

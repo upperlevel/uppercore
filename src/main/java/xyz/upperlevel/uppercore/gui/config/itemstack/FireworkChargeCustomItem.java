@@ -13,6 +13,7 @@ import xyz.upperlevel.uppercore.config.ConfigUtils;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,15 +54,15 @@ public class FireworkChargeCustomItem extends CustomItem {
     public static FireworkEffect parse(Config config) {
         boolean flicker = config.getBool("flicker", false);
         boolean trail = config.getBool("trail", false);
-        List<Color> colors = ((Collection<String>)config.getCollectionRequired("colors"))
+        List<Color> colors = ((Collection<String>)config.getCollection("colors", Collections.emptyList()))
                 .stream()
                 .map(ConfigUtils::parseColor)
                 .collect(Collectors.toList());
-        List<Color> fadeColors = ((Collection<String>)config.getCollectionRequired("fade-colors"))
+        List<Color> fadeColors = ((Collection<String>)config.getCollection("fade-colors", Collections.emptyList()))
                 .stream()
                 .map(ConfigUtils::parseColor)
                 .collect(Collectors.toList());
-        FireworkEffect.Type type = parseFireworkEffectType(config.getStringRequired("type"));
+        FireworkEffect.Type type = parseFireworkEffectType(config.getString("type", FireworkEffect.Type.BALL.name()));
         return FireworkEffect.builder()
                 .flicker(flicker)
                 .trail(trail)

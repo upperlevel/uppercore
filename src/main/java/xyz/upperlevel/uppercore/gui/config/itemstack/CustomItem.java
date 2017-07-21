@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -94,7 +95,7 @@ public class CustomItem {
             for(Map.Entry<String, Object> e : stEnch.entrySet()) {
                 Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 if (ench == null)
-                    Uppercore.logger().severe("Cannot find enchantment: " + e.getKey());
+                    throw new InvalidConfigurationException("Cannot find enchantment: " + e.getKey());
                 else
                     enchantments.put(ench, PlaceholderValue.intValue(e.getValue().toString()));
             }

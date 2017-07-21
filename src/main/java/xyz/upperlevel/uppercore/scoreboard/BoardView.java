@@ -209,8 +209,10 @@ public class BoardView {
     }
 
     public void updateTitle() {
-        player.setScoreboard(handle);
-        objective.setDisplayName(getRenderTitle(title.resolve(player)));
+        if (title != null) {
+            player.setScoreboard(handle);
+            objective.setDisplayName(getRenderTitle(title.resolve(player)));
+        }
     }
 
     public void updateLines() {

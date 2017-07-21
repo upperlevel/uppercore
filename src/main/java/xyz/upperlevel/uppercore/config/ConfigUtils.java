@@ -46,7 +46,7 @@ public final class ConfigUtils {
         if (parts.length != 3) {
             Color color = COLOR_BY_NAME.get(s.toUpperCase());
             if(color == null)
-                throw new InvalidConfigurationException("Invalid color format, use \"R;G;B\" or color name!");
+                throw new InvalidConfigurationException("Invalid color \"" + s + "\", use \"R;G;B\" or color name!");
             else return color;
         } else
             return Color.fromRGB(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
