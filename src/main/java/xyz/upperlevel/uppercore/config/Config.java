@@ -275,7 +275,7 @@ public interface Config {
         return res != null ? res : def;
     }
 
-    default byte ggetByteRequired(String key) {
+    default byte getByteRequired(String key) {
         Object raw = get(key);
         if (raw == null)
             requiredPropertyNotFound(key);
