@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.*;
@@ -66,7 +67,9 @@ public class ChestGui implements Gui {
 
     @SuppressWarnings("unchecked")
     protected ChestGui(Plugin plugin, String id, Config config) {
-        this(plugin, id, -1, config.getStringRequired("title"));
+        this.plugin = plugin;
+        this.id = id;
+        this.title = PlaceholderUtil.process(config.getStringRequired("title"));
         if (config.has("type")) {
             type = config.getEnum("type", InventoryType.class);
             icons = new Icon[type.getDefaultSize()];
@@ -81,7 +84,7 @@ public class ChestGui implements Gui {
             throw new InvalidConfigurationException("Both 'type' and 'size' are empty!");
         updateInterval = config.getInt("update-interval", -1);
         title = config.getMessageRequired("title");
-        for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("icons")) {
+        for (Map<String, Object> data : (Collection<Map<String, Object>>) config.getCollection("icons", Collections.emptyList())) {
             Icon item = Icon.deserialize(plugin, Config.wrap(data));
             icons[(int) data.get("slot")] = item;
         }
