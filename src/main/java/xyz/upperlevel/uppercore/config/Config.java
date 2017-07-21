@@ -258,6 +258,34 @@ public interface Config {
         }
     }
 
+    //------------------------Byte
+
+    default Byte getByte(String key) {
+        Number res;
+        try {
+            res = ((Number) get(key));
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
+        }
+        return res == null ? null : res.byteValue();
+    }
+
+    default byte getByte(String key, byte def) {
+        final Byte res = getByte(key);
+        return res != null ? res : def;
+    }
+
+    default byte ggetByteRequired(String key) {
+        Object raw = get(key);
+        if (raw == null)
+            requiredPropertyNotFound(key);
+        try {
+            return ((Number) get(key)).byteValue();
+        } catch (ClassCastException e) {
+            throw new InvalidConfigurationException("Invalid value in \"" + key + "\"");
+        }
+    }
+
     //------------------------Long
 
     default Long getLong(String key) {
