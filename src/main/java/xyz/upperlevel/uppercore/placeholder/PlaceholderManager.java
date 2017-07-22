@@ -26,17 +26,8 @@ public interface PlaceholderManager {
 
     String apply(Player player, String text, Map<String, Placeholder> local);
 
-    default String applyRaw(Player player, String text, Map<String, String> local) {
-        return apply(
-                player,
-                text,
-                local.entrySet()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                e -> Placeholder.constant(e.getValue())
-                        ))
-        );
+    default String apply(Player player, String text, PlaceholderSession local) {
+        return apply(player, text, local);
     }
 
     default String single(Player player, String string) {
@@ -47,7 +38,7 @@ public interface PlaceholderManager {
         return apply(player, '%' + string + '%', local);
     }
 
-    default String singleRaw(Player player, String string, Map<String, String> local) {
-        return applyRaw(player, '%' + string + '%', local);
+    default String single(Player player, String string, PlaceholderSession local) {
+        return apply(player, '%' + string + '%', local);
     }
 }

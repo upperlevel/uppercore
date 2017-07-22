@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.placeholder;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +25,14 @@ public interface PlaceholderValue<T> {
     T resolve(Player player, Map<String, Placeholder> local);
 
     /**
-     * Removes placeholders from the value and parses it using the local values in addition to the normal placeholders
+     * Removes placeholders from the value and parses it using the local placeholders in addition to the normal ones
      * @param player the player that executes the placeholders
-     * @param local the values to add to the default placeholders
+     * @param local the placeholders to add to the default ones
      * @return the parsed value without placeholders
      */
-    T resolveRaw(Player player, Map<String, String> local);
+    default T resolve(Player player, PlaceholderSession local) {
+        return resolve(player, local.getPlaceholders());
+    }
 
     /**
      * Removes placeholders from the value and parses it
@@ -42,26 +43,6 @@ public interface PlaceholderValue<T> {
         return resolve(player, Collections.emptyMap());
     }
 
-    /**
-     * @see T resolveRaw(Player, Map)
-     */
-    default T resolve(Player player, String key1, String value1) {
-        return resolveRaw(player, ImmutableMap.of(key1, value1));
-    }
-
-    /**
-     * @see T resolveRaw(Player, Map)
-     */
-    default T resolve(Player player, String key1, String value1, String key2, String value2) {
-        return resolveRaw(player, ImmutableMap.of(key1, value1, key2, value2));
-    }
-
-    /**
-     * @see T resolveRaw(Player, Map)
-     */
-    default T resolve(Player player, String key1, String value1, String key2, String value2, String key3, String value3) {
-        return resolveRaw(player, ImmutableMap.of(key1, value1, key2, value2, key3, value3));
-    }
 
     String toString();
 
@@ -152,27 +133,12 @@ public interface PlaceholderValue<T> {
         }
 
         @Override
-        public T resolveRaw(Player player, Map<String, String> local) {
+        public T resolve(Player player, PlaceholderSession local) {
             return value;
         }
 
         @Override
         public T resolve(Player player) {
-            return value;
-        }
-
-        @Override
-        public T resolve(Player player, String key1, String value1) {
-            return value;
-        }
-
-        @Override
-        public T resolve(Player player, String key1, String value1, String key2, String value2) {
-            return value;
-        }
-
-        @Override
-        public T resolve(Player player, String key1, String value1, String key2, String value2, String key3, String value3) {
             return value;
         }
 
@@ -198,8 +164,8 @@ public interface PlaceholderValue<T> {
         }
 
         @Override
-        public T resolveRaw(Player player, Map<String, String> local) {
-            return parse(PlaceholderUtil.resolveRaw(player, value, local));
+        public T resolve(Player player, PlaceholderSession local) {
+            return parse(PlaceholderUtil.resolve(player, value, local));
         }
 
         @Override
@@ -232,8 +198,8 @@ public interface PlaceholderValue<T> {
         }
 
         @Override
-        public String resolveRaw(Player player, Map<String, String> local) {
-            return PlaceholderUtil.resolveRaw(player, value, local);
+        public String resolve(Player player, PlaceholderSession local) {
+            return PlaceholderUtil.resolve(player, value, local);
         }
 
         @Override

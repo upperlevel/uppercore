@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
@@ -202,6 +203,11 @@ public interface Config {
         return message == null ? null : PlaceholderUtil.process(message, local);
     }
 
+    default PlaceholderValue<String> getMessage(String key, PlaceholderSession local) {
+        String message = getString(key);
+        return message == null ? null : PlaceholderUtil.process(message, local.getPlaceholders());
+    }
+
     default PlaceholderValue<String> getMessage(String key, String... local) {
         String message = getString(key);
         return message == null ? null : PlaceholderUtil.process(message, local);
@@ -219,6 +225,10 @@ public interface Config {
 
     default PlaceholderValue<String> getMessageRequired(String key, Set<String> local) {
         return PlaceholderUtil.process(getStringRequired(key), local);
+    }
+
+    default PlaceholderValue<String> getMessageRequired(String key, PlaceholderSession local) {
+        return PlaceholderUtil.process(getStringRequired(key), local.getPlaceholders());
     }
 
     default PlaceholderValue<String> getMessageRequired(String key, String... local) {

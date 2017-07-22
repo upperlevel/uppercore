@@ -111,8 +111,8 @@ public final class PlaceholderUtil {
         return manager.apply(player, str, local);
     }
 
-    public static String resolveRaw(Player player, String str, Map<String, String> local) {
-        return manager.applyRaw(player, str, local);
+    public static String resolve(Player player, String str, PlaceholderSession local) {
+        return manager.apply(player, str, local);
     }
 
     public static String placeholder(Player player, String str) {
