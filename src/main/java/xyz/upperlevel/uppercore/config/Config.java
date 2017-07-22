@@ -193,6 +193,28 @@ public interface Config {
         return PlaceholderUtil.process(getStringRequired(key));
     }
 
+    //-----------------------Message List (String + placeholder + colors)
+
+    default List<PlaceholderValue<String>> getMessageList(String key) {
+        List<String> tmp = getStringList(key);
+        if (tmp == null)
+            return null;
+        return tmp.stream()
+                .map(PlaceholderUtil::process)
+                .collect(Collectors.toList());
+    }
+
+    default List<PlaceholderValue<String>> getMessageList(String key, List<PlaceholderValue<String>> def) {
+        List<PlaceholderValue<String>> res = getMessageList(key);
+        return res != null ? res : def;
+    }
+
+    default List<PlaceholderValue<String>> getMessageListRequired(String key) {
+        List<PlaceholderValue<String>> res = getMessageList(key);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
+    }
 
     //------------------------Int
 
@@ -459,9 +481,9 @@ public interface Config {
     @SuppressWarnings("unchecked")//-_-
     default Map<String, Object> getSection(String key) {
         Object raw = get(key);
-        if(raw instanceof Map)
+        if (raw instanceof Map)
             return (Map<String, Object>) raw;
-        else if(raw instanceof ConfigurationSection)
+        else if (raw instanceof ConfigurationSection)
             return ((ConfigurationSection) raw).getValues(false);
         else
             invalidValue(key, raw, "Map");
@@ -484,11 +506,11 @@ public interface Config {
 
     default Config getConfig(String key, Config def) {
         Object raw = get(key);
-        if(raw == null)
+        if (raw == null)
             return def;
-        if(raw instanceof Map)
+        if (raw instanceof Map)
             return Config.wrap((Map<String, Object>) raw);
-        else if(raw instanceof ConfigurationSection)
+        else if (raw instanceof ConfigurationSection)
             return Config.wrap((ConfigurationSection) raw);
         else
             invalidValue(key, raw, "Map");
@@ -603,23 +625,29 @@ public interface Config {
 
     //--------------------------CustomItem
 
-    default CustomItem getCustomItem(String key, CustomItem def) {
-        try {
-            return CustomItem.deserialize(getConfig(key));
-        } catch (Exception e) {
-            return def;
-        }
+    default CustomItem getCustomItem(String key) {
+        Config sub = getConfig(key);
+        if (sub == null)
+            return null;
+        return CustomItem.deserialize(sub);
     }
 
-    default CustomItem getCustomItem(String key) {
-        return getCustomItem(key, null);
+    default CustomItem getCustomItem(String key, CustomItem def) {
+        CustomItem res = getCustomItem(key);
+        return res != null ? res : def;
     }
 
     default CustomItem getCustomItemRequired(String key) {
-        CustomItem itm = getCustomItem(key);
-        if (itm == null)
+        CustomItem res;
+        try {
+            res = getCustomItem(key);
+        } catch (InvalidConfigurationException e) {
+            e.addLocalizer("in item " + key);
+            throw e;
+        }
+        if (res == null)
             requiredPropertyNotFound(key);
-        return itm;
+        return res;
     }
 
     static void requiredPropertyNotFound(String key) {
