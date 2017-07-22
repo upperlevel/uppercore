@@ -25,7 +25,7 @@ public class GiveItemAction extends Action<GiveItemAction> {
 
     @Override
     public void run(Player player) {
-        player.getInventory().addItem(item.toItemStack(player));
+        player.getInventory().addItem(item.resolve(player));
         player.updateInventory();
     }
 

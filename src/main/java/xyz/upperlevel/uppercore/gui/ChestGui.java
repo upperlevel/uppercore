@@ -12,7 +12,6 @@ import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.*;
@@ -278,7 +277,7 @@ public class ChestGui implements Gui {
             inv = Bukkit.createInventory(null, size, title.resolve(player));
         for (int slot = 0; slot < icons.length; slot++)
             if (icons[slot] != null)
-                inv.setItem(slot, icons[slot].getDisplay().toItemStack(player));
+                inv.setItem(slot, icons[slot].getDisplay().resolve(player));
         return inv;
     }
 

@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
+import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.HashSet;
@@ -24,10 +25,13 @@ public class BoardView {
     private final Line[] lines = new Line[MAX_LINES];
 
     private PlaceholderValue<String> title;
+    private Board scoreboard;
 
     private final org.bukkit.scoreboard.Scoreboard handle;
     private final Objective objective;
     private final Set<String> entries = new HashSet<>();
+
+    private final UpdaterTask task;
 
     public BoardView(Player player) {
         this.player = player;
@@ -35,6 +39,11 @@ public class BoardView {
         handle = Bukkit.getScoreboardManager().getNewScoreboard();
         objective = handle.registerNewObjective("scoreboard", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        task = new UpdaterTask(() -> {
+            scoreboard.onUpdate(player, this);
+            update();
+        });
 
         for (int position = 0; position < lines.length; position++)
             lines[position] = new Line(position);
@@ -187,14 +196,23 @@ public class BoardView {
     public void clear() {
         for (int position = 0; position < lines.length; position++)
             removeLine(position);
+        scoreboard = null;
+        // cancels run task
+        task.stop();
     }
 
-    public void setBoard(Board board) {
-        setTitle(board.getTitle());
+    public void setScoreboard(Board board) {
         clear();
-        for (int position = 0; position < board.getLines().length; position++)
-            setLine(position, board.getLine(position));
-        updateLines();
+        if (board != null) {
+            setTitle(board.getTitle());
+            for (int position = 0; position < board.getLines().length; position++)
+                setLine(position, board.getLine(position));
+            updateLines();
+            if (board.getUpdateInterval() > 0) {
+                task.setInterval(board.getUpdateInterval());
+                task.start();
+            }
+        }
     }
 
     // RENDER

@@ -34,7 +34,7 @@ public class HotbarView {
         Icon icon = icons[slot];
         ItemStack item;
         if (icon != null)
-            item = icon.getDisplay().toItemStack(player);
+            item = icon.getDisplay().resolve(player);
         else
             item = null;
         items[slot] = item;

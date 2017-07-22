@@ -69,7 +69,7 @@ public final class ScoreboardSystem {
 
     public static BoardView set(Player player, Board board) {
         BoardView result = views.computeIfAbsent(player, BoardView::new);
-        result.setBoard(board);
+        result.setScoreboard(board);
         return result;
     }
 

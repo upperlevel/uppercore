@@ -6,7 +6,6 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Identifiable;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
-import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -19,13 +18,15 @@ import static xyz.upperlevel.uppercore.scoreboard.BoardUtil.MAX_LINES;
 @Data
 public class Board implements Identifiable {
 
-    private Plugin plugin;
-    private String id;
+    private final Plugin plugin;
+    private final String id;
 
     private PlaceholderValue<String> title;
     private final PlaceholderValue<String>[] lines = new PlaceholderValue[MAX_LINES]; // :(
+    private int updateInterval;
 
     public Board() {
+        this(null, null);
     }
 
     public Board(Plugin plugin, String id) {
@@ -33,9 +34,13 @@ public class Board implements Identifiable {
         this.id = id.toLowerCase(ENGLISH);
     }
 
+    public Board(Config config) {
+        this(null, null, config);
+    }
+
     public Board(Plugin plugin, String id, Config config) {
         this(plugin, id);
-        title = PlaceholderValue.stringValue(config.getStringRequired("title"));
+        title = config.getMessageRequired("title");
         List<String> lines = config.getList("lines");
         if (lines != null) {
             for (Object line : lines) {
@@ -49,6 +54,7 @@ public class Board implements Identifiable {
                 }
             }
         }
+        updateInterval = config.getInt("update-interval", -1);
     }
 
     public void setTitle(String title) {
@@ -93,8 +99,11 @@ public class Board implements Identifiable {
 
     public BoardView open(Player player) {
         BoardView view = ScoreboardSystem.view(player);
-        view.setBoard(this);
+        view.setScoreboard(this);
         return view;
+    }
+
+    public void onUpdate(Player player, BoardView view) {
     }
 
     public static Board deserialize(Plugin plugin, String id, Config config) {

@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.gui.hotbar;
 
+import lombok.Data;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 
+@Data
 public class HotbarRegistry implements Listener {
 
     private final Plugin plugin;

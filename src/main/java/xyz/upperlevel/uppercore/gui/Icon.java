@@ -15,6 +15,7 @@ import xyz.upperlevel.uppercore.gui.config.action.ActionType;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.gui.config.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -115,7 +116,7 @@ public class Icon {
         }
     }
 
-    private CustomItem display;
+    private ItemResolver display;
     private Link link;
     private int updateInterval; // 0 or < 0 are considered null
 
@@ -131,11 +132,11 @@ public class Icon {
         this.link = link;
     }
 
-    public Icon(CustomItem display) {
+    public Icon(ItemResolver display) {
         this.display = display;
     }
 
-    public Icon(CustomItem display, Link link) {
+    public Icon(ItemResolver display, Link link) {
         this.display = display;
         this.link = link;
     }
