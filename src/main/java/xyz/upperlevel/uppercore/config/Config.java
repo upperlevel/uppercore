@@ -481,6 +481,8 @@ public interface Config {
     @SuppressWarnings("unchecked")//-_-
     default Map<String, Object> getSection(String key) {
         Object raw = get(key);
+        if(raw == null)
+            return null;
         if (raw instanceof Map)
             return (Map<String, Object>) raw;
         else if (raw instanceof ConfigurationSection)
@@ -522,7 +524,10 @@ public interface Config {
     }
 
     default Config getConfigRequired(String key) {
-        return Config.wrap(getSectionRequired(key));
+        Config res = getConfig(key, null);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
     }
 
     //------------------------Config List
