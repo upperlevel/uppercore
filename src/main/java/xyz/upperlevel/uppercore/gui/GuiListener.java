@@ -23,7 +23,7 @@ public class GuiListener implements Listener {
             //Cannot call Inventory actions in an inventory event
             Bukkit.getScheduler().runTaskLater(
                     Uppercore.get(),
-                    () -> GuiSystem.back((Player) e.getPlayer()),
+                    () -> GuiSystem.close((Player) e.getPlayer()),
                     0
             );
         }
