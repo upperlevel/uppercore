@@ -7,6 +7,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.HashSet;
@@ -33,6 +34,8 @@ public class BoardView {
 
     private final UpdaterTask task;
 
+    private final PlaceholderSession placeholders = new PlaceholderSession();
+    
     public BoardView(Player player) {
         this.player = player;
 
@@ -41,12 +44,16 @@ public class BoardView {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         task = new UpdaterTask(() -> {
-            scoreboard.onUpdate(player, this);
+            scoreboard.onUpdate(this);
             update();
         });
 
         for (int position = 0; position < lines.length; position++)
             lines[position] = new Line(position);
+    }
+
+    public PlaceholderSession placeholders() {
+        return placeholders;
     }
 
     @Data
@@ -105,7 +112,7 @@ public class BoardView {
             // if the text is changed split it
             String lastEntry = entry;
             if (text != null) {
-                String real = text.resolve(player);
+                String real = text.resolve(player, placeholders);
                 StringBuffer
                         prefixBfr = new StringBuffer(),
                         entryBfr = new StringBuffer(),
@@ -229,7 +236,7 @@ public class BoardView {
     public void updateTitle() {
         if (title != null) {
             player.setScoreboard(handle);
-            objective.setDisplayName(getRenderTitle(title.resolve(player)));
+            objective.setDisplayName(getRenderTitle(title.resolve(player, placeholders)));
         }
     }
 

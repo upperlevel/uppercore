@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Identifiable;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -103,7 +104,7 @@ public class Board implements Identifiable {
         return view;
     }
 
-    public void onUpdate(Player player, BoardView view) {
+    public void onUpdate(BoardView view) {
     }
 
     public static Board deserialize(Plugin plugin, String id, Config config) {
