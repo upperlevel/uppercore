@@ -2,8 +2,7 @@ package xyz.upperlevel.uppercore.script;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.config.economy.EconomyManager;
+import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 
 import javax.script.*;

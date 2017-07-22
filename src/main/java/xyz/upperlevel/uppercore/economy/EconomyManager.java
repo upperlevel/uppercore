@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config.economy;
+package xyz.upperlevel.uppercore.economy;
 
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;

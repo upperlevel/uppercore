@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config.economy;
+package xyz.upperlevel.uppercore.economy;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;

@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.config.economy.EconomyManager;
+import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;

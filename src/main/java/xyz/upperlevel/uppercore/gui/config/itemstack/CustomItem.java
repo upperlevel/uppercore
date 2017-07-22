@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.gui.config.itemstack;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class CustomItem {
 
