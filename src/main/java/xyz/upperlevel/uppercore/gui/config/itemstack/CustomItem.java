@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CustomItem {
+public class CustomItem implements ItemResolver {
 
     private Material type;
     private PlaceholderValue<Short> data;
@@ -46,7 +45,8 @@ public class CustomItem {
             enchantments.put(entry.getKey(), PlaceholderValue.intValue(String.valueOf(entry.getValue())));
     }
 
-    public ItemStack toItemStack(Player player) {
+    @Override
+    public ItemStack resolve(Player player) {
         ItemStack item = new ItemStack(type, amount.resolve(player), data.resolve(player));
         ItemMeta meta = item.getItemMeta();
 
