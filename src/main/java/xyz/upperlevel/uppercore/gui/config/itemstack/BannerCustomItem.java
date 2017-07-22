@@ -11,12 +11,10 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BannerCustomItem extends CustomItem {
     private DyeColor baseColor;
@@ -25,8 +23,9 @@ public class BannerCustomItem extends CustomItem {
     public BannerCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                             PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                             List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                            Map<String, Placeholder> local,
                             DyeColor baseColor, List<Pattern> patterns) {
-        super(material, data, amount, displayName, lore, flags, enchantments);
+        super(material, data, amount, displayName, lore, flags, enchantments, local);
         this.baseColor = baseColor;
         this.patterns = patterns;
     }
@@ -41,9 +40,9 @@ public class BannerCustomItem extends CustomItem {
 
     @SuppressWarnings("unchecked")
     public static BannerCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
-                                  PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
-                                  List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                  Config config) {
+                                        PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
+                                        List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                        Map<String, Placeholder> local, Config config) {
         DyeColor baseColor = config.getDye("color");
         Collection<Map<String, Object>> rawPatterns = (Collection<Map<String, Object>>) config.getCollection("patterns");
         List<Pattern> patterns = new ArrayList<>();
@@ -60,7 +59,7 @@ public class BannerCustomItem extends CustomItem {
             }
         }
         return new BannerCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments,
+                mat, data, amount, displayName, lores, flags, enchantments, local,
                 baseColor, patterns
         );
     }

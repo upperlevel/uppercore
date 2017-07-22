@@ -704,11 +704,28 @@ public interface Config {
 
     //--------------------------CustomItem
 
-    default CustomItem getCustomItem(String key) {
+    default CustomItem getCustomItem(String key, Function<Config, CustomItem> deserializer) {
         Config sub = getConfig(key);
         if (sub == null)
             return null;
-        return CustomItem.deserialize(sub);
+        try {
+            return deserializer.apply(sub);
+        } catch (InvalidConfigurationException e) {
+            e.addLocalizer("in item " + key);
+            throw e;
+        }
+    }
+
+    default CustomItem getCustomItem(String key) {
+        return getCustomItem(key, CustomItem::deserialize);
+    }
+
+    default CustomItem getCustomItem(String key, Map<String, Placeholder> local) {
+        return getCustomItem(key, config -> CustomItem.deserialize(config, local));
+    }
+
+    default CustomItem getCustomItem(String key, PlaceholderSession local) {
+        return getCustomItem(key, config -> CustomItem.deserialize(config, local));
     }
 
     default CustomItem getCustomItem(String key, CustomItem def) {
@@ -717,13 +734,7 @@ public interface Config {
     }
 
     default CustomItem getCustomItemRequired(String key) {
-        CustomItem res;
-        try {
-            res = getCustomItem(key);
-        } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in item " + key);
-            throw e;
-        }
+        CustomItem res = getCustomItem(key);
         if (res == null)
             requiredPropertyNotFound(key);
         return res;

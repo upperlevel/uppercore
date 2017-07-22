@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
@@ -20,8 +21,9 @@ public class SpawnEggCustomItem extends CustomItem {
     public SpawnEggCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                               PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                              Map<String, Placeholder> local,
                               EntityType type) {
-        super(material, data, amount, displayName, lore, flags, enchantments);
+        super(material, data, amount, displayName, lore, flags, enchantments, local);
         this.type = type;
     }
 
@@ -35,9 +37,9 @@ public class SpawnEggCustomItem extends CustomItem {
     public static SpawnEggCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                         PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                         List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                        Config config) {
+                                        Map<String, Placeholder> local, Config config) {
         return new SpawnEggCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments,
+                mat, data, amount, displayName, lores, flags, enchantments, local,
                 config.getEnum("egg-type", EntityType.class)
         );
     }

@@ -11,12 +11,10 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PotionCustomItem extends CustomItem {
 
@@ -27,8 +25,9 @@ public class PotionCustomItem extends CustomItem {
     public PotionCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                             PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                             List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                            Map<String, Placeholder> local,
                             PotionType type, PlaceholderValue<Color> customColor, List<PotionEffect> customEffects) {
-        super(material, data, amount, displayName, lore, flags, enchantments);
+        super(material, data, amount, displayName, lore, flags, enchantments, local);
         this.type = type;
         this.customColor = customColor;
         this.customEffects = customEffects;
@@ -49,9 +48,9 @@ public class PotionCustomItem extends CustomItem {
 
     @SuppressWarnings("unchecked")
     public static PotionCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
-                                     PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
-                                     List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                     Config config) {
+                                        PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
+                                        List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                        Map<String, Placeholder> local, Config config) {
         PotionType type = config.getEnum("potion-type", PotionType.class);
         String rawColor = config.getString("color");
         PlaceholderValue<Color> customColor = rawColor == null ? null : PlaceholderValue.colorValue(rawColor);
@@ -62,7 +61,7 @@ public class PotionCustomItem extends CustomItem {
                 customEffects.add(new PotionEffect(e));
         }
         return new PotionCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments,
+                mat, data, amount, displayName, lores, flags, enchantments, local,
                 type, customColor, customEffects
         );
     }

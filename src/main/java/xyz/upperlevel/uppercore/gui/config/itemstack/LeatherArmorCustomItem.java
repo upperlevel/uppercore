@@ -8,10 +8,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class LeatherArmorCustomItem extends CustomItem {
 
@@ -20,8 +22,9 @@ public class LeatherArmorCustomItem extends CustomItem {
     public LeatherArmorCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                   PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                                   List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                  Map<String, Placeholder> local,
                                   PlaceholderValue<Color> color) {
-        super(material, data, amount, displayName, lore, flags, enchantments);
+        super(material, data, amount, displayName, lore, flags, enchantments, local);
         this.color = color;
     }
 
@@ -34,12 +37,12 @@ public class LeatherArmorCustomItem extends CustomItem {
     }
 
     public static LeatherArmorCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
-                                       PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
-                                       List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                       Config config) {
+                                              PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
+                                              List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                              Map<String, Placeholder> local, Config config) {
         PlaceholderValue<Color> color = PlaceholderValue.colorValue(config.getString("color"));
         return new LeatherArmorCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments,
+                mat, data, amount, displayName, lores, flags, enchantments, local,
                 color
         );
     }

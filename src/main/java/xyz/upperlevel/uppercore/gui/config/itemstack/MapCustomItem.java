@@ -8,10 +8,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MapCustomItem extends CustomItem {
 
@@ -22,9 +24,10 @@ public class MapCustomItem extends CustomItem {
     public MapCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                          PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                          List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                         Map<String, Placeholder> local,
                          boolean scaling, PlaceholderValue<String> displayLocName,
                          PlaceholderValue<Color> displayMapColor) {
-        super(material, data, amount, displayName, lore, flags, enchantments);
+        super(material, data, amount, displayName, lore, flags, enchantments, local);
         this.scaling = scaling;
         this.displayLocName = displayLocName;
         this.displayMapColor = displayMapColor;
@@ -42,14 +45,14 @@ public class MapCustomItem extends CustomItem {
     }
 
     public static MapCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
-                                              PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
-                                              List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                              Config config) {
+                                     PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
+                                     List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                     Map<String, Placeholder> local, Config config) {
         boolean scaling = config.getBool("scaling", false);
         PlaceholderValue<String> displayLocName = PlaceholderValue.stringValue(config.getString("location-name"));
         PlaceholderValue<Color> displayMapColor = PlaceholderValue.colorValue(config.getString("map-color"));
         return new MapCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments,
+                mat, data, amount, displayName, lores, flags, enchantments, local,
                 scaling, displayLocName, displayMapColor
         );
     }

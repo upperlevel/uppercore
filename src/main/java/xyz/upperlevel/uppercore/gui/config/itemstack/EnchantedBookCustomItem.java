@@ -8,12 +8,10 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class EnchantedBookCustomItem extends CustomItem {
 
@@ -22,8 +20,9 @@ public class EnchantedBookCustomItem extends CustomItem {
     public EnchantedBookCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                    PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                                    List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                   Map<String, Placeholder> local,
                                    Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments) {
-        super(material, data, amount, displayName, lore, flags, enchantments);
+        super(material, data, amount, displayName, lore, flags, enchantments, local);
         this.storedEnchantments = storedEnchantments;
     }
 
@@ -37,9 +36,9 @@ public class EnchantedBookCustomItem extends CustomItem {
 
     @SuppressWarnings("unchecked")
     public static EnchantedBookCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
-                                              PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
-                                              List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                              Config config) {
+                                               PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
+                                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                               Map<String, Placeholder> local, Config config) {
         Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments;
 
         storedEnchantments = new HashMap<>();
@@ -56,7 +55,7 @@ public class EnchantedBookCustomItem extends CustomItem {
             }
         }
         return new EnchantedBookCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments,
+                mat, data, amount, displayName, lores, flags, enchantments, local,
                 storedEnchantments
         );
     }

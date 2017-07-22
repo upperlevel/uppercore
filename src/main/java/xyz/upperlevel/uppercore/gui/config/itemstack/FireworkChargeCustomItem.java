@@ -10,12 +10,10 @@ import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigUtils;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static xyz.upperlevel.uppercore.config.ConfigUtils.parseFireworkEffectType;
@@ -27,8 +25,9 @@ public class FireworkChargeCustomItem extends CustomItem {
     public FireworkChargeCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                     PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                                     List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                    Map<String, Placeholder> local,
                                     FireworkEffect effect) {
-        super(material, data, amount, displayName, lore, flags, enchantments);
+        super(material, data, amount, displayName, lore, flags, enchantments, local);
         this.effect = effect;
     }
 
@@ -40,12 +39,12 @@ public class FireworkChargeCustomItem extends CustomItem {
     }
 
     public static FireworkChargeCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
-                                              PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
-                                              List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                              Config config) {
+                                                PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
+                                                List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                                Map<String, Placeholder> local, Config config) {
         FireworkEffect effect = parse(config.getConfigRequired("effect"));
         return new FireworkChargeCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments,
+                mat, data, amount, displayName, lores, flags, enchantments, local,
                 effect
         );
     }
