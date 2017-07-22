@@ -6,5 +6,5 @@ public interface Placeholder {
 
     String getId();
 
-    String resolve(Player player, String subId);
+    String resolve(Player player, String arg);
 }

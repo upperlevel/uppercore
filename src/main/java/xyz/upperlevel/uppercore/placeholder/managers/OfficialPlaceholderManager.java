@@ -6,11 +6,41 @@ import me.clip.placeholderapi.external.EZPlaceholderHook;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderManager;
 
 import java.util.Map;
 
-public class OfficialPlaceholderManager implements PlaceholderManager {
+public class OfficialPlaceholderManager extends BasePlaceholderManager {
+
+    private final Map<String, PlaceholderHook> placeholders;
+
+    public OfficialPlaceholderManager() {
+        this.placeholders = PlaceholderAPI.getPlaceholders();
+    }
+
+    @Override
+    public void register(Plugin plugin, Placeholder placeholder) {
+        new OfficialPlaceholderAdapter(plugin, placeholder).hook();
+    }
+
+    public boolean has(String id) {
+        return placeholders.containsKey(id);
+    }
+
+    public Placeholder find(String id) {
+        PlaceholderHook hook = placeholders.get(id);
+        return new Placeholder() {
+            @Override
+            public String getId() {
+                return id;
+            }
+
+            @Override
+            public String resolve(Player player, String arg) {
+                return hook.onPlaceholderRequest(player, arg);
+            }
+        };
+    }
+
 
     private static class OfficialPlaceholderAdapter extends EZPlaceholderHook {
 
@@ -25,33 +55,5 @@ public class OfficialPlaceholderManager implements PlaceholderManager {
         public String onPlaceholderRequest(Player player, String identifier) {
             return placeholder.resolve(player, identifier);
         }
-    }
-
-    @Override
-    public void register(Plugin plugin, Placeholder placeholder) {
-        new OfficialPlaceholderAdapter(plugin, placeholder).hook();
-    }
-
-    @Override
-    public boolean hasPlaceholders(String string) {
-        return PlaceholderAPI.containsPlaceholders(string);
-    }
-
-    @Override
-    public String apply(Player player, String string) {
-        return PlaceholderAPI.setPlaceholders(player, string);
-    }
-
-    @Override
-    public String single(Player player, String string) {
-        Map<String, PlaceholderHook> placeholders = PlaceholderAPI.getPlaceholders();
-
-        int index = string.indexOf('_');
-        String pl = string.substring(0, index);
-        Map.Entry<String, PlaceholderHook> p = placeholders.entrySet().stream().filter(h -> pl.equalsIgnoreCase(h.getKey())).findFirst().orElse(null);
-        if(p == null)
-            return null;
-        else
-            return p.getValue().onPlaceholderRequest(player, string.substring(index + 1));
     }
 }
