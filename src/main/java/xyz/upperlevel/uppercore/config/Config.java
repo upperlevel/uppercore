@@ -3,11 +3,13 @@ package xyz.upperlevel.uppercore.config;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
@@ -186,22 +188,68 @@ public interface Config {
     }
 
     default PlaceholderValue<String> getMessage(String key) {
-        return getMessage(key, null);
+        String message = getString(key);
+        return message == null ? null : PlaceholderUtil.process(message);
     }
+
+    default PlaceholderValue<String> getMessage(String key, Map<String, Placeholder> local) {
+        String message = getString(key);
+        return message == null ? null : PlaceholderUtil.process(message, local);
+    }
+
+    default PlaceholderValue<String> getMessage(String key, Set<String> local) {
+        String message = getString(key);
+        return message == null ? null : PlaceholderUtil.process(message, local);
+    }
+
+    default PlaceholderValue<String> getMessage(String key, String... local) {
+        String message = getString(key);
+        return message == null ? null : PlaceholderUtil.process(message, local);
+    }
+
+
 
     default PlaceholderValue<String> getMessageRequired(String key) {
         return PlaceholderUtil.process(getStringRequired(key));
     }
 
+    default PlaceholderValue<String> getMessageRequired(String key, Map<String, Placeholder> local) {
+        return PlaceholderUtil.process(getStringRequired(key), local);
+    }
+
+    default PlaceholderValue<String> getMessageRequired(String key, Set<String> local) {
+        return PlaceholderUtil.process(getStringRequired(key), local);
+    }
+
+    default PlaceholderValue<String> getMessageRequired(String key, String... local) {
+        return PlaceholderUtil.process(getStringRequired(key), local);
+    }
+
     //-----------------------Message List (String + placeholder + colors)
 
-    default List<PlaceholderValue<String>> getMessageList(String key) {
+    default List<PlaceholderValue<String>> getMessageList(String key, Function<String, PlaceholderValue<String>> processor) {
         List<String> tmp = getStringList(key);
         if (tmp == null)
             return null;
         return tmp.stream()
-                .map(PlaceholderUtil::process)
+                .map(processor)
                 .collect(Collectors.toList());
+    }
+
+    default List<PlaceholderValue<String>> getMessageList(String key) {
+       return getMessageList(key, PlaceholderValue::stringValue);
+    }
+
+    default List<PlaceholderValue<String>> getMessageList(String key, Map<String, Placeholder> local) {
+        return getMessageList(key, str -> PlaceholderUtil.process(str, local));
+    }
+
+    default List<PlaceholderValue<String>> getMessageList(String key, Set<String> local) {
+        return getMessageList(key, str -> PlaceholderUtil.process(str, local));
+    }
+
+    default List<PlaceholderValue<String>> getMessageList(String key, String... local) {
+        return getMessageList(key, str -> PlaceholderUtil.process(str, local));
     }
 
     default List<PlaceholderValue<String>> getMessageList(String key, List<PlaceholderValue<String>> def) {
@@ -209,12 +257,28 @@ public interface Config {
         return res != null ? res : def;
     }
 
-    default List<PlaceholderValue<String>> getMessageListRequired(String key) {
-        List<PlaceholderValue<String>> res = getMessageList(key);
-        if (res == null)
-            requiredPropertyNotFound(key);
+    default List<PlaceholderValue<String>> getMessageListRequired(String key, Function<String, PlaceholderValue<String>> processor) {
+        List<PlaceholderValue<String>> res = getMessageList(key, processor);
+        if (res == null) requiredPropertyNotFound(key);
         return res;
     }
+
+    default List<PlaceholderValue<String>> getMessageListRequired(String key) {
+        return getMessageListRequired(key, PlaceholderValue::stringValue);
+    }
+
+    default List<PlaceholderValue<String>> getMessageListRequired(String key, Map<String, Placeholder> local) {
+        return getMessageListRequired(key, str -> PlaceholderUtil.process(str, local));
+    }
+
+    default List<PlaceholderValue<String>> getMessageListRequired(String key, Set<String> local) {
+        return getMessageListRequired(key, str -> PlaceholderUtil.process(str, local));
+    }
+
+    default List<PlaceholderValue<String>> getMessageListRequired(String key, String... local) {
+        return getMessageListRequired(key, str -> PlaceholderUtil.process(str, local));
+    }
+
 
     //------------------------Int
 

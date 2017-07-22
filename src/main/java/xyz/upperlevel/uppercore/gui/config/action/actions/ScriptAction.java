@@ -43,11 +43,8 @@ public class ScriptAction extends Action<ScriptAction> {
             }
         }
         if (script == Script.EMPTY) return;
-        Bindings b = script.createBindings();
-        b.put("player", player);
-        b.put("placeholder", (Function<String, String>) str -> PlaceholderUtil.resolvePlaceholders(player, str));
         try {
-            script.run(b);
+            script.execute(player);
         } catch (ScriptException e) {
             Uppercore.logger().log(Level.SEVERE, "Error while executing script \"" + id + "\"", e);
         }

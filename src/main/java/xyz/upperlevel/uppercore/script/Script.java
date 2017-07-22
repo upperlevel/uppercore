@@ -23,7 +23,7 @@ public interface Script {
             currentThread.setContextClassLoader(ScriptSystem.getClassLoader());
             Bindings b = createBindings();
             b.put("player", player);
-            b.put("placeholder", (Function<String, String>) str -> PlaceholderUtil.resolvePlaceholders(player, str));
+            b.put("placeholder", (Function<String, String>) str -> PlaceholderUtil.resolve(player, str));
             b.put("balance", EconomyManager.get(player));
 
             return run(b);
