@@ -740,6 +740,20 @@ public interface Config {
         return res;
     }
 
+    default CustomItem getCustomItemRequired(String key, Map<String, Placeholder> local) {
+        CustomItem res = getCustomItem(key, local);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
+    }
+
+    default CustomItem getCustomItemRequired(String key, PlaceholderSession local) {
+        CustomItem res = getCustomItem(key, local);
+        if (res == null)
+            requiredPropertyNotFound(key);
+        return res;
+    }
+
     static void requiredPropertyNotFound(String key) {
         throw new InvalidConfigurationException("Cannot find property \"" + key + "\"");
     }

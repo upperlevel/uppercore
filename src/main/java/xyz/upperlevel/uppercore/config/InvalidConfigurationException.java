@@ -35,6 +35,11 @@ public class InvalidConfigurationException extends RuntimeException{
         return initialMessage;
     }
 
+    @Override
+    public String getMessage() {
+        return getErrorMessage("Error");
+    }
+
     public void addLocalizer(String localizer) {
         localizers.add(localizer);
     }

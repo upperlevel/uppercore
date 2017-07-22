@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.placeholder.managers;
 
 import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
@@ -22,7 +23,7 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
             String id = text.substring(0, index);
             if(hasId.test(id))
                 return true;
-            index = text.indexOf('_', index);
+            index = text.indexOf('_', index + 1);
         }
         return hasId.test(text);
     }
@@ -33,7 +34,7 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
             if (isPlaceholder(matcher.group(1).toLowerCase(), hasId))
                 return true;
             else
-                System.out.println("Cannot find " + matcher.group(1));
+                throw new InvalidConfigurationException("Cannot find placeholder '" + matcher.group(1) + "'");
         return false;
     }
 

@@ -48,9 +48,10 @@ public class Board implements Identifiable {
                 if (line instanceof String) {
                     addLine((String) line);
                 } else if (line instanceof Map) {
+                    Config l = Config.wrap((Map<String, Object>) line);
                     setLine(
-                            (int) ((Map) line).get("index"),
-                            (String) ((Map) line).get("text")
+                            l.getIntRequired("index"),
+                            l.getMessageRequired("text")
                     );
                 }
             }

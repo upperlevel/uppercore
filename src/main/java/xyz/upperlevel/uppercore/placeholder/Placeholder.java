@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface Placeholder {
 
@@ -11,7 +12,7 @@ public interface Placeholder {
 
     String resolve(Player player, String arg);
 
-    static Placeholder constant(String obj) {
+    static Placeholder of(String obj) {
         return new Placeholder() {
             @Override
             public String getId() {
@@ -21,6 +22,20 @@ public interface Placeholder {
             @Override
             public String resolve(Player player, String arg) {
                 return obj;
+            }
+        };
+    }
+
+    static Placeholder of(Supplier<String> obj) {
+        return new Placeholder() {
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public String resolve(Player player, String arg) {
+                return obj.get();
             }
         };
     }

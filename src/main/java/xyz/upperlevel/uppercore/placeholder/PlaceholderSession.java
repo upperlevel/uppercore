@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Data
 public class PlaceholderSession {
@@ -20,23 +21,23 @@ public class PlaceholderSession {
         return this;
     }
 
-    public PlaceholderSession add(String id, Object obj) {
-        this.placeholders.put(id, Placeholder.constant(String.valueOf(obj)));
+    public PlaceholderSession set(String id, Object obj) {
+        this.placeholders.put(id, Placeholder.of(String.valueOf(obj)));
         return this;
     }
 
-    public PlaceholderSession add(String id, Function<Player, String> obj) {
+    public PlaceholderSession set(String id, Supplier<String> obj) {
         this.placeholders.put(id, Placeholder.of(obj));
         return this;
     }
 
-    public PlaceholderSession add(String id, BiFunction<Player, String, String> obj) {
+    public PlaceholderSession set(String id, Function<Player, String> obj) {
         this.placeholders.put(id, Placeholder.of(obj));
         return this;
     }
 
-    public PlaceholderSession set(String id, Object value) {
-        placeholders.put(id, Placeholder.constant(String.valueOf(value)));
+    public PlaceholderSession set(String id, BiFunction<Player, String, String> obj) {
+        this.placeholders.put(id, Placeholder.of(obj));
         return this;
     }
 }
