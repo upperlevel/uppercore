@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.placeholder;
 
+import lombok.Data;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.gui.config.action.actions.PlaySoundAction;
@@ -9,8 +10,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+@Data
 public class PlaceholderSession {
-    @Getter
+
     private final Map<String, Placeholder> placeholders = new HashMap<>();
 
     private PlaceholderSession add(Placeholder placeholder) {
@@ -33,4 +35,8 @@ public class PlaceholderSession {
         return this;
     }
 
+    public PlaceholderSession set(String id, Object value) {
+        placeholders.put(id, Placeholder.constant(String.valueOf(value)));
+        return this;
+    }
 }
