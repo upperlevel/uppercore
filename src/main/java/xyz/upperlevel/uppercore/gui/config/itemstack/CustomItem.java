@@ -76,12 +76,12 @@ public class CustomItem implements ItemResolver {
         PlaceholderValue<Short> data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
         PlaceholderValue<Integer> amount = PlaceholderUtil.parseInt(config.getString("amount", "1"));
 
-        PlaceholderValue<String> displayName = config.getMessage("name", local);
+        PlaceholderValue<String> displayName = config.getMessage("name");
         List<PlaceholderValue<String>> lores;
         if (config.has("lore")) {
             lores = ((Collection<String>) config.getCollection("lore"))
                     .stream()
-                    .map(s -> PlaceholderUtil.process(s, local))
+                    .map(PlaceholderUtil::process)
                     .collect(Collectors.toList());
         } else lores = Collections.emptyList();
         List<ItemFlag> flags;

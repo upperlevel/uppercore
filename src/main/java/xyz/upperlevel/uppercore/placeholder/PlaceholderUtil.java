@@ -8,10 +8,7 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.placeholder.managers.CustomPlaceholderManager;
 import xyz.upperlevel.uppercore.placeholder.managers.OfficialPlaceholderManager;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public final class PlaceholderUtil {
 
@@ -87,22 +84,6 @@ public final class PlaceholderUtil {
         return PlaceholderValue.stringValue(message);
     }
 
-    public static PlaceholderValue<String> process(String message, Map<String, Placeholder> local) {
-        message = ChatColor.translateAlternateColorCodes('&', message);
-        return PlaceholderValue.stringValue(message, local);
-    }
-
-    public static PlaceholderValue<String> process(String message, Set<String> local) {
-        message = ChatColor.translateAlternateColorCodes('&', message);
-        return PlaceholderValue.stringValue(message, local);
-    }
-
-    public static PlaceholderValue<String> process(String message, String... local) {
-        message = ChatColor.translateAlternateColorCodes('&', message);
-        return PlaceholderValue.stringValue(message, local);
-    }
-
-
     public static String resolve(Player player, String str) {
         return manager.apply(player, str);
     }
@@ -121,17 +102,5 @@ public final class PlaceholderUtil {
 
     public static boolean hasPlaceholders(String str) {
         return manager.hasPlaceholders(str);
-    }
-
-    public static boolean hasPlaceholders(String str, Map<String, Placeholder> local) {
-        return manager.hasPlaceholders(str, local);
-    }
-
-    public static boolean hasPlaceholders(String str, Set<String> local) {
-        return manager.hasPlaceholders(str, local);
-    }
-
-    public static boolean hasPlaceholders(String str, String... local) {
-        return manager.hasPlaceholders(str, new HashSet<>(Arrays.asList(local)));
     }
 }

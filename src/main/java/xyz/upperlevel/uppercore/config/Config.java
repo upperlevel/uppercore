@@ -193,46 +193,8 @@ public interface Config {
         return message == null ? null : PlaceholderUtil.process(message);
     }
 
-    default PlaceholderValue<String> getMessage(String key, Map<String, Placeholder> local) {
-        String message = getString(key);
-        return message == null ? null : PlaceholderUtil.process(message, local);
-    }
-
-    default PlaceholderValue<String> getMessage(String key, Set<String> local) {
-        String message = getString(key);
-        return message == null ? null : PlaceholderUtil.process(message, local);
-    }
-
-    default PlaceholderValue<String> getMessage(String key, PlaceholderSession local) {
-        String message = getString(key);
-        return message == null ? null : PlaceholderUtil.process(message, local.getPlaceholders());
-    }
-
-    default PlaceholderValue<String> getMessage(String key, String... local) {
-        String message = getString(key);
-        return message == null ? null : PlaceholderUtil.process(message, local);
-    }
-
-
-
     default PlaceholderValue<String> getMessageRequired(String key) {
         return PlaceholderUtil.process(getStringRequired(key));
-    }
-
-    default PlaceholderValue<String> getMessageRequired(String key, Map<String, Placeholder> local) {
-        return PlaceholderUtil.process(getStringRequired(key), local);
-    }
-
-    default PlaceholderValue<String> getMessageRequired(String key, Set<String> local) {
-        return PlaceholderUtil.process(getStringRequired(key), local);
-    }
-
-    default PlaceholderValue<String> getMessageRequired(String key, PlaceholderSession local) {
-        return PlaceholderUtil.process(getStringRequired(key), local.getPlaceholders());
-    }
-
-    default PlaceholderValue<String> getMessageRequired(String key, String... local) {
-        return PlaceholderUtil.process(getStringRequired(key), local);
     }
 
     //-----------------------Message List (String + placeholder + colors)
@@ -250,18 +212,6 @@ public interface Config {
        return getMessageList(key, PlaceholderValue::stringValue);
     }
 
-    default List<PlaceholderValue<String>> getMessageList(String key, Map<String, Placeholder> local) {
-        return getMessageList(key, str -> PlaceholderUtil.process(str, local));
-    }
-
-    default List<PlaceholderValue<String>> getMessageList(String key, Set<String> local) {
-        return getMessageList(key, str -> PlaceholderUtil.process(str, local));
-    }
-
-    default List<PlaceholderValue<String>> getMessageList(String key, String... local) {
-        return getMessageList(key, str -> PlaceholderUtil.process(str, local));
-    }
-
     default List<PlaceholderValue<String>> getMessageList(String key, List<PlaceholderValue<String>> def) {
         List<PlaceholderValue<String>> res = getMessageList(key);
         return res != null ? res : def;
@@ -275,18 +225,6 @@ public interface Config {
 
     default List<PlaceholderValue<String>> getMessageListRequired(String key) {
         return getMessageListRequired(key, PlaceholderValue::stringValue);
-    }
-
-    default List<PlaceholderValue<String>> getMessageListRequired(String key, Map<String, Placeholder> local) {
-        return getMessageListRequired(key, str -> PlaceholderUtil.process(str, local));
-    }
-
-    default List<PlaceholderValue<String>> getMessageListRequired(String key, Set<String> local) {
-        return getMessageListRequired(key, str -> PlaceholderUtil.process(str, local));
-    }
-
-    default List<PlaceholderValue<String>> getMessageListRequired(String key, String... local) {
-        return getMessageListRequired(key, str -> PlaceholderUtil.process(str, local));
     }
 
 

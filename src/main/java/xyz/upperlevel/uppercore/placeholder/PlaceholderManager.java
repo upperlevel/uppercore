@@ -3,24 +3,13 @@ package xyz.upperlevel.uppercore.placeholder;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public interface PlaceholderManager {
 
     void register(Plugin plugin, Placeholder placeholder);
 
-    boolean hasPlaceholders(String str, Set<String> localRaw);
-
-    default boolean hasPlaceholders(String str, Map<String, Placeholder> local) {
-        return hasPlaceholders(str, local.keySet());
-    }
-
-    default boolean hasPlaceholders(String str) {
-        return hasPlaceholders(str, Collections.emptyMap());
-    }
+    boolean hasPlaceholders(String str);
 
     String apply(Player player, String text);
 

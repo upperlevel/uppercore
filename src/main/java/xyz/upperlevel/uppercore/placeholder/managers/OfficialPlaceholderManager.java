@@ -22,10 +22,6 @@ public class OfficialPlaceholderManager extends BasePlaceholderManager {
         new OfficialPlaceholderAdapter(plugin, placeholder).hook();
     }
 
-    public boolean has(String id) {
-        return placeholders.containsKey(id);
-    }
-
     public Placeholder find(String id) {
         PlaceholderHook hook = placeholders.get(id);
         return new Placeholder() {

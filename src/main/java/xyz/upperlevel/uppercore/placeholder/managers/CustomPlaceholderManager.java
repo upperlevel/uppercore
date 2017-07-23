@@ -27,11 +27,6 @@ public class CustomPlaceholderManager extends BasePlaceholderManager {
         return placeholders.get(id);
     }
 
-    @Override
-    public boolean has(String string) {
-        return placeholders.containsKey(string);
-    }
-
 
     public void addDefaults() {
         register(get(), new PlayerDisplayNamePlaceholder());

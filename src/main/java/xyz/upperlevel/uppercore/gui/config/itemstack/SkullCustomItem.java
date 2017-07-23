@@ -12,7 +12,6 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class SkullCustomItem extends CustomItem {
 
@@ -39,7 +38,7 @@ public class SkullCustomItem extends CustomItem {
                                        PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                        List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
                                        Map<String, Placeholder> local, Config config) {
-        PlaceholderValue<String> skullOwner = PlaceholderValue.stringValue(config.getString("owner"), local);
+        PlaceholderValue<String> skullOwner = PlaceholderValue.stringValue(config.getString("owner"));
         return new SkullCustomItem(
                 mat, data, amount, displayName, lores, flags, enchantments, local,
                 skullOwner

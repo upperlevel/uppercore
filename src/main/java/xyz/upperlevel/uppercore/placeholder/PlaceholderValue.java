@@ -10,7 +10,6 @@ import xyz.upperlevel.uppercore.config.ConfigUtils;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -72,31 +71,12 @@ public interface PlaceholderValue<T> {
         return value(string, Double::parseDouble, -1.0);
     }
 
-    static PlaceholderValue<String> stringValue(String string, Map<String, Placeholder> local) {
-        if (string == null) return null;
-        return stringValueKnown(string, PlaceholderUtil.hasPlaceholders(string, local));
-    }
-
-    static PlaceholderValue<String> stringValue(String string, Set<String> local) {
-        if (string == null) return null;
-        return stringValueKnown(string, PlaceholderUtil.hasPlaceholders(string, local));
-    }
-
-    static PlaceholderValue<String> stringValue(String string, String... local) {
-        if (string == null) return null;
-        return stringValueKnown(string, PlaceholderUtil.hasPlaceholders(string, local));
-    }
-
     static PlaceholderValue<String> stringValue(String string) {
         if (string == null) return null;
-        return stringValueKnown(string, PlaceholderUtil.hasPlaceholders(string));
-    }
-
-    static PlaceholderValue<String> stringValueKnown(String str, boolean placeholders) {
-        if (placeholders)
-            return new StringPlaceholderValue(str);
+        if (PlaceholderUtil.hasPlaceholders(string))
+            return new StringPlaceholderValue(string);
         else
-            return new FalsePlaceholderValue<>(str);
+            return new FalsePlaceholderValue<>(string);
     }
 
     static PlaceholderValue<Color> colorValue(String string) {
