@@ -199,17 +199,13 @@ public interface Config {
 
     //-----------------------Message List (String + placeholder + colors)
 
-    default List<PlaceholderValue<String>> getMessageList(String key, Function<String, PlaceholderValue<String>> processor) {
+    default List<PlaceholderValue<String>> getMessageList(String key) {
         List<String> tmp = getStringList(key);
         if (tmp == null)
             return null;
         return tmp.stream()
-                .map(processor)
+                .map(PlaceholderValue::stringValue)
                 .collect(Collectors.toList());
-    }
-
-    default List<PlaceholderValue<String>> getMessageList(String key) {
-       return getMessageList(key, PlaceholderValue::stringValue);
     }
 
     default List<PlaceholderValue<String>> getMessageList(String key, List<PlaceholderValue<String>> def) {
@@ -217,14 +213,10 @@ public interface Config {
         return res != null ? res : def;
     }
 
-    default List<PlaceholderValue<String>> getMessageListRequired(String key, Function<String, PlaceholderValue<String>> processor) {
-        List<PlaceholderValue<String>> res = getMessageList(key, processor);
+    default List<PlaceholderValue<String>> getMessageListRequired(String key) {
+        List<PlaceholderValue<String>> res = getMessageList(key);
         if (res == null) requiredPropertyNotFound(key);
         return res;
-    }
-
-    default List<PlaceholderValue<String>> getMessageListRequired(String key) {
-        return getMessageListRequired(key, PlaceholderValue::stringValue);
     }
 
 
