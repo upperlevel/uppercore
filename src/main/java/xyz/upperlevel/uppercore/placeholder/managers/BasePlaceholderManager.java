@@ -83,7 +83,7 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
             found = finder.apply(id);
             if(found != null)
                 return found.resolve(player, arg);
-            index = text.indexOf('_', index);
+            index = text.indexOf('_', index + 1);
         }
         found = finder.apply(text);
         return found == null ? null : found.resolve(player, "");
