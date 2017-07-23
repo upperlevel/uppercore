@@ -24,7 +24,7 @@ public class OfficialPlaceholderManager extends BasePlaceholderManager {
 
     public Placeholder find(String id) {
         PlaceholderHook hook = placeholders.get(id);
-        return new Placeholder() {
+        return hook == null ? null : new Placeholder() {
             @Override
             public String getId() {
                 return id;

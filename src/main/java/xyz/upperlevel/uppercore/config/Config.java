@@ -204,7 +204,7 @@ public interface Config {
         if (tmp == null)
             return null;
         return tmp.stream()
-                .map(PlaceholderValue::stringValue)
+                .map(PlaceholderUtil::process)
                 .collect(Collectors.toList());
     }
 

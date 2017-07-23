@@ -59,11 +59,8 @@ public class HotbarRegistry implements Listener {
         try {
             hotbar = Hotbar.deserialize(plugin, id, Config.wrap(config));
         } catch (InvalidConfigurationException e) {
-            Uppercore.logger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
-            return null;
-        } catch (Exception e) {
-            Uppercore.logger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
-            return null;
+            e.addLocalizer("in hotbar " + id);
+            throw e;
         }
         register(id, hotbar);
         Uppercore.logger().log(Level.INFO, "Successfully loaded hotbar " + id);

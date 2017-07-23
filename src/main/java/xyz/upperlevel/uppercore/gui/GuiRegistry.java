@@ -47,26 +47,14 @@ public class GuiRegistry {
      * @param file loads the given file
      */
     public Gui load(File file) {
-        FileConfiguration config = new YamlConfiguration();
-        try {
-            config.load(file);
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Error while loading the file \"" + file + "\"", e);
-            return null;
-        } catch (org.bukkit.configuration.InvalidConfigurationException e) {
-            plugin.getLogger().log(Level.SEVERE, "Invalid configuration in file \"" + file + "\":", e);
-            return null;
-        }
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         String id = file.getName().replaceFirst("[.][^.]+$", "");
         ChestGui gui;
         try {
             gui = ChestGui.deserialize(plugin, id, Config.wrap(config));
         } catch (InvalidConfigurationException e) {
-            plugin.getLogger().severe(e.getErrorMessage("Invalid configuration in file \"" + file + "\""));
-            return null;
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Unknown error thrown while reading config in file \"" + file + "\"", e);
-            return null;
+            e.addLocalizer("in gui " + id);
+            throw e;
         }
         register(id, gui);
         plugin.getLogger().log(Level.INFO, "Successfully loaded gui " + id);
