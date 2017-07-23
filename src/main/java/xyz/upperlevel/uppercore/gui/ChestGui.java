@@ -11,10 +11,12 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.gui.config.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Data
@@ -298,16 +300,24 @@ public class ChestGui implements Gui {
         }
     }
 
-    public static Builder builder(Plugin plugin, String id) {
-        return new Builder(plugin, id);
+    public static Builder builder(Plugin plugin, String id, int size) {
+        return new Builder(plugin, id, size);
+    }
+
+    public static Builder builder(int size) {
+        return new Builder(size);
     }
 
     public static class Builder {
 
         private final ChestGui gui;
 
-        public Builder(Plugin plugin, String id) {
-            gui = new ChestGui(plugin, id, -1, "");
+        public Builder(Plugin plugin, String id, int size) {
+            gui = new ChestGui(plugin, id, size, "");
+        }
+
+        public Builder(int size) {
+            gui = new ChestGui(null, null, size, "");
         }
 
         public Builder(ChestGui gui) {
@@ -316,11 +326,6 @@ public class ChestGui implements Gui {
 
         public Builder type(InventoryType type) {
             gui.type = type;
-            return this;
-        }
-
-        public Builder size(int size) {
-            gui.size = size;
             return this;
         }
 
@@ -336,6 +341,16 @@ public class ChestGui implements Gui {
 
         public Builder add(ItemStack item, Link link) {
             gui.addItem(item, link);
+            return this;
+        }
+
+        public Builder add(ItemResolver item, Link link) {
+            gui.addIcon(Icon.of(item, link));
+            return this;
+        }
+
+        public Builder add(Supplier<ItemStack> item, Link link) {
+            gui.addIcon(Icon.of(item, link));
             return this;
         }
 

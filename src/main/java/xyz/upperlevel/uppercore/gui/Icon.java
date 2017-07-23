@@ -23,11 +23,126 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @Data
 public class Icon {
+
+    private ItemResolver display;
+    private Link link;
+    private int updateInterval; // 0 or < 0 are considered null
+
+    public Icon() {
+    }
+
+    public Icon(ItemStack display) {
+        this.display = new CustomItem(display);
+    }
+
+    public Icon(ItemStack display, Link link) {
+        this.display = new CustomItem(display);
+        this.link = link;
+    }
+
+    public Icon(ItemResolver display) {
+        this.display = display;
+    }
+
+    public Icon(ItemResolver display, Link link) {
+        this.display = display;
+        this.link = link;
+    }
+
+    public void setDisplay(ItemStack display) {
+        this.display = new CustomItem(display);
+    }
+
+    public void setDisplay(ItemResolver display) {
+        this.display = display;
+    }
+
+    public boolean needUpdate() {
+        return updateInterval > 0;
+    }
+
+    public void onClick(InventoryClickEvent e) {
+        if (link != null)
+            link.run((Player) e.getWhoClicked());
+    }
+
+    public static Icon deserialize(Plugin plugin, Config config) {
+        Icon result = new Icon();
+        try {
+            if (config.has("update-interval"))
+                result.updateInterval = config.getInt("update-interval", -1);
+            if (config.has("item"))
+                result.display = CustomItem.deserialize(config.getConfigRequired("item"));
+            if (config.has("click"))
+                result.link = IconClick.deserialize(plugin, config.getConfig("click"));
+            return result;
+        } catch (InvalidConfigurationException e) {
+            e.addLocalizer("in gui display");
+            throw e;
+        }
+    }
+
+    public static Icon of(ItemStack item) {
+        return new Icon(item);
+    }
+
+    public static Icon of(ItemResolver item) {
+        return new Icon(item);
+    }
+
+    public static Icon of(ItemResolver item, Link link) {
+        return new Icon(item, link);
+    }
+
+    public static Icon of(Supplier<ItemStack> item, Link link) {
+        return new Icon(p -> item.get(), link);
+    }
+
+    public static Icon of(ItemStack item, Link link) {
+        return new Icon(item, link);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private final Icon item;
+
+        public Builder() {
+            item = new Icon();
+        }
+
+        public Builder(Icon item) {
+            this.item = item;
+        }
+
+        public Builder item(ItemStack item) {
+            this.item.setDisplay(item);
+            return this;
+        }
+
+        public Builder item(ItemResolver item) {
+            this.item.setDisplay(item);
+            return this;
+        }
+
+        public Builder link(Link link) {
+            item.link = link;
+            return this;
+        }
+
+        public Icon build() {
+            return item;
+        }
+    }
 
     public static class IconClick implements Link {
 
@@ -113,96 +228,6 @@ public class Icon {
             joiner.add("noMoneyError: " + noMoneyError);
             joiner.add("noMoneySound: " + noMoneySound);
             return '{' + joiner.toString() + '}';
-        }
-    }
-
-    private ItemResolver display;
-    private Link link;
-    private int updateInterval; // 0 or < 0 are considered null
-
-    public Icon() {
-    }
-
-    public Icon(ItemStack display) {
-        this.display = new CustomItem(display);
-    }
-
-    public Icon(ItemStack display, Link link) {
-        this.display = new CustomItem(display);
-        this.link = link;
-    }
-
-    public Icon(ItemResolver display) {
-        this.display = display;
-    }
-
-    public Icon(ItemResolver display, Link link) {
-        this.display = display;
-        this.link = link;
-    }
-
-    public void setDisplay(ItemStack display) {
-        this.display = new CustomItem(display);
-    }
-
-    public boolean needUpdate() {
-        return updateInterval > 0;
-    }
-
-    public void onClick(InventoryClickEvent e) {
-        if (link != null)
-            link.run((Player) e.getWhoClicked());
-    }
-
-    public static Icon deserialize(Plugin plugin, Config config) {
-        Icon result = new Icon();
-        try {
-            if (config.has("update-interval"))
-                result.updateInterval = config.getInt("update-interval", -1);
-            if (config.has("item"))
-                result.display = CustomItem.deserialize(config.getConfigRequired("item"));
-            if (config.has("click"))
-                result.link = IconClick.deserialize(plugin, config.getConfig("click"));
-            return result;
-        } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in gui display");
-            throw e;
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-
-        private final Icon item;
-
-        public Builder() {
-            item = new Icon();
-        }
-
-        public Builder(Icon item) {
-            this.item = item;
-        }
-
-        public Builder item(ItemStack item) {
-            this.item.setDisplay(item);
-            return this;
-        }
-
-        public Builder item(CustomItem item) {
-            this.item.display = item;
-            return this;
-        }
-
-        public Builder link(Link link) {
-            item.link = link;
-            return this;
-        }
-
-        public Icon build() {
-            return item;
         }
     }
 }

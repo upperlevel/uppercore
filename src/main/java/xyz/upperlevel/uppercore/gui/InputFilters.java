@@ -4,7 +4,7 @@ import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.function.BiConsumer;
+import java.util.function.*;
 
 public final class InputFilters {
 
@@ -15,48 +15,85 @@ public final class InputFilters {
         };
     }
 
-    public static AnvilGUI.ClickHandler filterInt(BiConsumer<Player, Integer> consumer) {
+    public static AnvilGUI.ClickHandler filterInt(BiConsumer<Player, Integer> consumer, IntPredicate filter) {
         return (p, m) -> {
+            int parsed;
             try {
-                consumer.accept(p, Integer.parseInt(m));
+                parsed = Integer.parseInt(m);
             } catch (NumberFormatException e) {
                 return "Invalid number!";
             }
+            if(!filter.test(parsed))
+                return "Invalid number!";
+            consumer.accept(p, parsed);
+            return null;
+        };
+    }
+
+    public static AnvilGUI.ClickHandler filterInt(BiConsumer<Player, Integer> consumer) {
+        return filterInt(consumer, n -> true);
+    }
+
+    public static AnvilGUI.ClickHandler filterLong(BiConsumer<Player, Long> consumer, LongPredicate filter) {
+        return (p, m) -> {
+            long parsed;
+            try {
+                parsed = Long.parseLong(m);
+            } catch (NumberFormatException e) {
+                return "Invalid number!";
+            }
+            if(!filter.test(parsed))
+                return "Invalid number";
+            consumer.accept(p, parsed);
             return null;
         };
     }
 
     public static AnvilGUI.ClickHandler filterLong(BiConsumer<Player, Long> consumer) {
+        return filterLong(consumer, n -> true);
+    }
+
+    interface FloatPredicate {
+        boolean test(float res);
+    }
+
+    public static AnvilGUI.ClickHandler filterFloat(BiConsumer<Player, Float> consumer, FloatPredicate filter) {
         return (p, m) -> {
+            float parsed;
             try {
-                consumer.accept(p, Long.parseLong(m));
+                parsed = Float.parseFloat(m);
             } catch (NumberFormatException e) {
                 return "Invalid number!";
             }
+            if(!filter.test(parsed))
+                return "Invalid number!";
+            consumer.accept(p, parsed);
             return null;
         };
     }
 
     public static AnvilGUI.ClickHandler filterFloat(BiConsumer<Player, Float> consumer) {
+        return filterFloat(consumer, n -> true);
+    }
+
+    public static AnvilGUI.ClickHandler filterDouble(BiConsumer<Player, Double> consumer, DoublePredicate filter) {
         return (p, m) -> {
+            double parsed;
             try {
-                consumer.accept(p, Float.parseFloat(m));
+                parsed = Double.parseDouble(m);
             } catch (NumberFormatException e) {
                 return "Invalid number!";
             }
+            if(!filter.test(parsed))
+                return "Invalid number!";
+            consumer.accept(p, parsed);
+
             return null;
         };
     }
 
     public static AnvilGUI.ClickHandler filterDouble(BiConsumer<Player, Double> consumer) {
-        return (p, m) -> {
-            try {
-                consumer.accept(p, Double.parseDouble(m));
-            } catch (NumberFormatException e) {
-                return "Invalid number!";
-            }
-            return null;
-        };
+        return filterDouble(consumer, n -> true);
     }
 
     public static AnvilGUI.ClickHandler filterBoolean(BiConsumer<Player, Boolean> consumer) {
@@ -70,14 +107,18 @@ public final class InputFilters {
         };
     }
 
-    public static AnvilGUI.ClickHandler filterPlayer(BiConsumer<Player, Player> consumer) {
+    public static AnvilGUI.ClickHandler filterPlayer(BiConsumer<Player, Player> consumer, Predicate<Player> filter) {
         return (p, m) -> {
             Player player = Bukkit.getPlayer(m);
-            if (player != null) {
+            if (player != null && filter.test(player)) {
                 consumer.accept(p, player);
                 return null;
             } else return "Invalid name!";
         };
+    }
+
+    public static AnvilGUI.ClickHandler filterPlayer(BiConsumer<Player, Player> consumer) {
+        return filterPlayer(consumer, always());
     }
 
 
@@ -97,4 +138,11 @@ public final class InputFilters {
                 throw new NumberFormatException();
         }
     }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Predicate<T> always() {
+        return TRUE;
+    }
+
+    public static Predicate TRUE = o -> true;
 }
