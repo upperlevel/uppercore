@@ -11,12 +11,14 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
+import xyz.upperlevel.uppercore.util.CSound;
 
 import java.util.Arrays;
 
 import static org.bukkit.ChatColor.RED;
 
 public final class GuiUtil {
+    private static Sound DEF_ERROR_SOUND;//Yeah, it's a lazy initialization with a constant field
 
     public static ItemStack wool(DyeColor color, String name, String... lores) {
         return setNameAndLores(new Wool(color).toItemStack(1), name, lores);
@@ -56,7 +58,9 @@ public final class GuiUtil {
     }
 
     public static void sendErrorMessage(Player player, String message) {
-        sendErrorMessage(player, message, Sound.BLOCK_ANVIL_USE);
+        if(DEF_ERROR_SOUND == null)
+            DEF_ERROR_SOUND = CSound.getRaw("BLOCK_ANVIL_USE");
+        sendErrorMessage(player, message, DEF_ERROR_SOUND);
     }
 
     public static void sendErrorMessage(Player player, String message, Sound sound) {

@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.*;
+import xyz.upperlevel.uppercore.util.CSound;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
 
 import java.util.*;
@@ -427,11 +428,11 @@ public interface Config {
         if (raw == null)
             return def;
         else {
-            try {
-                return Sound.valueOf(key.toUpperCase(Locale.ENGLISH));
-            } catch (IllegalArgumentException e) {
-                throw new InvalidConfigurationException("Cannot find sound \"" + raw + "\"");
-            }
+            Sound s = CSound.get(key);
+            if(s == null)
+                throw new InvalidConfigurationException("Cannot find sound \"" + raw + "\", is it supported?");
+            else
+                return s;
         }
     }
 

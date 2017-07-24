@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.util.CSound;
 
 import java.util.Collection;
 import java.util.List;
@@ -199,10 +200,12 @@ public interface Parser<T> {
             public Sound load(Plugin plugin, Object object) {
                 if (object instanceof Sound)
                     return (Sound) object;
-                else if (object instanceof String)
-                    return Sound.valueOf(((String) object).replace(' ', '_').toUpperCase(Locale.ENGLISH));
-                else
-                    throw new IllegalArgumentException("Cannot parse " + object + " as sound");
+                else {
+                    Sound s = CSound.get(object.toString());
+                    if(s == null)
+                        throw new IllegalArgumentException("Cannot find sound \"" + object.toString() + "\", is it supported?");
+                    return s;
+                }
             }
 
             @Override
