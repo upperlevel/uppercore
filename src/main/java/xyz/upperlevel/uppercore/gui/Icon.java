@@ -13,9 +13,9 @@ import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.ActionType;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
-import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.gui.config.itemstack.ItemResolver;
+import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 

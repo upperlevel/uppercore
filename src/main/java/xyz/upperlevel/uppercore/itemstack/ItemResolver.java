@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config.itemstack;
+package xyz.upperlevel.uppercore.itemstack;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

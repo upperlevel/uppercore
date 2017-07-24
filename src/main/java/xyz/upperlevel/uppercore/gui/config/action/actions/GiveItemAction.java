@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.CustomItem;
 
 import java.util.Map;
 

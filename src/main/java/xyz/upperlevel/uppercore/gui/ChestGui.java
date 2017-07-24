@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.gui.config.itemstack.ItemResolver;
+import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 

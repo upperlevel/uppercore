@@ -2,7 +2,7 @@ package xyz.upperlevel.uppercore.config;
 
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
 
