@@ -55,6 +55,12 @@ public interface PlaceholderRegistry<T extends PlaceholderRegistry<T>> {
         return (T) this;
     }
 
+    default T set(Map<String, Placeholder> placeholders) {
+        for(Map.Entry<String, Placeholder> p : placeholders.entrySet())
+            set(p.getKey(), p.getValue());
+        return (T) this;
+    }
+
     static PlaceholderRegistry wrap(Map<String, Placeholder> handle) {
         return new SimplePlaceholderRegistry(handle);
     }
