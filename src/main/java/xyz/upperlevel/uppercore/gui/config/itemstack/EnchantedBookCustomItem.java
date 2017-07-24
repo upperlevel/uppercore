@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.*;
@@ -20,9 +21,9 @@ public class EnchantedBookCustomItem extends CustomItem {
     public EnchantedBookCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                    PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                                    List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                   Map<String, Placeholder> local,
+                                   PlaceholderRegistry placeholders,
                                    Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments) {
-        super(material, data, amount, displayName, lore, flags, enchantments, local);
+        super(material, data, amount, displayName, lore, flags, enchantments, placeholders);
         this.storedEnchantments = storedEnchantments;
     }
 
@@ -38,7 +39,7 @@ public class EnchantedBookCustomItem extends CustomItem {
     public static EnchantedBookCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                                PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                                List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                               Map<String, Placeholder> local, Config config) {
+                                               PlaceholderRegistry placeholders, Config config) {
         Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments;
 
         storedEnchantments = new HashMap<>();
@@ -55,7 +56,7 @@ public class EnchantedBookCustomItem extends CustomItem {
             }
         }
         return new EnchantedBookCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments, local,
+                mat, data, amount, displayName, lores, flags, enchantments, placeholders,
                 storedEnchantments
         );
     }

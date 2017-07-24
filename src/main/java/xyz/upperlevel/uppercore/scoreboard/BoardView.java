@@ -7,7 +7,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.HashSet;
@@ -15,7 +15,6 @@ import java.util.Set;
 
 import static org.bukkit.ChatColor.RESET;
 import static xyz.upperlevel.uppercore.scoreboard.BoardUtil.*;
-import static xyz.upperlevel.uppercore.scoreboard.BoardUtil.divideLine;
 
 @Data
 public class BoardView {
@@ -34,7 +33,7 @@ public class BoardView {
 
     private final UpdaterTask task;
 
-    private final PlaceholderSession placeholders = new PlaceholderSession();
+    private final PlaceholderRegistry placeholders = PlaceholderRegistry.create();
     
     public BoardView(Player player) {
         this.player = player;
@@ -52,7 +51,7 @@ public class BoardView {
             lines[position] = new Line(position);
     }
 
-    public PlaceholderSession placeholders() {
+    public PlaceholderRegistry placeholders() {
         return placeholders;
     }
 

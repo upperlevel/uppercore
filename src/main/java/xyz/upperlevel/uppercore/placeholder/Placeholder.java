@@ -12,11 +12,11 @@ public interface Placeholder {
 
     String resolve(Player player, String arg);
 
-    static Placeholder of(String obj) {
+    static Placeholder of(String id, String obj) {
         return new Placeholder() {
             @Override
             public String getId() {
-                return null;
+                return id;
             }
 
             @Override
@@ -26,11 +26,15 @@ public interface Placeholder {
         };
     }
 
-    static Placeholder of(Supplier<String> obj) {
+    static Placeholder of(String obj) {
+        return of(null, obj);
+    }
+
+    static Placeholder of(String id, Supplier<String> obj) {
         return new Placeholder() {
             @Override
             public String getId() {
-                return null;
+                return id;
             }
 
             @Override
@@ -40,11 +44,15 @@ public interface Placeholder {
         };
     }
 
-    static Placeholder of(Function<Player, String> obj) {
+    static Placeholder of(Supplier<String> obj) {
+        return of(null, obj);
+    }
+
+    static Placeholder of(String id, Function<Player, String> obj) {
         return new Placeholder() {
             @Override
             public String getId() {
-                return null;
+                return id;
             }
 
             @Override
@@ -54,11 +62,15 @@ public interface Placeholder {
         };
     }
 
-    static Placeholder of(BiFunction<Player, String, String> obj) {
+    static Placeholder of(Function<Player, String> obj) {
+        return of(null, obj);
+    }
+
+    static Placeholder of(String id, BiFunction<Player, String, String> obj) {
         return new Placeholder() {
             @Override
             public String getId() {
-                return null;
+                return id;
             }
 
             @Override
@@ -66,5 +78,9 @@ public interface Placeholder {
                 return obj.apply(player, arg);
             }
         };
+    }
+
+    static Placeholder of(BiFunction<Player, String, String> obj) {
+        return of(null, obj);
     }
 }

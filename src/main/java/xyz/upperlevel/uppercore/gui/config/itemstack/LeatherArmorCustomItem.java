@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
@@ -22,9 +23,9 @@ public class LeatherArmorCustomItem extends CustomItem {
     public LeatherArmorCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                   PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                                   List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                  Map<String, Placeholder> local,
+                                  PlaceholderRegistry placeholders,
                                   PlaceholderValue<Color> color) {
-        super(material, data, amount, displayName, lore, flags, enchantments, local);
+        super(material, data, amount, displayName, lore, flags, enchantments, placeholders);
         this.color = color;
     }
 
@@ -39,10 +40,10 @@ public class LeatherArmorCustomItem extends CustomItem {
     public static LeatherArmorCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                               PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                              Map<String, Placeholder> local, Config config) {
+                                              PlaceholderRegistry placeholders, Config config) {
         PlaceholderValue<Color> color = PlaceholderValue.colorValue(config.getString("color"));
         return new LeatherArmorCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments, local,
+                mat, data, amount, displayName, lores, flags, enchantments, placeholders,
                 color
         );
     }

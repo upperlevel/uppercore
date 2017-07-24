@@ -11,10 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
-import xyz.upperlevel.uppercore.placeholder.Placeholder;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +32,7 @@ public class CustomItem implements ItemResolver {
     private Map<Enchantment, PlaceholderValue<Integer>> enchantments = new HashMap<>();
 
     //Local placeholders
-    private Map<String, Placeholder> localPlaceholders;
+    private PlaceholderRegistry placeholders;
 
     public CustomItem(ItemStack item) {
         type = item.getType();
@@ -63,15 +60,15 @@ public class CustomItem implements ItemResolver {
 
     public void processMeta(Player player, ItemMeta meta) {
         if (displayName != null)
-            meta.setDisplayName(displayName.resolve(player, localPlaceholders));
-        meta.setLore(lore.stream().map(m -> m.resolve(player, localPlaceholders)).collect(Collectors.toList()));
+            meta.setDisplayName(displayName.resolve(player, placeholders));
+        meta.setLore(lore.stream().map(m -> m.resolve(player, placeholders)).collect(Collectors.toList()));
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
         for (Map.Entry<Enchantment, PlaceholderValue<Integer>> ench : enchantments.entrySet())
             meta.addEnchant(ench.getKey(), ench.getValue().resolve(player), true);
     }
 
     @SuppressWarnings("unchecked")
-    public static CustomItem deserialize(Config config, Map<String, Placeholder> local) {
+    public static CustomItem deserialize(Config config, PlaceholderRegistry placeholders) {
         Material mat = config.getMaterialRequired("type");
         PlaceholderValue<Short> data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
         PlaceholderValue<Integer> amount = PlaceholderUtil.parseInt(config.getString("amount", "1"));
@@ -112,14 +109,14 @@ public class CustomItem implements ItemResolver {
             case BANNER:
                 return BannerCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case SKULL:
                 mat = Material.SKULL_ITEM;
             case SKULL_ITEM:
                 return SkullCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case LEATHER_BOOTS:
             case LEATHER_CHESTPLATE:
@@ -127,12 +124,12 @@ public class CustomItem implements ItemResolver {
             case LEATHER_LEGGINGS:
                 return LeatherArmorCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case MAP:
                 return MapCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case POTION:
             case LINGERING_POTION:
@@ -140,39 +137,35 @@ public class CustomItem implements ItemResolver {
             case TIPPED_ARROW:
                 return PotionCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case MONSTER_EGG:
                 return SpawnEggCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case ENCHANTED_BOOK:
                 return EnchantedBookCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case FIREWORK:
                 return FireworkCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             case FIREWORK_CHARGE:
                 return FireworkChargeCustomItem.from(
                         mat, data, amount, displayName, lores, flags, enchantments,
-                        local, config
+                        placeholders, config
                 );
             default:
-                return new CustomItem(mat, data, amount, displayName, lores, flags, enchantments, local);
+                return new CustomItem(mat, data, amount, displayName, lores, flags, enchantments, placeholders);
         }
     }
 
-    public static CustomItem deserialize(Config config, PlaceholderSession local) {
-        return deserialize(config, local.getPlaceholders());
-    }
-
     public static CustomItem deserialize(Config config) {
-        return deserialize(config, Collections.emptyMap());
+        return deserialize(config, PlaceholderRegistry.def());
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -23,9 +24,9 @@ public class FireworkCustomItem extends CustomItem {
     public FireworkCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                               PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                              Map<String, Placeholder> local,
+                              PlaceholderRegistry placeholders,
                               List<FireworkEffect> effects, PlaceholderValue<Integer> power) {
-        super(material, data, amount, displayName, lore, flags, enchantments, local);
+        super(material, data, amount, displayName, lore, flags, enchantments, placeholders);
         this.effects = effects;
         this.power = power;
     }
@@ -44,7 +45,7 @@ public class FireworkCustomItem extends CustomItem {
     public static FireworkCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                           PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                           List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                          Map<String, Placeholder> local, Config config) {
+                                          PlaceholderRegistry placeholders, Config config) {
         List<FireworkEffect> effects = ((Collection<Map<String, Object>>)config.getCollection("effects", Collections.emptyList()))
                 .stream()
                 .map(c -> FireworkChargeCustomItem.parse(Config.wrap(c)))
@@ -52,7 +53,7 @@ public class FireworkCustomItem extends CustomItem {
         String rawPower = config.getString("power");
         PlaceholderValue<Integer> power = rawPower == null ? null : PlaceholderUtil.parseInt(rawPower);
         return new FireworkCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments, local,
+                mat, data, amount, displayName, lores, flags, enchantments, placeholders,
                 effects, power
         );
     }

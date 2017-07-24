@@ -3,9 +3,8 @@ package xyz.upperlevel.uppercore.placeholder.managers;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderManager;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
-import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,13 +22,8 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
     }
 
     @Override
-    public String apply(Player player, String text, Map<String, Placeholder> local) {
-        return apply(player, text, finder(local));
-    }
-
-    @Override
-    public String apply(Player player, String text, PlaceholderSession local) {
-        return apply(player, text, local.getPlaceholders());
+    public String apply(Player player, String text, PlaceholderRegistry local) {
+        return apply(player, text, local::get);
     }
 
     @Override
@@ -38,13 +32,8 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
     }
 
     @Override
-    public String single(Player player, String string, Map<String, Placeholder> local) {
-        return exec(player, string, finder(local));
-    }
-
-    @Override
-    public String single(Player player, String text, PlaceholderSession local) {
-        return single(player, text, local.getPlaceholders());
+    public String single(Player player, String text, PlaceholderRegistry local) {
+        return exec(player, text, this::find);
     }
 
 
@@ -64,13 +53,6 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
     }
 
     protected abstract Placeholder find(String id);
-
-    protected Function<String, Placeholder> finder(Map<String, Placeholder> local) {
-        return id -> {
-            Placeholder p = local.get(id);
-            return p == null ? find(id) : p;
-        };
-    }
 
 
     public static String exec(Player player, String text, Function<String, Placeholder> finder) {

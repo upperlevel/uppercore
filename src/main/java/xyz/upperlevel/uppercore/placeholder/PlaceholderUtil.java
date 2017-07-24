@@ -8,8 +8,6 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.placeholder.managers.CustomPlaceholderManager;
 import xyz.upperlevel.uppercore.placeholder.managers.OfficialPlaceholderManager;
 
-import java.util.Map;
-
 public final class PlaceholderUtil {
 
     private static PlaceholderManager manager = null;
@@ -88,11 +86,7 @@ public final class PlaceholderUtil {
         return manager.apply(player, str);
     }
 
-    public static String resolve(Player player, String str, Map<String, Placeholder> local) {
-        return manager.apply(player, str, local);
-    }
-
-    public static String resolve(Player player, String str, PlaceholderSession local) {
+    public static String resolve(Player player, String str, PlaceholderRegistry local) {
         return manager.apply(player, str, local);
     }
 
@@ -102,5 +96,9 @@ public final class PlaceholderUtil {
 
     public static boolean hasPlaceholders(String str) {
         return manager.hasPlaceholders(str);
+    }
+
+    public static PlaceholderRegistry getRegistry() {
+        return manager.getRegistry();
     }
 }

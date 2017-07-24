@@ -3,10 +3,7 @@ package xyz.upperlevel.uppercore.config;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.gui.config.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.placeholder.Placeholder;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
 
 import java.util.*;
@@ -650,11 +647,7 @@ public interface Config {
         return getCustomItem(key, CustomItem::deserialize);
     }
 
-    default CustomItem getCustomItem(String key, Map<String, Placeholder> local) {
-        return getCustomItem(key, config -> CustomItem.deserialize(config, local));
-    }
-
-    default CustomItem getCustomItem(String key, PlaceholderSession local) {
+    default CustomItem getCustomItem(String key, PlaceholderRegistry local) {
         return getCustomItem(key, config -> CustomItem.deserialize(config, local));
     }
 
@@ -670,14 +663,7 @@ public interface Config {
         return res;
     }
 
-    default CustomItem getCustomItemRequired(String key, Map<String, Placeholder> local) {
-        CustomItem res = getCustomItem(key, local);
-        if (res == null)
-            requiredPropertyNotFound(key);
-        return res;
-    }
-
-    default CustomItem getCustomItemRequired(String key, PlaceholderSession local) {
+    default CustomItem getCustomItemRequired(String key, PlaceholderRegistry local) {
         CustomItem res = getCustomItem(key, local);
         if (res == null)
             requiredPropertyNotFound(key);

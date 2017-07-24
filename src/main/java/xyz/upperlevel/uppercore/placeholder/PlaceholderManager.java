@@ -7,27 +7,27 @@ import java.util.Map;
 
 public interface PlaceholderManager {
 
+    /**
+     * Returns a read-only registry that can read the manager's placeholders
+     * @return the registry accessing the manager's placeholders
+     */
+    PlaceholderRegistry getRegistry();
+
     void register(Plugin plugin, Placeholder placeholder);
 
     boolean hasPlaceholders(String str);
 
-    String apply(Player player, String text);
+    String apply(Player player, String text, PlaceholderRegistry registry);
 
-    String apply(Player player, String text, Map<String, Placeholder> local);
-
-    default String apply(Player player, String text, PlaceholderSession local) {
-        return apply(player, text, local);
+    default String apply(Player player, String text) {
+        return apply(player, text, getRegistry());
     }
 
     default String single(Player player, String string) {
         return apply(player, '%' + string + '%');
     }
 
-    default String single(Player player, String string, Map<String, Placeholder> local) {
-        return apply(player, '%' + string + '%', local);
-    }
-
-    default String single(Player player, String string, PlaceholderSession local) {
-        return apply(player, '%' + string + '%', local);
+    default String single(Player player, String string, PlaceholderRegistry registry) {
+        return apply(player, '%' + string + '%', registry);
     }
 }

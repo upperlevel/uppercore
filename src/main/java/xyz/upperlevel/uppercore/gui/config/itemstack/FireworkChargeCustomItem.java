@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigUtils;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.*;
@@ -25,9 +26,9 @@ public class FireworkChargeCustomItem extends CustomItem {
     public FireworkChargeCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                     PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                                     List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                    Map<String, Placeholder> local,
+                                    PlaceholderRegistry placeholders,
                                     FireworkEffect effect) {
-        super(material, data, amount, displayName, lore, flags, enchantments, local);
+        super(material, data, amount, displayName, lore, flags, enchantments, placeholders);
         this.effect = effect;
     }
 
@@ -41,10 +42,10 @@ public class FireworkChargeCustomItem extends CustomItem {
     public static FireworkChargeCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                                 PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                                 List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                                Map<String, Placeholder> local, Config config) {
+                                                PlaceholderRegistry placeholders, Config config) {
         FireworkEffect effect = parse(config.getConfigRequired("effect"));
         return new FireworkChargeCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments, local,
+                mat, data, amount, displayName, lores, flags, enchantments, placeholders,
                 effect
         );
     }

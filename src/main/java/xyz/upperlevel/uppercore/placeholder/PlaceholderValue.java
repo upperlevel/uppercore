@@ -8,20 +8,10 @@ import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigUtils;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public interface PlaceholderValue<T> {
-
-    /**
-     * Removes placeholders from the value and parses it using the local PlaceHolders in addition to the normal ones
-     * @param player the player that executes the placeholders
-     * @param local the placeholders to add to the default ones
-     * @return the parsed value without placeholders
-     */
-    T resolve(Player player, Map<String, Placeholder> local);
 
     /**
      * Removes placeholders from the value and parses it using the local placeholders in addition to the normal ones
@@ -29,8 +19,8 @@ public interface PlaceholderValue<T> {
      * @param local the placeholders to add to the default ones
      * @return the parsed value without placeholders
      */
-    default T resolve(Player player, PlaceholderSession local) {
-        return resolve(player, local.getPlaceholders());
+    default T resolve(Player player, PlaceholderRegistry local) {
+        return resolve(player, local);
     }
 
     /**
@@ -39,7 +29,7 @@ public interface PlaceholderValue<T> {
      * @return the parsed value without placeholders
      */
     default T resolve(Player player) {
-        return resolve(player, Collections.emptyMap());
+        return resolve(player, PlaceholderUtil.getRegistry());
     }
 
 
@@ -108,12 +98,7 @@ public interface PlaceholderValue<T> {
         private final T value;
 
         @Override
-        public T resolve(Player player, Map<String, Placeholder> local) {
-            return value;
-        }
-
-        @Override
-        public T resolve(Player player, PlaceholderSession local) {
+        public T resolve(Player player, PlaceholderRegistry local) {
             return value;
         }
 
@@ -139,12 +124,7 @@ public interface PlaceholderValue<T> {
         private final T onError;
 
         @Override
-        public T resolve(Player player, Map<String, Placeholder> local) {
-            return null;
-        }
-
-        @Override
-        public T resolve(Player player, PlaceholderSession local) {
+        public T resolve(Player player, PlaceholderRegistry local) {
             return parse(PlaceholderUtil.resolve(player, value, local));
         }
 
@@ -173,12 +153,7 @@ public interface PlaceholderValue<T> {
         private final String value;
 
         @Override
-        public String resolve(Player player, Map<String, Placeholder> local) {
-            return PlaceholderUtil.resolve(player, value, local);
-        }
-
-        @Override
-        public String resolve(Player player, PlaceholderSession local) {
+        public String resolve(Player player, PlaceholderRegistry local) {
             return PlaceholderUtil.resolve(player, value, local);
         }
 

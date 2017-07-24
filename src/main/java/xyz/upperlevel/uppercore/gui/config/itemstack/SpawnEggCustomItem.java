@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.placeholder.Placeholder;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
@@ -21,9 +21,9 @@ public class SpawnEggCustomItem extends CustomItem {
     public SpawnEggCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                               PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                               List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                              Map<String, Placeholder> local,
+                              PlaceholderRegistry placeholders,
                               EntityType type) {
-        super(material, data, amount, displayName, lore, flags, enchantments, local);
+        super(material, data, amount, displayName, lore, flags, enchantments, placeholders);
         this.type = type;
     }
 
@@ -35,11 +35,11 @@ public class SpawnEggCustomItem extends CustomItem {
     }
 
     public static SpawnEggCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
-                                        PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
-                                        List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                        Map<String, Placeholder> local, Config config) {
+                                          PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
+                                          List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
+                                          PlaceholderRegistry placeholders, Config config) {
         return new SpawnEggCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments, local,
+                mat, data, amount, displayName, lores, flags, enchantments, placeholders,
                 config.getEnum("egg-type", EntityType.class)
         );
     }

@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public class SkullCustomItem extends CustomItem {
     public SkullCustomItem(Material material, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                            PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lore,
                            List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                           Map<String, Placeholder> local,
+                           PlaceholderRegistry placeholders,
                            PlaceholderValue<String> skullOwner) {
-        super(material, data, amount, displayName, lore, flags, enchantments, local);
+        super(material, data, amount, displayName, lore, flags, enchantments, placeholders);
         this.skullOwner = skullOwner;
     }
 
@@ -31,16 +32,16 @@ public class SkullCustomItem extends CustomItem {
         super.processMeta(player, m);
         SkullMeta meta = (SkullMeta) m;
         if(skullOwner != null)
-            meta.setOwner(skullOwner.resolve(player, getLocalPlaceholders()));
+            meta.setOwner(skullOwner.resolve(player, getPlaceholders()));
     }
 
     public static SkullCustomItem from(Material mat, PlaceholderValue<Short> data, PlaceholderValue<Integer> amount,
                                        PlaceholderValue<String> displayName, List<PlaceholderValue<String>> lores,
                                        List<ItemFlag> flags, Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-                                       Map<String, Placeholder> local, Config config) {
+                                       PlaceholderRegistry placeholders, Config config) {
         PlaceholderValue<String> skullOwner = PlaceholderValue.stringValue(config.getString("owner"));
         return new SkullCustomItem(
-                mat, data, amount, displayName, lores, flags, enchantments, local,
+                mat, data, amount, displayName, lores, flags, enchantments, placeholders,
                 skullOwner
         );
     }

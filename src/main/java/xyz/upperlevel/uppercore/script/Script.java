@@ -77,6 +77,6 @@ public interface Script {
         public ScriptEngine getEngine() {
             return null;
         }
-    };
+    }
 
 }
