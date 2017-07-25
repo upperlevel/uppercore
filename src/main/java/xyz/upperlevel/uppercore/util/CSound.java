@@ -47,20 +47,21 @@ public class CSound {
         translator.put(name, valueOf(sound));
     }
 
+    //http://minecraft.gamepedia.com/Sounds.json
     private static void setupOld() {
         Uppercore.logger().warning("[Sound] Using translator (not every sound is supported!)");
         r("AMBIENT_CAVE", "AMBIENCE_CAVE");
-        r("BLOCK_ANVIL_BREAK", "ANVIL_BREAK");
-        //r("BLOCK_ANVIL_DESTROY", "");
-        //r("BLOCK_ANVIL_FALL", "");
-        //r("BLOCK_ANVIL_HIT", "");
+        r("BLOCK_ANVIL_BREAK", "DIG_STONE");
+        r("BLOCK_ANVIL_DESTROY", "ANVIL_BREAK");
+        r("BLOCK_ANVIL_FALL", "STEP_STONE");
+        r("BLOCK_ANVIL_HIT", "STEP_STONE");
         r("BLOCK_ANVIL_LAND", "ANVIL_LAND");
-        //r("BLOCK_ANVIL_PLACE", "");
-        //r("BLOCK_ANVIL_STEP", "");
+        r("BLOCK_ANVIL_PLACE", "ANVIL_LAND");
+        r("BLOCK_ANVIL_STEP", "STEP_STONE");
         r("BLOCK_ANVIL_USE", "ANVIL_USE");
         //BLOCK_BREWING_STAND_BREW
         r("BLOCK_CHEST_CLOSE", "CHEST_CLOSE");
-        //r("BLOCK_CHEST_LOCKED", "");
+        r("BLOCK_CHEST_LOCKED", "DOOR_CLOSE");
         r("BLOCK_CHEST_OPEN", "CHEST_OPEN");
         //r("BLOCK_CHORUS_FLOWER_DEATH", "");
         //r("BLOCK_CHORUS_FLOWER_GROW", "");
@@ -69,19 +70,18 @@ public class CSound {
         //r("BLOCK_CLOTH_HIT", "");
         //r("BLOCK_CLOTH_PLACE", "");
         //r("BLOCK_CLOTH_STEP", "");
-        //r("BLOCK_COMPARATOR_CLICK", "");
-        //r("BLOCK_DISPENSER_DISPENSE", "");
-        //r("BLOCK_DISPENSER_FAIL", "");
-        //r("BLOCK_DISPENSER_LAUNCH", "");
+        r("BLOCK_COMPARATOR_CLICK", "CLICK");
+        r("BLOCK_DISPENSER_DISPENSE", "CLICK");
+        r("BLOCK_DISPENSER_FAIL", "CLICK");
+        r("BLOCK_DISPENSER_LAUNCH", "SHOOT_ARROW");
         //r("BLOCK_ENCHANTMENT_TABLE_USE", "");
         //r("BLOCK_ENDERCHEST_CLOSE", "");
         //r("BLOCK_ENDERCHEST_OPEN", "");
-        //r("BLOCK_END_GATEWAY_SPAWN", "");
+        r("BLOCK_END_GATEWAY_SPAWN", "EXPLODE");
         //r("BLOCK_FENCE_GATE_CLOSE", "");
         //r("BLOCK_FENCE_GATE_OPEN", "");
         r("BLOCK_FIRE_AMBIENT", "FIRE");
-        //r("FIRE_IGNITE", "");?
-        //r("BLOCK_FIRE_EXTINGUISH", "");
+        r("BLOCK_FIRE_EXTINGUISH", "FIZZ");
         //r("BLOCK_FURNACE_FIRE_CRACKLE", "");
         r("BLOCK_GLASS_BREAK", "GLASS");
         r("BLOCK_GLASS_FALL", "STEP_STONE");
