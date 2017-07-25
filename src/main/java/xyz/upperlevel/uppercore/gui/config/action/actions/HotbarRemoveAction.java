@@ -8,11 +8,14 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.hotbar.Hotbar;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
+import xyz.upperlevel.uppercore.hotbar.Hotbar;
+import xyz.upperlevel.uppercore.hotbar.HotbarId;
+import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
 public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
 
@@ -29,12 +32,12 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
     @Override
     public void run(Player player) {
         String barId = id.resolve(player);
-        Hotbar hotbar = HotbarSystem.getHotbar(getPlugin(), barId);
+        HotbarId hotbar = hotbars().get(getPlugin(), barId);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + barId + "\"");
             return;
         }
-        hotbar.remove(player);
+        hotbar.get().remove(player);
     }
 
 

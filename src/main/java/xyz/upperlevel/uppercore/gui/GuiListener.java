@@ -10,20 +10,22 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Uppercore;
 
+import static xyz.upperlevel.uppercore.Uppercore.guis;
+
 public class GuiListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        GuiSystem.close(e.getPlayer());
+        guis().close(e.getPlayer());
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if (e.getPlayer() instanceof Player && !GuiSystem.isCalled()) {
+        if (e.getPlayer() instanceof Player && !GuiManager.isCalled()) {
             //Cannot call Inventory actions in an inventory event
             Bukkit.getScheduler().runTaskLater(
                     Uppercore.get(),
-                    () -> GuiSystem.close((Player) e.getPlayer()),
+                    () -> guis().close((Player) e.getPlayer()),
                     0
             );
         }
@@ -32,9 +34,9 @@ public class GuiListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.getClickedInventory() == e.getInventory())
-            GuiSystem.onClick(e);
+            guis().onClick(e);
         if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-            if (GuiSystem.getHistory((Player) e.getWhoClicked()) != null)
+            if (guis().getHistory((Player) e.getWhoClicked()) != null)
                 e.setCancelled(true);
         }
     }

@@ -5,15 +5,15 @@ import xyz.upperlevel.uppercore.gui.link.Link;
 public class GuiAction {
 
     public static Link close() {
-        return GuiSystem::close;
+        return GuiManager::close;
     }
 
     public static Link back() {
-        return GuiSystem::back;
+        return GuiManager::back;
     }
 
     public static Link change(Gui gui) {
-        return p -> GuiSystem.change(p, gui);
+        return p -> GuiManager.change(p, gui);
     }
 
 

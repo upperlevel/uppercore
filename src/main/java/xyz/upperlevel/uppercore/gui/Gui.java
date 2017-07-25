@@ -2,10 +2,10 @@ package xyz.upperlevel.uppercore.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.link.Link;
 
-import java.util.Locale;
+import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 public interface Gui extends Link {
 
@@ -41,6 +41,6 @@ public interface Gui extends Link {
      */
     @Override
     default void run(Player player) {
-        GuiSystem.open(player, this);
+        guis().open(player, this);
     }
 }

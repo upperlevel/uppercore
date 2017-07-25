@@ -8,13 +8,16 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.hotbar.Hotbar;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
+import xyz.upperlevel.uppercore.hotbar.Hotbar;
+import xyz.upperlevel.uppercore.hotbar.HotbarId;
+import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
 @Getter
 public class HotbarGiveAction extends Action<HotbarGiveAction> {
@@ -35,12 +38,12 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
     @Override
     public void run(Player player) {
         String hotbarId = id.resolve(player);
-        Hotbar hotbar = HotbarSystem.getHotbar(getPlugin(), hotbarId);
+        HotbarId hotbar = hotbars().get(getPlugin(), hotbarId);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + hotbarId + "\"");
             return;
         }
-        hotbar.give(player);
+        hotbar.get().give(player);
     }
 
 

@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.gui.arguments;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 import xyz.upperlevel.uppercore.gui.Gui;
-import xyz.upperlevel.uppercore.gui.GuiSystem;
+import xyz.upperlevel.uppercore.gui.GuiManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +22,7 @@ public class GuiArgumentParser implements ArgumentParser {
 
     @Override
     public Object parse(Class<?> type, List<String> args) throws ParseException {
-        Gui gui = GuiSystem.get(args.get(0));
+        Gui gui = GuiManager.get(args.get(0));
         if (gui == null)
             throw new ParseException(args.get(0), "gui");
         return gui;

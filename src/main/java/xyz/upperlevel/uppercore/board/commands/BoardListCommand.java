@@ -2,10 +2,10 @@ package xyz.upperlevel.uppercore.board.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Identifier;
+import xyz.upperlevel.uppercore.Registrable;
 import xyz.upperlevel.uppercore.Registry;
 import xyz.upperlevel.uppercore.board.Board;
-import xyz.upperlevel.uppercore.board.BoardRegistry;
+import xyz.upperlevel.uppercore.board.BoardId;
 import xyz.upperlevel.uppercore.command.Argument;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.Executor;
@@ -26,9 +26,9 @@ public class BoardListCommand extends Command {
 
     @Executor
     public void run(CommandSender sender, @Argument("plugin") @Optional Plugin plugin) {
-        Collection<Identifier<Board>> boards;
+        Collection<BoardId> boards;
         if (plugin != null) {
-            Registry<Board> reg = boards().get(plugin);
+            Registry<BoardId> reg = boards().get(plugin);
             if (reg == null) {
                 sender.sendMessage(RED + "No boards registry found for: \"" + plugin.getName() + "\"");
                 return;
@@ -37,7 +37,7 @@ public class BoardListCommand extends Command {
         } else
             boards = boards().get();
         StringJoiner str = new StringJoiner(GRAY + ", ");
-        for (Identifier<Board> board : boards)
+        for (Registrable<Board> board : boards)
             str.add(AQUA + board.getGlobalId());
         if (boards.size() > 0)
             sender.sendMessage(GOLD + "Showing " + boards.size() + " boards: " + str);

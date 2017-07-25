@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 import xyz.upperlevel.uppercore.config.Config;
@@ -18,6 +19,8 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 @Data
 public class ChestGui implements Gui {
@@ -207,7 +210,7 @@ public class ChestGui implements Gui {
                         return task;
                     });
                 } else if (this.updateInterval < 0) {//If there isn't any updater because the old updateInterval wasn't valid
-                    GuiSystem.getHistories().entrySet()
+                    guis().getHistories().entrySet()
                             .stream()
                             .filter(e -> e.getValue().peek() == this)
                             .forEach((e) -> startUpdateTask(e.getKey()));
@@ -248,7 +251,7 @@ public class ChestGui implements Gui {
     }
 
     protected void onUpdate(Player player) {
-        GuiSystem.reprint(player);
+        guis().reprint(player);
     }
 
     @Override

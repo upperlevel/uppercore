@@ -5,7 +5,7 @@ import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 import xyz.upperlevel.uppercore.command.argument.exceptions.UnparsableTypeException;
 import xyz.upperlevel.uppercore.command.arguments.*;
 import xyz.upperlevel.uppercore.gui.arguments.GuiArgumentParser;
-import xyz.upperlevel.uppercore.gui.hotbar.arguments.HotbarArgumentParser;
+import xyz.upperlevel.uppercore.hotbar.arguments.HotbarArgumentParser;
 import xyz.upperlevel.uppercore.board.arguments.BoardArgumentParser;
 
 import java.util.*;

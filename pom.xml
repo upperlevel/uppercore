@@ -16,7 +16,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mcVersion>1.11.2-R0.1-SNAPSHOT</mcVersion>
+        <mcVersion>1.12-R0.1-SNAPSHOT</mcVersion>
         <basePackage>${project.groupId}</basePackage>
         <mainClass>${basePackage}.Uppercore</mainClass>
     </properties>

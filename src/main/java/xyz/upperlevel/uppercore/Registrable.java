@@ -10,13 +10,13 @@ import static java.util.Locale.ENGLISH;
 import static lombok.AccessLevel.NONE;
 
 @Data
-public class Identifier<T> {
+public class Registrable<T> {
     private final Plugin plugin;
     private final String id;
     @Getter(NONE)
     private final T handle;
 
-    public Identifier(Plugin plugin, String id, T handle) {
+    public Registrable(Plugin plugin, String id, T handle) {
         this.plugin = plugin;
         this.id = id.toLowerCase(Locale.ENGLISH);
         this.handle = handle;
