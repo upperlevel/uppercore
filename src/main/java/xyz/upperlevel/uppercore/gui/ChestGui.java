@@ -24,29 +24,20 @@ import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 @Data
 public class ChestGui implements Gui {
-
-    private final Map<Player, UpdaterTask> updaters = new HashMap<>();
-
-    private final Plugin plugin;
-    private final String id;
-
     private PlaceholderValue<String> title;
     private int size;
     private InventoryType type;
     private Icon[] icons;
-
     private int updateInterval = -1;
+    private final Map<Player, UpdaterTask> updaters = new HashMap<>();
 
     /**
      * Initializes the gui by its size and title. The id can be set to null if not needed.
      *
-     * @param id    a unique id
      * @param size  the size of the gui
      * @param title the title of the gui
      */
-    public ChestGui(Plugin plugin, String id, int size, String title) {
-        this.plugin = plugin;
-        this.id = id;
+    public ChestGui(int size, String title) {
         this.title = PlaceholderValue.stringValue(title);
         this.size = size;
         this.icons = new Icon[size];
@@ -56,13 +47,10 @@ public class ChestGui implements Gui {
     /**
      * Initializes the gui by its type and title. The id can be set to null if not needed.
      *
-     * @param id    a unique id
      * @param type  the type of the gui
      * @param title the title of the gui
      */
-    public ChestGui(Plugin plugin, String id, InventoryType type, String title) {
-        this.plugin = plugin;
-        this.id = id;
+    public ChestGui(InventoryType type, String title) {
         this.type = type;
         this.title = PlaceholderValue.stringValue(title);
         this.icons = new Icon[type.getDefaultSize()];
@@ -70,16 +58,14 @@ public class ChestGui implements Gui {
     }
 
     @SuppressWarnings("unchecked")
-    protected ChestGui(Plugin plugin, String id, Config config) {
-        this.plugin = plugin;
-        this.id = id;
+    protected ChestGui(Plugin plugin, Config config) {
         if (config.has("type")) {
             type = config.getEnum("type", InventoryType.class);
             icons = new Icon[type.getDefaultSize()];
         } else if (config.has("size")) {
             size = config.getInt("size");
             if (size % 9 != 0) {
-                plugin.getLogger().warning("In gui " + id + ": size must be a multiple of 9");
+                plugin.getLogger().warning("In a gui: size must be a multiple of 9");
                 size = GuiSize.min(size);
             }
             icons = new Icon[size];
@@ -94,10 +80,6 @@ public class ChestGui implements Gui {
                 icons[(int) data.get("slot")] = item;
             }
         }
-    }
-
-    public boolean hasId() {
-        return id != null;
     }
 
     public void onSetup() {
@@ -296,115 +278,10 @@ public class ChestGui implements Gui {
     @SuppressWarnings("unchecked")
     public static ChestGui deserialize(Plugin plugin, String id, Config config) {
         try {
-            return new ChestGui(plugin, id, config);
+            return new ChestGui(plugin, config);
         } catch (InvalidConfigurationException e) {
             e.addLocalizer("in gui " + id);
             throw e;
         }
     }
-
-    public static Builder builder(Plugin plugin, String id, int size) {
-        return new Builder(plugin, id, size);
-    }
-
-    public static Builder builder(int size) {
-        return new Builder(size);
-    }
-
-    public static class Builder {
-
-        private final ChestGui gui;
-
-        public Builder(Plugin plugin, String id, int size) {
-            gui = new ChestGui(plugin, id, size, "");
-        }
-
-        public Builder(int size) {
-            gui = new ChestGui(null, null, size, "");
-        }
-
-        public Builder(ChestGui gui) {
-            this.gui = gui;
-        }
-
-        public Builder type(InventoryType type) {
-            gui.type = type;
-            return this;
-        }
-
-        public Builder title(String title) {
-            gui.setTitle(title);
-            return this;
-        }
-
-        public Builder add(ItemStack item) {
-            gui.addItem(item);
-            return this;
-        }
-
-        public Builder add(ItemStack item, Link link) {
-            gui.addItem(item, link);
-            return this;
-        }
-
-        public Builder add(ItemResolver item, Link link) {
-            gui.addIcon(Icon.of(item, link));
-            return this;
-        }
-
-        public Builder add(Supplier<ItemStack> item, Link link) {
-            gui.addIcon(Icon.of(item, link));
-            return this;
-        }
-
-        public Builder add(Icon icon) {
-            gui.addIcon(icon);
-            return this;
-        }
-
-        public Builder addAll(ItemStack... items) {
-            gui.addItems(items);
-            return this;
-        }
-
-        public Builder addAll(Icon... icons) {
-            gui.addIcons(icons);
-            return this;
-        }
-
-        public Builder set(int slot, ItemStack item, Link link) {
-            gui.setItem(slot, item, link);
-            return this;
-        }
-
-        public Builder set(int slot, ItemStack item) {
-            gui.setItem(slot, item);
-            return this;
-        }
-
-        public Builder set(int slot, Icon icon) {
-            gui.setIcon(slot, icon);
-            return this;
-        }
-
-        public Builder set(int[] slots, ItemStack item) {
-            gui.setItem(slots, item);
-            return this;
-        }
-
-        public Builder set(int[] slots, Icon icon) {
-            gui.setIcon(slots, icon);
-            return this;
-        }
-
-        public Builder updateInterval(int interval) {
-            gui.updateInterval = interval;
-            return this;
-        }
-
-        public ChestGui build() {
-            return gui;
-        }
-    }
-
 }
