@@ -2,21 +2,21 @@ package xyz.upperlevel.uppercore.hotbar;
 
 import lombok.Data;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Registrable;
+import xyz.upperlevel.uppercore.Identifier;
 import xyz.upperlevel.uppercore.config.Config;
 
 @Data
-public class RegistrableHotbar extends Registrable<Hotbar> {
+public class HotbarId extends Identifier<Hotbar> {
     private String permission;
     private boolean onJoin;
 
-    public RegistrableHotbar(Plugin plugin, String id, Config config) {
+    public HotbarId(Plugin plugin, String id, Config config) {
         this(plugin, id, new Hotbar(plugin, config));
         permission = config.getString("permission");
         onJoin = config.getBool("on-join");
     }
 
-    public RegistrableHotbar(Plugin plugin, String id, Hotbar handle) {
+    public HotbarId(Plugin plugin, String id, Hotbar handle) {
         super(plugin, id, handle);
     }
 }

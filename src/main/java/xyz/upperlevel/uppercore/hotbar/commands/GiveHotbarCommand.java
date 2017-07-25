@@ -1,12 +1,12 @@
-package xyz.upperlevel.uppercore.gui.hotbar.commands;
+package xyz.upperlevel.uppercore.hotbar.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.*;
-import xyz.upperlevel.uppercore.gui.hotbar.Hotbar;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
+import xyz.upperlevel.uppercore.hotbar.HotbarId;
 
 import static org.bukkit.ChatColor.GREEN;
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
 public class GiveHotbarCommand extends Command {
 
@@ -16,10 +16,10 @@ public class GiveHotbarCommand extends Command {
     }
 
     @Executor
-    public void run(CommandSender sender, @Argument("hotbar") Hotbar hotbar, @Argument("player") @Optional(sender = Sender.PLAYER) Player player) {
+    public void run(CommandSender sender, @Argument("hotbar") HotbarId hotbar, @Argument("player") @Optional(sender = Sender.PLAYER) Player player) {
         if (player == null)
             player = (Player) sender;
-        HotbarSystem.view(player).addHotbar(hotbar);
+        hotbars().view(player).addHotbar(hotbar.get());
         sender.sendMessage(GREEN + "Hotbar \"" + hotbar.getGlobalId() + "\" added to \"" + player.getName() + "\".");
     }
 }

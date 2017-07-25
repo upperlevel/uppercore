@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.hotbar;
+package xyz.upperlevel.uppercore.hotbar;
 
 
 import lombok.Data;
@@ -6,6 +6,8 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Loader;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.Icon;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
@@ -13,32 +15,20 @@ import xyz.upperlevel.uppercore.gui.link.Link;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
+
 @Data
 public class Hotbar {
-
-    private Plugin plugin;
-    private String id;
-
     private Icon[] icons = new Icon[9];
     private List<Icon> noSlotIcons = new ArrayList<>();
 
     private int nextFree = 0;
     private int size = 0;
 
-    private String permission;
-    private boolean onJoin;
-
     public Hotbar() {
     }
 
-    public Hotbar(Plugin plugin, String id) {
-        this.plugin = plugin;
-        this.id = id;
-    }
-
-    public Hotbar(Plugin plugin, String id, Config config) {
-        this(plugin, id);
-        permission = (String) config.get("permission");
+    public Hotbar(Plugin plugin, Config config) {
         if (config.has("icons"))
             for (Config section : config.getConfigList("icons")) {
                 Icon icon = Icon.deserialize(plugin, section);
@@ -48,16 +38,6 @@ public class Hotbar {
                 else
                     icons[slot] = icon;
             }
-        onJoin = config.getBool("on-join", false);
-    }
-
-    public boolean isIdentified() {
-        return plugin != null && id != null;
-    }
-
-    public String getGlobalId() {
-        if (!isIdentified()) return null;
-        return (plugin.getName() + ":" + id).toLowerCase(Locale.ENGLISH);
     }
 
     /**
@@ -216,14 +196,12 @@ public class Hotbar {
     }
 
     public boolean give(Player player) {
-        if (permission != null && !player.hasPermission(permission))
-            return false;
-        HotbarSystem.view(player).addHotbar(this);
+        hotbars().view(player).addHotbar(this);
         return true;
     }
 
     public boolean remove(Player player) {
-        return HotbarSystem.view(player).removeHotbar(this);
+        return hotbars().view(player).removeHotbar(this);
     }
 
     /**
@@ -232,8 +210,8 @@ public class Hotbar {
      * @param config the config where load the hotbar
      * @return the hotbar created
      */
-    public static Hotbar deserialize(Plugin plugin, String id, Config config) {
-        return new Hotbar(plugin, id, config);
+    public static Hotbar deserialize(Plugin plugin, Config config) {
+        return new Hotbar(plugin, config);
     }
 
     public static class HotbarOutOfSpaceException extends RuntimeException {
@@ -246,62 +224,6 @@ public class Hotbar {
             super("Error adding links to hotbar: trying to add " + toAdd + " but only " + hotbar.getFree() + " empty!");
             this.hotbar = hotbar;
             this.toAdd = toAdd;
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-
-        private Hotbar hotbar;
-
-        public Builder() {
-            hotbar = new Hotbar();
-        }
-
-        public Builder(Hotbar hotbar) {
-            this.hotbar = hotbar;
-        }
-
-        public Builder permission(String permission) {
-            hotbar.setPermission(permission);
-            return this;
-        }
-
-        public Builder onJoin(boolean onJoin) {
-            hotbar.setOnJoin(onJoin);
-            return this;
-        }
-
-        public Builder add(Icon link) {
-            hotbar.addIcon(link);
-            return this;
-        }
-
-        public Builder add(ItemStack item, Link link) {
-            hotbar.addIcon(item, link);
-            return this;
-        }
-
-        public Builder add(Icon... links) {
-            hotbar.addIcons(links);
-            return this;
-        }
-
-        public Builder add(Collection<Icon> links) {
-            hotbar.addIcons(links);
-            return this;
-        }
-
-        public Builder set(int slot, Icon icon) {
-            hotbar.setIcon(slot, icon);
-            return this;
-        }
-
-        public Hotbar build() {
-            return hotbar;
         }
     }
 }

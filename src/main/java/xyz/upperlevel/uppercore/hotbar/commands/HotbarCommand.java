@@ -1,9 +1,9 @@
-package xyz.upperlevel.uppercore.gui.hotbar.commands;
+package xyz.upperlevel.uppercore.hotbar.commands;
 
 import xyz.upperlevel.uppercore.command.NodeCommand;
-import xyz.upperlevel.uppercore.gui.hotbar.commands.GiveHotbarCommand;
-import xyz.upperlevel.uppercore.gui.hotbar.commands.HotbarListCommand;
-import xyz.upperlevel.uppercore.gui.hotbar.commands.RemoveHotbarCommand;
+import xyz.upperlevel.uppercore.hotbar.commands.GiveHotbarCommand;
+import xyz.upperlevel.uppercore.hotbar.commands.HotbarListCommand;
+import xyz.upperlevel.uppercore.hotbar.commands.RemoveHotbarCommand;
 
 public class HotbarCommand extends NodeCommand {
 

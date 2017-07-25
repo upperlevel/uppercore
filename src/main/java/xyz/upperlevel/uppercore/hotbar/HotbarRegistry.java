@@ -1,101 +1,42 @@
-package xyz.upperlevel.uppercore.gui.hotbar;
+package xyz.upperlevel.uppercore.hotbar;
 
 import lombok.Data;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Registry;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.gui.GuiId;
 
 import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 
+import static xyz.upperlevel.uppercore.Uppercore.guis;
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
+
 
 @Data
-public class HotbarRegistry implements Listener {
-
-    private final Plugin plugin;
-    private final File folder;
-    private final Map<String, Hotbar> hotbars = new HashMap<>();
-
-    HotbarRegistry(Plugin plugin) {
-        this.plugin = plugin;
-        this.folder = new File(plugin.getDataFolder(), "hotbars");
-        HotbarSystem.register(plugin, this);
+public class HotbarRegistry extends Registry<HotbarId> {
+    public HotbarRegistry(Plugin plugin) {
+        super(plugin, "hotbars");
+        hotbars().register(this);
     }
 
-    /**
-     * Registers the hotbar with the given id.
-     *
-     * @param id     the id
-     * @param hotbar the hotbar
-     */
-    public void register(String id, Hotbar hotbar) {
-        hotbars.put(id, hotbar);
-        HotbarSystem.register(plugin, id, hotbar);
+    @Override
+    public void register(HotbarId id) {
+        super.register(id);
+        hotbars().register(id);
     }
 
-    public Hotbar get(String id) {
-        return hotbars.get(id);
-    }
-
-    public Collection<Hotbar> getHotbars() {
-        return hotbars.values();
-    }
-
-    /**
-     * Loads a new hotbar from the given file.
-     *
-     * @param file the file where to load the hotbar
-     * @return the hotbar loaded
-     */
-    public Hotbar load(File file) {
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        String id = file.getName().replaceFirst("[.][^.]+$", "");
-        Hotbar hotbar;
-        try {
-            hotbar = Hotbar.deserialize(plugin, id, Config.wrap(config));
-        } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in hotbar " + id);
-            throw e;
-        }
-        register(id, hotbar);
-        Uppercore.logger().log(Level.INFO, "Successfully loaded hotbar " + id);
-        return hotbar;
-    }
-
-    /**
-     * Loads all hotbars found in the given folder.
-     *
-     * @param folder the folder where to load the hotbars
-     */
-    public void loadFolder(File folder) {
-        plugin.getLogger().info("Attempting to load hotbars at: \"" + folder.getPath() + "\"");
-        if (folder.exists()) {
-            if (folder.isDirectory()) {
-                File[] files = folder.listFiles();
-                if (files == null) {
-                    plugin.getLogger().severe("Error while reading " + folder + " files");
-                    return;
-                }
-                for (File file : files)
-                    load(file);
-            } else
-                plugin.getLogger().severe("\"" + folder.getName() + "\" isn't a folder!");
-        } else {
-            try {
-                folder.mkdirs();
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Error creating the directory " + folder.getName(), e);
-            }
-        }
-    }
-
-
-    public void loadDefaultFolder() {
-        loadFolder(folder);
+    @Override
+    public HotbarId unregister(String id) {
+        HotbarId result = super.unregister(id);
+        if (result != null)
+            hotbars().unregister(result);
+        return result;
     }
 }

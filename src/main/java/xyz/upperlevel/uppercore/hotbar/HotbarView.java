@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.hotbar;
+package xyz.upperlevel.uppercore.hotbar;
 
 import lombok.Data;
 import org.bukkit.entity.Player;

@@ -3,99 +3,59 @@ package xyz.upperlevel.uppercore.hotbar;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
+import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.gui.Icon;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
-import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
+public class HotbarManager extends Manager<HotbarId> implements Listener {
+    private final Map<Player, HotbarView> views = new HashMap<>();
+    private final Set<HotbarId> onJoin = new HashSet<>();
 
-public class HotbarSystem {
-
-    private static final Map<String, Hotbar> hotbars = new HashMap<>();
-    private static final Map<Plugin, HotbarRegistry> registries = new HashMap<>();
-    private static final Map<Player, HotbarView> views = new HashMap<>();
-
-    private HotbarSystem() {
-    }
-
-    public static void initialize() {
-        Bukkit.getOnlinePlayers().forEach(HotbarSystem::joinPlayer);
-        Bukkit.getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            public void onJoin(PlayerJoinEvent e) {
-                joinPlayer(e.getPlayer());
-            }
-
-            @EventHandler
-            public void onQuit(PlayerQuitEvent e) {
-                quitPlayer(e.getPlayer());
-            }
-        }, Uppercore.get());
-
+    public HotbarManager() {
         ArgumentParserSystem.register();
+
+        Bukkit.getOnlinePlayers().forEach(this::initialize);
+        Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
     }
 
-    public static void register(Plugin plugin, String id, Hotbar hotbar) {
-        hotbars.put(obtainId(plugin, id), hotbar);
-    }
-
-    public static void register(Plugin plugin, HotbarRegistry registry) {
-        registries.put(plugin, registry);
-    }
-
-    public static HotbarRegistry getRegistry(Plugin plugin) {
-        return registries.get(plugin);
-    }
-
-    /**
-     * Gets hotbar of plugin from id.
-     *
-     * @param plugin the plugin
-     * @param id     the id
-     * @return the hotbar found
-     */
-    public static Hotbar getHotbar(Plugin plugin, String id) {
-        HotbarRegistry reg = registries.get(plugin);
-        if (reg != null)
-            return reg.get(id);
-        return hotbars.get(id);
-    }
-
-    /**
-     * Gets hotbar from formatted id {@code ("[plugin]:[id]")}.
-     *
-     * @param id the formatted id
-     * @return the hotbar found
-     */
-    public static Hotbar getHotbar(String id) {
-        return hotbars.get(adaptId(id));
-    }
-
-    public static Collection<Hotbar> getHotbars() {
-        return hotbars.values();
-    }
-
-    private static void joinPlayer(Player player) {
+    private void initialize(Player player) {
         HotbarView v = new HotbarView(player);
         views.put(player, v);
-        for (Hotbar hotbar : hotbars.values())
-            if (hotbar.isOnJoin())
-                v.addHotbar(hotbar);
+        for (HotbarId onJoin : this.onJoin)
+            v.addHotbar(onJoin.get());
     }
 
-    private static void quitPlayer(Player player) {
+    private void destroy(Player player) {
         HotbarView v = views.remove(player);
         if (v != null) v.clear();
+    }
+
+    @Override
+    public void register(HotbarId entry) {
+        super.register(entry);
+        onJoin.add(entry);
+    }
+
+    @Override
+    public HotbarId unregister(String id) {
+        HotbarId entry = super.unregister(id);
+        if (entry != null)
+            onJoin.remove(entry);
+        return entry;
     }
 
     /**
@@ -104,7 +64,7 @@ public class HotbarSystem {
      * @param player the player holding the hotbar
      * @return the hotbar held
      */
-    public static HotbarView view(Player player) {
+    public HotbarView view(Player player) {
         return views.computeIfAbsent(player, HotbarView::new);
     }
 
@@ -115,7 +75,7 @@ public class HotbarSystem {
      * @param hotbar the hotbar
      * @return true if is holding the passed hotbar, otherwise false
      */
-    public static boolean isHolding(Player player, Hotbar hotbar) {
+    public boolean isHolding(Player player, Hotbar hotbar) {
         return view(player).isHolding(hotbar);
     }
 
@@ -124,11 +84,11 @@ public class HotbarSystem {
      *
      * @param player the player
      */
-    public static void remove(Player player) {
+    public void remove(Player player) {
         view(player).clear();
     }
 
-    public static boolean onClick(PlayerInteractEvent event) {
+    public boolean onClick(PlayerInteractEvent event) {
         if (onClick(event.getPlayer(), event.getPlayer().getInventory().getHeldItemSlot())) {
             event.setCancelled(true);
             return true;
@@ -136,7 +96,7 @@ public class HotbarSystem {
         return false;
     }
 
-    public static boolean onClick(Player player, int slot) {
+    public boolean onClick(Player player, int slot) {
         Icon icon = view(player).getIcon(slot);
         if (icon == null || icon.getLink() == null)
             return false;
@@ -144,12 +104,66 @@ public class HotbarSystem {
         return true;
     }
 
-    public static void clearAll() {
-        views.keySet().forEach(HotbarSystem::remove);
+    public void clearAll() {
+        views.keySet().forEach(this::remove);
         views.clear();
     }
 
-    public static HotbarRegistry subscribe(Plugin plugin) {
-        return new HotbarRegistry(plugin);
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        initialize(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        destroy(event.getPlayer());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    public void onPlayerClick(InventoryClickEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        HotbarView h = view(player);
+        if (e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
+            //isIconSlot is really fast but it only works with the main player inventory where the first 9 indexes are
+            //for the hotbar. this isn't exactly the main inventory but it works as well
+            if (h != null && h.isIconSlot(e.getHotbarButton())) {
+                e.setCancelled(true);
+                return;
+            }
+        }
+
+        if (h != null && (h.isIcon(e.getCurrentItem()) || h.isIcon((e.getCursor())))) {//TODO use normal slots
+            e.setCancelled(true);
+            player.updateInventory();
+        }
+
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent e) {
+        try {
+            if (e.getHand() != EquipmentSlot.HAND)
+                return;
+        } catch (Error ignored) {
+        }
+        if (e.getAction() != Action.PHYSICAL)
+            onClick(e); // this method cancels the event by himself
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDropItem(PlayerDropItemEvent e) {
+        HotbarView h = view(e.getPlayer());
+        if (h != null && h.isIconSlot(e.getPlayer().getInventory().getHeldItemSlot()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
+        view(e.getPlayer()).print();
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e) {
+        view(e.getEntity());
     }
 }
