@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.Gui;
-import xyz.upperlevel.uppercore.gui.GuiSystem;
+import xyz.upperlevel.uppercore.gui.GuiId;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
@@ -14,6 +14,8 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 public class GuiOpenAction extends Action<GuiOpenAction> {
 
@@ -34,12 +36,12 @@ public class GuiOpenAction extends Action<GuiOpenAction> {
     @Override
     public void run(Player player) {
         String guiId = this.guiId.resolve(player);
-        Gui gui = GuiSystem.get(getPlugin(), guiId);
+        GuiId gui = guis().get(getPlugin(), guiId);
         if (gui == null) {
             Uppercore.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;
         }
-        GuiSystem.open(player, gui, clearStack);
+        guis().open(player, gui.get(), clearStack);
     }
 
 

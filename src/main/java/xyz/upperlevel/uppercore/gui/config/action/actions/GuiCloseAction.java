@@ -2,11 +2,14 @@ package xyz.upperlevel.uppercore.gui.config.action.actions;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.GuiSystem;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 public class GuiCloseAction extends Action<GuiCloseAction> {
 
@@ -18,7 +21,7 @@ public class GuiCloseAction extends Action<GuiCloseAction> {
 
     @Override
     public void run(Player player) {
-        GuiSystem.close(player);
+        guis().close(player);
     }
 
     public static class GuiCloseActionType extends BaseActionType<GuiCloseAction> {

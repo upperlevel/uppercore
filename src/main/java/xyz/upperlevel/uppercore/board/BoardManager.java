@@ -8,20 +8,48 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.hotbar.HotbarId;
+import xyz.upperlevel.uppercore.hotbar.HotbarView;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-public class BoardManager extends Manager<Board> implements Listener {
+public class BoardManager extends Manager<BoardId> implements Listener {
     private final Map<Player, BoardView> views = new HashMap<>();
+    private BoardId onJoin;
 
     public BoardManager() {
         Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
         Bukkit.getOnlinePlayers().forEach(this::initialize);
     }
 
+    @Override
+    public void register(BoardId board) {
+        super.register(board);
+        if (board.isOnJoin())
+            onJoin = board;
+    }
+
+    @Override
+    public BoardId unregister(String id) {
+        BoardId result = super.unregister(id);
+        if (onJoin != null && onJoin.equals(result))
+            onJoin = null;
+        return result;
+    }
+
     private void initialize(Player player) {
-        views.put(player, new BoardView(player));
+        BoardView view = new BoardView(player);
+        views.put(player, view);
+        if (onJoin != null)
+            view.setBoard(onJoin.get());
+    }
+
+    private void quitPlayer(Player player) {
+        BoardView v = views.remove(player);
+        if (v != null) v.clear();
     }
 
     public BoardView open(Player player, Board board) {
@@ -48,6 +76,6 @@ public class BoardManager extends Manager<Board> implements Listener {
 
     @EventHandler
     public void on(PlayerQuitEvent event) {
-        views.remove(event.getPlayer());
+        quitPlayer(event.getPlayer());
     }
 }

@@ -9,7 +9,9 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
+import xyz.upperlevel.uppercore.hotbar.Hotbar;
+import xyz.upperlevel.uppercore.hotbar.HotbarId;
+import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.script.Script;
 import xyz.upperlevel.uppercore.script.ScriptSystem;
@@ -19,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
 @Getter
 public class RequireAction extends Action<RequireAction> {
@@ -57,9 +61,14 @@ public class RequireAction extends Action<RequireAction> {
                 (script == null || testScript(player, script));
     }
 
-    private boolean hasHotbar(Player player, PlaceholderValue<String> hotbar) {
-        final String id = hotbar.resolve(player);
-        return HotbarSystem.isHolding(player, HotbarSystem.getHotbar(id));
+    private boolean hasHotbar(Player player, PlaceholderValue<String> hotbarId) {
+        final String id = hotbarId.resolve(player);
+        HotbarId hotbar = hotbars().get(id);
+        if (hotbar == null) {
+            Uppercore.logger().severe("Cannot find hotbar \"" + id + "\"");
+            return false;
+        }
+        return hotbars().isHolding(player, hotbar.get());
     }
 
     private boolean testScript(Player player, String id) {

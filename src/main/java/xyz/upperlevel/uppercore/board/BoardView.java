@@ -12,8 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static xyz.upperlevel.uppercore.board.BoardUtil.*;
-
 @Data
 public class BoardView {
     public static final int MAX_LINES = 15;
@@ -87,7 +85,7 @@ public class BoardView {
             while (entries.contains(entry))
                 entry += ChatColor.RESET;
             if (entry.length() > MAX_ENTRY_CHARS)
-                throw new IllegalArgumentException("Too much chars for entry \"" + entry + "\" at: \"" + position + "\"");
+                throw new IllegalArgumentException("Too much chars for registrable \"" + entry + "\" at: \"" + position + "\"");
             return entry;
         }
 

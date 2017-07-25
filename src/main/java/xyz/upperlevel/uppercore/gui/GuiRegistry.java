@@ -1,25 +1,28 @@
 package xyz.upperlevel.uppercore.gui;
 
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Identifier;
+import xyz.upperlevel.uppercore.Registrable;
 import xyz.upperlevel.uppercore.Registry;
 
-public class GuiRegistry extends Registry<Gui> {
+import static xyz.upperlevel.uppercore.Uppercore.guis;
+
+public class GuiRegistry extends Registry<GuiId> {
     public GuiRegistry(Plugin plugin) {
         super(plugin, "guis");
-        GuiSystem.register(plugin, this);
+        guis().register(this);
     }
 
     @Override
-    public GuiRegistry register(String id, Gui gui) {
-        super.register(id, gui);
-        GuiSystem.register(getPlugin(), id, gui);
-        return this;
+    public void register(GuiId id) {
+        super.register(id);
+        guis().register(id);
     }
 
     @Override
-    public Identifier<Gui> unregister(String id) {
-        GuiSystem.unregister(getPlugin(), id);
-        return super.unregister(id);
+    public GuiId unregister(String id) {
+        GuiId result = super.unregister(id);
+        if (result != null)
+            guis().unregister(result);
+        return result;
     }
 }

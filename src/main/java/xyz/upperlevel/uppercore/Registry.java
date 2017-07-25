@@ -4,7 +4,6 @@ import lombok.Data;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.board.Board;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 
@@ -19,12 +18,12 @@ import java.util.logging.Logger;
 import static java.util.Locale.ENGLISH;
 
 @Data
-public abstract class Registry<T> {
+public abstract class Registry<T extends Registrable<?>> {
     private final Plugin plugin;
     private final Logger logger;
     private final String id;
     private final File folder;
-    private final Map<String, Identifier<T>> entries = new HashMap<>();
+    private final Map<String, T> entries = new HashMap<>();
 
     public Registry(Plugin plugin, String id) {
         this.plugin = plugin;
@@ -33,39 +32,37 @@ public abstract class Registry<T> {
         this.folder = new File(plugin.getDataFolder(), id);
     }
 
-    public Identifier<T> register(String id, T entry) {
-        Identifier<T> result = new Identifier<>(plugin, id, entry);
-        entries.put(id, result);
-        return result;
+    public void register(T entry) {
+        entries.put(id, entry);
     }
 
-    public Identifier<T> unregister(String id) {
+    public T unregister(String id) {
         return entries.remove(id.toLowerCase(ENGLISH));
     }
 
-    public Identifier<T> get(String id) {
+    public T get(String id) {
         return entries.get(id);
     }
 
-    public Collection<Identifier<T>> get() {
+    public Collection<T> get() {
         return entries.values();
     }
 
     public void load(File file, Loader<T> loader) {
-        logger.info("Attempting to load entry(s) at: \"" + file.getPath() + "\"");
+        logger.info("Attempting to load registrable(s) at: \"" + file.getPath() + "\"");
         if (file.exists()) {
             if (!file.isDirectory()) {
                 FileConfiguration config = YamlConfiguration.loadConfiguration(file);
                 String id = file.getName().replaceFirst("[.][^.]+$", "");
                 T entry;
                 try {
-                    entry = loader.load(Config.wrap(config));
+                    entry = loader.load(plugin, id, Config.wrap(config));
                 } catch (InvalidConfigurationException e) {
-                    e.addLocalizer("in entry " + id);
+                    e.addLocalizer("in registrable " + id);
                     throw e;
                 }
-                register(id, entry);
-                logger.info("Successfully loaded entry: \"" + id + "\"");
+                register(entry);
+                logger.info("Successfully loaded registrable: \"" + id + "\"");
             } else {
                 File[] files = folder.listFiles();
                 if (files == null) {
