@@ -15,8 +15,9 @@ public interface PlaceholderValue<T> {
 
     /**
      * Removes placeholders from the value and parses it using the local placeholders in addition to the normal ones
+     *
      * @param player the player that executes the placeholders
-     * @param local the placeholders to add to the default ones
+     * @param local  the placeholders to add to the default ones
      * @return the parsed value without placeholders
      */
     default T resolve(Player player, PlaceholderRegistry local) {
@@ -25,6 +26,7 @@ public interface PlaceholderValue<T> {
 
     /**
      * Removes placeholders from the value and parses it
+     *
      * @param player the player that executes the placeholders
      * @return the parsed value without placeholders
      */
@@ -34,7 +36,6 @@ public interface PlaceholderValue<T> {
 
 
     String toString();
-
 
 
     static PlaceholderValue<Byte> byteValue(String string) {
@@ -94,7 +95,6 @@ public interface PlaceholderValue<T> {
 
     @Data
     class FalsePlaceholderValue<T> implements PlaceholderValue<T> {
-
         private final T value;
 
         @Override
@@ -114,14 +114,18 @@ public interface PlaceholderValue<T> {
 
     @Data
     class SimplePlaceholderValue<T> implements PlaceholderValue<T> {
-
-        private final String value;
+        private String value;
 
         private final Function<String, T> parser;
         private final BiConsumer<String, Exception> exceptionHandler;
-
-        @Getter
         private final T onError;
+
+        public SimplePlaceholderValue(String value, Function<String, T> parser, BiConsumer<String, Exception> exceptionHandler, T onError) {
+            this.value = value;
+            this.parser = parser;
+            this.exceptionHandler = exceptionHandler;
+            this.onError = onError;
+        }
 
         @Override
         public T resolve(Player player, PlaceholderRegistry local) {
@@ -147,10 +151,13 @@ public interface PlaceholderValue<T> {
         }
     }
 
-    @RequiredArgsConstructor
+    @Data
     class StringPlaceholderValue implements PlaceholderValue<String> {
-        @Getter
-        private final String value;
+        private String value;
+
+        public StringPlaceholderValue(String value) {
+            this.value = value;
+        }
 
         @Override
         public String resolve(Player player, PlaceholderRegistry local) {

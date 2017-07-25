@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.scoreboard;
+package xyz.upperlevel.uppercore.board;
 
 public class BoardUtil {
 

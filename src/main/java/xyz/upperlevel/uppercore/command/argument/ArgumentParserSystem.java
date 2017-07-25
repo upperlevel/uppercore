@@ -6,7 +6,7 @@ import xyz.upperlevel.uppercore.command.argument.exceptions.UnparsableTypeExcept
 import xyz.upperlevel.uppercore.command.arguments.*;
 import xyz.upperlevel.uppercore.gui.arguments.GuiArgumentParser;
 import xyz.upperlevel.uppercore.gui.hotbar.arguments.HotbarArgumentParser;
-import xyz.upperlevel.uppercore.scoreboard.arguments.ScoreboardArgumentParser;
+import xyz.upperlevel.uppercore.board.arguments.BoardArgumentParser;
 
 import java.util.*;
 
@@ -33,7 +33,7 @@ public final class ArgumentParserSystem {
 
         register(new GuiArgumentParser());
         register(new HotbarArgumentParser());
-        register(new ScoreboardArgumentParser());
+        register(new BoardArgumentParser());
     }
 
     public static void register(@NonNull ArgumentParser parser) {

@@ -1,9 +1,9 @@
-package xyz.upperlevel.uppercore.scoreboard.arguments;
+package xyz.upperlevel.uppercore.board.arguments;
 
 import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
-import xyz.upperlevel.uppercore.scoreboard.Board;
-import xyz.upperlevel.uppercore.scoreboard.ScoreboardSystem;
+import xyz.upperlevel.uppercore.board.Board;
+import xyz.upperlevel.uppercore.board.BoardSystem;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,9 +22,9 @@ public class ScoreboardArgumentParser implements ArgumentParser {
 
     @Override
     public Object parse(Class<?> type, List<String> args) throws ParseException {
-        Board sc = ScoreboardSystem.get(args.get(0));
+        Board sc = BoardSystem.get(args.get(0));
         if (sc == null)
-            throw new ParseException(args.get(0), "scoreboard");
+            throw new ParseException(args.get(0), "board");
         return sc;
     }
 }

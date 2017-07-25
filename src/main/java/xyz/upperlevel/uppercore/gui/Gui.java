@@ -9,19 +9,6 @@ import java.util.Locale;
 
 public interface Gui extends Link {
 
-    Plugin getPlugin();
-
-    String getId();
-
-    default boolean isIdentified() {
-        return getPlugin() != null && getId() != null;
-    }
-
-    default String getGlobalId() {
-        if (!isIdentified()) return null;
-        return (getPlugin().getName() + ":" + getId()).toLowerCase(Locale.ENGLISH);
-    }
-
     /**
      * Called when a player clicks on the inventory
      * The event is cancelled before the call so if someone for some reason wants to re-enable it (idk why) he/she could

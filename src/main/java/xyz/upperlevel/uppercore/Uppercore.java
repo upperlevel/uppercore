@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.upperlevel.uppercore.board.BoardRegistry;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
 import xyz.upperlevel.uppercore.gui.GuiEventListener;
@@ -11,7 +12,7 @@ import xyz.upperlevel.uppercore.gui.GuiListener;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.hotbar.HotbarSystem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.scoreboard.ScoreboardSystem;
+import xyz.upperlevel.uppercore.board.BoardManager;
 import xyz.upperlevel.uppercore.script.ScriptSystem;
 
 import java.io.File;
@@ -23,6 +24,7 @@ public class Uppercore extends JavaPlugin {
     public static final String SCRIPT_CONFIG = "script_engine.yml";
 
     private static Uppercore instance;
+    private BoardManager boards;
 
     private Metrics metrics;
 
@@ -48,7 +50,7 @@ public class Uppercore extends JavaPlugin {
         //Command setup
         ArgumentParserSystem.initialize();
         HotbarSystem.initialize();
-        ScoreboardSystem.initialize();
+        boards = new BoardManager();
 
         //Gui setup
         final PluginManager pluginManager = getServer().getPluginManager();
@@ -68,5 +70,9 @@ public class Uppercore extends JavaPlugin {
 
     public static Logger logger() {
         return instance.getLogger();
+    }
+
+    public static BoardManager boards() {
+        return instance.boards;
     }
 }
