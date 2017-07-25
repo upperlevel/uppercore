@@ -1,198 +1,152 @@
 package xyz.upperlevel.uppercore.board;
 
 import lombok.Data;
-import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import static org.bukkit.ChatColor.RESET;
 import static xyz.upperlevel.uppercore.board.BoardUtil.*;
-import static xyz.upperlevel.uppercore.board.BoardUtil.divideLine;
 
 @Data
 public class BoardView {
-
-    public static int teamId = 0;
+    public static final int MAX_LINES = 15;
+    public static final int MAX_TITLE_CHARS = 32;
+    public static final int MAX_PREFIX_CHARS = 16;
+    public static final int MAX_ENTRY_CHARS = 40; // >= 1.8
+    public static final int MAX_SUFFIX_CHARS = 16;
 
     private final Player player;
-
-    private final Title title = new Title();
-    private final Line[] lines = new Line[MAX_LINES];
     private Board board;
 
-    private final org.bukkit.scoreboard.Scoreboard handle;
+    private final Scoreboard handle;
     private final Objective objective;
+    private final Line[] lines = new Line[MAX_LINES];
     private final Set<String> entries = new HashSet<>();
 
     public BoardView(Player player) {
         this.player = player;
-        for (int i = 0; i < lines.length; i++)
-            lines[i] = new Line(i);
 
-        handle = Bukkit.getScoreboardManager().getNewScoreboard();
-        objective = handle.registerNewObjective("board", "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        this.handle = Bukkit.getScoreboardManager().getNewScoreboard();
+        this.objective = handle.registerNewObjective("scoreboard", "dummy");
+        for (int pos = 0; pos < lines.length; pos++)
+            lines[pos] = new Line(pos);
     }
 
-    public void open() {
-        player.setScoreboard(handle);
+    private void open() {
+        if (board != null)
+            player.setScoreboard(handle);
+        else
+            close();
     }
 
-    public void close() {
+    private void close() {
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-    }
-
-    public Line getLine(int position) {
-        return lines[position];
     }
 
     public void setBoard(Board board) {
         this.board = board;
-        if (board != null) {
-            getTitle().set(board.getTitle());
-            for (int position = 0; position < board.getLines().length; position++)
-                lines[position].set(board.getLine(position));
-        } else {
+        render();
+    }
 
+    public void render() {
+        if (board != null) {
+            // TITLE
+            objective.setDisplayName(board.getTitle().render(player));
+            // LINES
+            List<String> lines = board.render(player);
+            int pos = 0;
+            for (; pos < lines.size(); pos++)
+                this.lines[pos].render(lines.get(pos), lines.size() - pos);
+            while (pos++ < this.lines.length)
+                this.lines[pos].clear();
         }
+        open();
     }
 
     public void clear() {
-
-    }
-
-    public void display() {
-        int last = 0;
-        for (int current = 0; current < lines.length; current++) {
-            if (!lines[current].isEmpty())
-                for (; last <= current; last++)
-                    lines[last].display();
-        }
-    }
-
-    // TITLE
-    public class Title {
-        private Board.Title title;
-
-        @Getter
-        private final PlaceholderSession placeholders = new PlaceholderSession();
-
-        public boolean isEmpty() {
-            return title == null || title.isEmpty();
-        }
-
-        public Board.Title get() {
-            return title;
-        }
-
-        public void set(Board.Title title) {
-            // todo stop old update task
-            this.title = title;
-            // todo start update task
-            display();
-        }
-
-        public void display() {
-            if (isEmpty()) {
-                close();
-                return;
-            }
-            objective.setDisplayName(title.getText().resolve(player, placeholders));
-            open();
-        }
+        setBoard(null);
     }
 
     // LINE
-    public class Line {
-        @Getter
-        private final int position;
-        private Board.Line line;
-
-        @Getter
-        private final PlaceholderSession placeholders = new PlaceholderSession();
-
-        private final Team team;
+    private class Line {
+        private Team team;
         private String prefix, entry, suffix;
 
         public Line(int position) {
-            this.position = position;
-            this.team = handle.registerNewTeam("" + teamId++);
+            this.team = handle.registerNewTeam("line_" + position);
         }
 
-        public boolean isEmpty() {
-            return line == null || line.isEmpty();
-        }
-
-        public Board.Line get() {
-            return line;
-        }
-
-        public void set(Board.Line line) {
-            // todo stop old task
-            this.line = line;
-            if (line == null && entry != null) {
-                entries.remove(entry);
-                handle.resetScores(entry);
-                prefix = null;
-                entry = null;
-                suffix = null;
-            }
-            display();
-            // todo start task
-        }
-
-        public String format(String entry) {
+        private String format(String entry, int position) {
             while (entries.contains(entry))
-                entry += RESET;
+                entry += ChatColor.RESET;
             if (entry.length() > MAX_ENTRY_CHARS)
-                throw new IllegalArgumentException("Too much chars for entry \"" + entry + "\" at line: \"" + position + "\"");
+                throw new IllegalArgumentException("Too much chars for entry \"" + entry + "\" at: \"" + position + "\"");
             return entry;
         }
 
-        public void display() {
-            // if the text is changed split it
-            String lastEntry = entry;
-            if (line != null && !line.isEmpty()) {
-                String real = line.getText().resolve(player, placeholders); // TODO mix placeholders
-                StringBuffer
-                        prefixBfr = new StringBuffer(),
-                        entryBfr = new StringBuffer(),
-                        suffixBfr = new StringBuffer();
-                divideLine(
-                        real,
-                        prefixBfr,
-                        entryBfr,
-                        suffixBfr
-                );
-                prefix = prefixBfr.toString();
-                entry = format(entryBfr.toString());
-                suffix = suffixBfr.toString();
-            } else {
-                prefix = "";
-                entry = format("");
-                suffix = "";
-            }
-            // updates prefix, entry and suffix just if changed
-            if (prefix != null)
-                team.setPrefix(prefix);
-            if (entry != null) {
-                if (lastEntry != null) {
-                    entries.remove(lastEntry);
-                    handle.resetScores(lastEntry);
+        private void split(String line, StringBuffer prefix, StringBuffer entry, StringBuffer suffix) {
+            if (!line.isEmpty()) {
+                int pre = Math.min(line.length(), MAX_PREFIX_CHARS);
+                prefix.append(line.substring(0, pre));
+                line = line.substring(pre, line.length());
+
+                if (!line.isEmpty()) {
+                    int mid = Math.min(line.length(), MAX_ENTRY_CHARS);
+                    entry.append(line.substring(0, mid));
+                    line = line.substring(mid, line.length());
+
+                    if (!line.isEmpty()) {
+                        int suf = Math.min(line.length(), MAX_SUFFIX_CHARS);
+                        suffix.append(line.substring(0, suf));
+                    }
                 }
+            }
+        }
+
+        public void render(String line, int position) {
+            if (line != null) {
+                StringBuffer
+                        prefix_bfr = new StringBuffer(),
+                        entry_bfr = new StringBuffer(),
+                        suffix_bfr = new StringBuffer();
+                split(line, prefix_bfr, entry_bfr, suffix_bfr);
+                // ENTRY
+                if (entry != null) {
+                    clear();
+                }
+                entry = entry_bfr.toString();
                 entries.add(entry);
                 team.addEntry(entry);
                 objective.getScore(entry).setScore(lines.length - position);
-            }
-            if (suffix != null)
+                // PREFIX
+                prefix = prefix_bfr.toString();
+                team.setPrefix(prefix);
+                // SUFFIX
+                suffix = suffix_bfr.toString();
                 team.setSuffix(suffix);
+                this.prefix = prefix_bfr.toString();
+                this.entry = format(entry_bfr.toString(), position);
+                this.suffix = suffix_bfr.toString();
+            } else {
+                clear();
+            }
+        }
+
+        public void clear() {
+            if (entry != null) {
+                entries.remove(entry);
+                handle.resetScores(entry);
+                entry = null;
+            }
+            prefix = null;
+            suffix = null;
         }
     }
 }

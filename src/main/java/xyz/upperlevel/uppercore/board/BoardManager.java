@@ -6,85 +6,48 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Identifier;
+import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BoardSystem extends System<Board> {
+public class BoardManager extends Manager<Board> implements Listener {
+    private final Map<Player, BoardView> views = new HashMap<>();
 
-    private static final Map<Player, BoardView> views = new HashMap<>();
-
-    private static void onPlayerJoin(Player p) {
-        views.put(p, new BoardView(p));
+    public BoardManager() {
+        Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
+        Bukkit.getOnlinePlayers().forEach(this::initialize);
     }
 
-    public static void initialize() {
-        Bukkit.getOnlinePlayers().forEach(BoardSystem::onPlayerJoin);
-        Bukkit.getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            public void onPlayerJoin(PlayerJoinEvent e) {
-                BoardSystem.onPlayerJoin(e.getPlayer());
-            }
-
-            @EventHandler
-            public void onPlayerQuit(PlayerQuitEvent e) {
-                views.remove(e.getPlayer());
-            }
-        }, Uppercore.get());
+    private void initialize(Player player) {
+        views.put(player, new BoardView(player));
     }
 
-    static void register(BoardRegistry registry) {
-        registriesByPlugin.put(registry.getPlugin(), registry);
+    public BoardView open(Player player, Board board) {
+        BoardView view = view(player);
+        view.setBoard(board);
+        return view;
     }
 
-    static void register(Identifier<Board> board) {
-        scoreboardsById.put(board.getGlobalId(), board.getHandle());
+    public BoardView close(Player player) {
+        BoardView view = views.get(player);
+        if (view != null)
+            view.clear();
+        return view;
     }
 
-    public static BoardRegistry get(Plugin plugin) {
-        return registriesByPlugin.get(plugin);
+    public BoardView view(Player player) {
+        return views.computeIfAbsent(player, BoardView::new);
     }
 
-    public static Board get(String id) {
-        return scoreboardsById.get(id);
+    @EventHandler
+    public void on(PlayerJoinEvent event) {
+        initialize(event.getPlayer());
     }
 
-    public static Identifier<Board> get(Plugin plugin, String id) {
-        BoardRegistry registry = get(plugin);
-        if (registry != null)
-            return registry.get(id);
-        return null;
-    }
-
-    public static BoardView view(Player player) {
-        return views.get(player);
-    }
-
-    public static BoardView set(Player player, Board board) {
-        BoardView result = views.computeIfAbsent(player, BoardView::new);
-        result.setBoard(board);
-        return result;
-    }
-
-    public static void remove(Player player) {
-        BoardView res = view(player);
-        if (res == null) return;
-        res.clear();
-    }
-
-    public static Collection<Board> getScoreboards() {
-        return scoreboardsById.values();
-    }
-
-    public static Collection<BoardRegistry> getRegistries() {
-        return registriesByPlugin.values();
-    }
-
-    public static BoardRegistry subscribe(Plugin plugin) {
-        return new BoardRegistry(plugin);
+    @EventHandler
+    public void on(PlayerQuitEvent event) {
+        views.remove(event.getPlayer());
     }
 }

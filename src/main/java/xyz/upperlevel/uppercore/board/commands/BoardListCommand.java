@@ -2,18 +2,20 @@ package xyz.upperlevel.uppercore.board.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Identifier;
+import xyz.upperlevel.uppercore.Registry;
+import xyz.upperlevel.uppercore.board.Board;
+import xyz.upperlevel.uppercore.board.BoardRegistry;
 import xyz.upperlevel.uppercore.command.Argument;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.Executor;
 import xyz.upperlevel.uppercore.command.Optional;
-import xyz.upperlevel.uppercore.board.Board;
-import xyz.upperlevel.uppercore.board.BoardRegistry;
-import xyz.upperlevel.uppercore.board.BoardSystem;
 
 import java.util.Collection;
 import java.util.StringJoiner;
 
 import static org.bukkit.ChatColor.*;
+import static xyz.upperlevel.uppercore.Uppercore.boards;
 
 public class BoardListCommand extends Command {
 
@@ -24,14 +26,18 @@ public class BoardListCommand extends Command {
 
     @Executor
     public void run(CommandSender sender, @Argument("plugin") @Optional Plugin plugin) {
-        Collection<Board> boards;
+        Collection<Identifier<Board>> boards;
         if (plugin != null) {
-            BoardRegistry reg = BoardSystem.get(plugin);
-            boards = reg.getScoreboards();
+            Registry<Board> reg = boards().get(plugin);
+            if (reg == null) {
+                sender.sendMessage(RED + "No boards registry found for: \"" + plugin.getName() + "\"");
+                return;
+            }
+            boards = reg.get();
         } else
-            boards = BoardSystem.getScoreboards();
+            boards = boards().get();
         StringJoiner str = new StringJoiner(GRAY + ", ");
-        for (Board board : boards)
+        for (Identifier<Board> board : boards)
             str.add(AQUA + board.getGlobalId());
         if (boards.size() > 0)
             sender.sendMessage(GOLD + "Showing " + boards.size() + " boards: " + str);

@@ -1,26 +1,28 @@
 package xyz.upperlevel.uppercore.board;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
-import xyz.upperlevel.uppercore.placeholder.Placeholder;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderSession;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import static xyz.upperlevel.uppercore.board.BoardUtil.MAX_LINES;
+import static lombok.AccessLevel.NONE;
 
 @Data
 public class Board {
     private Title title;
-    private final List<Zone> zones = new ArrayList<>();
+    private final TextArea area = new TextArea();
     private int updateInterval;
-
-    private final PlaceholderSession placeholders = new PlaceholderSession();
+    private final PlaceholderRegistry placeholders = PlaceholderRegistry.create();
 
     public Board() {
     }
@@ -31,22 +33,27 @@ public class Board {
         if (title instanceof String)
             this.title = new Title(PlaceholderUtil.process((String) title));
         else if (title instanceof Map)
-            this.title = Title.deserialize(Config.wrap((Map<String, Object>) title));
+            this.title = new Title(Config.wrap((Map<String, Object>) title));
 
         this.updateInterval = config.getInt("update-interval", -1);
 
         List<Object> lines = config.getList("lines");
         for (Object line : lines) {
-            if (line instanceof String) {
-                addLine(new Line(PlaceholderUtil.process((String) line)));
-            } else if (line instanceof Map) {
-                Config sub = Config.wrap((Map) line);
-                if (sub.has("position"))
-                    setLine(sub.getIntRequired("position"), Line.deserialize(Config.wrap((Map<String, Object>) line)));
-                else
-                    addLine(new Line(Config.wrap((Map<String, Object>) line)));
-            }
+            if (line instanceof String)
+                area.addLine(new Line(PlaceholderUtil.process((String) line)));
+            else if (line instanceof Map)
+                area.addLine(new Line(Config.wrap((Map<String, Object>) line)));
         }
+    }
+
+    public List<String> render(Player player) {
+        List<String> result = new ArrayList<>();
+        Area current = area;
+        do {
+            result.addAll(current.render(player));
+            current = area.getNext();
+        } while (current != null);
+        return result;
     }
 
     public static Board deserialize(Config config) {
@@ -60,10 +67,10 @@ public class Board {
 
     // TITLE
     @Data
-    public static class Title {
+    public class Title {
         private PlaceholderValue<String> text;
         private int updateInterval;
-        private final PlaceholderSession placeholders = new PlaceholderSession();
+        private final PlaceholderRegistry placeholders = PlaceholderRegistry.create(Board.this.placeholders);
 
         public Title() {
         }
@@ -77,20 +84,74 @@ public class Board {
             this.updateInterval = config.getInt("update-interval");
         }
 
+        public String render(Player player) {
+            return text.resolve(player, placeholders);
+        }
+    }
+
+    // LINE
+    public class Line {
+        private PlaceholderValue<String> text;
+        private int updateInterval;
+        private final PlaceholderRegistry placeholders = PlaceholderRegistry.create(Board.this.placeholders);
+
+        public Line() {
+        }
+
+        public Line(PlaceholderValue<String> text) {
+            this.text = text;
+        }
+
+        public Line(Config config) {
+            this.text = config.getMessage("text");
+            this.updateInterval = config.getInt("update-interval");
+        }
+
         public boolean isEmpty() {
             return text == null;
         }
 
-        public static Title deserialize(Config config) {
-            return new Title(config);
+        public String render(Player player) {
+            return text.resolve(player, placeholders);
         }
     }
 
+    // AREA
     @Data
-    public static class Zone {
+    public abstract class Area {
+        @Setter(NONE)
+        private Area next;
+        private int updateInterval;
+        private final PlaceholderRegistry placeholders = PlaceholderRegistry.create(Board.this.placeholders);
 
+        public Area append(Area area) {
+            next = area;
+            return next;
+        }
+
+        public abstract void update();
+
+        public abstract List<String> render(Player player);
     }
 
-    public static class Ranking extends Zone {
+    // TEXT AREA
+    public class TextArea extends Area {
+        private final List<Line> lines = new ArrayList<>();
+
+        public void addLine(Line line) {
+            lines.add(line);
+        }
+
+        @Override
+        public void update() {
+        }
+
+        @Override
+        public List<String> render(Player player) {
+            return lines.stream()
+                    .filter(Line::isEmpty)
+                    .map(line -> line.render(player))
+                    .collect(Collectors.toList());
+        }
     }
 }

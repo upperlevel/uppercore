@@ -9,7 +9,7 @@ public class BoardCommand extends NodeCommand {
         setDescription("Commands for scoreboards.");
 
         register(new BoardListCommand());
-        register(new ScoreboardRemoveCommand());
-        register(new ScoreboardSetCommand());
+        register(new BoardRemoveCommand());
+        register(new BoardSetCommand());
     }
 }
