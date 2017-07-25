@@ -4,15 +4,12 @@ import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
+import xyz.upperlevel.uppercore.board.BoardManager;
 import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
-import xyz.upperlevel.uppercore.gui.GuiEventListener;
-import xyz.upperlevel.uppercore.gui.GuiListener;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.board.BoardManager;
 import xyz.upperlevel.uppercore.script.ScriptSystem;
 
 import java.io.File;
@@ -57,10 +54,7 @@ public class Uppercore extends JavaPlugin {
         hotbars = new HotbarManager();
 
         //Gui setup
-        final PluginManager pluginManager = getServer().getPluginManager();
-        pluginManager.registerEvents(new GuiEventListener(), this);
-        pluginManager.registerEvents(new GuiListener(), this);
-
+        PluginManager pluginManager = getServer().getPluginManager();
         new UppercoreCommand().subscribe();
     }
 

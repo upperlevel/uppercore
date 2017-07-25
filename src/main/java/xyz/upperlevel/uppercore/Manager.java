@@ -8,58 +8,58 @@ import java.util.Map;
 
 import static java.util.Locale.ENGLISH;
 
-public class Manager<R extends Registrable<?>> {
-    private final Map<Plugin, Registry<R>> registries = new HashMap<>();
-    private final Map<String, R> entries = new HashMap<>();
+public class Manager<T extends Identifier<?>> {
+    private final Map<Plugin, Registry<T>> registries = new HashMap<>();
+    private final Map<String, T> entries = new HashMap<>();
 
     // REGISTRY
 
-    public void register(Registry<R> registry) {
+    public void register(Registry<T> registry) {
         registries.put(registry.getPlugin(), registry);
     }
 
-    public Registry<R> unregister(Plugin plugin) {
+    public Registry<T> unregister(Plugin plugin) {
         return registries.remove(plugin);
     }
 
-    public Registry<R> get(Plugin plugin) {
+    public Registry<T> get(Plugin plugin) {
         return registries.get(plugin);
     }
 
-    public Collection<Registry<R>> getRegistries() {
+    public Collection<Registry<T>> getRegistries() {
         return registries.values();
     }
 
     // ENTRY
 
-    public void register(R entry) {
+    public void register(T entry) {
         entries.put(entry.getGlobalId(), entry);
     }
 
-    public R unregister(String id) {
+    public T unregister(String id) {
         return entries.remove(id.toLowerCase(ENGLISH));
     }
 
-    public R unregister(Plugin plugin, String id) {
-        return unregister(Registrable.getGlobalId(plugin, id));
+    public T unregister(Plugin plugin, String id) {
+        return unregister(Identifier.getGlobalId(plugin, id));
     }
 
-    public R unregister(R entry) {
+    public T unregister(T entry) {
         return unregister(entry.getPlugin(), entry.getId());
     }
 
-    public R get(String id) {
+    public T get(String id) {
         return entries.get(id.toLowerCase(ENGLISH));
     }
 
-    public  R get(Plugin plugin, String id) {
-        Registry<R> registry = get(plugin);
+    public T get(Plugin plugin, String id) {
+        Registry<T> registry = get(plugin);
         if (registry != null)
             return registry.get(id);
         return null;
     }
 
-    public Collection<R> get() {
+    public Collection<T> get() {
         return entries.values();
     }
 }

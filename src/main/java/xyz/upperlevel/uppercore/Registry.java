@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import static java.util.Locale.ENGLISH;
 
 @Data
-public abstract class Registry<T extends Registrable<?>> {
+public abstract class Registry<T extends Identifier<?>> {
     private final Plugin plugin;
     private final Logger logger;
     private final String id;
