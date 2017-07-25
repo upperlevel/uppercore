@@ -80,13 +80,6 @@
             <version>1.6</version>
             <scope>provided</scope>
         </dependency>
-        <!-- anvil gui api -->
-        <dependency>
-            <groupId>xyz.upperlevel.spigot.anvilgui</groupId>
-            <artifactId>spigot-anvil-gui</artifactId>
-            <version>1.2.2</version>
-            <scope>compile</scope>
-        </dependency>
         <!-- metrics -->
         <dependency>
             <groupId>org.bstats</groupId>
