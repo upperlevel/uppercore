@@ -4,7 +4,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.*;
-import xyz.upperlevel.uppercore.util.CSound;
+import xyz.upperlevel.uppercore.sound.CompatibleSound;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
 
 import java.util.*;
@@ -428,7 +428,7 @@ public interface Config {
         if (raw == null)
             return def;
         else {
-            Sound s = CSound.get(key);
+            Sound s = CompatibleSound.get(key);
             if(s == null)
                 throw new InvalidConfigurationException("Cannot find sound \"" + raw + "\", is it supported?");
             else

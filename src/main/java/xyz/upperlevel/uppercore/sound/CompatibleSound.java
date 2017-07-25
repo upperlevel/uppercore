@@ -1,7 +1,8 @@
-package xyz.upperlevel.uppercore.util;
+package xyz.upperlevel.uppercore.sound;
 
 import org.bukkit.Sound;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.util.NmsVersion;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 import static org.bukkit.Sound.valueOf;
 
-public class CSound {
+public class CompatibleSound {
     public static final boolean OLD;
     private static Map<String, Sound> translator;
 

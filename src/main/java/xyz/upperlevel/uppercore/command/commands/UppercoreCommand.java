@@ -6,6 +6,7 @@ import xyz.upperlevel.uppercore.gui.commands.GuiCommand;
 import xyz.upperlevel.uppercore.gui.hotbar.commands.HotbarCommand;
 import xyz.upperlevel.uppercore.board.commands.BoardCommand;
 import xyz.upperlevel.uppercore.script.commands.ScriptCommand;
+import xyz.upperlevel.uppercore.sound.command.PlaySoundCommand;
 
 public class UppercoreCommand extends NodeCommand {
 
@@ -18,5 +19,7 @@ public class UppercoreCommand extends NodeCommand {
         register(new HotbarCommand());
         register(new BoardCommand());
         register(new ScriptCommand());
+
+        register(new PlaySoundCommand());
     }
 }

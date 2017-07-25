@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
-import xyz.upperlevel.uppercore.util.CSound;
+import xyz.upperlevel.uppercore.sound.CompatibleSound;
 
 import java.util.Arrays;
 
@@ -59,7 +59,7 @@ public final class GuiUtil {
 
     public static void sendErrorMessage(Player player, String message) {
         if(DEF_ERROR_SOUND == null)
-            DEF_ERROR_SOUND = CSound.getRaw("BLOCK_ANVIL_USE");
+            DEF_ERROR_SOUND = CompatibleSound.getRaw("BLOCK_ANVIL_USE");
         sendErrorMessage(player, message, DEF_ERROR_SOUND);
     }
 

@@ -7,6 +7,7 @@ import xyz.upperlevel.uppercore.command.arguments.*;
 import xyz.upperlevel.uppercore.gui.arguments.GuiArgumentParser;
 import xyz.upperlevel.uppercore.gui.hotbar.arguments.HotbarArgumentParser;
 import xyz.upperlevel.uppercore.board.arguments.BoardArgumentParser;
+import xyz.upperlevel.uppercore.sound.argument.SoundArgumentParser;
 
 import java.util.*;
 
@@ -34,6 +35,8 @@ public final class ArgumentParserSystem {
         register(new GuiArgumentParser());
         register(new HotbarArgumentParser());
         register(new BoardArgumentParser());
+
+        register(new SoundArgumentParser());
     }
 
     public static void register(@NonNull ArgumentParser parser) {

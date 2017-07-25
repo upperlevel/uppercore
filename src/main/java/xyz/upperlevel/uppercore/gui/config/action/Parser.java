@@ -6,7 +6,7 @@ import org.bukkit.plugin.Plugin;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.util.CSound;
+import xyz.upperlevel.uppercore.sound.CompatibleSound;
 
 import java.util.Collection;
 import java.util.List;
@@ -201,7 +201,7 @@ public interface Parser<T> {
                 if (object instanceof Sound)
                     return (Sound) object;
                 else {
-                    Sound s = CSound.get(object.toString());
+                    Sound s = CompatibleSound.get(object.toString());
                     if(s == null)
                         throw new IllegalArgumentException("Cannot find sound \"" + object.toString() + "\", is it supported?");
                     return s;

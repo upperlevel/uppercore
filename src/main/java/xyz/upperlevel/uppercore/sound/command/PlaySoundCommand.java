@@ -1,0 +1,22 @@
+package xyz.upperlevel.uppercore.sound.command;
+
+import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.command.*;
+
+public class PlaySoundCommand extends Command {
+    public PlaySoundCommand() {
+        super("playSound");
+        setDescription("Plays the sound to the player (used for testing)");
+    }
+
+    @Executor(sender = Sender.PLAYER)
+    public void run(CommandSender sender, @Argument("sound")Sound sound, @Optional @Argument("volume")Float volume, @Optional @Argument("pitch")Float pitch) {
+        Player player = (Player)sender;
+        if(volume != null && pitch != null)
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        else
+            player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+    }
+}
