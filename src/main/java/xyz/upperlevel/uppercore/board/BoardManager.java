@@ -70,12 +70,12 @@ public class BoardManager extends Manager<BoardId> implements Listener {
     }
 
     @EventHandler
-    public void on(PlayerJoinEvent event) {
+    public void onJoin(PlayerJoinEvent event) {
         initialize(event.getPlayer());
     }
 
     @EventHandler
-    public void on(PlayerQuitEvent event) {
+    public void onQuit(PlayerQuitEvent event) {
         quitPlayer(event.getPlayer());
     }
 }

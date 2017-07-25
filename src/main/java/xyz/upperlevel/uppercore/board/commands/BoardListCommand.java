@@ -2,7 +2,7 @@ package xyz.upperlevel.uppercore.board.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Registrable;
+import xyz.upperlevel.uppercore.Identifier;
 import xyz.upperlevel.uppercore.Registry;
 import xyz.upperlevel.uppercore.board.Board;
 import xyz.upperlevel.uppercore.board.BoardId;
@@ -37,7 +37,7 @@ public class BoardListCommand extends Command {
         } else
             boards = boards().get();
         StringJoiner str = new StringJoiner(GRAY + ", ");
-        for (Registrable<Board> board : boards)
+        for (Identifier<Board> board : boards)
             str.add(AQUA + board.getGlobalId());
         if (boards.size() > 0)
             sender.sendMessage(GOLD + "Showing " + boards.size() + " boards: " + str);
