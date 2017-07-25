@@ -5,15 +5,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.events.*;
 
-import java.util.*;
-
-import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
-import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * This manager is the class that manages the player histories in a stack-like system
@@ -26,44 +31,12 @@ import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
  * <p>
  * This system does not support recursion
  */
-public final class GuiSystem {
+@Getter
+public class GuiManager extends Manager<GuiId> implements Listener {
+    private final Map<Player, LinkedList<Gui>> histories = new HashMap<>();
+    private boolean called = false;
 
-    private static final Map<String, Gui> guis = new HashMap<>();//This class uses a lot of optimizations in the HashMap!
-    private static final Map<Plugin, GuiRegistry> registries = new HashMap<>();
-
-    private static final Map<Player, LinkedList<Gui>> histories = new HashMap<>();
-
-    @Getter
-    private static boolean called = false;
-
-    private GuiSystem() {
-    }
-
-    public static void register(Plugin plugin, String id, Gui gui) {
-        guis.put(obtainId(plugin, id), gui);
-    }
-
-    public static void register(Plugin plugin, GuiRegistry registry) {
-        registries.put(plugin, registry);
-    }
-
-    public static Gui get(String id) {
-        return guis.get(adaptId(id));
-    }
-
-    public static Gui get(Plugin plugin, String id) {
-        GuiRegistry reg = registries.get(plugin);
-        if (reg != null)
-            return reg.get(id);
-        return null;
-    }
-
-    public static GuiRegistry getRegistry(Plugin plugin) {
-        return registries.get(plugin);
-    }
-
-    public static Collection<Gui> get() {
-        return guis.values();
+    public GuiManager() {
     }
 
     /**
@@ -73,7 +46,7 @@ public final class GuiSystem {
      * @param gui         the gui to be opened
      * @param closeOthers if give to true the GUI histories would be cleaned
      */
-    public static void open(Player player, Gui gui, boolean closeOthers) {
+    public void open(Player player, Gui gui, boolean closeOthers) {
         if (called) return;
         called = true;
         try {
@@ -107,7 +80,7 @@ public final class GuiSystem {
      * @param player the player that is opening the api
      * @param gui    the gui to be opened
      */
-    public static void open(Player player, Gui gui) {
+    public void open(Player player, Gui gui) {
         open(player, gui, false);
     }
 
@@ -116,7 +89,7 @@ public final class GuiSystem {
      *
      * @param player the player
      */
-    public static void close(Player player) {
+    public void close(Player player) {
         if (called) return;
         called = true;
         try {
@@ -142,7 +115,7 @@ public final class GuiSystem {
         }
     }
 
-    public static void closeAll() {
+    public void closeAll() {
         if (called) return;
         called = true;
         try {
@@ -159,7 +132,7 @@ public final class GuiSystem {
      *
      * @param player the player
      */
-    public static void back(Player player) {
+    public void back(Player player) {
         if (called) return;
         called = true;
         try {
@@ -202,7 +175,7 @@ public final class GuiSystem {
      * @param player the player
      * @param gui    the Gui that will be appended instead of the last one
      */
-    public static void change(Player player, Gui gui) {
+    public void change(Player player, Gui gui) {
         if (called) return;
         called = true;
         try {
@@ -234,7 +207,7 @@ public final class GuiSystem {
      *
      * @param event the click event
      */
-    public static void onClick(InventoryClickEvent event) {
+    public void onClick(InventoryClickEvent event) {
         HumanEntity h = event.getWhoClicked();
         if (!(h instanceof Player))
             return;
@@ -255,7 +228,7 @@ public final class GuiSystem {
         }
     }
 
-    public static void reprint(Player player) {
+    public void reprint(Player player) {
         if (called) return;
         called = true;
         try {
@@ -276,19 +249,42 @@ public final class GuiSystem {
      * @param player the player
      * @return the player's Gui histories
      */
-    public static LinkedList<Gui> getHistory(Player player) {
+    public LinkedList<Gui> getHistory(Player player) {
         return histories.get(player);
     }
 
-    private static LinkedList<Gui> getOrCreate(Player player) {
+    private LinkedList<Gui> getOrCreate(Player player) {
         return histories.computeIfAbsent(player, (pl) -> new LinkedList<>());
     }
 
-    public static Map<Player, LinkedList<Gui>> getHistories() {
+    public Map<Player, LinkedList<Gui>> getHistories() {
         return Collections.unmodifiableMap(histories);
     }
 
-    public static GuiRegistry subscribe(Plugin plugin) {
-        return new GuiRegistry(plugin);
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        close(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        if (e.getPlayer() instanceof Player && !called) {
+            //Cannot call Inventory actions in an inventory event
+            Bukkit.getScheduler().runTaskLater(
+                    Uppercore.get(),
+                    () -> close((Player) e.getPlayer()),
+                    0
+            );
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent e) {
+        if (e.getClickedInventory() == e.getInventory())
+            onClick(e);
+        if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+            if (getHistory((Player) e.getWhoClicked()) != null)
+                e.setCancelled(true);
+        }
     }
 }

@@ -3,16 +3,18 @@ package xyz.upperlevel.uppercore.gui.arguments;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 import xyz.upperlevel.uppercore.gui.Gui;
-import xyz.upperlevel.uppercore.gui.GuiManager;
+import xyz.upperlevel.uppercore.gui.GuiId;
 
 import java.util.Collections;
 import java.util.List;
+
+import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 public class GuiArgumentParser implements ArgumentParser {
 
     @Override
     public List<Class<?>> getParsable() {
-        return Collections.singletonList(Gui.class);
+        return Collections.singletonList(GuiId.class);
     }
 
     @Override
@@ -22,7 +24,7 @@ public class GuiArgumentParser implements ArgumentParser {
 
     @Override
     public Object parse(Class<?> type, List<String> args) throws ParseException {
-        Gui gui = GuiManager.get(args.get(0));
+        GuiId gui = guis().get(args.get(0));
         if (gui == null)
             throw new ParseException(args.get(0), "gui");
         return gui;

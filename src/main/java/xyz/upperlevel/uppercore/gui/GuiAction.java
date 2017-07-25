@@ -2,18 +2,20 @@ package xyz.upperlevel.uppercore.gui;
 
 import xyz.upperlevel.uppercore.gui.link.Link;
 
+import static xyz.upperlevel.uppercore.Uppercore.guis;
+
 public class GuiAction {
 
     public static Link close() {
-        return GuiManager::close;
+        return guis()::close;
     }
 
     public static Link back() {
-        return GuiManager::back;
+        return guis()::back;
     }
 
     public static Link change(Gui gui) {
-        return p -> GuiManager.change(p, gui);
+        return p -> guis().change(p, gui);
     }
 
 

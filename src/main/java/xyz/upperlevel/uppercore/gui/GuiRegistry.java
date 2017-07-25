@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.gui;
 
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Registrable;
 import xyz.upperlevel.uppercore.Registry;
 
 import static xyz.upperlevel.uppercore.Uppercore.guis;
