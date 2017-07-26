@@ -51,41 +51,37 @@ public abstract class Registry<T extends Identifier<?>> {
     public void load(File file, Loader<T> loader) {
         logger.info("Attempting to load registrable(s) at: \"" + file.getPath() + "\"");
         if (file.exists()) {
-            if (!file.isDirectory()) {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-                String id = file.getName().replaceFirst("[.][^.]+$", "");
-                T entry;
-                try {
-                    entry = loader.load(plugin, id, Config.wrap(config));
-                } catch (InvalidConfigurationException e) {
-                    e.addLocalizer("in registrable " + id);
-                    throw e;
-                }
-                register(entry);
-                logger.info("Successfully loaded registrable: \"" + id + "\"");
-            } else {
-                File[] files = folder.listFiles();
-                if (files == null) {
-                    logger.severe("Error while reading files in: \"" + folder + "\"");
-                    return;
-                }
-                for (File sub : files)
-                    load(sub, loader);
-            }
-        } else {
-            logger.warning("File/directory not exists: " + file);
-            if (file.isDirectory()) {
-                file.mkdirs();
-            } else {
-                try {
-                    if (file.getParentFile() != null)
-                        file.getParentFile().mkdirs();
-                    file.createNewFile();
-                } catch (IOException ignored) {
-                }
-            }
-            logger.info("File/directory created!");
+            if (file.isDirectory())
+                loadFolder(file, loader);
+            else
+                loadFile(file, loader);
+        } else
+            logger.severe("File/directory not found: " + file);
+    }
+
+    public void loadFolder(File folder, Loader<T> loader) {
+        File[] files = folder.listFiles();
+        if (files == null) {
+            logger.severe("Error while reading files in: \"" + folder + "\"");
+            return;
         }
+        for (File sub : files)
+            load(sub, loader);
+    }
+
+    public T loadFile(File file, Loader<T> loader) {
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        String id = file.getName().replaceFirst("[.][^.]+$", "");
+        T entry;
+        try {
+            entry = loader.load(plugin, id, Config.wrap(config));
+        } catch (InvalidConfigurationException e) {
+            e.addLocalizer("in registrable " + id);
+            throw e;
+        }
+        register(entry);
+        logger.info("Successfully loaded registrable: \"" + id + "\"");
+        return entry;
     }
 
     private class RegistryLogger extends java.util.logging.Logger {
