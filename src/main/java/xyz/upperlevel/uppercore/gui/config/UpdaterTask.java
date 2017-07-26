@@ -24,9 +24,13 @@ public class UpdaterTask extends BukkitRunnable {
     }
 
     public void start() {
+        start(true);
+    }
+
+    public void start(boolean now) {
         stop();
         if (!started) {
-            runTaskTimer(Uppercore.get(), 0, interval);
+            runTaskTimer(Uppercore.get(), now ? 0 : interval, interval);
             started = true;
         }
     }

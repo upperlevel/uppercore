@@ -4,6 +4,7 @@ import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -36,14 +37,15 @@ public class BoardView {
 
         this.handle = Bukkit.getScoreboardManager().getNewScoreboard();
         this.objective = handle.registerNewObjective("scoreboard", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         for (int pos = 0; pos < lines.length; pos++)
             lines[pos] = new Line(pos);
     }
 
     private void open() {
-        if (board != null)
+        if (board != null) {
             player.setScoreboard(handle);
-        else
+        } else
             close();
     }
 
@@ -54,6 +56,12 @@ public class BoardView {
     public void setBoard(Board board) {
         this.board = board;
         render();
+        if (board != null && board.getUpdateInterval() > 0) {
+            // update task
+            updater.setInterval(board.getUpdateInterval());
+            updater.start(false);
+        } else
+            updater.stop();
     }
 
     public void render() {
@@ -64,13 +72,9 @@ public class BoardView {
             int pos = 0;
             for (; pos < lines.size(); pos++)
                 this.lines[pos].render(lines.get(pos), lines.size() - pos);
-            while (pos++ < this.lines.length)
+            for (; pos < this.lines.length; pos++)
                 this.lines[pos].clear();
-            // update task
-            updater.setInterval(board.getUpdateInterval());
-            updater.start();
-        } else
-            updater.stop();
+        }
         open();
     }
 
@@ -117,27 +121,26 @@ public class BoardView {
         public void render(String line, int position) {
             if (line != null) {
                 StringBuffer
-                        prefix_bfr = new StringBuffer(),
-                        entry_bfr = new StringBuffer(),
-                        suffix_bfr = new StringBuffer();
-                split(line, prefix_bfr, entry_bfr, suffix_bfr);
+                        pBfr = new StringBuffer(),
+                        eBfr = new StringBuffer(),
+                        sBfr = new StringBuffer();
+                split(line, pBfr, eBfr, sBfr);
                 // ENTRY
                 if (entry != null) {
-                    clear();
+                    clear(); // remove entry line
                 }
-                entry = entry_bfr.toString();
+                this.entry = format(eBfr.toString(), position);
                 entries.add(entry);
                 team.addEntry(entry);
-                objective.getScore(entry).setScore(lines.length - position);
+                objective.getScore(entry).setScore(position);
                 // PREFIX
-                prefix = prefix_bfr.toString();
+                prefix = pBfr.toString();
                 team.setPrefix(prefix);
                 // SUFFIX
-                suffix = suffix_bfr.toString();
+                suffix = sBfr.toString();
                 team.setSuffix(suffix);
-                this.prefix = prefix_bfr.toString();
-                this.entry = format(entry_bfr.toString(), position);
-                this.suffix = suffix_bfr.toString();
+                this.prefix = pBfr.toString();
+                this.suffix = sBfr.toString();
             } else {
                 clear();
             }

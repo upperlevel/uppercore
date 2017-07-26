@@ -26,8 +26,6 @@ public class HotbarManager extends Manager<HotbarId> implements Listener {
     private final Set<HotbarId> onJoin = new HashSet<>();
 
     public HotbarManager() {
-        ArgumentParserSystem.register();
-
         Bukkit.getOnlinePlayers().forEach(this::initialize);
         Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
     }
