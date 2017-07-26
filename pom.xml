@@ -63,7 +63,7 @@
         <dependency>
             <groupId>xyz.upperlevel.spigot.anvilgui</groupId>
             <artifactId>spigot-anvil-gui</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
         </dependency>
         <!-- lombok -->
         <dependency>
