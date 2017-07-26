@@ -26,17 +26,17 @@ public final class GuiUtil {
 
     @SuppressWarnings("deprecation")
     public static ItemStack stainedClay(DyeColor color, String name, String... lores) {
-        return setNameAndLores(new ItemStack(Material.STAINED_CLAY, 1, color.getDyeData()), name, lores);
+        return setNameAndLores(new ItemStack(Material.STAINED_CLAY, 1, color.getWoolData()), name, lores);
     }
 
     @SuppressWarnings("deprecation")
     public static ItemStack stainedGlassPane(DyeColor color, String name, String... lores) {
-        return setNameAndLores(new ItemStack(Material.STAINED_GLASS_PANE, 1, color.getDyeData()), name, lores);
+        return setNameAndLores(new ItemStack(Material.STAINED_GLASS_PANE, 1, color.getWoolData()), name, lores);
     }
 
     @SuppressWarnings("deprecation")
     public static ItemStack stainedGlass(DyeColor color, String name, String... lores) {
-        return setNameAndLores(new ItemStack(Material.STAINED_GLASS, 1, color.getDyeData()), name, lores);
+        return setNameAndLores(new ItemStack(Material.STAINED_GLASS, 1, color.getWoolData()), name, lores);
     }
 
     @SuppressWarnings("deprecation")
