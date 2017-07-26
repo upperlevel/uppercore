@@ -39,8 +39,8 @@ public class GuiRegistry extends Registry<GuiId> {
         getLogger().info("Successfully loaded gui \"" + out.getId() + "\"");
     }
 
-    public void loadFile(File file) {
-        loadFile(file, LOADER);
+    public GuiId loadFile(File file) {
+        return loadFile(file, LOADER);
     }
 
     public void loadFolder(File file) {

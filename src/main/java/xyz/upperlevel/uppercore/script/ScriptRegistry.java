@@ -42,8 +42,8 @@ public class ScriptRegistry extends Registry<ScriptId> {
         load(file, LOADER);
     }
 
-    public void loadFile(File file) {
-        loadFile(file, LOADER);
+    public ScriptId loadFile(File file) {
+        return loadFile(file, LOADER);
     }
 
     public void loadFolder(File file) {
