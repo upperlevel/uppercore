@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
 
 import javax.script.ScriptEngine;
@@ -20,26 +21,20 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static xyz.upperlevel.uppercore.util.RegistryUtil.adaptId;
-import static xyz.upperlevel.uppercore.util.RegistryUtil.obtainId;
-
-public class ScriptSystem {
+public class ScriptManager extends Manager<ScriptId> {
 
     @Getter
-    private static File classPath;
+    private File classPath;
 
     @Getter
-    private static ClassLoader classLoader;
+    private ClassLoader classLoader;
     @Getter
-    private static ScriptEngineManager engineManager;
+    private ScriptEngineManager engineManager;
     @Getter
-    private static Map<String, String> extensionsToEngineName;
+    private Map<String, String> extensionsToEngineName;
 
-    private static final Map<String, Script> scripts = new HashMap<>();
-    private static final Map<Plugin, ScriptRegistry> registries = new HashMap<>();
-
-    public static void load(File classPath, File scriptEngineConfig) {
-        ScriptSystem.classPath = classPath;
+    public void load(File classPath, File scriptEngineConfig) {
+        this.classPath = classPath;
         {//Create classLoader
             File[] files = classPath.listFiles();
             URL[] urls;
@@ -58,7 +53,7 @@ public class ScriptSystem {
                         .filter(Objects::nonNull)
                         .toArray(URL[]::new);
 
-            classLoader = new URLClassLoader(urls, ScriptSystem.class.getClassLoader());
+            classLoader = new URLClassLoader(urls, ScriptManager.class.getClassLoader());
         }
         engineManager = new ScriptEngineManager(classLoader);
         {//Print found engines
@@ -92,7 +87,7 @@ public class ScriptSystem {
         reloadConfig(scriptEngineConfig);
     }
 
-    public static void reloadConfig(File configFile) {
+    public void reloadConfig(File configFile) {
         extensionsToEngineName = new HashMap<>();
 
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
@@ -101,46 +96,19 @@ public class ScriptSystem {
             extensionsToEngineName.put(obj.getKey(), obj.getValue().toString());
     }
 
-    public static void register(Plugin plugin, String id, Script script) {
-        scripts.put(obtainId(plugin, id), script);
+    public void register(Plugin plugin, String id, Script script) {
+        register(new ScriptId(plugin, id, script));
     }
 
-    public static void register(Plugin plugin, ScriptRegistry registry) {
-        registries.put(plugin, registry);
-    }
-
-    public static Script get(String id) {
-        return scripts.get(adaptId(id));
-    }
-
-    public static Script get(Plugin plugin, String id) {
-        ScriptRegistry reg = registries.get(plugin);
-        if (reg != null)
-            return reg.get(id);
-        return null;
-    }
-
-    public static Map<String, Script> get() {
-        return Collections.unmodifiableMap(scripts);
-    }
-
-    public static ScriptRegistry getRegistry(Plugin plugin) {
-        return registries.get(plugin);
-    }
-
-    public static Map<Plugin, ScriptRegistry> getRegistries() {
-        return Collections.unmodifiableMap(registries);
-    }
-
-    public static void setupMetrics(Metrics metrics) {
+    public void setupMetrics(Metrics metrics) {
         metrics.addCustomChart(new Metrics.AdvancedPie("script_engines_used") {
 
             @Override
             public HashMap<String, Integer> getValues(HashMap<String, Integer> map) {
-                Map<String, Long> counts = get().values()
+                Map<String, Long> counts = get()
                         .stream()
                         .collect(
-                                Collectors.groupingBy(s -> getEngineName(s.getEngine()),
+                                Collectors.groupingBy((ScriptId s) -> getEngineName(s.get().getEngine()),
                                         Collectors.counting())
                         );
                 for (Map.Entry<String, Long> e : counts.entrySet())
@@ -159,8 +127,4 @@ public class ScriptSystem {
                 .replaceFirst("ScriptEngine", "")
                 .toLowerCase(Locale.ENGLISH);
     }
-
-
-
-    private ScriptSystem(){}
 }

@@ -9,12 +9,9 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.hotbar.Hotbar;
 import xyz.upperlevel.uppercore.hotbar.HotbarId;
-import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
-import xyz.upperlevel.uppercore.script.Script;
-import xyz.upperlevel.uppercore.script.ScriptSystem;
+import xyz.upperlevel.uppercore.script.ScriptId;
 
 import javax.script.ScriptException;
 import java.util.Collections;
@@ -23,6 +20,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import static xyz.upperlevel.uppercore.Uppercore.hotbars;
+import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
 @Getter
 public class RequireAction extends Action<RequireAction> {
@@ -72,14 +70,14 @@ public class RequireAction extends Action<RequireAction> {
     }
 
     private boolean testScript(Player player, String id) {
-        Script script = ScriptSystem.get(id);
+        ScriptId script = scripts().get(id);
         if (script == null) {
             Uppercore.logger().severe("Cannot find script '" + id + "'");
             return true;
         }
         Object res;
         try {
-            res = script.execute(player);
+            res = script.get().execute(player);
         } catch (ScriptException e) {
             Uppercore.logger().log(Level.SEVERE, "Error while executing script '" + id + "'", e);
             return true;

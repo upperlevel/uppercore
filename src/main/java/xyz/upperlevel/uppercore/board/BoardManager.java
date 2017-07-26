@@ -8,13 +8,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.hotbar.HotbarId;
-import xyz.upperlevel.uppercore.hotbar.HotbarView;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class BoardManager extends Manager<BoardId> implements Listener {
     private final Map<Player, BoardView> views = new HashMap<>();

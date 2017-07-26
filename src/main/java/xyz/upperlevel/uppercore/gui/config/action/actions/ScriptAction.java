@@ -8,15 +8,14 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.script.Script;
-import xyz.upperlevel.uppercore.script.ScriptSystem;
+import xyz.upperlevel.uppercore.script.ScriptId;
 
-import javax.script.Bindings;
 import javax.script.ScriptException;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Level;
+
+import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
 
 public class ScriptAction extends Action<ScriptAction> {
@@ -35,12 +34,13 @@ public class ScriptAction extends Action<ScriptAction> {
     @Override
     public void run(Player player) {
         if (script == null) {
-            script = ScriptSystem.get(id);
-            if (script == null) {
+            ScriptId scriptId = scripts().get(id);
+            if (scriptId == null) {
                 Uppercore.logger().severe("Cannot find script \"" + id + "\"");
                 script = Script.EMPTY;
                 return;
-            }
+            } else
+                script = scriptId.get();
         }
         if (script == Script.EMPTY) return;
         try {

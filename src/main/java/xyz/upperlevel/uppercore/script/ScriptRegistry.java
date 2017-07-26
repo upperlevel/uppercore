@@ -3,52 +3,62 @@ package xyz.upperlevel.uppercore.script;
 import com.google.common.io.Files;
 import lombok.Data;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.Loader;
+import xyz.upperlevel.uppercore.Registry;
+import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
+
+import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
 @Data
-public class ScriptRegistry {
+public class ScriptRegistry extends Registry<ScriptId> {
+    public static final Loader<ScriptId> LOADER = ScriptRegistry::load;
 
-    private final Plugin plugin;
-    private final File folder;
-    private final Map<String, Script> scripts = new HashMap<>();
-
-    ScriptRegistry(Plugin plugin) {
-        this.plugin = plugin;
-        this.folder = new File(plugin.getDataFolder(), "scripts");
-        ScriptSystem.register(plugin, this);
+    public ScriptRegistry(Plugin plugin) {
+        super(plugin, "scripts");
+        scripts().register(this);
     }
 
-    public void register(String id, Script gui) {
-        scripts.put(id, gui);
-        ScriptSystem.register(plugin, id, gui);
+    @Override
+    public void register(ScriptId script) {
+        super.register(script);
+        scripts().register(script);
     }
 
-    public Script get(String id) {
-        return scripts.get(id);
+    @Override
+    public ScriptId unregister(String id) {
+        ScriptId result = super.unregister(id);
+        if (result != null)
+            scripts().unregister(result);
+        return result;
     }
 
-    public Map<String, Script> getScripts() {
-        return Collections.unmodifiableMap(scripts);
+    public void load(File file) {
+        load(file, LOADER);
     }
 
-    public boolean load(String id, Script script) throws ScriptException {
-        return scripts.putIfAbsent(id, script) == null;
+    public void loadFile(File file) {
+        loadFile(file, LOADER);
     }
 
-    public Script load(String id, String script, String ext) throws ScriptException {
-        final String engineName = ScriptSystem.getExtensionsToEngineName().get(ext);
+    public void loadFolder(File file) {
+        loadFolder(file, LOADER);
+    }
+
+    @Override
+    protected void postLoad(File in, ScriptId out) {
+        Script script = out.get();
+        getLogger().info("Successfully loaded script \"" + out.getId() + "\" with " + script.getEngine().getClass().getSimpleName() + (script instanceof PrecompiledScript ? " (compiled)" : ""));
+    }
+
+    protected static ScriptId load(Plugin plugin, String id, String script, String ext) throws ScriptException {
+        ScriptManager manager = scripts();
+        final String engineName = manager.getExtensionsToEngineName().get(ext);
         if (engineName == null)
             throw new IllegalArgumentException("Cannot find engine for \"" + ext + "\"");
         ScriptEngine engine;
@@ -56,59 +66,25 @@ public class ScriptRegistry {
             final Thread currentThread = Thread.currentThread();
             final ClassLoader oldLoader = currentThread.getContextClassLoader();
             try {
-                currentThread.setContextClassLoader(ScriptSystem.getClassLoader());
-                engine = ScriptSystem.getEngineManager().getEngineByName(engineName);
+                currentThread.setContextClassLoader(manager.getClassLoader());
+                engine = manager.getEngineManager().getEngineByName(engineName);
             } finally {
                 currentThread.setContextClassLoader(oldLoader);
             }
         }
         if (engine == null)
             throw new IllegalStateException("Cannot find engine \"" + engineName + "\"");
-        Script s = Script.of(engine, script);
-        return load(id, s) ? s : null;
+        return new ScriptId(plugin, id, Script.of(engine, script));
     }
 
-    public Script load(File file) throws IOException, ScriptException {
+    protected static ScriptId load(Plugin plugin, String id, File file) {
         String fileName = file.getName();
         int lastDot = fileName.lastIndexOf('.');
-        final String id = fileName.substring(0, lastDot);
         final String ext = fileName.substring(lastDot + 1);
-        return load(id, Files.toString(file, StandardCharsets.UTF_8), ext);
-    }
-
-    public void loadFolder(File folder) {
-        plugin.getLogger().info("Attempting to load scripts at: \"" + folder.getPath() + "\"");
-        if (!folder.isDirectory()) {
-            plugin.getLogger().severe("Error: " + folder + " isn't a folder");
-            return;
+        try {
+            return load(plugin, id, Files.toString(file, StandardCharsets.UTF_8), ext);
+        } catch (IOException | ScriptException e) {
+            throw new InvalidConfigurationException("while loading script \"" + id + "\"");
         }
-        File[] files = folder.listFiles();
-        if (files == null) {
-            plugin.getLogger().severe("Error reading files in " + folder);
-            return;
-        }
-        for (File file : files) {
-            Script res;
-            try {
-                res = load(file);
-            } catch (FileNotFoundException e) {
-                plugin.getLogger().severe("Cannot find file " + e);
-                continue;
-            } catch (ScriptException e) {
-                plugin.getLogger().log(Level.SEVERE, "Script error in file " + file.getName(), e);
-                continue;
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Unknown error while reading script " + file.getName(), e);
-                continue;
-            }
-            if (res == null)
-                plugin.getLogger().severe("Cannot load file " + file.getName() + ": id already used!");
-            else
-                plugin.getLogger().info("Loaded script " + file.getName() + " with " + res.getEngine().getClass().getSimpleName() + (res instanceof PrecompiledScript ? " (compiled)" : ""));
-        }
-    }
-
-    public void loadDefaultFolder() {
-        loadFolder(folder);
     }
 }

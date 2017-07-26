@@ -7,12 +7,12 @@ import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.Executor;
 import xyz.upperlevel.uppercore.command.Optional;
 import xyz.upperlevel.uppercore.script.ScriptRegistry;
-import xyz.upperlevel.uppercore.script.ScriptSystem;
 
 import java.util.Collection;
 import java.util.StringJoiner;
 
 import static org.bukkit.ChatColor.*;
+import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
 public class ScriptListCommand extends Command {
 
@@ -25,10 +25,10 @@ public class ScriptListCommand extends Command {
     public void run(CommandSender sender, @Argument("plugin") @Optional Plugin plugin) {
         Collection<String> scriptNames;
         if (plugin != null) {
-            ScriptRegistry reg = ScriptSystem.getRegistry(plugin);
-            scriptNames = reg.getScripts().keySet();
+            ScriptRegistry reg = (ScriptRegistry) scripts().get(plugin);
+            scriptNames = reg.getEntries().keySet();
         } else
-            scriptNames = ScriptSystem.get().keySet();
+            scriptNames = scripts().getEntries().keySet();
         StringJoiner str = new StringJoiner(GRAY + ", ");
         for (String name : scriptNames)
             str.add(AQUA + name);

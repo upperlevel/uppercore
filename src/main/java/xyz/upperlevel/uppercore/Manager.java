@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,10 @@ public class Manager<T extends Identifier<?>> {
 
     public Registry<T> get(Plugin plugin) {
         return registries.get(plugin);
+    }
+
+    public Map<String, T> getEntries() {
+        return Collections.unmodifiableMap(entries);
     }
 
     public Collection<Registry<T>> getRegistries() {

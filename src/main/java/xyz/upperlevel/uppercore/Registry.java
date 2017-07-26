@@ -1,14 +1,10 @@
 package xyz.upperlevel.uppercore;
 
 import lombok.Data;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,18 +66,21 @@ public abstract class Registry<T extends Identifier<?>> {
     }
 
     public T loadFile(File file, Loader<T> loader) {
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         String id = file.getName().replaceFirst("[.][^.]+$", "");
         T entry;
         try {
-            entry = loader.load(plugin, id, Config.wrap(config));
+            entry = loader.load(plugin, id, file);
         } catch (InvalidConfigurationException e) {
             e.addLocalizer("in registrable " + id);
             throw e;
         }
         register(entry);
-        logger.info("Successfully loaded registrable: \"" + id + "\"");
+        postLoad(file, entry);
         return entry;
+    }
+
+    protected void postLoad(File in, T out) {
+        logger.info("Successfully loaded registrable: \"" + out.getId() + "\"");
     }
 
     private class RegistryLogger extends java.util.logging.Logger {

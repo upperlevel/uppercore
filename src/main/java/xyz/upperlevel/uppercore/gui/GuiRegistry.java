@@ -9,7 +9,7 @@ import java.io.File;
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 public class GuiRegistry extends Registry<GuiId> {
-    public static Loader<GuiId> LOADER = (plugin, id, config) -> new GuiId(plugin, id, new ChestGui(plugin, config));
+    public static Loader<GuiId> LOADER = Loader.of((plugin, id, config) -> new GuiId(plugin, id, new ChestGui(plugin, config)));
 
     public GuiRegistry(Plugin plugin) {
         super(plugin, "guis");
@@ -32,6 +32,11 @@ public class GuiRegistry extends Registry<GuiId> {
 
     public void load(File file) {
         load(file, LOADER);
+    }
+
+    @Override
+    protected void postLoad(File in, GuiId out) {
+        getLogger().info("Successfully loaded gui \"" + out.getId() + "\"");
     }
 
     public void loadFile(File file) {

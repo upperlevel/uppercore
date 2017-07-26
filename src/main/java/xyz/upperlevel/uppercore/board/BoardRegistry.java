@@ -3,6 +3,8 @@ package xyz.upperlevel.uppercore.board;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Registry;
 
+import java.io.File;
+
 import static xyz.upperlevel.uppercore.Uppercore.boards;
 
 public class BoardRegistry extends Registry<BoardId> {
@@ -23,5 +25,10 @@ public class BoardRegistry extends Registry<BoardId> {
         if (result != null)
             boards().unregister(result);
         return result;
+    }
+
+    @Override
+    protected void postLoad(File in, BoardId out) {
+        getLogger().info("Successfully loaded board \"" + out.getId() + "\"");
     }
 }

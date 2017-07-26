@@ -10,7 +10,7 @@ import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.script.ScriptSystem;
+import xyz.upperlevel.uppercore.script.ScriptManager;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -25,6 +25,7 @@ public class Uppercore extends JavaPlugin {
     private BoardManager boards;
     private GuiManager guis;
     private HotbarManager hotbars;
+    private ScriptManager scripts;
 
     private Metrics metrics;
 
@@ -38,23 +39,24 @@ public class Uppercore extends JavaPlugin {
         PlaceholderUtil.tryHook();
         EconomyManager.enable();
 
-        //ScriptSystem setup
-        File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
-        if (!scriptsConfigFile.exists())
-            saveResource(SCRIPT_CONFIG, false);
-        ScriptSystem.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
-
-        //Metrics custom data setup
-        ScriptSystem.setupMetrics(metrics);
-
         //Command setup
 
         boards = new BoardManager();
         guis = new GuiManager();
         hotbars = new HotbarManager();
+        scripts = new ScriptManager();
+
+        //ScriptManager setup
+        File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
+        if (!scriptsConfigFile.exists())
+            saveResource(SCRIPT_CONFIG, false);
+        scripts.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
+
+        //Metrics custom data setup
+        scripts.setupMetrics(metrics);
+
 
         //Gui setup
-        PluginManager pluginManager = getServer().getPluginManager();
         new UppercoreCommand().subscribe();
     }
 
@@ -76,6 +78,10 @@ public class Uppercore extends JavaPlugin {
 
     public static GuiManager guis() {
         return instance.guis;
+    }
+
+    public static ScriptManager scripts() {
+        return instance.scripts;
     }
 
     public static HotbarManager hotbars() {

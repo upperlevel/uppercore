@@ -1,9 +1,13 @@
 package xyz.upperlevel.uppercore;
 
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.Config;
+
+import java.io.File;
 
 public interface Loader<T> {
+    T load(Plugin plugin, String id, File config);
 
-    T load(Plugin plugin, String id, Config config);
+    static <T> Loader<T> of(ConfigLoader<T> loader) {
+        return loader.normalize();
+    }
 }

@@ -10,7 +10,7 @@ import xyz.upperlevel.uppercore.script.Script;
 import javax.script.ScriptEngine;
 
 import static org.bukkit.ChatColor.*;
-import static xyz.upperlevel.uppercore.script.ScriptSystem.getEngineName;
+import static xyz.upperlevel.uppercore.script.ScriptManager.getEngineName;
 
 public class ScriptInfoCommand extends Command {
     public ScriptInfoCommand() {
