@@ -25,7 +25,7 @@ public class CompatibleSound {
     //SETUP METHODS
 
     static {
-        OLD = NmsVersion.MAJOR < 9;
+        OLD = NmsVersion.MAJOR <= 1 && NmsVersion.MINOR < 9;
         translator = new HashMap<>();
         if(OLD)
             setupOld();
