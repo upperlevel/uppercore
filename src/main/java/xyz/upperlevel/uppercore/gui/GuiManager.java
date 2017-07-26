@@ -37,6 +37,7 @@ public class GuiManager extends Manager<GuiId> implements Listener {
     private boolean called = false;
 
     public GuiManager() {
+        Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
     }
 
     /**

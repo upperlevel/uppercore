@@ -284,4 +284,100 @@ public class ChestGui implements Gui {
             throw e;
         }
     }
+
+    public static Builder builder(int size) {
+        return new Builder(size);
+    }
+
+    public static class Builder {
+        private final ChestGui gui;
+
+        public Builder(int size) {
+            gui = new ChestGui(size, "");
+        }
+
+        public Builder(ChestGui gui) {
+            this.gui = gui;
+        }
+
+        public Builder type(InventoryType type) {
+            gui.type = type;
+            return this;
+        }
+
+        public Builder title(String title) {
+            gui.setTitle(title);
+            return this;
+        }
+
+        public Builder add(ItemStack item) {
+            gui.addItem(item);
+            return this;
+        }
+
+        public Builder add(ItemStack item, Link link) {
+            gui.addItem(item, link);
+            return this;
+        }
+
+        public Builder add(ItemResolver item, Link link) {
+            gui.addIcon(Icon.of(item, link));
+            return this;
+        }
+
+        public Builder add(Supplier<ItemStack> item, Link link) {
+            gui.addIcon(Icon.of(item, link));
+            return this;
+        }
+
+        public Builder add(Icon icon) {
+            gui.addIcon(icon);
+            return this;
+        }
+
+        public Builder addAll(ItemStack... items) {
+            gui.addItems(items);
+            return this;
+        }
+
+        public Builder addAll(Icon... icons) {
+            gui.addIcons(icons);
+            return this;
+        }
+
+        public Builder set(int slot, ItemStack item, Link link) {
+            gui.setItem(slot, item, link);
+            return this;
+        }
+
+        public Builder set(int slot, ItemStack item) {
+            gui.setItem(slot, item);
+            return this;
+        }
+
+        public Builder set(int slot, Icon icon) {
+            gui.setIcon(slot, icon);
+            return this;
+        }
+
+        public Builder set(int[] slots, ItemStack item) {
+            gui.setItem(slots, item);
+            return this;
+        }
+
+        public Builder set(int[] slots, Icon icon) {
+            gui.setIcon(slots, icon);
+            return this;
+        }
+
+        public Builder updateInterval(int interval) {
+            gui.updateInterval = interval;
+            return this;
+        }
+
+        public ChestGui build() {
+            return gui;
+        }
+    }
+
 }

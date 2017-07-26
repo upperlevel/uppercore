@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.gui.config;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,6 +24,7 @@ public class UpdaterTask extends BukkitRunnable {
     }
 
     public void start() {
+        stop();
         if (!started) {
             runTaskTimer(Uppercore.get(), 0, interval);
             started = true;

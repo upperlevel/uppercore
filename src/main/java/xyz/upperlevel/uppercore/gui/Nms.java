@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.gui;
 
+import net.wesjd.anvilgui.version.impl.FallbackWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -69,8 +70,7 @@ public class Nms {
 
 
     protected static void handleException(Exception e) {
-        return;
-        //throw new FallbackWrapper.UnsupportedVersionException(version, e);
+        throw new FallbackWrapper.UnsupportedVersionException(version, e);
     }
 
 

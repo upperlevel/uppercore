@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
 
 import java.util.HashSet;
 import java.util.List;
@@ -21,12 +22,14 @@ public class BoardView {
     public static final int MAX_SUFFIX_CHARS = 16;
 
     private final Player player;
-    private Board board;
-
     private final Scoreboard handle;
     private final Objective objective;
+
+    // BOARD
+    private Board board;
     private final Line[] lines = new Line[MAX_LINES];
     private final Set<String> entries = new HashSet<>();
+    private final UpdaterTask updater = new UpdaterTask(this::render);
 
     public BoardView(Player player) {
         this.player = player;
@@ -55,16 +58,19 @@ public class BoardView {
 
     public void render() {
         if (board != null) {
-            // TITLE
-            objective.setDisplayName(board.getTitle().render(player));
-            // LINES
+            // scoreboard
+            objective.setDisplayName(board.getTitle().resolve(player));
             List<String> lines = board.render(player);
             int pos = 0;
             for (; pos < lines.size(); pos++)
                 this.lines[pos].render(lines.get(pos), lines.size() - pos);
             while (pos++ < this.lines.length)
                 this.lines[pos].clear();
-        }
+            // update task
+            updater.setInterval(board.getUpdateInterval());
+            updater.start();
+        } else
+            updater.stop();
         open();
     }
 

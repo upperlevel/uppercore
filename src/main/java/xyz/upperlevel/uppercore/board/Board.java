@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.board;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
@@ -11,6 +10,7 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,40 +19,33 @@ import static lombok.AccessLevel.NONE;
 
 @Data
 public class Board {
-    private Title title;
-    private final TextArea area = new TextArea();
+    private final PlaceholderValue<String> title;
+    private final List<Area> areas = new LinkedList<>();
     private int updateInterval;
     private final PlaceholderRegistry placeholders = PlaceholderRegistry.create();
 
-    public Board() {
+    public Board(PlaceholderValue<String> title) {
+        this.title = title;
     }
 
     @SuppressWarnings("unchecked")
     public Board(Config config) {
-        Object title = config.get("title");
-        if (title instanceof String)
-            this.title = new Title(PlaceholderUtil.process((String) title));
-        else if (title instanceof Map)
-            this.title = new Title(Config.wrap((Map<String, Object>) title));
-
+        this.title = config.getMessage("title");
         this.updateInterval = config.getInt("update-interval", -1);
-
-        List<Object> lines = config.getList("lines");
-        for (Object line : lines) {
-            if (line instanceof String)
-                area.addLine(new Line(PlaceholderUtil.process((String) line)));
-            else if (line instanceof Map)
-                area.addLine(new Line(Config.wrap((Map<String, Object>) line)));
+        if (config.has("lines")) {
+            TextArea area = new TextArea();
+            area.add(config.getMessageList("lines"));
+            areas.add(area);
         }
+    }
+
+    public void add(Area area) {
+        areas.add(area);
     }
 
     public List<String> render(Player player) {
         List<String> result = new ArrayList<>();
-        Area current = area;
-        do {
-            result.addAll(current.render(player));
-            current = area.getNext();
-        } while (current != null);
+        areas.forEach(area -> result.addAll(area.render(player, placeholders)));
         return result;
     }
 
@@ -65,81 +58,31 @@ public class Board {
         }
     }
 
-    // TITLE
-    @Data
-    public class Title {
-        private PlaceholderValue<String> text;
-        private int updateInterval;
-        private final PlaceholderRegistry placeholders = PlaceholderRegistry.create(Board.this.placeholders);
-
-        public Title() {
-        }
-
-        public Title(PlaceholderValue<String> text) {
-            this.text = text;
-        }
-
-        public Title(Config config) {
-            this.text = config.getMessage("text");
-            this.updateInterval = config.getInt("update-interval");
-        }
-
-        public String render(Player player) {
-            return text.resolve(player, placeholders);
-        }
-    }
-
-    // LINE
-    public class Line {
-        private PlaceholderValue<String> text;
-        private int updateInterval;
-        private final PlaceholderRegistry placeholders = PlaceholderRegistry.create(Board.this.placeholders);
-
-        public Line() {
-        }
-
-        public Line(PlaceholderValue<String> text) {
-            this.text = text;
-        }
-
-        public Line(Config config) {
-            this.text = config.getMessage("text");
-            this.updateInterval = config.getInt("update-interval");
-        }
-
-        public boolean isEmpty() {
-            return text == null;
-        }
-
-        public String render(Player player) {
-            return text.resolve(player, placeholders);
-        }
-    }
-
     // AREA
-    @Data
-    public abstract class Area {
-        @Setter(NONE)
-        private Area next;
-        private int updateInterval;
-        private final PlaceholderRegistry placeholders = PlaceholderRegistry.create(Board.this.placeholders);
+    public interface Area {
+        void update();
 
-        public Area append(Area area) {
-            next = area;
-            return next;
-        }
-
-        public abstract void update();
-
-        public abstract List<String> render(Player player);
+        List<String> render(Player player, PlaceholderRegistry session);
     }
 
     // TEXT AREA
-    public class TextArea extends Area {
-        private final List<Line> lines = new ArrayList<>();
+    @Data
+    public class TextArea implements Area {
+        private List<PlaceholderValue<String>> lines = new ArrayList<>();
 
-        public void addLine(Line line) {
+        public TextArea() {
+        }
+
+        public TextArea(List<PlaceholderValue<String>> lines) {
+            this.lines = lines;
+        }
+
+        public void add(PlaceholderValue<String> line) {
             lines.add(line);
+        }
+
+        public void add(List<PlaceholderValue<String>> lines) {
+            this.lines.addAll(lines);
         }
 
         @Override
@@ -147,10 +90,9 @@ public class Board {
         }
 
         @Override
-        public List<String> render(Player player) {
+        public List<String> render(Player player, PlaceholderRegistry session) {
             return lines.stream()
-                    .filter(Line::isEmpty)
-                    .map(line -> line.render(player))
+                    .map(line -> line.resolve(player, session))
                     .collect(Collectors.toList());
         }
     }

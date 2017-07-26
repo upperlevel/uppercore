@@ -7,6 +7,7 @@ import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -29,7 +30,7 @@ public abstract class Registry<T extends Identifier<?>> {
     }
 
     public void register(T entry) {
-        entries.put(id, entry);
+        entries.put(entry.getId(), entry);
     }
 
     public T unregister(String id) {
@@ -37,7 +38,7 @@ public abstract class Registry<T extends Identifier<?>> {
     }
 
     public T get(String id) {
-        return entries.get(id);
+        return entries.get(id.toLowerCase(ENGLISH));
     }
 
     public Collection<T> get() {
