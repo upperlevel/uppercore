@@ -44,9 +44,17 @@ public final class ConfigUtils {
     public static Color parseColor(String s) {
         String[] parts = s.split(";");
         if (parts.length != 3) {
-            Color color = COLOR_BY_NAME.get(s.toUpperCase());
-            if(color == null)
-                throw new InvalidConfigurationException("Invalid color \"" + s + "\", use \"R;G;B\" or color name!");
+            Color color;
+            if (s.charAt(0) == '#' && s.length() >= 7) {//Hex color
+                try {
+                    color = Color.fromRGB(Integer.parseUnsignedInt(s.substring(1, 7), 16));
+                } catch (IllegalArgumentException e) {
+                    color = null;
+                }
+            } else
+                color = COLOR_BY_NAME.get(s.toUpperCase());
+            if (color == null)
+                throw new InvalidConfigurationException("Invalid color \"" + s + "\", use \"R;G;B\", \"#RRGGBB\" or color name!");
             else return color;
         } else
             return Color.fromRGB(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
