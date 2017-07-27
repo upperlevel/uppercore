@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.placeholder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
@@ -64,6 +65,7 @@ public interface PlaceholderValue<T> {
 
     static PlaceholderValue<String> stringValue(String string) {
         if (string == null) return null;
+        string = ChatColor.translateAlternateColorCodes('&', string);
         if (PlaceholderUtil.hasPlaceholders(string))
             return new StringPlaceholderValue(string);
         else

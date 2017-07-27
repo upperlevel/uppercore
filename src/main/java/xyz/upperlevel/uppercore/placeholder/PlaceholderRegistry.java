@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.placeholder;
 
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -63,6 +64,34 @@ public interface PlaceholderRegistry<T extends PlaceholderRegistry<T>> {
 
     static PlaceholderRegistry wrap(Map<String, Placeholder> handle) {
         return new SimplePlaceholderRegistry(handle);
+    }
+
+    static PlaceholderRegistry wrap(String k1, String v1) {
+        return wrap(ImmutableMap.of(k1, Placeholder.of(v1)));
+    }
+
+    static PlaceholderRegistry wrap(String k1, String v1, String k2, String v2) {
+        return wrap(ImmutableMap.of(
+                k1, Placeholder.of(v1),
+                k2, Placeholder.of(v2)
+        ));
+    }
+
+    static PlaceholderRegistry wrap(String k1, String v1, String k2, String v2, String k3, String v3) {
+        return wrap(ImmutableMap.of(
+                k1, Placeholder.of(v1),
+                k2, Placeholder.of(v2),
+                k3, Placeholder.of(v3)
+        ));
+    }
+
+    static PlaceholderRegistry wrap(String k1, String v1, String k2, String v2, String k3, String v3, String k4, String v4) {
+        return wrap(ImmutableMap.of(
+                k1, Placeholder.of(v1),
+                k2, Placeholder.of(v2),
+                k3, Placeholder.of(v3),
+                k4, Placeholder.of(v4)
+        ));
     }
 
     static PlaceholderRegistry def() {

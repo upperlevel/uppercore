@@ -10,6 +10,7 @@ import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
+import xyz.upperlevel.uppercore.message.MessageManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.script.ScriptManager;
 
@@ -30,12 +31,16 @@ public class Uppercore extends JavaPlugin {
 
     private Metrics metrics;
 
+    private MessageManager messages;
+
     @Override
     public void onEnable() {
         instance = this;
 
         //Metrics setup
         metrics = new Metrics(this);
+
+        messages = MessageManager.load(this);
 
         PlaceholderUtil.tryHook();
         EconomyManager.enable();
@@ -89,5 +94,9 @@ public class Uppercore extends JavaPlugin {
 
     public static HotbarManager hotbars() {
         return instance.hotbars;
+    }
+
+    public static MessageManager messages() {
+        return instance.messages;
     }
 }
