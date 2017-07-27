@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.sound;
 
+import lombok.Getter;
 import org.bukkit.Sound;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.util.NmsVersion;
@@ -12,6 +13,7 @@ import static org.bukkit.Sound.valueOf;
 
 public class CompatibleSound {
     public static final boolean OLD;
+    @Getter
     private static Map<String, Sound> translator;
 
     public static Sound getRaw(String str) {

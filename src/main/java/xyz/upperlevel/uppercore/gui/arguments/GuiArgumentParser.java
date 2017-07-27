@@ -1,8 +1,9 @@
 package xyz.upperlevel.uppercore.gui.arguments;
 
+import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
-import xyz.upperlevel.uppercore.gui.Gui;
 import xyz.upperlevel.uppercore.gui.GuiId;
 
 import java.util.Collections;
@@ -28,5 +29,10 @@ public class GuiArgumentParser implements ArgumentParser {
         if (gui == null)
             throw new ParseException(args.get(0), "gui");
         return gui;
+    }
+
+    @Override
+    public List<String> onTabCompletion(CommandSender sender, Class<?> type, List<String> args) {
+        return ArgumentParserSystem.tabComplete(guis().getEntries().keySet(), args);
     }
 }

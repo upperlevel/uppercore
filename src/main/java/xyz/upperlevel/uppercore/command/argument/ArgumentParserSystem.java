@@ -1,15 +1,21 @@
 package xyz.upperlevel.uppercore.command.argument;
 
 import lombok.NonNull;
+import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 import xyz.upperlevel.uppercore.command.argument.exceptions.UnparsableTypeException;
 import xyz.upperlevel.uppercore.command.arguments.*;
 import xyz.upperlevel.uppercore.gui.arguments.GuiArgumentParser;
 import xyz.upperlevel.uppercore.hotbar.arguments.HotbarArgumentParser;
 import xyz.upperlevel.uppercore.board.arguments.BoardArgumentParser;
+import xyz.upperlevel.uppercore.script.arguments.ScriptArgumentParser;
 import xyz.upperlevel.uppercore.sound.argument.SoundArgumentParser;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
 public final class ArgumentParserSystem {
 
@@ -37,6 +43,7 @@ public final class ArgumentParserSystem {
         register(new BoardArgumentParser());
 
         register(new SoundArgumentParser());
+        register(new ScriptArgumentParser());
     }
 
     public static void register(@NonNull ArgumentParser parser) {
@@ -77,5 +84,24 @@ public final class ArgumentParserSystem {
         if (parser == null)
             throw new UnparsableTypeException(type.getName());
         return parser.parse(type, args);
+    }
+
+    public static List<String> tabComplete(Collection<String> in, List<String> args) {
+        if (args.isEmpty())
+            return new ArrayList<>(in);
+        String arg = args.get(0);
+        return in.stream()
+                .filter(s -> StringUtil.startsWithIgnoreCase(s, arg))
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> tabComplete(Stream<String> in, List<String> args) {
+        if (args.isEmpty())
+            return in.collect(Collectors.toList());
+        String arg = args.get(0);
+        return in
+                .filter(s -> StringUtil.startsWithIgnoreCase(s, arg))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
     }
 }

@@ -1,9 +1,11 @@
 package xyz.upperlevel.uppercore.board.arguments;
 
+import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.Identifier;
-import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
-import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 import xyz.upperlevel.uppercore.board.Board;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
+import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,5 +30,10 @@ public class BoardArgumentParser implements ArgumentParser {
         if (board == null)
             throw new ParseException(args.get(0), "board");
         return board.get();
+    }
+
+    @Override
+    public List<String> onTabCompletion(CommandSender sender, Class<?> type, List<String> args) {
+        return ArgumentParserSystem.tabComplete(boards().getEntries().keySet(), args);
     }
 }
