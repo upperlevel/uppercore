@@ -4,9 +4,11 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -54,6 +56,30 @@ public abstract class NodeCommand extends Command {
             return;
         }
         cmd.execute(sender, args.subList(1, args.size()));
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, List<String> args) {
+        if(args.isEmpty()) {
+            return commands.stream()
+                    .filter(c -> c.canExecute(sender))
+                    .map(Command::getName)
+                    .collect(Collectors.toList());
+        } else if(args.size() > 1) {
+            Command sub = getCommand(args.get(0));
+            if(sub != null)
+                return sub.tabComplete(sender, args.subList(1, args.size()));
+            else
+                return emptyList();
+        } else {
+            String arg = args.get(0);
+
+            return commands.stream()
+                    .filter(c -> c.canExecute(sender))
+                    .map(Command::getName)
+                    .filter(s -> StringUtil.startsWithIgnoreCase(s, arg))
+                    .collect(Collectors.toList());
+        }
     }
 
     public class HelpCommand extends Command {

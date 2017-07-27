@@ -7,7 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
 import xyz.upperlevel.uppercore.command.argument.exceptions.UnparsableTypeException;
@@ -19,11 +22,12 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static lombok.AccessLevel.NONE;
 import static org.bukkit.ChatColor.*;
 
 @Data
-public abstract class Command implements CommandExecutor {
+public abstract class Command implements CommandExecutor, TabCompleter {
 
     private NodeCommand parent;
 
@@ -227,19 +231,20 @@ public abstract class Command implements CommandExecutor {
                     return;
                 }
             } else {
-                if (ArgumentParserSystem.isParsable(type)) {
-                    int used = ArgumentParserSystem.getArgumentsCount(type);
-                    if (used < 0)
-                        used = args.size() - arg;
-                    try {
-                        result.add(ArgumentParserSystem.parse(type, args.subList(arg, arg + used)));
-                    } catch (ParseException e) {
-                        sender.sendMessage(e.getMessageFormatted());
-                        return;
-                    }
-                    arg += used;
-                } else
+                ArgumentParser parser = ArgumentParserSystem.getParser(type);
+                if (parser == null)
                     throw new UnparsableTypeException("Unparsable type \"" + type.getName() + "\" in commands \"" + getName() + "\"");
+
+                int used = parser.getArgumentsCount();
+                if (used < 0)
+                    used = args.size() - arg;
+                try {
+                    result.add(parser.parse(type, args.subList(arg, arg + used)));
+                } catch (ParseException e) {
+                    sender.sendMessage(e.getMessageFormatted());
+                    return;
+                }
+                arg += used;
             }
         }
         try {
@@ -249,6 +254,32 @@ public abstract class Command implements CommandExecutor {
             e.printStackTrace();
             sender.sendMessage(RED + "An error occurred during the execution of this commands.");
         }
+    }
+
+    public boolean canExecute(CommandSender sender) {
+        return permission == null || sender.hasPermission(permission);
+    }
+
+    public List<String> tabComplete(CommandSender sender, List<String> args) {
+        int arg = 0;
+        for (int i = 1; i < executor.getParameterCount(); i++) {
+            Parameter parameter = executor.getParameters()[i];
+            Class<?> type = parameter.getType();
+            ArgumentParser parser = ArgumentParserSystem.getParser(type);
+            if (parser == null)
+                throw new UnparsableTypeException("Unparsable type \"" + type.getName() + "\" in commands \"" + getName() + "\"");
+            if (arg >= args.size()) {
+                return parser.onTabCompletion(sender, type, Collections.emptyList());
+            } else {
+                int used = parser.getArgumentsCount();
+
+                if(used < 0 || used >= args.size() + arg)
+                    return parser.onTabCompletion(sender, type, args.subList(arg, args.size()));
+                else
+                    arg += used;
+            }
+        }
+        return emptyList();
     }
 
     /**
@@ -263,11 +294,17 @@ public abstract class Command implements CommandExecutor {
         }
         setDescription(cmd.getDescription());
         cmd.setExecutor(this);
+        cmd.setTabCompleter(this);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
         execute(sender, Arrays.asList(args));
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String alias, String[] args) {
+        return tabComplete(sender, Arrays.asList(args));
     }
 }

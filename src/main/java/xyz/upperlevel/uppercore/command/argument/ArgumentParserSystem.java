@@ -53,6 +53,10 @@ public final class ArgumentParserSystem {
         parsers.forEach(ArgumentParserSystem::register);
     }
 
+    public static ArgumentParser getParser(Class<?> type) {
+        return parsersByParsable.get(type);
+    }
+
     public static boolean isParsable(Class<?> type) {
         return parsersByParsable.containsKey(type);
     }
