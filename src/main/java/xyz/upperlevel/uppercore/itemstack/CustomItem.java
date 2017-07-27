@@ -42,6 +42,17 @@ public class CustomItem implements ItemResolver {
         registerDefCustomDeserializers();
     }
 
+    public CustomItem(CustomItem item) {
+        this.type = item.type;
+        this.data = item.data;
+        this.amount = item.amount;
+        this.displayName = item.displayName;
+        this.lore = item.lore;
+        this.flags = item.flags;
+        this.enchantments = item.enchantments;
+        this.placeholders = item.placeholders;
+    }
+
     public CustomItem(Material type, Config config, PlaceholderRegistry placeholders) {
         this.type = type;
         this.placeholders = placeholders;
@@ -143,6 +154,7 @@ public class CustomItem implements ItemResolver {
     @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(", ");
+        addStringDetails(joiner);
         return '{' + joiner.toString() + '}';
     }
 
@@ -156,5 +168,7 @@ public class CustomItem implements ItemResolver {
         joiner.add("enchantments: " + enchantments);
     }
 
-
+    public CustomItem copy() {
+        return new CustomItem(this);
+    }
 }

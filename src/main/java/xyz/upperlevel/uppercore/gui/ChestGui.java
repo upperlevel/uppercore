@@ -32,28 +32,60 @@ public class ChestGui implements Gui {
     private final Map<Player, UpdaterTask> updaters = new HashMap<>();
 
     /**
-     * Initializes the gui by its size and title. The id can be set to null if not needed.
+     * Initializes the gui by copying another gui
+     *
+     * @param gui the gui to copy
+     */
+    public ChestGui(ChestGui gui) {
+        this.title = gui.title;
+        this.size = gui.size;
+        this.type = gui.type;
+        this.icons = Arrays.copyOf(icons, icons.length);
+        setUpdateInterval(gui.updateInterval);
+    }
+
+    /**
+     * Initializes the gui by its size and title.
      *
      * @param size  the size of the gui
      * @param title the title of the gui
      */
-    public ChestGui(int size, String title) {
-        this.title = PlaceholderValue.stringValue(title);
+    public ChestGui(int size, PlaceholderValue<String> title) {
+        this.title = title;
         this.size = size;
         this.icons = new Icon[size];
         onSetup();
     }
 
     /**
-     * Initializes the gui by its type and title. The id can be set to null if not needed.
+     * Initializes the gui by its type and title.
      *
      * @param type  the type of the gui
      * @param title the title of the gui
      */
-    public ChestGui(InventoryType type, String title) {
+    public ChestGui(InventoryType type, PlaceholderValue<String> title) {
         this.type = type;
-        this.title = PlaceholderValue.stringValue(title);
+        this.title = title;
         this.icons = new Icon[type.getDefaultSize()];
+        onSetup();
+    }
+
+    /**
+     * Initializes the gui by its size or type and title.
+     *
+     * @param size  the size of the gui
+     * @param title the title of the gui
+     */
+    public ChestGui(int size, InventoryType type, PlaceholderValue<String> title) {
+        this.title = title;
+        this.size = size;
+        this.type = type;
+        if(size >= 0) {
+            this.icons = new Icon[size];
+            if(type != null)
+                throw new IllegalArgumentException("Cannot have both size and type present!");
+        } else
+            this.icons = new Icon[type.getDefaultSize()];
         onSetup();
     }
 
@@ -91,6 +123,10 @@ public class ChestGui implements Gui {
 
     public void setTitle(PlaceholderValue<String> title) {
         this.title = title;
+    }
+
+    public String solveTitle(Player player) {
+        return title.resolve(player);
     }
 
     /**
@@ -259,13 +295,17 @@ public class ChestGui implements Gui {
     public Inventory create(Player player) {
         Inventory inv;
         if (type != null)
-            inv = Bukkit.createInventory(null, type, title.resolve(player));
+            inv = Bukkit.createInventory(null, type, solveTitle(player));
         else
-            inv = Bukkit.createInventory(null, size, title.resolve(player));
+            inv = Bukkit.createInventory(null, size, solveTitle(player));
         for (int slot = 0; slot < icons.length; slot++)
             if (icons[slot] != null)
                 inv.setItem(slot, icons[slot].getDisplay().resolve(player));
         return inv;
+    }
+
+    public ChestGui copy() {
+        return new ChestGui(this);
     }
 
     /**
@@ -293,7 +333,7 @@ public class ChestGui implements Gui {
         private final ChestGui gui;
 
         public Builder(int size) {
-            gui = new ChestGui(size, "");
+            gui = new ChestGui(size, PlaceholderValue.fake(""));
         }
 
         public Builder(ChestGui gui) {
