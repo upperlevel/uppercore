@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config;
+package xyz.upperlevel.uppercore.task;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -28,18 +28,13 @@ public class UpdaterTask extends BukkitRunnable {
     }
 
     public void start(boolean now) {
-        stop();
-        if (!started) {
-            runTaskTimer(Uppercore.get(), now ? 0 : interval, interval);
-            started = true;
-        }
+        runTaskTimer(Uppercore.get(), now ? 0 : interval, interval);
+        started = true;
     }
 
     public void stop() {
-        if (started) {
-            cancel();
-            started = false;
-        }
+        cancel();
+        started = false;
     }
 
     @Override

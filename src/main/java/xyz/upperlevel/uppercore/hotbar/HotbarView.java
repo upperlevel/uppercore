@@ -4,7 +4,7 @@ import lombok.Data;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.uppercore.gui.Icon;
-import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
+import xyz.upperlevel.uppercore.task.UpdaterTask;
 
 import java.util.HashMap;
 import java.util.HashSet;

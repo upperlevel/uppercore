@@ -8,7 +8,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import xyz.upperlevel.uppercore.gui.config.UpdaterTask;
+import xyz.upperlevel.uppercore.task.UpdaterTask;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +30,10 @@ public class BoardView {
     private Board board;
     private final Line[] lines = new Line[MAX_LINES];
     private final Set<String> entries = new HashSet<>();
-    private final UpdaterTask updater = new UpdaterTask(this::render);
+    private final UpdaterTask updater = new UpdaterTask(() -> {
+        System.out.println("scoreboard tick");
+        render();
+    });
 
     public BoardView(Player player) {
         this.player = player;
@@ -56,12 +59,15 @@ public class BoardView {
     public void setBoard(Board board) {
         this.board = board;
         render();
-        if (board != null && board.getUpdateInterval() > 0) {
-            // update task
-            updater.setInterval(board.getUpdateInterval());
-            updater.start(false);
-        } else
+        System.out.println("scoreboard updater started? " + updater.isStarted());
+        if (updater.isStarted())
             updater.stop();
+        if (board != null && board.getUpdateInterval() > 0) {
+            updater.setInterval(board.getUpdateInterval());
+            if (!updater.isStarted())
+                updater.start(false);
+            System.out.println("scoreboard updater started");
+        }
     }
 
     public void render() {

@@ -1,21 +1,16 @@
 package xyz.upperlevel.uppercore.board;
 
 import lombok.Data;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import static lombok.AccessLevel.NONE;
 
 @Data
 public class Board {
@@ -62,7 +57,7 @@ public class Board {
     public interface Area {
         void update();
 
-        List<String> render(Player player, PlaceholderRegistry session);
+        List<String> render(Player player, PlaceholderRegistry placeholders);
     }
 
     // TEXT AREA
@@ -90,9 +85,9 @@ public class Board {
         }
 
         @Override
-        public List<String> render(Player player, PlaceholderRegistry session) {
+        public List<String> render(Player player, PlaceholderRegistry placeholders) {
             return lines.stream()
-                    .map(line -> line.resolve(player, session))
+                    .map(line -> line.resolve(player, placeholders))
                     .collect(Collectors.toList());
         }
     }
