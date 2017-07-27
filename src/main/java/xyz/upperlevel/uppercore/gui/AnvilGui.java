@@ -14,10 +14,6 @@ import xyz.upperlevel.uppercore.Uppercore;
 @RequiredArgsConstructor
 @Data
 public class AnvilGui implements Gui {
-
-    private Plugin plugin;
-    private String id = null;
-
     private String message;
     private AnvilGUI.ClickHandler listener = (player, input) -> "Not implemented!";
 
