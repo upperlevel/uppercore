@@ -3,6 +3,12 @@ package xyz.upperlevel.uppercore.economy;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import static xyz.upperlevel.uppercore.economy.EconomyManager.format;
+
 public class Balance {
     private final Economy economy;
     private final OfflinePlayer player;
@@ -20,6 +26,10 @@ public class Balance {
 
     public double get() {
         return economy.getBalance(player);
+    }
+
+    public String getFormatted() {
+        return economy.format(get());
     }
 
     public void give(double money) {
