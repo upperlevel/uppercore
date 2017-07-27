@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.command;
 
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.*;
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
@@ -63,29 +65,71 @@ public abstract class NodeCommand extends Command {
             addAliases(asList("?", "h"));
         }
 
+        protected String getPath() {
+            List<String> path = new ArrayList<>();
+            Command command = this;
+            while(command != null) {
+                path.add(command.getName());
+                command = command.getParent();
+            }
+            StringJoiner joiner = new StringJoiner(" ","/","");
+            ListIterator<String> i = path.listIterator(path.size());
+            while (i.hasPrevious())
+                joiner.add(i.previous());
+            return joiner.toString();
+        }
+
         @Executor
         public void run(CommandSender sender, @Argument("page") @Optional(value = "1") int page) {
-            List<String> entries = new ArrayList<>();
+            List<BaseComponent[]> entries = new ArrayList<>();
             for (Command cmd : NodeCommand.this.getCommands())
-                entries.add(cmd.getHelpline(sender, true));
+                entries.add(TextComponent.fromLegacyText(cmd.getHelpline(sender, true)));
 
             int pages = TextUtil.getPages(1, entries.size(), 0);
-            List<String> header = singletonList(
-                    GOLD + "Help for commands \"" + NodeCommand.this.getName() + "\" " +
-                            (page == 1 ? RED : GREEN) + "[<]" +
-                            GOLD + " " + page + "/" + pages + " " +
-                            (page == pages ? RED : GREEN) + "[>]" +
-                            GOLD + ":");
-            List<String> footer = emptyList();
+
 
             if (page <= 0) {
                 sender.sendMessage(RED + "Hey, the max pages number is " + pages + "!");
                 return;
             }
 
-            TextUtil.sendMessages(
+            String path = getPath();
+            TextComponent header;
+            {
+                header = new TextComponent("Help for commands \"" + NodeCommand.this.getName() + "\" ");
+
+                TextComponent leftArrow = new TextComponent("[<]");
+                if(page <= 1) {
+                    leftArrow.setColor(ChatColor.RED);
+                } else {
+                    leftArrow.setColor(ChatColor.GREEN);
+                    leftArrow.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Previous page").create()));
+                    leftArrow.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, path + " " + (page - 1)));
+                }
+                header.addExtra(leftArrow);
+
+                TextComponent middle = new TextComponent(" " + page + "/" + pages + " ");
+                middle.setColor(ChatColor.GOLD);
+                header.addExtra(middle);
+
+                TextComponent rightArrow = new TextComponent("[>]");
+                if(page >= pages) {
+                    rightArrow.setColor(ChatColor.RED);
+                } else {
+                    rightArrow.setColor(ChatColor.GREEN);
+                    rightArrow.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Next page").create()));
+                    rightArrow.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, path + " " + (page + 1)));
+                }
+                header.addExtra(rightArrow);
+
+                TextComponent f = new TextComponent(":");
+                f.setColor(ChatColor.GOLD);
+                header.addExtra(f);
+            }
+
+            TextUtil.sendComponentMessages(
                     sender,
-                    TextUtil.getPage(header, entries, footer, page - 1)
+                    TextUtil.getComponentPage(singletonList(new BaseComponent[]{header}), entries, emptyList(), page - 1)
             );
         }
     }

@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.util;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +31,26 @@ public final class TextUtil {
         return result;
     }
 
+    public static List<BaseComponent[]> getComponentPage(List<BaseComponent[]> header, List<BaseComponent[]> entries, List<BaseComponent[]> footer, int page) {
+        List<BaseComponent[]> result = new ArrayList<>();
+        result.addAll(header);
+        int entriesPerPage = MAX_LINES - header.size() - footer.size();
+        if (page < 0)
+            page = 0;
+        if (entriesPerPage > 0)
+            result.addAll(entries.subList(page * entriesPerPage, Math.min(entries.size(), (page + 1) * entriesPerPage)));
+        result.addAll(footer);
+        return result;
+    }
+
+
     public static void sendMessages(CommandSender sender, List<String> messages) {
         for (String msg : messages)
             sender.sendMessage(msg);
+    }
+
+    public static void sendComponentMessages(CommandSender sender, List<BaseComponent[]> messages) {
+        for (BaseComponent[] msg : messages)
+            sender.spigot().sendMessage(msg);
     }
 }
