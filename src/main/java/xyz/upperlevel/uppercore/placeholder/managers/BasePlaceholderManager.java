@@ -56,8 +56,12 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
 
 
     public static String exec(Player player, String text, Function<String, Placeholder> finder) {
-        int index = text.indexOf('_');
-        Placeholder found;
+        Placeholder found = finder.apply(text);
+
+        if(found != null)
+            return found.resolve(player, "");
+
+        int index = text.lastIndexOf('_');
 
         while (index >= 0) {
             String id = text.substring(0, index);
@@ -70,9 +74,8 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
                     return null;
                 }
             }
-            index = text.indexOf('_', index + 1);
+            index = text.lastIndexOf('_', index - 1);
         }
-        found = finder.apply(text);
-        return found == null ? null : found.resolve(player, "");
+        return null;
     }
 }
