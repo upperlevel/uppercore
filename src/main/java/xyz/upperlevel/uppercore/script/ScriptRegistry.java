@@ -5,7 +5,7 @@ import lombok.Data;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Loader;
 import xyz.upperlevel.uppercore.Registry;
-import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;

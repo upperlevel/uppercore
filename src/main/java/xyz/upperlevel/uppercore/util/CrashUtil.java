@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore.util;
 
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 
 import java.io.File;
 import java.io.FileWriter;

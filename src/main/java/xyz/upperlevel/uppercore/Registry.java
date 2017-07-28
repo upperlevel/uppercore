@@ -2,12 +2,11 @@ package xyz.upperlevel.uppercore;
 
 import lombok.Data;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;

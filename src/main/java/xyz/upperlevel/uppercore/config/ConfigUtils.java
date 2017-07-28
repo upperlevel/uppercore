@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.config;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 
 import java.util.HashMap;
 import java.util.Locale;

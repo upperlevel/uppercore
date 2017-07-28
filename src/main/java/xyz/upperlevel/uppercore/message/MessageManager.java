@@ -1,9 +1,10 @@
 package xyz.upperlevel.uppercore.message;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.io.File;
@@ -11,14 +12,26 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class MessageManager {
+    private final String path;
     private final Config config;
 
+    public MessageManager(String path, Config config) {
+        this.path = path;
+        this.config = config;
+    }
+
+    public MessageManager(Config config) {
+        this("", config);
+    }
+
     public Message get(String path) {
-        Object raw = config.getRequired(path);
+        Object raw = config.get(path);
+        if(raw == null)
+            throw new IllegalMessageConfigException(this.path, path);
         if(raw instanceof Collection) {
-            return new Message(((Collection<?>) raw)
+            return new Message(
+                    ((Collection<?>) raw)
                     .stream()
                     .map(o -> PlaceholderValue.stringValue(o.toString()))
                     .collect(Collectors.toList()));
@@ -26,7 +39,17 @@ public class MessageManager {
     }
 
     public MessageManager getSection(String path) {
-        return new MessageManager(config.getConfigRequired(path));
+        try {
+            return new MessageManager(getPath(path), config.getConfigRequired(path));
+        } catch (RequiredPropertyNotFoundException exception) {
+            throw new IllegalMessageConfigException(getPath(path));
+        } catch (InvalidConfigurationException e) {
+            throw new IllegalMessageConfigException(getPath(path), e);
+        }
+    }
+
+    private String getPath(String other) {
+        return path.isEmpty() ? other : path + '.' + other;
     }
 
     public static MessageManager load(Config config) {
@@ -34,6 +57,8 @@ public class MessageManager {
     }
 
     public static MessageManager load(File file) {
+        if(!file.exists())
+            throw new IllegalArgumentException("Cannot find file " + file);
         return new MessageManager(Config.wrap(YamlConfiguration.loadConfiguration(file)));
     }
 

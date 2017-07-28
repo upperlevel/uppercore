@@ -2,6 +2,9 @@ package xyz.upperlevel.uppercore.config;
 
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidVauleConfigException;
+import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
@@ -672,11 +675,11 @@ public interface Config {
     }
 
     static void requiredPropertyNotFound(String key) {
-        throw new InvalidConfigurationException("Cannot find property \"" + key + "\"");
+        throw new RequiredPropertyNotFoundException(key);
     }
 
     static void invalidValue(String key, Object value, String expected) {
-        throw new InvalidConfigurationException("Invalid value in '" + key + "' (found '" + value.getClass().getSimpleName() + "', expected '" + expected + "')");
+        throw new InvalidVauleConfigException(key, value, expected);
     }
 
     static Config wrap(Map<String, Object> map) {
