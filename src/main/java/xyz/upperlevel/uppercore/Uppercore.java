@@ -13,6 +13,7 @@ import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.message.MessageManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.script.ScriptManager;
+import xyz.upperlevel.uppercore.util.CrashUtil;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -37,35 +38,41 @@ public class Uppercore extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        //Metrics setup
-        metrics = new Metrics(this);
+        try {
 
-        messages = MessageManager.load(this);
+            //Metrics setup
+            metrics = new Metrics(this);
 
-        PlaceholderUtil.tryHook();
-        EconomyManager.enable();
+            messages = MessageManager.load(this);
 
-        //Command setup
-        ArgumentParserSystem.initialize();
+            PlaceholderUtil.tryHook();
+            EconomyManager.enable();
 
-        // MANAGER
-        boards = new BoardManager();
-        guis = new GuiManager();
-        hotbars = new HotbarManager();
-        scripts = new ScriptManager();
+            //Command setup
+            ArgumentParserSystem.initialize();
 
-        //ScriptManager setup
-        File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
-        if (!scriptsConfigFile.exists())
-            saveResource(SCRIPT_CONFIG, false);
-        scripts.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
+            // MANAGER
+            boards = new BoardManager();
+            guis = new GuiManager();
+            hotbars = new HotbarManager();
+            scripts = new ScriptManager();
 
-        //Metrics custom data setup
-        scripts.setupMetrics(metrics);
+            //ScriptManager setup
+            File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
+            if (!scriptsConfigFile.exists())
+                saveResource(SCRIPT_CONFIG, false);
+            scripts.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
+
+            //Metrics custom data setup
+            scripts.setupMetrics(metrics);
 
 
-        //Gui setup
-        new UppercoreCommand().subscribe();
+            //Gui setup
+            new UppercoreCommand().subscribe();
+        } catch (Throwable t) {
+            CrashUtil.saveCrash(this, t);
+            setEnabled(false);
+        }
     }
 
     @Override

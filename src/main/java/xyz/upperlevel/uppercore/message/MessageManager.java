@@ -38,8 +38,10 @@ public class MessageManager {
     }
 
     public static MessageManager load(Plugin plugin, String fileName) {
-        plugin.saveResource(fileName, false);
-        return load(new File(plugin.getDataFolder(), fileName));
+        File file = new File(plugin.getDataFolder(), fileName);
+        if(!file.exists())
+            plugin.saveResource(fileName, false);
+        return load(file);
     }
 
     public static MessageManager load(Plugin plugin) {
