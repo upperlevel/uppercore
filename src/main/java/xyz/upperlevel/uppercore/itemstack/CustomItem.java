@@ -126,7 +126,7 @@ public class CustomItem implements ItemResolver {
         registerCustomDeserializer(SkullCustomItem::new, Material.SKULL_ITEM);
         registerCustomDeserializer(LeatherArmorCustomItem::new, Material.LEATHER_BOOTS, Material.LEATHER_CHESTPLATE, Material.LEATHER_HELMET, Material.LEATHER_LEGGINGS);
         registerCustomDeserializer(MapCustomItem::new, Material.MAP);
-        registerCustomDeserializer(PotionCustomItem::new, Material.POTION, Material.LINGERING_POTION, Material.SPLASH_POTION, Material.TIPPED_ARROW);
+        registerCustomDeserializer(PotionCustomItem::new, Material.POTION, mat("LINGERING_POTION"), mat("SPLASH_POTION"), mat("Material.TIPPED_ARROW"));
         registerCustomDeserializer(SpawnEggCustomItem::new, Material.MONSTER_EGG);
         registerCustomDeserializer(EnchantedBookCustomItem::new, Material.ENCHANTED_BOOK);
         registerCustomDeserializer(FireworkCustomItem::new, Material.FIREWORK);
@@ -135,7 +135,12 @@ public class CustomItem implements ItemResolver {
 
     public static void registerCustomDeserializer(CustomItemFactory des, Material... aliases) {
         for(Material m : aliases)
-            customDeserializers.put(m, des);
+            if(m != null)
+                customDeserializers.put(m, des);
+    }
+
+    private static Material mat(String material) {
+        return Material.getMaterial(material);
     }
 
     @SuppressWarnings("unchecked")
