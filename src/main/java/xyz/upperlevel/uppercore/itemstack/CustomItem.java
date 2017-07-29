@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 public class CustomItem implements ItemResolver {
     private static Map<Material, CustomItemFactory> customDeserializers = new HashMap<>();
 
+    public static final CustomItem AIR = new CustomItem(new ItemStack(Material.AIR));
+
     private Material type;
     private PlaceholderValue<Short> data;
     private PlaceholderValue<Integer> amount;
@@ -93,21 +95,27 @@ public class CustomItem implements ItemResolver {
         amount = PlaceholderValue.intValue(String.valueOf(item.getAmount()));
 
         ItemMeta meta = item.getItemMeta();
-        displayName = meta.hasDisplayName() ? PlaceholderValue.stringValue(meta.getDisplayName()) : null;
-        lore = meta.hasLore() ? meta.getLore().stream().map(PlaceholderValue::stringValue).collect(Collectors.toList()) : new ArrayList<>();
-        flags = new ArrayList<>(meta.getItemFlags());
-        for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
-            enchantments.put(entry.getKey(), PlaceholderValue.intValue(String.valueOf(entry.getValue())));
+        if(meta != null) {
+            displayName = meta.hasDisplayName() ? PlaceholderValue.stringValue(meta.getDisplayName()) : null;
+            lore = meta.hasLore() ? meta.getLore().stream().map(PlaceholderValue::stringValue).collect(Collectors.toList()) : new ArrayList<>();
+            flags = new ArrayList<>(meta.getItemFlags());
+            for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
+                enchantments.put(entry.getKey(), PlaceholderValue.intValue(String.valueOf(entry.getValue())));
+        } else {
+            displayName = PlaceholderValue.fake("");
+            lore = Collections.emptyList();
+        }
     }
 
     @Override
     public ItemStack resolve(Player player) {
         ItemStack item = new ItemStack(type, amount.resolve(player), data.resolve(player));
         ItemMeta meta = item.getItemMeta();
+        if(meta != null) {
+            processMeta(player, meta);
 
-        processMeta(player, meta);
-
-        item.setItemMeta(meta);
+            item.setItemMeta(meta);
+        }
         return item;
     }
 
