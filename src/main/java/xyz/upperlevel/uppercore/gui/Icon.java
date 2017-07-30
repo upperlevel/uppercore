@@ -17,6 +17,7 @@ import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.gui.link.Link;
+import xyz.upperlevel.uppercore.message.Message;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.ArrayList;
@@ -147,11 +148,11 @@ public class Icon {
     public static class IconClick implements Link {
 
         private String permission;
-        private PlaceholderValue<String> noPermissionError;
+        private Message noPermissionError;
         private Sound noPermissionSound;
 
         private PlaceholderValue<Double> cost;
-        private PlaceholderValue<String> noMoneyError;
+        private Message noMoneyError;
         private Sound noMoneySound;
 
         private List<Action> actions = new ArrayList<>();
@@ -161,7 +162,7 @@ public class Icon {
 
         public boolean checkPermission(Player player) {
             if (permission != null && !player.hasPermission(permission)) {
-                player.sendMessage(noPermissionError.resolve(player));
+                noPermissionError.send(player);
                 if (noPermissionSound != null)
                     player.playSound(player.getLocation(), noPermissionSound, 1.0f, 1.0f);
                 return false;
@@ -179,7 +180,7 @@ public class Icon {
                 }
                 EconomyResponse res = eco.withdrawPlayer(player, c);
                 if (!res.transactionSuccess()) {
-                    player.sendMessage(noMoneyError.resolve(player));
+                    noMoneyError.send(player);
                     if (noMoneySound != null)
                         player.playSound(player.getLocation(), noMoneySound, 1.0f, 1.0f);
                     Uppercore.logger().log(Level.INFO, res.errorMessage);

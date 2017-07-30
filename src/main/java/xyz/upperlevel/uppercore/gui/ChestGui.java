@@ -103,7 +103,7 @@ public class ChestGui implements Gui {
         } else
             throw new InvalidConfigurationException("Both 'type' and 'size' are empty!");
         updateInterval = config.getInt("update-interval", -1);
-        title = config.getMessageRequired("title");
+        title = config.getMessageStrRequired("title");
         Collection<Map<String, Object>> iconsData = (Collection<Map<String, Object>>) config.getCollection("icons");
         if (iconsData != null) {
             for (Map<String, Object> data : iconsData) {

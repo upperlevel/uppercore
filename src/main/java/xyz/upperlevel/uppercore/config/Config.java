@@ -6,6 +6,7 @@ import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidVauleConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.message.Message;
 import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
 import xyz.upperlevel.uppercore.util.SerializationUtil;
@@ -13,6 +14,8 @@ import xyz.upperlevel.uppercore.util.SerializationUtil;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonList;
 
 @SuppressWarnings("unchecked")
 public interface Config {
@@ -182,25 +185,51 @@ public interface Config {
         return res;
     }
 
-    //-----------------------Message (String + placeholder + colors)
+    //-----------------------Message
 
-    default PlaceholderValue<String> getMessage(String key, String def) {
-        String message = getString(key, def);
-        return message == null ? null : PlaceholderUtil.process(message);
+    default Message getMessage(String key) {
+        return Message.fromConfig(get(key));
     }
 
-    default PlaceholderValue<String> getMessage(String key) {
-        String message = getString(key);
-        return message == null ? null : PlaceholderUtil.process(message);
+    default Message getMessage(String key, Message def) {
+        Message message = getMessage(key);
+        return message == null ? def : message;
     }
 
-    default PlaceholderValue<String> getMessageRequired(String key) {
-        return PlaceholderUtil.process(getStringRequired(key));
+    default Message getMessage(String key, String def) {
+        Message message = getMessage(key);
+        if(message != null)
+            return message;
+        else
+            return new Message(singletonList(PlaceholderValue.stringValue(def)));
+    }
+
+    default Message getMessageRequired(String key) {
+        return Message.fromConfig(getRequired(key));
+    }
+
+    //-----------------------MessageStr (String + placeholder + colors)
+
+    default PlaceholderValue<String> getMessageStr(String key) {
+        return PlaceholderValue.stringValue(getString(key));
+    }
+
+    default PlaceholderValue<String> getMessageStr(String key, String def) {
+        return PlaceholderValue.stringValue(getString(key, def));
+    }
+
+    default PlaceholderValue<String> getMessageStr(String key, PlaceholderValue<String> def) {
+        String str = getString(key);
+        return str == null ? def : PlaceholderValue.stringValue(str);
+    }
+
+    default PlaceholderValue<String> getMessageStrRequired(String key) {
+        return PlaceholderValue.stringValue(getStringRequired(key));
     }
 
     //-----------------------Message List (String + placeholder + colors)
 
-    default List<PlaceholderValue<String>> getMessageList(String key) {
+    default List<PlaceholderValue<String>> getMessageStrList(String key) {
         List<String> tmp = getStringList(key);
         if (tmp == null)
             return null;
@@ -209,13 +238,13 @@ public interface Config {
                 .collect(Collectors.toList());
     }
 
-    default List<PlaceholderValue<String>> getMessageList(String key, List<PlaceholderValue<String>> def) {
-        List<PlaceholderValue<String>> res = getMessageList(key);
+    default List<PlaceholderValue<String>> getMessageStrList(String key, List<PlaceholderValue<String>> def) {
+        List<PlaceholderValue<String>> res = getMessageStrList(key);
         return res != null ? res : def;
     }
 
-    default List<PlaceholderValue<String>> getMessageListRequired(String key) {
-        List<PlaceholderValue<String>> res = getMessageList(key);
+    default List<PlaceholderValue<String>> getMessageStrListRequired(String key) {
+        List<PlaceholderValue<String>> res = getMessageStrList(key);
         if (res == null) requiredPropertyNotFound(key);
         return res;
     }

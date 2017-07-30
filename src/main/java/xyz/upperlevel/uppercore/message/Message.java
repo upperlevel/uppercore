@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.message;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,14 +15,15 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class Message {
-    private List<PlaceholderValue<String>> handle;
+    @Getter
+    private List<PlaceholderValue<String>> lines;
 
     public List<String> get(Player player) {
-        return handle.stream().map(p -> p.resolve(player)).collect(Collectors.toList());
+        return lines.stream().map(p -> p.resolve(player)).collect(Collectors.toList());
     }
 
     public List<String> get(Player player, PlaceholderRegistry placeholders) {
-        return handle.stream().map(p -> p.resolve(player, placeholders)).collect(Collectors.toList());
+        return lines.stream().map(p -> p.resolve(player, placeholders)).collect(Collectors.toList());
     }
 
     public List<String> get(Player player, String k1, String v2) {
@@ -47,12 +49,12 @@ public class Message {
 
 
     public void send(Player player) {
-        for(PlaceholderValue<String> message : handle)
+        for(PlaceholderValue<String> message : lines)
             player.sendMessage(message.resolve(player));
     }
 
     public void send(Player player, PlaceholderRegistry placeholders) {
-        for(PlaceholderValue<String> message : handle)
+        for(PlaceholderValue<String> message : lines)
             player.sendMessage(message.resolve(player, placeholders));
     }
 
@@ -110,13 +112,13 @@ public class Message {
     //--------------BROADCAST
     public void broadcast(Iterable<? extends Player> players) {
         for(Player player : players)
-            for(PlaceholderValue<String> message : handle)
+            for(PlaceholderValue<String> message : lines)
                 player.sendMessage(message.resolve(player));
     }
 
     public void broadcast(Iterable<? extends Player> players, PlaceholderRegistry placeholders) {
         for(Player player : players)
-            for(PlaceholderValue<String> message : handle)
+            for(PlaceholderValue<String> message : lines)
                 player.sendMessage(message.resolve(player, placeholders));
     }
 

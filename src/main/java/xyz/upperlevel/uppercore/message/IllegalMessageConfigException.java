@@ -15,19 +15,19 @@ public class IllegalMessageConfigException extends IllegalStateException {
     }
 
     public IllegalMessageConfigException(String path) {
-        super("Cannot find section '" + path + "'!");
+        super("Cannot find message section '" + path + "'!");
         this.path = path;
         this.messagePath = null;
     }
 
     public IllegalMessageConfigException(String path, String message, InvalidConfigurationException e) {
-        super("Error in '" + path + '.' + message + "': " + e.getConfigError());
+        super("Error in message '" + path + '.' + message + "': " + e.getConfigError());
         this.path = path;
         this.messagePath = message;
     }
 
     public IllegalMessageConfigException(String path, InvalidConfigurationException e) {
-        super("Error in section '" + path + "': " + e.getConfigError());
+        super("Error in message section '" + path + "': " + e.getConfigError());
         this.path = path;
         this.messagePath = null;
     }

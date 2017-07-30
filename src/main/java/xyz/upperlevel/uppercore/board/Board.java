@@ -25,11 +25,11 @@ public class Board {
 
     @SuppressWarnings("unchecked")
     public Board(Config config) {
-        this.title = config.getMessage("title");
+        this.title = config.getMessageStr("title");
         this.updateInterval = config.getInt("update-interval", -1);
         if (config.has("lines")) {
             TextArea area = new TextArea();
-            area.add(config.getMessageList("lines"));
+            area.add(config.getMessageStrList("lines"));
             areas.add(area);
         }
     }

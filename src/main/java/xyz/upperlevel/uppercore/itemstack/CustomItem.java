@@ -61,7 +61,7 @@ public class CustomItem implements ItemResolver {
         data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
         amount = PlaceholderUtil.parseInt(config.getString("amount", "1"));
 
-        displayName = config.getMessage("name");
+        displayName = config.getMessageStr("name");
         if (config.has("lore")) {
             lore = ((Collection<String>) config.getCollection("lore"))
                     .stream()
