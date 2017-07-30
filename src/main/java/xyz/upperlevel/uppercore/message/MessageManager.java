@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.message;
 
+import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
@@ -13,7 +14,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class MessageManager {
+    @Getter
     private final String path;
+    @Getter
     private final Config config;
 
     public MessageManager(String path, Config config) {
