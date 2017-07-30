@@ -1,0 +1,10 @@
+# This file contains a list of db-drivers (that might be supported by the core) and where to download them.
+
+mysql:
+- 'https://repo1.maven.org/maven2/com/zaxxer/HikariCP/2.6.3/HikariCP-2.6.3.jar '
+
+mongodb:
+- 'https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongodb-accessor/3.4.2/mongodb-accessor-3.4.2.jar'
+
+rethinkdb:
+- 'https://oss.sonatype.org/content/repositories/releases/com/rethinkdb/rethinkdb-accessor/2.3.3/rethinkdb-accessor-2.3.3.jar'
