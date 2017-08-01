@@ -7,7 +7,7 @@ commands:
   help:
     #[header]
     #[usage]
-    #[usage[
+    #[usage]
     #...
     #[footer]
     header: #[init][arrow.previous][pages][arrow.next][end]

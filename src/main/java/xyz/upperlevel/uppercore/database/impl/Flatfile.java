@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.database.flatfile;
+package xyz.upperlevel.uppercore.database;
 
 import lombok.Data;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,72 +9,68 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-public class Flatfile implements Accessor {
+public class Flatfile implements DatabaseDriver {
     @Override
-    public void authenticate(Credential credential) {
+    public Connection connect(String host, int port, String database) {
+        return new ImplConnection(database);
     }
 
     @Override
-    public Connection connect() {
-        return connect(null, -1);
-    }
-
-    @Override
-    public Conn connect(String host, int port) {
-        return new Conn();
+    public Connection connect(String host, int port, String database, String user, String password) {
+        return new ImplConnection(database);
     }
 
     @Data
-    public class Conn implements Connection {
-        @Override
-        public Database database(String id) {
-            return null;
-        }
+    public class ImplConnection implements Connection {
+        private final String db;
 
         @Override
-        public void disconnect() {
+        public ImplDatabase database() {
+            return new ImplDatabase();
         }
 
         @Data
-        public class Db implements Database {
-            private final String id;
+        public class ImplDatabase implements Database {
             private final File folder;
 
-            public Db(String id) {
-                this.id = id;
-                this.folder = new File("plugins", id);
+            public ImplDatabase() {
+                this.folder = new File("plugins", db);
+                this.folder.mkdirs();
             }
 
             @Override
-            public Coll collection(String id) {
-                folder.mkdirs();
-                return new Coll(id);
+            public Table table(String id) {
+                return new ImplTable(id);
             }
 
             @Data
-            public class Coll implements Collection {
+            public class ImplTable implements Table {
                 private final String id;
                 private final File folder;
 
-                public Coll(String id) {
+                public ImplTable(String id) {
                     this.id = id;
-                    this.folder = new File(Db.this.folder, id);
+                    this.folder = new File(ImplDatabase.this.folder, id);
+                    this.folder.mkdirs();
                 }
 
                 @Override
-                public Doc document(String id) {
-                    folder.mkdirs();
-                    return new Doc(id);
+                public Document document(String id) {
+                    return new ImplDocument(id);
                 }
 
                 @Data
-                public class Doc implements xyz.upperlevel.uppercore.database.Document {
+                public class ImplDocument implements Document {
                     private final String id;
                     private final File file;
 
-                    public Doc(String id) {
+                    public ImplDocument(String id) {
                         this.id = id;
-                        this.file = new File(folder, id + ".yml");
+                        this.file = new File(ImplTable.this.getFolder(), id + ".yml");
+                        try {
+                            this.file.createNewFile();
+                        } catch (IOException ignored) {
+                        }
                     }
 
                     @Override

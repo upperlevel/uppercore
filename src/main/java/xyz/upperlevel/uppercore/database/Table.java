@@ -1,7 +1,5 @@
 package xyz.upperlevel.uppercore.database;
 
-public interface Collection {
-    String getId();
-
+public interface Table {
     Document document(String id);
 }

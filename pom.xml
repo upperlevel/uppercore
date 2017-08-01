@@ -92,17 +92,26 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>1.1</version>
         </dependency>
+        <!-- hikaricp -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.6.1</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- mongodb -->
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-accessor</artifactId>
+            <artifactId>mongo-java-driver</artifactId>
             <version>3.4.2</version>
+            <scope>compile</scope>
         </dependency>
         <!-- rethinkdb -->
         <dependency>
             <groupId>com.rethinkdb</groupId>
-            <artifactId>rethinkdb-accessor</artifactId>
+            <artifactId>rethinkdb-driver</artifactId>
             <version>2.3.3</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

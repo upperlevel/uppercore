@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.database.rethinkdb;
 
 import com.rethinkdb.gen.ast.Get;
-import com.rethinkdb.gen.ast.Table;
 import lombok.Data;
 import xyz.upperlevel.uppercore.database.*;
 
@@ -9,7 +8,7 @@ import java.util.Map;
 
 import static com.rethinkdb.RethinkDB.r;
 
-public class RethinkDb implements Accessor {
+public class RethinkDb implements DatabaseDriver {
     private Credential credential;
 
     @Override
@@ -69,16 +68,16 @@ public class RethinkDb implements Accessor {
             }
 
             @Override
-            public Coll collection(String id) {
+            public Coll table(String id) {
                 db.tableCreate(id)
                         .run(conn);
                 return new Coll(id);
             }
 
             @Data
-            public class Coll implements Collection {
+            public class Coll implements Table {
                 private final String id;
-                private final Table table;
+                private final com.rethinkdb.gen.ast.Table table;
 
                 public Coll(String id) {
                     this.id = id;
