@@ -1,27 +1,35 @@
-package xyz.upperlevel.uppercore.database;
+package xyz.upperlevel.uppercore.database.impl;
 
 import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import lombok.Data;
+import xyz.upperlevel.uppercore.database.*;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static com.mongodb.MongoCredential.createCredential;
 import static java.util.Collections.singletonList;
 
 public class MongoDb implements DatabaseDriver {
+    @Override
+    public String getId() {
+        return "mongodb";
+    }
 
     @Override
-    public Connection connect(String host, int port, String database) {
+    public Connection connect(String database) {
+        return connect(database, "localhost", 27017);
+    }
+
+    @Override
+    public Connection connect(String database, String host, int port) {
         return new ImplConnection(database, new MongoClient(host, port));
     }
 
     @Override
-    public Connection connect(String host, int port, String database, String user, String password) {
+    public Connection connect(String database, String host, int port, String user, String password) {
         return new ImplConnection(database, new MongoClient(
                 new ServerAddress(host, port),
                 singletonList(createCredential(user, database, password.toCharArray()))

@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.database;
+package xyz.upperlevel.uppercore.database.impl;
 
 import lombok.Data;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,12 +11,22 @@ import java.util.Map;
 
 public class Flatfile implements DatabaseDriver {
     @Override
-    public Connection connect(String host, int port, String database) {
+    public String getId() {
+        return "flatfile";
+    }
+
+    @Override
+    public Connection connect(String database) {
         return new ImplConnection(database);
     }
 
     @Override
-    public Connection connect(String host, int port, String database, String user, String password) {
+    public Connection connect(String database, String host, int port) {
+        return new ImplConnection(database);
+    }
+
+    @Override
+    public Connection connect(String database, String host, int port, String user, String password) {
         return new ImplConnection(database);
     }
 
@@ -45,11 +55,9 @@ public class Flatfile implements DatabaseDriver {
 
             @Data
             public class ImplTable implements Table {
-                private final String id;
                 private final File folder;
 
                 public ImplTable(String id) {
-                    this.id = id;
                     this.folder = new File(ImplDatabase.this.folder, id);
                     this.folder.mkdirs();
                 }
@@ -61,11 +69,9 @@ public class Flatfile implements DatabaseDriver {
 
                 @Data
                 public class ImplDocument implements Document {
-                    private final String id;
                     private final File file;
 
                     public ImplDocument(String id) {
-                        this.id = id;
                         this.file = new File(ImplTable.this.getFolder(), id + ".yml");
                         try {
                             this.file.createNewFile();

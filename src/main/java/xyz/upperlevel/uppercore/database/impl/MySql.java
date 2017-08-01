@@ -1,10 +1,11 @@
-package xyz.upperlevel.uppercore.database;
+package xyz.upperlevel.uppercore.database.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Data;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import xyz.upperlevel.uppercore.database.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +14,17 @@ import java.util.Map;
 
 public class MySql implements DatabaseDriver {
     @Override
-    public Connection connect(String host, int port, String database) {
+    public String getId() {
+        return "mysql";
+    }
+
+    @Override
+    public Connection connect(String database) {
+        return connect(database, "localhost", 3306);
+    }
+
+    @Override
+    public Connection connect(String database, String host, int port) {
         HikariDataSource pool = new HikariDataSource();
         pool.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         pool.addDataSourceProperty("serverName", host);
@@ -27,7 +38,7 @@ public class MySql implements DatabaseDriver {
     }
 
     @Override
-    public Connection connect(String host, int port, String database, String user, String password) {
+    public Connection connect(String database, String host, int port, String user, String password) {
         HikariDataSource pool = new HikariDataSource();
         pool.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         pool.addDataSourceProperty("serverName", host);
