@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.itemstack;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -61,11 +62,12 @@ public class CustomItem implements ItemResolver {
         data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
         amount = PlaceholderUtil.parseInt(config.getString("amount", "1"));
 
-        displayName = config.getMessageStr("name");
+        String rawName = config.getString("name");
+        displayName = rawName == null ? null : PlaceholderValue.stringValue(ChatColor.RESET.toString() + rawName);
         if (config.has("lore")) {
             lore = ((Collection<String>) config.getCollection("lore"))
                     .stream()
-                    .map(PlaceholderUtil::process)
+                    .map(message -> PlaceholderUtil.process(ChatColor.RESET.toString() + message))
                     .collect(Collectors.toList());
         } else lore = Collections.emptyList();
         if (config.has("flags")) {
