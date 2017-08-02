@@ -21,9 +21,7 @@ public interface PlaceholderValue<T> {
      * @param local  the placeholders to add to the default ones
      * @return the parsed value without placeholders
      */
-    default T resolve(Player player, PlaceholderRegistry local) {
-        return resolve(player, local);
-    }
+    T resolve(Player player, PlaceholderRegistry local);
 
     /**
      * Removes placeholders from the value and parses it
