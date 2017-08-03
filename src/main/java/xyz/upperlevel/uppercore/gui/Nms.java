@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.gui;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.wesjd.anvilgui.version.impl.FallbackWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ public class Nms {
 
     private static final Method getNmsComponent;
     private static final Constructor packetPlayOutChatConstructor;
+    private static final Field packetPlayOutChatComponents;
     private static final Method craftPlayerGetHandle;
     private static final Field craftPlayerPlayerConnection;
     private static final Method playerConnectionSendPacket;
@@ -27,6 +29,7 @@ public class Nms {
             getNmsComponent = getNMSClass("IChatBaseComponent$ChatSerializer").getMethod("a", String.class);
             final Class<?> packetChatClazz = getNMSClass("PacketPlayOutChat");
             packetPlayOutChatConstructor = packetChatClazz.getConstructor(getNMSClass("IChatBaseComponent"));
+            packetPlayOutChatComponents = packetChatClazz.getField("components");
             final Class<?> craftPlayerClazz = getCraftClass("entity.CraftPlayer");
             craftPlayerGetHandle = craftPlayerClazz.getMethod("getHandle");
             craftPlayerPlayerConnection = getNMSClass("EntityPlayer").getField("playerConnection");
@@ -41,6 +44,10 @@ public class Nms {
         sendPacket(player, jsonPacket(json));
     }
 
+    public static void sendJson(Player player, BaseComponent... json) {
+        sendPacket(player, jsonPacket(json));
+    }
+
     public static Object jsonPacket(String json) {
         /*
         IChatBaseComponent msg = ChatSerializer.a(JSON);
@@ -49,6 +56,21 @@ public class Nms {
         try {
             Object msg = getNmsComponent.invoke(null, json);
             return packetPlayOutChatConstructor.newInstance(msg);
+        }  catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            handleException(e);
+            return null;
+        }
+    }
+
+    public static Object jsonPacket(BaseComponent[] json) {
+        /*
+        IChatBaseComponent msg = ChatSerializer.a(JSON);
+        PacketPlayOutChat packet = new PacketPlayOutChat(msg);
+         */
+        try {
+            Object packet = packetPlayOutChatConstructor.newInstance((Object) null);
+            packetPlayOutChatComponents.set(packet, json);
+            return packet;
         }  catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             handleException(e);
             return null;
