@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.particle.data.ParticleData;
 import xyz.upperlevel.uppercore.particle.exceptions.PacketInstantiationException;
 import xyz.upperlevel.uppercore.particle.exceptions.PacketSendingException;
 import xyz.upperlevel.uppercore.particle.exceptions.VersionIncompatibleException;
-import xyz.upperlevel.uppercore.util.NmsVersion;
+import xyz.upperlevel.uppercore.util.nms.NmsVersion;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -117,7 +117,7 @@ public class ParticlePacket {
     }
 
     /**
-     * Initializes {@link #packet} with all set values
+     * Initializes {@link #packet} with all setBool values
      *
      * @param center Center location of the effect
      * @throws PacketInstantiationException If instantion fails due to an unknown error

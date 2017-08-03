@@ -15,7 +15,7 @@ import static org.bukkit.ChatColor.GREEN;
 public class BoardSetCommand extends Command {
 
     public BoardSetCommand() {
-        super("set");
+        super("setBool");
         setDescription("Sets board to a player.");
     }
 
@@ -23,6 +23,6 @@ public class BoardSetCommand extends Command {
     public void run(CommandSender sender, @Argument("board") BoardId board, @Argument("player") @Optional Player player) {
         if (player == null)
             player = (Player) sender;
-        sender.sendMessage(GREEN + "Board \"" + board.getGlobalId() + "\" set to: \"" + player.getName() + "\".");
+        sender.sendMessage(GREEN + "Board \"" + board.getGlobalId() + "\" setBool to: \"" + player.getName() + "\".");
     }
 }

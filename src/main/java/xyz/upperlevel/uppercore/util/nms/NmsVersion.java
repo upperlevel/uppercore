@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.util;
+package xyz.upperlevel.uppercore.util.nms;
 
 import org.bukkit.Bukkit;
 

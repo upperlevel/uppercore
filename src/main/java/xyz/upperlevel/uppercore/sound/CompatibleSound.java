@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.sound;
 import lombok.Getter;
 import org.bukkit.Sound;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.util.NmsVersion;
+import xyz.upperlevel.uppercore.util.nms.NmsVersion;
 
 import java.util.HashMap;
 import java.util.Locale;

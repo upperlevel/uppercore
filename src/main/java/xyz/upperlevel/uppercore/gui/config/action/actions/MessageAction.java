@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
-import xyz.upperlevel.uppercore.util.NmsUtil;
+import xyz.upperlevel.uppercore.util.nms.impl.MessageNms;
 
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class MessageAction extends Action<MessageAction> {
         if (!raw)
             player.sendMessage(translateCustom(message.resolve(player)));
         else
-            NmsUtil.sendJson(player, message.resolve(player));
+            MessageNms.sendJson(player, message.resolve(player));
     }
 
 
