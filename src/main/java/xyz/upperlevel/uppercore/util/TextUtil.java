@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.uppercore.gui.Nms;
+import xyz.upperlevel.uppercore.util.nms.impl.MessageNms;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -70,7 +70,7 @@ public final class TextUtil {
     public static void sendComponentMessages(CommandSender sender, List<BaseComponent[]> messages) {
         for (BaseComponent[] msg : messages)
             if (sender instanceof Player)
-                Nms.sendJson((Player) sender, msg);
+                MessageNms.sendJson((Player) sender, msg);
             else
                 sender.sendMessage(BaseComponent.toLegacyText(msg));
     }
