@@ -5,12 +5,12 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.Nms;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.util.NmsUtil;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -48,7 +48,7 @@ public class BroadcastAction extends Action<BroadcastAction> {
             if(message.hasPlaceholders()) {
                 sendJson(message, permission != null ? p -> p.hasPermission(permission) : p -> true);
             } else {
-                Object packet = Nms.jsonPacket(message.resolve(null));
+                Object packet = NmsUtil.jsonPacket(message.resolve(null));
                 sendPacket(packet, permission != null ? p -> p.hasPermission(permission) : p -> true);
             }
         }
@@ -57,7 +57,7 @@ public class BroadcastAction extends Action<BroadcastAction> {
     private void sendPacket(Object packet, Predicate<Player> selector) {
         for(Player p : Bukkit.getOnlinePlayers())
             if(selector.test(p))
-                Nms.sendPacket(p, packet);
+                NmsUtil.sendPacket(p, packet);
     }
 
     private void sendJson(PlaceholderValue<String> json, Predicate<Player> selector) {

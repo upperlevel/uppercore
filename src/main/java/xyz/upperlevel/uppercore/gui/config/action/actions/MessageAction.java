@@ -4,13 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.Nms;
 import xyz.upperlevel.uppercore.gui.config.action.Action;
 import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
-import xyz.upperlevel.uppercore.util.TextUtil;
+import xyz.upperlevel.uppercore.util.NmsUtil;
 
 import java.util.Map;
 
@@ -35,7 +34,7 @@ public class MessageAction extends Action<MessageAction> {
         if (!raw)
             player.sendMessage(translateCustom(message.resolve(player)));
         else
-            Nms.sendJson(player, message.resolve(player));
+            NmsUtil.sendJson(player, message.resolve(player));
     }
 
 

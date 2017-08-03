@@ -7,9 +7,10 @@ import xyz.upperlevel.uppercore.config.Config;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class SerializationUtil {
+public final class LocUtil {
 
-    private SerializationUtil() {
+    public static String format(Location loc, boolean world) {
+        return (world ? (loc.getWorld().getName() + ":") : "") + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
     }
 
     public static Map<String, Object> serialize(Location location) {
@@ -23,7 +24,7 @@ public final class SerializationUtil {
         return data;
     }
 
-    public static Location deserializeLocation(Config section) {
+    public static Location deserialize(Config section) {
         return new Location(
                 Bukkit.getWorld(section.getString("world")),
                 section.getDouble("x"),
@@ -33,4 +34,6 @@ public final class SerializationUtil {
                 section.getFloat("pitch")
         );
     }
+
+    private LocUtil() {}
 }

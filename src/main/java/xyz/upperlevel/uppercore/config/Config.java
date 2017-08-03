@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.message.Message;
 import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
-import xyz.upperlevel.uppercore.util.SerializationUtil;
+import xyz.upperlevel.uppercore.util.LocUtil;
 
 import java.util.*;
 import java.util.function.Function;
@@ -618,7 +618,7 @@ public interface Config {
 
     default Location getLocation(String key, Location def) {
         try {
-            return SerializationUtil.deserializeLocation(getConfig(key));
+            return LocUtil.deserialize(getConfig(key));
         } catch (Exception e) {
             return def;
         }
@@ -644,7 +644,7 @@ public interface Config {
             return def;
         try {
             for (Config cfg : cfgs)
-                res.add(SerializationUtil.deserializeLocation(cfg));
+                res.add(LocUtil.deserialize(cfg));
         } catch (Exception e) {
             return def;
         }
