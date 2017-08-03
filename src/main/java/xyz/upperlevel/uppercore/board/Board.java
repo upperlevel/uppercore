@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.board;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
@@ -12,12 +14,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
+@Setter
 public class Board {
     private final PlaceholderValue<String> title;
     private final List<Area> areas = new LinkedList<>();
     private int updateInterval;
-    private final PlaceholderRegistry placeholders = PlaceholderRegistry.create();
+    private PlaceholderRegistry placeholders = PlaceholderRegistry.create();
 
     public Board(PlaceholderValue<String> title) {
         this.title = title;
@@ -32,6 +35,14 @@ public class Board {
             area.add(config.getMessageStrList("lines"));
             areas.add(area);
         }
+    }
+
+    public Board(Board other) {
+        title = other.title;
+        updateInterval = other.updateInterval;
+        for(Area area : other.areas)
+            areas.add(area.copy());
+        placeholders = other.placeholders;
     }
 
     public void add(Area area) {
@@ -58,6 +69,8 @@ public class Board {
         void update();
 
         List<String> render(Player player, PlaceholderRegistry placeholders);
+
+        Area copy();
     }
 
     // TEXT AREA
@@ -89,6 +102,11 @@ public class Board {
             return lines.stream()
                     .map(line -> line.resolve(player, placeholders))
                     .collect(Collectors.toList());
+        }
+
+        @Override
+        public TextArea copy() {
+            return new TextArea(new ArrayList<>(lines));
         }
     }
 }

@@ -81,8 +81,12 @@ public final class ConfigUtils {
     }
 
     public static FileConfiguration loadConfig(Plugin plugin, String fileName) {
+        return loadConfig(plugin.getDataFolder(), fileName);
+    }
+
+    public static FileConfiguration loadConfig(File folder, String fileName) {
         File file = new File(
-                plugin.getDataFolder(),
+                folder,
                 fileName
         );
         if(!file.exists())
