@@ -8,6 +8,7 @@ import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigUtils;
+import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -31,6 +32,10 @@ public interface PlaceholderValue<T> {
      */
     default T resolve(Player player) {
         return resolve(player, PlaceholderUtil.getRegistry());
+    }
+
+    default boolean hasPlaceholders() {
+        return true;
     }
 
 
@@ -61,9 +66,17 @@ public interface PlaceholderValue<T> {
         return value(string, Double::parseDouble, -1.0);
     }
 
+    static PlaceholderValue<String> rawStringValue(String string) {
+        if (string == null) return null;
+        if (PlaceholderUtil.hasPlaceholders(string))
+            return new StringPlaceholderValue(string);
+        else
+            return new FalsePlaceholderValue<>(string);
+    }
+
     static PlaceholderValue<String> stringValue(String string) {
         if (string == null) return null;
-        string = ChatColor.translateAlternateColorCodes('&', string);
+        string = TextUtil.translatePlain(string);
         if (PlaceholderUtil.hasPlaceholders(string))
             return new StringPlaceholderValue(string);
         else
@@ -109,6 +122,11 @@ public interface PlaceholderValue<T> {
 
         public String toString() {
             return String.valueOf(value);
+        }
+
+        @Override
+        public boolean hasPlaceholders() {
+            return false;
         }
     }
 

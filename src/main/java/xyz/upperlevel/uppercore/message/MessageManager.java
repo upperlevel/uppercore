@@ -7,6 +7,7 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.io.File;
 import java.util.Collection;
@@ -36,7 +37,7 @@ public class MessageManager {
             return new Message(
                     ((Collection<?>) raw)
                     .stream()
-                    .map(o -> PlaceholderValue.stringValue(o.toString()))
+                    .map(o -> PlaceholderValue.rawStringValue(o.toString()))
                     .collect(Collectors.toList()));
         } else return new Message(Collections.singletonList(PlaceholderValue.stringValue(raw.toString())));
     }

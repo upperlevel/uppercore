@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,12 +51,12 @@ public class Message {
 
     public void send(Player player) {
         for(PlaceholderValue<String> message : lines)
-            player.sendMessage(message.resolve(player));
+            player.sendMessage(TextUtil.translateCustom(message.resolve(player)));
     }
 
     public void send(Player player, PlaceholderRegistry placeholders) {
         for(PlaceholderValue<String> message : lines)
-            player.sendMessage(message.resolve(player, placeholders));
+            player.sendMessage(TextUtil.translateCustom(message.resolve(player, placeholders)));
     }
 
     public void send(Player player, String k1, String v1) {
@@ -81,11 +82,13 @@ public class Message {
 
 
     public void send(CommandSender sender) {
-        send(sender instanceof Player ? (Player) sender : null);
+        for(PlaceholderValue<String> message : lines)
+            sender.sendMessage(TextUtil.translateCustom(message.resolve(null)));
     }
 
     public void send(CommandSender sender, PlaceholderRegistry placeholders) {
-        send(sender instanceof Player ? (Player) sender : null, placeholders);
+        for(PlaceholderValue<String> message : lines)
+            sender.sendMessage(TextUtil.translateCustom(message.resolve(null, placeholders)));
     }
 
     public void send(CommandSender sender, String k1, String v1) {
