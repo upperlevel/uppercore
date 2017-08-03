@@ -10,8 +10,11 @@ import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.config.action.Parser;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.util.TextUtil.translateCustom;
 
 @Getter
 public class MessageAction extends Action<MessageAction> {
@@ -30,7 +33,7 @@ public class MessageAction extends Action<MessageAction> {
     @Override
     public void run(Player player) {
         if (!raw)
-            player.sendMessage(message.resolve(player));
+            player.sendMessage(translateCustom(message.resolve(player)));
         else
             Nms.sendJson(player, message.resolve(player));
     }

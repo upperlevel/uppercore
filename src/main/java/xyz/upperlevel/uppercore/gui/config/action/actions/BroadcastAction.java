@@ -13,6 +13,9 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
+import java.util.function.Predicate;
+
+import static xyz.upperlevel.uppercore.util.TextUtil.translateCustom;
 
 @Getter
 public class BroadcastAction extends Action<BroadcastAction> {
@@ -34,20 +37,33 @@ public class BroadcastAction extends Action<BroadcastAction> {
     public void run(Player player) {
         if(!raw) {
             if (permission != null)
-                Bukkit.broadcast(message.resolve(player), permission);
-            else
-                Bukkit.broadcastMessage(message.resolve(player));
-        } else {
-            Object packet = Nms.jsonPacket(message.resolve(player));
-            if(permission != null) {
-                for(Player p : Bukkit.getOnlinePlayers())
+                for(Player p : Bukkit.getOnlinePlayers()) {
                     if(p.hasPermission(permission))
-                        Nms.sendPacket(p, packet);
-            } else {
+                        p.sendMessage(translateCustom(message.resolve(p)));
+                }
+            else
                 for(Player p : Bukkit.getOnlinePlayers())
-                        Nms.sendPacket(p, packet);
+                    p.sendMessage(translateCustom(message.resolve(p)));
+        } else {
+            if(message.hasPlaceholders()) {
+                sendJson(message, permission != null ? p -> p.hasPermission(permission) : p -> true);
+            } else {
+                Object packet = Nms.jsonPacket(message.resolve(null));
+                sendPacket(packet, permission != null ? p -> p.hasPermission(permission) : p -> true);
             }
         }
+    }
+
+    private void sendPacket(Object packet, Predicate<Player> selector) {
+        for(Player p : Bukkit.getOnlinePlayers())
+            if(selector.test(p))
+                Nms.sendPacket(p, packet);
+    }
+
+    private void sendJson(PlaceholderValue<String> json, Predicate<Player> selector) {
+        for(Player p : Bukkit.getOnlinePlayers())
+            if(selector.test(p))
+                p.sendMessage(translateCustom(json.resolve(p)));
     }
 
 
