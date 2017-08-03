@@ -48,6 +48,39 @@ public class Message {
         ));
     }
 
+    //--------------FILTER
+
+    public Message filter(PlaceholderRegistry reg) {
+        return new Message(
+                lines.stream()
+                        .map(p -> PlaceholderValue.rawStringValue(p.resolve(null, reg)))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    public Message filter(String k1, String v1) {
+        return filter(PlaceholderRegistry.wrap(
+                k1, v1
+        ));
+    }
+
+    public Message filter(String k1, String v1, String k2, String v2) {
+        return filter(PlaceholderRegistry.wrap(
+                k1, v1,
+                k2, v2
+        ));
+    }
+
+    public Message filter(String k1, String v1, String k2, String v2, String k3, String v3) {
+        return filter(PlaceholderRegistry.wrap(
+                k1, v1,
+                k2, v2,
+                k3, v3
+        ));
+    }
+
+
+    //--------------SEND
 
     public void send(Player player) {
         for(PlaceholderValue<String> message : lines)
