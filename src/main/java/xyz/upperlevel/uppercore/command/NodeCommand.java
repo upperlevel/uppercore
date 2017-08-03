@@ -122,7 +122,7 @@ public abstract class NodeCommand extends Command {
             String path = getPath();
             TextComponent header;
             {
-                header = new TextComponent("Help for commands \"" + NodeCommand.this.getName() + "\" ");
+                header = new TextComponent(GOLD + "Help for commands \"" + NodeCommand.this.getName() + "\" ");
 
                 TextComponent leftArrow = new TextComponent("[<]");
                 if(page <= 1) {

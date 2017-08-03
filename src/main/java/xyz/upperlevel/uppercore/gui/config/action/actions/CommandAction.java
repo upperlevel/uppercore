@@ -36,9 +36,9 @@ public class CommandAction extends Action<CommandAction> {
     public static class CommandActionType extends BaseActionType<CommandAction> {
 
         public CommandActionType() {
-            super("commands");
+            super("command");
             setParameters(
-                    Parameter.of("commands", Parser.strValue(), true),
+                    Parameter.of("command", Parser.strValue(), true),
                     Parameter.of("executor", Parser.enumValue(Executor.class), Executor.PLAYER, false)
             );
         }
@@ -47,7 +47,7 @@ public class CommandAction extends Action<CommandAction> {
         public CommandAction create(Plugin plugin, Map<String, Object> pars) {
             return new CommandAction(
                     plugin,
-                    PlaceholderUtil.process((String) pars.get("commands")),
+                    PlaceholderUtil.process((String) pars.get("command")),
                     (Executor) pars.get("executor")
             );
         }

@@ -8,8 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
-public abstract class Timer extends BukkitRunnable {
+public abstract class Timer {
     private final Plugin plugin;
+    private BukkitRunnable task;
+
     private final long start, each;
     private long current;
 
@@ -19,34 +21,39 @@ public abstract class Timer extends BukkitRunnable {
         this.each = each;
     }
 
-    @Override
-    public void run() {
-        tick();
-        if (current > 0)
-            current -= each;
-        else {
-            end();
-            stop();
-        }
-    }
-
     public abstract void tick();
 
     public abstract void end();
 
     public void start() {
+        if (task != null)
+            stop();
         current = start;
-        runTaskTimer(plugin, 0, each);
+        task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                tick();
+                if (current > 0)
+                    current -= each;
+                else {
+                    end();
+                    stop();
+                }
+            }
+        };
+        task.runTaskTimer(plugin, 0, each);
     }
 
     public boolean isStarted() {
-        return current > 0;
+        return task != null;
     }
 
     public void stop() {
-        cancel();
-        if (current > 0)
+        if (task != null) {
+            task.cancel();
+            task = null;
             current = 0;
+        }
     }
 
     public String toString(String pattern) {

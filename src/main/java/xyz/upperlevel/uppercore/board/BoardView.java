@@ -30,14 +30,10 @@ public class BoardView {
     private Board board;
     private final Line[] lines = new Line[MAX_LINES];
     private final Set<String> entries = new HashSet<>();
-    private final UpdaterTask updater = new UpdaterTask(() -> {
-        System.out.println("scoreboard tick");
-        render();
-    });
+    private final UpdaterTask updater = new UpdaterTask(this::render);
 
     public BoardView(Player player) {
         this.player = player;
-
         this.handle = Bukkit.getScoreboardManager().getNewScoreboard();
         this.objective = handle.registerNewObjective("scoreboard", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -57,16 +53,14 @@ public class BoardView {
     }
 
     public void setBoard(Board board) {
-        this.board = board;
-        render();
-        System.out.println("scoreboard updater started? " + updater.isStarted());
         if (updater.isStarted())
             updater.stop();
+        this.board = board;
+        render();
         if (board != null && board.getUpdateInterval() > 0) {
             updater.setInterval(board.getUpdateInterval());
             if (!updater.isStarted())
                 updater.start(false);
-            System.out.println("scoreboard updater started");
         }
     }
 

@@ -4,10 +4,14 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.gui.Nms;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+
+import static org.bukkit.ChatColor.BOLD;
 
 public final class TextUtil {
     public static final char CUSTOM_CONTROL_CHAR = '^';
@@ -21,7 +25,7 @@ public final class TextUtil {
     private static final BitSet codes = new BitSet();
 
     static {
-        for(ChatColor c : ChatColor.values()) {
+        for (ChatColor c : ChatColor.values()) {
             char ch = c.getChar();
             codes.set(ch);
             codes.set(Character.toUpperCase(ch));
@@ -65,13 +69,16 @@ public final class TextUtil {
 
     public static void sendComponentMessages(CommandSender sender, List<BaseComponent[]> messages) {
         for (BaseComponent[] msg : messages)
-            sender.spigot().sendMessage(msg);
+            if (sender instanceof Player)
+                Nms.sendJson((Player) sender, msg);
+            else
+                sender.sendMessage(BaseComponent.toLegacyText(msg));
     }
 
     public static String translateCustom(String text) {
         char[] b = text.toCharArray();
-        if(b.length == 0) return text;
-        if(b.length >= 2 && b[0] == CUSTOM_CONTROL_CHAR) {
+        if (b.length == 0) return text;
+        if (b.length >= 2 && b[0] == CUSTOM_CONTROL_CHAR) {
             ChatColor color = ChatColor.getByChar(b[1]);
             if (color != null)
                 return separator(color);
@@ -91,8 +98,8 @@ public final class TextUtil {
 
     public static String translate(String text) {
         char[] b = text.toCharArray();
-        if(b.length == 0) return text;
-        if(b.length >= 2 && b[0] == CUSTOM_CONTROL_CHAR) {
+        if (b.length == 0) return text;
+        if (b.length >= 2 && b[0] == CUSTOM_CONTROL_CHAR) {
             ChatColor color = ChatColor.getByChar(b[1]);
             if (color != null)
                 return separator(color);
@@ -133,9 +140,9 @@ public final class TextUtil {
         int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
         int compensated = 0;
 
-        StringBuilder sb = new StringBuilder(b.length - offset + toCompensate/spaceLength);
+        StringBuilder sb = new StringBuilder(b.length - offset + toCompensate / spaceLength);
 
-        while(compensated < toCompensate){
+        while (compensated < toCompensate) {
             sb.append(" ");
             compensated += spaceLength;
         }
@@ -152,7 +159,7 @@ public final class TextUtil {
         int times = toCompensate / spaceLength;
 
         StringBuilder sb = new StringBuilder(b.length - offset + times);
-        for(int i = 0; i < times; i++)
+        for (int i = 0; i < times; i++)
             sb.append(' ');
         sb.append(b, offset, b.length - offset);
         return sb.toString();
@@ -169,9 +176,9 @@ public final class TextUtil {
             char c = b[i];
             if (c == CONFIG_CONTROL_CHAR || c == CONTROL_CHAR) {
                 ChatColor color = ChatColor.getByChar(Character.toLowerCase(b[i + 1]));
-                if(color != null) {
+                if (color != null) {
                     b[i] = CONTROL_CHAR;
-                    isBold = color == ChatColor.BOLD;
+                    isBold = color == BOLD;
                     i++;
                 }
             } else {
@@ -189,7 +196,7 @@ public final class TextUtil {
         for (int i = offset, len = b.length; i < len; i++) {
             char c = b[i];
             if (c == CONTROL_CHAR) {
-                isBold = Character.toLowerCase(b[++i]) != ChatColor.BOLD.getChar();
+                isBold = Character.toLowerCase(b[++i]) != BOLD.getChar();
             } else {
                 DefaultFontInfo info = DefaultFontInfo.getDefaultFontInfo(c);
                 size += isBold ? info.getBoldLength() : info.getLength();
@@ -199,5 +206,6 @@ public final class TextUtil {
         return size;
     }
 
-    private TextUtil() {}
+    private TextUtil() {
+    }
 }

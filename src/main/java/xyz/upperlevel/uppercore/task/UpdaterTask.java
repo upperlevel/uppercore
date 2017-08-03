@@ -6,21 +6,20 @@ import org.bukkit.scheduler.BukkitRunnable;
 import xyz.upperlevel.uppercore.Uppercore;
 
 @Getter
-public class UpdaterTask extends BukkitRunnable {
-
-    private final Runnable task;
+public class UpdaterTask {
+    private final Runnable action;
 
     @Setter
     private int interval;
-    private boolean started;
+    private BukkitRunnable task;
 
-    public UpdaterTask(Runnable task) {
-        this.task = task;
+    public UpdaterTask(Runnable action) {
+        this.action = action;
     }
 
-    public UpdaterTask(int interval, Runnable task) {
+    public UpdaterTask(int interval, Runnable action) {
+        this.action = action;
         this.interval = interval;
-        this.task = task;
     }
 
     public void start() {
@@ -28,17 +27,27 @@ public class UpdaterTask extends BukkitRunnable {
     }
 
     public void start(boolean now) {
-        runTaskTimer(Uppercore.get(), now ? 0 : interval, interval);
-        started = true;
+        if (task != null)
+            stop();
+        task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                action.run();
+            }
+        };
+        task.runTaskTimer(Uppercore.get(), now ? 0 : interval, interval);
     }
 
-    public void stop() {
-        cancel();
-        started = false;
+    public boolean isStarted() {
+        return task != null;
     }
 
-    @Override
-    public void run() {
-        task.run();
+    public boolean stop() {
+        if (task != null) {
+            task.cancel();
+            task = null;
+            return true;
+        }
+        return false;
     }
 }
