@@ -1,15 +1,24 @@
 package xyz.upperlevel.uppercore.config;
 
+import com.google.common.collect.Maps;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.BiConsumer;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.Integer.remainderUnsigned;
+import static xyz.upperlevel.uppercore.util.CollectionUtil.toMap;
 
 public final class ConfigUtils {
 
@@ -69,6 +78,71 @@ public final class ConfigUtils {
         } catch (IllegalArgumentException e) {
             throw new InvalidConfigurationException("Cannot find firework effect type: \"" + s + "\"");
         }
+    }
+
+    public static FileConfiguration loadConfig(Plugin plugin, String fileName) {
+        File file = new File(
+                plugin.getDataFolder(),
+                fileName
+        );
+        if(!file.exists())
+            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': no file found");
+        if(!file.isFile())
+            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': not a file");
+        if(!file.canRead())
+            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': cannot read");
+        YamlConfiguration config = new YamlConfiguration();
+        try {
+            config.load(file);
+        } catch (IOException e) {
+            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': " + e.getMessage(), e);
+        } catch (org.bukkit.configuration.InvalidConfigurationException e) {
+            throw new InvalidConfigurationException("Invalid config file '" + fileName + "': " + e.getMessage(), e);
+        }
+        return config;
+    }
+
+    public static Map<String, Object> loadMap(Plugin plugin, String fileName) {
+        return loadConfig(plugin, fileName).getValues(false);
+    }
+
+    public static Map<String, Config> loadConfigMap(Plugin plugin, String fileName, String itemName) {
+        return loadConfigMap(plugin, fileName, (key, obj) -> plugin.getLogger().severe("Cannot parse " + itemName + " " + key + ": expected map (found: " + obj.getClass().getSimpleName() + ")"));
+    }
+
+    public static Map<String, Config> loadConfigMap(Plugin plugin, String fileName, BiConsumer<String, Object> cannotParseAsConfig) {
+        return loadConfigMap(loadConfig(plugin, fileName), cannotParseAsConfig);
+    }
+
+    public static Map<String, Config> loadConfigMap(ConfigurationSection config, Plugin plugin, String itemName) {
+        return loadConfigMap(config, (key, obj) -> plugin.getLogger().severe("Cannot parse " + itemName + " " + key + ": expected map (found: " + obj.getClass().getSimpleName() + ")"));
+    }
+
+    public static Map<String, Config> loadConfigMap(ConfigurationSection config, BiConsumer<String, Object> cannotParseAsConfig) {
+        return loadConfigMap(config.getValues(false), cannotParseAsConfig);
+    }
+
+    public static Map<String, Config> loadConfigMap(Map<String, Object> config, Plugin plugin, String itemName) {
+        return loadConfigMap(config, (key, obj) -> plugin.getLogger().severe("Cannot parse " + itemName + " " + key + ": expected map (found: " + obj.getClass().getSimpleName() + ")"));
+    }
+
+    public static Map<String, Config> loadConfigMap(Map<String, Object> config, BiConsumer<String, Object> cannotParseAsConfig) {
+        return config
+                .entrySet()
+                .stream()
+                .map(e -> {
+                    Object o = e.getValue();
+                    if(o instanceof Map)
+                        return Maps.immutableEntry(e.getKey(), Config.wrap((Map)o));
+                    else if(o instanceof ConfigurationSection)
+                        return Maps.immutableEntry(e.getKey(), Config.wrap((ConfigurationSection) o));
+                    else {
+                        cannotParseAsConfig.accept(e.getKey(), o);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(toMap(LinkedHashMap::new));
     }
 
     private ConfigUtils() {}

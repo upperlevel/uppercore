@@ -20,6 +20,12 @@ public class InvalidConfigurationException extends RuntimeException{
         this.localizers = new ArrayList<>(Arrays.asList(localizers));
     }
 
+    public InvalidConfigurationException(String configError, Throwable cause, String... localizers) {
+        super(configError, cause);
+        this.configError = configError;
+        this.localizers = new ArrayList<>(Arrays.asList(localizers));
+    }
+
     public String getErrorMessage(String initialMessage)  {
         List<String> localizers = getLocalizers();
         Lists.reverse(localizers);
