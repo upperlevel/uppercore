@@ -10,7 +10,7 @@ import java.util.BitSet;
 import java.util.List;
 
 public final class TextUtil {
-    public static final char CUSTOM_CONTROL_CHAR = '£';
+    public static final char CUSTOM_CONTROL_CHAR = '^';
     public static final char CONFIG_CONTROL_CHAR = '&';
     public static final char CONTROL_CHAR = 167;
     public static final int MAX_LINES = 10;

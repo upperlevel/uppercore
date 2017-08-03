@@ -37,7 +37,7 @@ public class MessageManager {
             return new Message(
                     ((Collection<?>) raw)
                     .stream()
-                    .map(o -> PlaceholderValue.rawStringValue(o.toString()))
+                    .map(o -> PlaceholderValue.stringValue(o.toString()))
                     .collect(Collectors.toList()));
         } else return new Message(Collections.singletonList(PlaceholderValue.stringValue(raw.toString())));
     }
