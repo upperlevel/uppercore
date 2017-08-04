@@ -1,14 +1,15 @@
 package xyz.upperlevel.uppercore.command;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.PluginManager;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
@@ -26,7 +27,8 @@ import static java.util.Collections.emptyList;
 import static lombok.AccessLevel.NONE;
 import static org.bukkit.ChatColor.*;
 
-@Data
+@Getter
+@Setter
 public abstract class Command implements CommandExecutor, TabCompleter {
 
     private NodeCommand parent;
@@ -34,7 +36,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     private final String name;
     private String description;
     private List<String> aliases = new ArrayList<>();
-    private String permission;
+    private Permission permission;
 
     private Sender sender = Sender.ALL; // non null
 
@@ -47,7 +49,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         setup();
     }
 
-    protected void setParent(NodeCommand parent) {
+    public void setParent(NodeCommand parent) {
         this.parent = parent;
     }
 
@@ -101,7 +103,6 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     }
 
     public String getUsage() {
-        System.out.println("usage: " + getUsage(null, false));
         return getUsage(null, false);
     }
 
@@ -207,7 +208,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     }
 
     public void execute(CommandSender sender, List<String> args) {
-        if (executor == null)
+        if (executor == null || !canExecute(sender))
             return;
         List<Object> result = new ArrayList<>();
         result.add(sender);
@@ -295,6 +296,27 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         setDescription(cmd.getDescription());
         cmd.setExecutor(this);
         cmd.setTabCompleter(this);
+        calcPermissions();
+        registerPermissions(Bukkit.getPluginManager());
+    }
+
+    public void registerPermissions(PluginManager manager) {
+        if(permission != null)
+            manager.addPermission(permission);
+    }
+
+    public void calcPermissions() {
+        WithPermission perm = getClass().getAnnotation(WithPermission.class);
+        if(perm != null) {
+            String path;
+            if(parent != null) {
+                Permission parentPerm = parent.getPermission();
+                path = parentPerm.getName() + '.' + perm.value();
+            } else path = perm.value();
+            permission = new Permission(path, perm.value(), perm.def().get(this));
+            if(parent != null)
+                permission.addParent(parent.getAnyPerm(), true);
+        }
     }
 
     @Override

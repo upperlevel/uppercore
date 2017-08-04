@@ -4,6 +4,8 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
@@ -22,6 +24,8 @@ public abstract class NodeCommand extends Command {
 
     private final Map<String, Command> commandsByName = new HashMap<>();
     private final HelpCommand helpCmd = new HelpCommand();
+    @Getter
+    private Permission anyPerm;
 
     public NodeCommand(String name) {
         super(name);
@@ -42,6 +46,8 @@ public abstract class NodeCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, List<String> args) {
+        if(!canExecute(sender))
+            return;
         super.execute(sender, args);
         if (args.isEmpty()) {
             helpCmd.run(sender, 1);
@@ -82,6 +88,36 @@ public abstract class NodeCommand extends Command {
         }
     }
 
+    @Override
+    public void calcPermissions() {
+        super.calcPermissions();
+
+        if(getPermission() != null) {
+            WithChildPermission perm = getClass().getAnnotation(WithChildPermission.class);
+            String path = getPermission().getName() + ".*";
+            if (perm != null)
+                anyPerm = new Permission(path, perm.desc(), perm.def().get(this));
+            else
+                anyPerm = new Permission(path, DefaultPermission.INHERIT.get(this));
+            if(getParent() != null)
+                anyPerm.addParent(getParent().anyPerm, true);
+        }
+
+        for(Command command : commands) {
+            command.calcPermissions();
+        }
+    }
+
+    @Override
+    public void registerPermissions(PluginManager manager) {
+        super.registerPermissions(manager);
+        if(anyPerm != null)
+            manager.addPermission(anyPerm);
+        for(Command command : commands)
+            command.registerPermissions(manager);
+    }
+
+    @WithPermission("help")
     public class HelpCommand extends Command {
 
         public HelpCommand() {
