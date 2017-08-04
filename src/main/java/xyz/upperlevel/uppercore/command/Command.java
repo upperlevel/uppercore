@@ -310,8 +310,9 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         if(perm != null) {
             String path;
             if(parent != null) {
-                Permission parentPerm = parent.getPermission();
-                path = parentPerm.getName() + '.' + perm.value();
+                if(parent.getPermission() == null)
+                    return;
+                path = parent.getPermission().getName() + '.' + perm.value();
             } else path = perm.value();
             permission = new Permission(path, perm.value(), perm.def().get(this));
             if(parent != null)

@@ -20,7 +20,7 @@ public enum DefaultPermission {
         @Override
         public PermissionDefault get(Command command) {
             Command parent = command.getParent();
-            return parent == null ? PermissionDefault.TRUE : parent.getPermission().getDefault();
+            return (parent == null || parent.getPermission() == null) ? PermissionDefault.TRUE : parent.getPermission().getDefault();
         }
     },
     NOT_OP {

@@ -54,7 +54,7 @@ public abstract class NodeCommand extends Command {
             return;
         }
         Command cmd = getCommand(args.get(0));
-        if (cmd == null) {
+        if (cmd == null || !cmd.canExecute(sender)) {
             TextUtil.sendMessages(sender, asList(
                     RED + "No commands found for \"" + LIGHT_PURPLE + args.get(0) + RED + "\". " + GOLD + "To see all commands use:",
                     getUsage(sender, true)
@@ -101,10 +101,10 @@ public abstract class NodeCommand extends Command {
                 anyPerm = new Permission(path, DefaultPermission.INHERIT.get(this));
             if(getParent() != null)
                 anyPerm.addParent(getParent().anyPerm, true);
-        }
 
-        for(Command command : commands) {
-            command.calcPermissions();
+            for(Command command : commands) {
+                command.calcPermissions();
+            }
         }
     }
 
