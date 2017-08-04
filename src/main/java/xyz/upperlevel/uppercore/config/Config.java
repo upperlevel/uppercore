@@ -65,65 +65,6 @@ public interface Config {
         return color;
     }
 
-    //------------------------Float
-
-    default Float getFloat(String key) {
-        Number res;
-        try {
-            res = ((Number) get(key));
-        } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
-            return null;
-        }
-        return res == null ? null : res.floatValue();
-    }
-
-    default float getFloat(String key, float def) {
-        Float res = getFloat(key);
-        return res != null ? res : def;
-    }
-
-    default float getFloatRequired(String key) {
-        Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
-        try {
-            return ((Number) get(key)).intValue();
-        } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
-        }
-    }
-
-    //------------------------Double
-
-    default Double getDouble(String key) {
-        Number res = null;
-        try {
-            res = ((Number) get(key));
-        } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
-        }
-        return res == null ? null : res.doubleValue();
-    }
-
-    default double getDouble(String key, double def) {
-        Double res = getDouble(key);
-        return res != null ? res : def;
-    }
-
-    default double getDoubleRequired(String key) {
-        Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
-        try {
-            return ((Number) get(key)).intValue();
-        } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
-        }
-    }
-
     //------------------------String
 
     default String getString(String key) {
@@ -399,6 +340,65 @@ public interface Config {
         if (raw == null)
             requiredPropertyNotFound(key);
         return raw;
+    }
+
+    //------------------------Float
+
+    default Float getFloat(String key) {
+        Number res;
+        try {
+            res = ((Number) get(key));
+        } catch (ClassCastException e) {
+            invalidValue(key, get(key), "Number");
+            return null;
+        }
+        return res == null ? null : res.floatValue();
+    }
+
+    default float getFloat(String key, float def) {
+        Float res = getFloat(key);
+        return res != null ? res : def;
+    }
+
+    default float getFloatRequired(String key) {
+        Object raw = get(key);
+        if (raw == null)
+            requiredPropertyNotFound(key);
+        try {
+            return ((Number) get(key)).floatValue();
+        } catch (ClassCastException e) {
+            invalidValue(key, raw, "Number");
+            return -1;
+        }
+    }
+
+    //------------------------Double
+
+    default Double getDouble(String key) {
+        Number res = null;
+        try {
+            res = ((Number) get(key));
+        } catch (ClassCastException e) {
+            invalidValue(key, get(key), "Number");
+        }
+        return res == null ? null : res.doubleValue();
+    }
+
+    default double getDouble(String key, double def) {
+        Double res = getDouble(key);
+        return res != null ? res : def;
+    }
+
+    default double getDoubleRequired(String key) {
+        Object raw = get(key);
+        if (raw == null)
+            requiredPropertyNotFound(key);
+        try {
+            return ((Number) get(key)).doubleValue();
+        } catch (ClassCastException e) {
+            invalidValue(key, raw, "Number");
+            return -1;
+        }
     }
 
     //------------------------Enum
