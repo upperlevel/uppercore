@@ -84,24 +84,24 @@ public final class ConfigUtils {
         return loadConfig(plugin.getDataFolder(), fileName);
     }
 
-    public static FileConfiguration loadConfig(File folder, String fileName) {
-        File file = new File(
-                folder,
-                fileName
-        );
-        if(!file.exists())
-            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': no file found");
-        if(!file.isFile())
-            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': not a file");
-        if(!file.canRead())
-            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': cannot read");
+    public static FileConfiguration loadConfig(File folder, String filename) {
+        return loadConfig(new File(folder, filename));
+    }
+
+    public static FileConfiguration loadConfig(File file) {
+        if (!file.exists())
+            throw new InvalidConfigurationException("Cannot read file '" + file + "': no file found");
+        if (!file.isFile())
+            throw new InvalidConfigurationException("Cannot read file '" + file + "': not a file");
+        if (!file.canRead())
+            throw new InvalidConfigurationException("Cannot read file '" + file + "': cannot read");
         YamlConfiguration config = new YamlConfiguration();
         try {
             config.load(file);
         } catch (IOException e) {
-            throw new InvalidConfigurationException("Cannot read file '" + fileName + "': " + e.getMessage(), e);
+            throw new InvalidConfigurationException("Cannot read file '" + file + "': " + e.getMessage(), e);
         } catch (org.bukkit.configuration.InvalidConfigurationException e) {
-            throw new InvalidConfigurationException("Invalid config file '" + fileName + "': " + e.getMessage(), e);
+            throw new InvalidConfigurationException("Invalid config file '" + file + "': " + e.getMessage(), e);
         }
         return config;
     }
@@ -136,9 +136,9 @@ public final class ConfigUtils {
                 .stream()
                 .map(e -> {
                     Object o = e.getValue();
-                    if(o instanceof Map)
-                        return Maps.immutableEntry(e.getKey(), Config.wrap((Map)o));
-                    else if(o instanceof ConfigurationSection)
+                    if (o instanceof Map)
+                        return Maps.immutableEntry(e.getKey(), Config.wrap((Map) o));
+                    else if (o instanceof ConfigurationSection)
                         return Maps.immutableEntry(e.getKey(), Config.wrap((ConfigurationSection) o));
                     else {
                         cannotParseAsConfig.accept(e.getKey(), o);
@@ -149,5 +149,6 @@ public final class ConfigUtils {
                 .collect(toMap(LinkedHashMap::new));
     }
 
-    private ConfigUtils() {}
+    private ConfigUtils() {
+    }
 }

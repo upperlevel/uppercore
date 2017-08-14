@@ -74,8 +74,9 @@ public class BoardView {
                 this.lines[pos].render(lines.get(pos), lines.size() - pos);
             for (; pos < this.lines.length; pos++)
                 this.lines[pos].clear();
-        }
-        open();
+            open();
+        } else
+            close();
     }
 
     public void clear() {

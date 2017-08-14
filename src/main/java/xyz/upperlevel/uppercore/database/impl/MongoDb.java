@@ -12,7 +12,7 @@ import java.util.Map;
 import static com.mongodb.MongoCredential.createCredential;
 import static java.util.Collections.singletonList;
 
-public class MongoDb implements DatabaseDriver {
+public class MongoDb implements Storage {
     @Override
     public String getId() {
         return "mongodb";

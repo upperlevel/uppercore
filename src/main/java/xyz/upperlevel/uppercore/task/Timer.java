@@ -8,22 +8,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
-public abstract class Timer {
+public class Timer {
     private final Plugin plugin;
     private BukkitRunnable task;
 
     private final long start, each;
     private long current;
+    private final Runnable tick, end;
 
-    public Timer(Plugin plugin, long start, long each) {
+    public Timer(Plugin plugin, long start, long each, Runnable tick, Runnable end) {
         this.plugin = plugin;
         this.start = start;
         this.each = each;
+        this.tick = tick;
+        this.end = end;
     }
-
-    public abstract void tick();
-
-    public abstract void end();
 
     public void start() {
         if (task != null)
@@ -32,11 +31,11 @@ public abstract class Timer {
         task = new BukkitRunnable() {
             @Override
             public void run() {
-                tick();
+                tick.run();
                 if (current > 0)
                     current -= each;
                 else {
-                    end();
+                    end.run();
                     stop();
                 }
             }

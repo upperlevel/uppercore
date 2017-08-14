@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.database.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Data;
+import lombok.Getter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -10,9 +11,10 @@ import xyz.upperlevel.uppercore.database.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 
-public class MySql implements DatabaseDriver {
+public class MySql implements Storage {
     @Override
     public String getId() {
         return "mysql";
@@ -60,27 +62,17 @@ public class MySql implements DatabaseDriver {
 
         @Override
         public ImplDatabase database() {
-            try {
-                // create
-                PreparedStatement stat = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS ?");
-                stat.setString(0, db);
-                stat.execute();
-                //
-                return new ImplDatabase();
-            } catch (SQLException e) {
-                throw new IllegalStateException("Cannot create statement to create db \"" + db + "\": " + e);
-            }
+            return new ImplDatabase();
         }
 
-        @Data
+        @Getter
         public class ImplDatabase implements Database {
             @Override
             public ImplTable table(String id) {
                 try {
                     // create
-                    PreparedStatement stat = conn.prepareStatement("CREATE TABLE IF NOT EXISTS ?(id VARCHAR(36), data JSON)");
-                    stat.setString(0, id);
-                    stat.execute();
+                    Statement stat = conn.createStatement();
+                    stat.executeUpdate("CREATE TABLE " + id + " (id VARCHAR(36), data VARCHAR)");
                     //
                     return new ImplTable(id);
                 } catch (SQLException e) {
@@ -88,7 +80,7 @@ public class MySql implements DatabaseDriver {
                 }
             }
 
-            @Data
+            @Getter
             public class ImplTable implements Table {
                 private final String id;
 
@@ -101,9 +93,9 @@ public class MySql implements DatabaseDriver {
                     try {
                         // create
                         PreparedStatement stat = conn.prepareStatement("INSERT IGNORE INTO ? VALUES(?, ?)");
-                        stat.setString(0, ImplTable.this.id);
-                        stat.setString(1, id);
-                        stat.setString(2, new JSONObject().toJSONString());
+                        stat.setString(1, ImplTable.this.id);
+                        stat.setString(2, id);
+                        stat.setString(3, new JSONObject().toJSONString());
                         stat.execute();
                         //
                         return new ImplDocument(id);
@@ -126,8 +118,8 @@ public class MySql implements DatabaseDriver {
                         ResultSet result;
                         try {
                             PreparedStatement stat = conn.prepareStatement("SELECT data FROM ? WHERE id=?");
-                            stat.setString(0, ImplTable.this.id);
-                            stat.setString(1, id);
+                            stat.setString(1, ImplTable.this.id);
+                            stat.setString(2, id);
                             result = stat.executeQuery();
                             if (result.next()) {
                                 JSONParser parser = new JSONParser();
@@ -145,9 +137,9 @@ public class MySql implements DatabaseDriver {
                     public void send(Map<String, Object> data) {
                         try {
                             PreparedStatement stat = conn.prepareStatement("UPDATE ? SET data=? WHERE id=?");
-                            stat.setString(0, ImplTable.this.id);
-                            stat.setString(1, new JSONObject(data).toJSONString());
-                            stat.setString(2, id);
+                            stat.setString(1, ImplTable.this.id);
+                            stat.setString(2, new JSONObject(data).toJSONString());
+                            stat.setString(3, id);
                             new JSONObject(data);
                         } catch (SQLException e) {
                             throw new IllegalStateException("Cannot update json data from \"" + id + "\": " + e);

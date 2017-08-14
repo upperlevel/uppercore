@@ -1,15 +1,20 @@
 package xyz.upperlevel.uppercore.database.impl;
 
+import com.google.gson.Gson;
 import lombok.Data;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.database.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.HashMap;
 import java.util.Map;
 
-public class Flatfile implements DatabaseDriver {
+public class Flatfile implements Storage {
     @Override
     public String getId() {
         return "flatfile";
@@ -72,26 +77,31 @@ public class Flatfile implements DatabaseDriver {
                     private final File file;
 
                     public ImplDocument(String id) {
-                        this.file = new File(ImplTable.this.getFolder(), id + ".yml");
+                        this.file = new File(ImplTable.this.getFolder(), id + ".json");
                         try {
                             this.file.createNewFile();
                         } catch (IOException ignored) {
                         }
                     }
 
+                    @SuppressWarnings("unchecked")
                     @Override
                     public Map<String, Object> ask() {
-                        return YamlConfiguration.loadConfiguration(file).getValues(false);
+                        JSONParser parser = new JSONParser();
+                        try {
+                            return (Map<String, Object>) parser.parse(new FileReader(file));
+                        } catch (IOException | ParseException e) {
+                            return new HashMap<>();
+                        }
                     }
 
                     @Override
                     public void send(Map<String, Object> data) {
-                        FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-                        for (String key : data.keySet())
-                            cfg.set(key, cfg.get(key));
-                        try {
-                            cfg.save(file);
-                        } catch (IOException ignored) {
+                        try (FileWriter fw = new FileWriter(file)) {
+                            fw.write(new JSONObject(data).toJSONString());
+                            fw.flush();
+                        } catch (IOException e) {
+                            throw new IllegalStateException("Error while writing to \"" + file + "\": " + e);
                         }
                     }
                 }

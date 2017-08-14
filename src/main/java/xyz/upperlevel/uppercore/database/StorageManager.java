@@ -8,22 +8,31 @@ import xyz.upperlevel.uppercore.database.impl.RethinkDb;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DatabaseDriverManager {
-    private final Map<String, DatabaseDriver> drivers = new HashMap<>();
+public class StorageManager {
+    private final Map<String, Storage> storages = new HashMap<>();
 
-    public DatabaseDriverManager() {
+    /**
+     * Instantiate a new storage manager and registers default storages.
+     */
+    public StorageManager() {
         register(new Flatfile());
         register(new MongoDb());
         register(new MySql());
         register(new RethinkDb());
     }
 
-    public void register(DatabaseDriver driver) {
-        drivers.put(driver.getId(), driver);
+    /**
+     * Registers a storage.
+     */
+    public void register(Storage storage) {
+        storages.put(storage.getId(), storage);
     }
 
-    public DatabaseDriver get(String id) {
-        return drivers.get(id);
+    /**
+     * Gets a registered storage by id.
+     */
+    public Storage get(String id) {
+        return storages.get(id);
     }
 
     public Flatfile flatfile() {

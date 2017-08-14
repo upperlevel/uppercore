@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore.board;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
@@ -17,41 +17,61 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class Board {
-    private final PlaceholderValue<String> title;
-    private final List<Area> areas = new LinkedList<>();
+    private PlaceholderValue<String> title;
+    private List<BoardSection> sections = new LinkedList<>();
     private int updateInterval;
     private PlaceholderRegistry placeholders = PlaceholderRegistry.create();
+
+    /**
+     * Init an empty board, with just the title.
+     */
+    public Board(String title) {
+        this.title = PlaceholderValue.stringValue(title);
+    }
 
     public Board(PlaceholderValue<String> title) {
         this.title = title;
     }
 
+    /**
+     * Loads the board from a configuration.
+     */
     @SuppressWarnings("unchecked")
     public Board(Config config) {
         this.title = config.getMessageStr("title");
         this.updateInterval = config.getInt("update-interval", -1);
-        if (config.has("lines")) {
-            TextArea area = new TextArea();
-            area.add(config.getMessageStrList("lines"));
-            areas.add(area);
-        }
+        if (config.has("lines"))
+            sections.add(new FixBoardSection(config.getMessageStrList("lines")));
     }
 
+    /**
+     * Copy constructor.
+     */
     public Board(Board other) {
-        title = other.title;
-        updateInterval = other.updateInterval;
-        for(Area area : other.areas)
-            areas.add(area.copy());
-        placeholders = other.placeholders;
+        this.title = other.title;
+        this.updateInterval = other.updateInterval;
+        this.sections = other.sections;
+        this.placeholders = other.placeholders;
     }
 
-    public void add(Area area) {
-        areas.add(area);
+    public void setTitle(String title) {
+        this.title = PlaceholderValue.stringValue(title);
     }
 
+    /**
+     * Appends a board section.
+     */
+    public void append(BoardSection section) {
+        sections.add(section);
+    }
+
+    /**
+     * Renders all the sections and obtains a list of strings identifying the lines.
+     * @param player the player for which the board may be displayed
+     */
     public List<String> render(Player player) {
         List<String> result = new ArrayList<>();
-        areas.forEach(area -> result.addAll(area.render(player, placeholders)));
+        sections.forEach(section -> result.addAll(section.render(player, placeholders)));
         return result;
     }
 
@@ -64,49 +84,31 @@ public class Board {
         }
     }
 
-    // AREA
-    public interface Area {
-        void update();
-
-        List<String> render(Player player, PlaceholderRegistry placeholders);
-
-        Area copy();
+    public static Board.Builder builder(String title) {
+        return new Board.Builder(new Board(title));
     }
 
-    // TEXT AREA
-    @Data
-    public class TextArea implements Area {
-        private List<PlaceholderValue<String>> lines = new ArrayList<>();
+    @RequiredArgsConstructor
+    public static class Builder {
+        private final Board handle;
 
-        public TextArea() {
+        public Builder title(String title) {
+            handle.setTitle(title);
+            return this;
         }
 
-        public TextArea(List<PlaceholderValue<String>> lines) {
-            this.lines = lines;
+        public Builder updateInterval(int updateInterval) {
+            handle.setUpdateInterval(updateInterval);
+            return this;
         }
 
-        public void add(PlaceholderValue<String> line) {
-            lines.add(line);
+        public Builder append(BoardSection section) {
+            handle.append(section);
+            return this;
         }
 
-        public void add(List<PlaceholderValue<String>> lines) {
-            this.lines.addAll(lines);
-        }
-
-        @Override
-        public void update() {
-        }
-
-        @Override
-        public List<String> render(Player player, PlaceholderRegistry placeholders) {
-            return lines.stream()
-                    .map(line -> line.resolve(player, placeholders))
-                    .collect(Collectors.toList());
-        }
-
-        @Override
-        public TextArea copy() {
-            return new TextArea(new ArrayList<>(lines));
+        public Board build() {
+            return handle;
         }
     }
 }

@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.board.BoardManager;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
+import xyz.upperlevel.uppercore.database.StorageManager;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
@@ -29,6 +30,7 @@ public class Uppercore extends JavaPlugin {
     private GuiManager guis;
     private HotbarManager hotbars;
     private ScriptManager scripts;
+    private StorageManager storages;
 
     private Metrics metrics;
 
@@ -56,6 +58,7 @@ public class Uppercore extends JavaPlugin {
             guis = new GuiManager();
             hotbars = new HotbarManager();
             scripts = new ScriptManager();
+            storages = new StorageManager();
 
             //ScriptManager setup
             File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
@@ -105,5 +108,9 @@ public class Uppercore extends JavaPlugin {
 
     public static MessageManager messages() {
         return instance.messages;
+    }
+
+    public static StorageManager storages() {
+        return instance.storages;
     }
 }

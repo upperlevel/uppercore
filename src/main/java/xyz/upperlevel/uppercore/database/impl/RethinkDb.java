@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static com.rethinkdb.RethinkDB.r;
 
-public class RethinkDb implements DatabaseDriver {
+public class RethinkDb implements Storage {
     @Override
     public String getId() {
         return "rethinkdb";

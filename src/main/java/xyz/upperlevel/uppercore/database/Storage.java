@@ -1,6 +1,6 @@
 package xyz.upperlevel.uppercore.database;
 
-public interface DatabaseDriver {
+public interface Storage {
     String getId();
 
     Connection connect(String database);
