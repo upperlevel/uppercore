@@ -14,7 +14,7 @@ import static org.bukkit.Sound.valueOf;
 public class CompatibleSound {
     public static final boolean OLD;
     @Getter
-    private static Map<String, Sound> translator;
+    private static Map<String, Sound> translator = new HashMap<>();
 
     public static Sound getRaw(String str) {
         return translator.get(str);
@@ -28,7 +28,6 @@ public class CompatibleSound {
 
     static {
         OLD = NmsVersion.MAJOR <= 1 && NmsVersion.MINOR < 9;
-        translator = new HashMap<>();
         if(OLD)
             setupOld();
         else

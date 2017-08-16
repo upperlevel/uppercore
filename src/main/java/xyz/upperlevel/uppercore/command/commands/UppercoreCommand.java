@@ -21,5 +21,7 @@ public class UppercoreCommand extends NodeCommand {
         register(new ScriptCommand());
 
         register(new PlaySoundCommand());
+
+        register(Uppercore.get().getUpdater().getCommand());
     }
 }

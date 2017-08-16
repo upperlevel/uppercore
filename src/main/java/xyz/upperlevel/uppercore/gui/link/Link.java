@@ -18,7 +18,7 @@ public interface Link {
     };
 
     /**
-     * Executed when the link is run
+     * Executed when the link is sync
      *
      * @param player the player that executed this link
      */

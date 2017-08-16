@@ -2,7 +2,6 @@ package xyz.upperlevel.uppercore;
 
 import lombok.Getter;
 import org.bstats.Metrics;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.board.BoardManager;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
@@ -14,6 +13,8 @@ import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.message.MessageManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.script.ScriptManager;
+import xyz.upperlevel.uppercore.update.DownloadableUpdateChecker;
+import xyz.upperlevel.uppercore.update.SpigetUpdateChecker;
 import xyz.upperlevel.uppercore.util.CrashUtil;
 
 import java.io.File;
@@ -21,8 +22,9 @@ import java.util.logging.Logger;
 
 @Getter
 public class Uppercore extends JavaPlugin {
-
     public static final String SCRIPT_CONFIG = "script_engine.yml";
+    public static final String SPIGOT_ID = null;
+    public static final long SPIGET_ID = -1;
 
     private static Uppercore instance;
 
@@ -36,6 +38,8 @@ public class Uppercore extends JavaPlugin {
 
     private MessageManager messages;
 
+    private DownloadableUpdateChecker updater;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -44,6 +48,8 @@ public class Uppercore extends JavaPlugin {
 
             //Metrics setup
             metrics = new Metrics(this);
+            //UpdateChecker setup
+            updater = new SpigetUpdateChecker(this, SPIGOT_ID, SPIGET_ID);
 
             messages = MessageManager.load(this);
 
@@ -80,6 +86,10 @@ public class Uppercore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+    }
+
+    public File getFile() {
+        return super.getFile();
     }
 
     public static Uppercore get() {

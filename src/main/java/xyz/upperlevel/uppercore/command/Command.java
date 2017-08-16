@@ -140,7 +140,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         StringJoiner usage = new StringJoiner(",");
         for (String alias : aliases)
             usage.add(alias);
-        return (format && this.sender.isCorrect(sender) ? AQUA : RED) + usage.toString();
+        return (!format ? "" : this.sender.isCorrect(sender) ? AQUA : RED) + usage.toString();
     }
 
     private static boolean isSenderCorrect(Optional optional, CommandSender sender) {
