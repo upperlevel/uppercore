@@ -1,16 +1,16 @@
 package xyz.upperlevel.uppercore.hotbar;
 
-import lombok.Data;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Loader;
 import xyz.upperlevel.uppercore.Registry;
 
 import java.io.File;
 
 import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
-
-@Data
 public class HotbarRegistry extends Registry<HotbarId> {
+    public static final Loader<HotbarId> LOADER = Loader.of(HotbarId::new);
+
     public HotbarRegistry(Plugin plugin) {
         super(plugin, "hotbars");
         hotbars().register(this);
@@ -28,6 +28,10 @@ public class HotbarRegistry extends Registry<HotbarId> {
         if (result != null)
             hotbars().unregister(result);
         return result;
+    }
+
+    public void loadFolder(File folder) {
+        loadFolder(folder, LOADER);
     }
 
     @Override

@@ -56,6 +56,7 @@ public abstract class Registry<T extends Identifier<?>> {
     }
 
     public void loadFolder(File folder, Loader<T> loader) {
+        folder.mkdirs();
         File[] files = folder.listFiles();
         if (files == null) {
             logger.severe("Error while reading files in: \"" + folder + "\"");
