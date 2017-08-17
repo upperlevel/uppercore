@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.util.nms.impl;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.util.nms.NmsPacket;
+import xyz.upperlevel.uppercore.util.nms.NmsVersion;
 import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
 
 import java.lang.reflect.Constructor;
@@ -21,8 +22,15 @@ public class MessageNms {
 
     static {
         try {
-            getNmsComponent = NmsPacket.NMS.getClass("IChatBaseComponent$ChatSerializer").getMethod("a", String.class);
-            final Class<?> packetChatClazz = NmsPacket.NMS.getClass("PacketPlayOutChat");
+            Class<?> chatSerialzer;
+
+            if(NmsVersion.MINOR > 8 || (NmsVersion.MINOR == 8 && NmsVersion.RELEASE != 1))
+                chatSerialzer = NmsPacket.NMS.getClass("IChatBaseComponent$ChatSerializer");
+            else
+                chatSerialzer = NmsPacket.NMS.getClass("ChatSerializer");
+
+            getNmsComponent = chatSerialzer.getMethod("a", String.class);
+            Class<?> packetChatClazz = NmsPacket.NMS.getClass("PacketPlayOutChat");
             packetPlayOutChatConstructor = packetChatClazz.getConstructor(NmsPacket.NMS.getClass("IChatBaseComponent"));
             packetPlayOutChatComponents = packetChatClazz.getField("components");
         } catch (Exception e) {
