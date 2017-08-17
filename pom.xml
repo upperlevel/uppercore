@@ -8,8 +8,8 @@
     <artifactId>uppercore</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>UpperCore</name>
-    <description>The core of all upperlevel's spigot projects</description>
+    <name>Uppercore</name>
+    <description>The core of all Upperlevel's spigot projects.</description>
     <url>https://github.com/upperlevel/uppercore</url>
 
     <properties>
