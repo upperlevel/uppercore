@@ -13,8 +13,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
-import xyz.upperlevel.uppercore.gui.Icon;
+import xyz.upperlevel.uppercore.gui.ConfigIcon;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,7 +94,7 @@ public class HotbarManager extends Manager<HotbarId> implements Listener {
     }
 
     public boolean onClick(Player player, int slot) {
-        Icon icon = view(player).getIcon(slot);
+        ConfigIcon icon = view(player).getIcon(slot);
         if (icon == null || icon.getLink() == null)
             return false;
         icon.getLink().run(player);

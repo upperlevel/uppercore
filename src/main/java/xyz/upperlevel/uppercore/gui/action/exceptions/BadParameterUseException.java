@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config.action.exceptions;
+package xyz.upperlevel.uppercore.gui.action.exceptions;
 
 /**
  * This is called when a multiple required parameter action is being called using a single parameter

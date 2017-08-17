@@ -1,11 +1,11 @@
-package xyz.upperlevel.uppercore.gui.config.action;
+package xyz.upperlevel.uppercore.gui.action;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
-import xyz.upperlevel.uppercore.gui.config.action.actions.*;
+import xyz.upperlevel.uppercore.gui.action.actions.*;
 
 import java.util.Collection;
 import java.util.HashMap;

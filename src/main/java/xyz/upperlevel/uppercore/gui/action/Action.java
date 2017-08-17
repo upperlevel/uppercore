@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config.action;
+package xyz.upperlevel.uppercore.gui.action;
 
 import lombok.Data;
 import org.bukkit.plugin.Plugin;

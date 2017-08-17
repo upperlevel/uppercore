@@ -1,12 +1,12 @@
-package xyz.upperlevel.uppercore.gui.config.action;
+package xyz.upperlevel.uppercore.gui.action;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.config.action.exceptions.BadParameterUseException;
-import xyz.upperlevel.uppercore.gui.config.action.exceptions.RequiredParameterNotFoundException;
+import xyz.upperlevel.uppercore.gui.action.exceptions.BadParameterUseException;
+import xyz.upperlevel.uppercore.gui.action.exceptions.RequiredParameterNotFoundException;
 
 import java.util.*;
 import java.util.function.Function;

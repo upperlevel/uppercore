@@ -6,9 +6,7 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Loader;
-import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.Icon;
+import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.link.Link;
 
@@ -19,8 +17,8 @@ import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
 @Data
 public class Hotbar {
-    private Icon[] icons = new Icon[9];
-    private List<Icon> noSlotIcons = new ArrayList<>();
+    private ConfigIcon[] icons = new ConfigIcon[9];
+    private List<ConfigIcon> noSlotIcons = new ArrayList<>();
 
     private int nextFree = 0;
     private int size = 0;
@@ -31,7 +29,7 @@ public class Hotbar {
     public Hotbar(Plugin plugin, Config config) {
         if (config.has("icons"))
             for (Config section : config.getConfigList("icons")) {
-                Icon icon = Icon.deserialize(plugin, section);
+                ConfigIcon icon = ConfigIcon.deserialize(plugin, section);
                 int slot = section.getInt("slot", -1);
                 if (slot == -1)
                     noSlotIcons.add(icon);
@@ -85,11 +83,11 @@ public class Hotbar {
         } while (icons[nextFree] != null);
     }
 
-    public Icon getIcon(int slot) {
+    public ConfigIcon getIcon(int slot) {
         return icons[slot];
     }
 
-    public boolean setIcon(int slot, Icon icon) {
+    public boolean setIcon(int slot, ConfigIcon icon) {
         if (icon == null)
             return remove(slot);
         if (icons[slot] != null)
@@ -107,7 +105,7 @@ public class Hotbar {
      * @param predicate the predicate that decides which item to removeHotbar
      * @return true if the hotbar changed
      */
-    public boolean remove(Predicate<Icon> predicate) {
+    public boolean remove(Predicate<ConfigIcon> predicate) {
         int initialSize = size;
         for (int i = 0; i < 9; i++) {
             if (predicate.test(icons[i])) {
@@ -124,7 +122,7 @@ public class Hotbar {
      *
      * @param links the collection with the links to removeHotbar
      */
-    public void remove(Collection<Icon> links) {
+    public void remove(Collection<ConfigIcon> links) {
         remove(links::contains);
     }
 
@@ -133,7 +131,7 @@ public class Hotbar {
      *
      * @param links the array containing the links to removeHotbar
      */
-    public void remove(Icon[] links) {
+    public void remove(ConfigIcon[] links) {
         remove(Arrays.asList(links));
     }
 
@@ -161,29 +159,29 @@ public class Hotbar {
     }
 
     public void addItem(ItemStack item) {
-        addIcon(new Icon(item));
+        addIcon(new ConfigIcon(item));
     }
 
-    public void addIcons(Collection<Icon> icons) {
+    public void addIcons(Collection<ConfigIcon> icons) {
         if (icons.size() > (9 - size))
             throw new HotbarOutOfSpaceException(this, icons.size());
 
-        for (Icon icon : icons) {
+        for (ConfigIcon icon : icons) {
             this.icons[nextFree] = icon;
             size++;
             findNextFree();
         }
     }
 
-    public void addIcons(Icon[] icons) {
+    public void addIcons(ConfigIcon[] icons) {
         addIcons(Arrays.asList(icons));
     }
 
     public boolean addIcon(ItemStack item, Link link) {
-        return addIcon(new Icon(item, link));
+        return addIcon(new ConfigIcon(item, link));
     }
 
-    public boolean addIcon(Icon icon) {
+    public boolean addIcon(ConfigIcon icon) {
         if (isFull())
             return false;
         icons[nextFree] = icon;

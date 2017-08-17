@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config.action.exceptions;
+package xyz.upperlevel.uppercore.gui.action.exceptions;
 
 import lombok.Getter;
 

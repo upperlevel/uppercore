@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
@@ -62,6 +63,16 @@ public final class GuiUtil {
         meta.setBasePotionData(new PotionData(type, extended, upgraded));
         potion.setItemMeta(meta);
         return potion;
+    }
+
+    public static ItemStack head(String playerName, String displayName, String... lore) {
+        ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.setOwner(playerName);
+        meta.setDisplayName(displayName);
+        meta.setLore(Arrays.asList(lore));
+        item.setItemMeta(meta);
+        return item;
     }
 
     public static ItemStack setNameAndLores(ItemStack item, String name, String... lores) {

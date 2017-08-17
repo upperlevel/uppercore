@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.gui.config.action.actions;
+package xyz.upperlevel.uppercore.gui.action.actions;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
@@ -6,9 +6,9 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.config.action.Action;
-import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
-import xyz.upperlevel.uppercore.gui.config.action.Parser;
+import xyz.upperlevel.uppercore.gui.action.Action;
+import xyz.upperlevel.uppercore.gui.action.BaseActionType;
+import xyz.upperlevel.uppercore.gui.action.Parser;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 

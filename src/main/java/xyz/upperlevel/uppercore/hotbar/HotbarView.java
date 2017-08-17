@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.hotbar;
 import lombok.Data;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.uppercore.gui.Icon;
+import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
 
 import java.util.HashMap;
@@ -16,11 +16,11 @@ public class HotbarView {
 
     private final Player player;
 
-    private final Icon[] icons = new Icon[9];
+    private final ConfigIcon[] icons = new ConfigIcon[9];
     private final ItemStack[] items = new ItemStack[9];
 
     private final Set<Hotbar> hotbars = new HashSet<>();
-    private final Map<Icon, UpdaterTask> updaters = new HashMap<>(); // one updater per hotbar
+    private final Map<ConfigIcon, UpdaterTask> updaters = new HashMap<>(); // one updater per hotbar
 
     // takes care of slots held by hotbars
     private final Map<Hotbar, Set<Integer>> slotsByHotbar = new HashMap<>();
@@ -31,7 +31,7 @@ public class HotbarView {
     }
 
     public void printSlot(int slot) {
-        Icon icon = icons[slot];
+        ConfigIcon icon = icons[slot];
         ItemStack item;
         if (icon != null)
             item = icon.getDisplay().resolve(player);
@@ -46,13 +46,13 @@ public class HotbarView {
         items[slot] = null;
     }
 
-    public void printIcon(Icon icon) {
+    public void printIcon(ConfigIcon icon) {
         for (int slot = 0; slot < icons.length; slot++)
             if (icons[slot] != null && icons[slot] == icon)
                 printSlot(slot);
     }
 
-    private void wipeIcon(Icon icon) {
+    private void wipeIcon(ConfigIcon icon) {
         for (int slot = 0; slot < icons.length; slot++) {
             if (icons[slot] != null && icons[slot].equals(icon))
                 wipeSlot(slot);
@@ -82,7 +82,7 @@ public class HotbarView {
         updaters.clear();
     }
 
-    public Icon getIcon(int slot) {
+    public ConfigIcon getIcon(int slot) {
         return icons[slot];
     }
 
@@ -104,7 +104,7 @@ public class HotbarView {
         return hotbars.stream().anyMatch(hotbar -> hotbar.isIconSlot(slot));
     }
 
-    public boolean addIcon(Icon icon) {
+    public boolean addIcon(ConfigIcon icon) {
         int slot = getNextSlot();
         if (slot >= 0) {
             icons[slot] = icon;
@@ -113,9 +113,9 @@ public class HotbarView {
         return false;
     }
 
-    public int getIconsCount(Icon icon) {
+    public int getIconsCount(ConfigIcon icon) {
         int count = 0;
-        for (Icon other : icons) {
+        for (ConfigIcon other : icons) {
             if (icon != null) {
                 if (icon.equals(other))
                     count++;
@@ -126,11 +126,11 @@ public class HotbarView {
         return count;
     }
 
-    public void setIcon(int slot, Icon icon) {
+    public void setIcon(int slot, ConfigIcon icon) {
         setIcon(slot, icon, null);
     }
 
-    private void setIcon(int slot, Icon icon, Hotbar hotbar) {
+    private void setIcon(int slot, ConfigIcon icon, Hotbar hotbar) {
         removeIcon(slot, false);
         icons[slot] = icon;
         if (hotbar != null)
@@ -152,7 +152,7 @@ public class HotbarView {
         for (Set<Integer> slots : slotsByHotbar.values())
             slots.remove(slot);
         hotbarsBySlot[slot] = null;
-        Icon icon = icons[slot];
+        ConfigIcon icon = icons[slot];
         if (icon != null && getIconsCount(icon) == 1) {
             UpdaterTask task = updaters.remove(icon);
             if (task != null)
@@ -165,7 +165,7 @@ public class HotbarView {
 
     public int getFreeSlots() {
         int count = 0;
-        for (Icon icon : icons) {
+        for (ConfigIcon icon : icons) {
             if (icon == null)
                 count++;
         }
@@ -188,11 +188,11 @@ public class HotbarView {
         if (isHolding(hotbar) || isOverlaying(hotbar))
             return false;
         for (int slot = 0; slot < hotbar.getIcons().length; slot++) {
-            Icon icon = hotbar.getIcon(slot);
+            ConfigIcon icon = hotbar.getIcon(slot);
             if (icon != null)
                 setIcon(slot, icon, hotbar);
         }
-        for (Icon icon : hotbar.getNoSlotIcons())
+        for (ConfigIcon icon : hotbar.getNoSlotIcons())
             addIcon(icon);
         hotbars.add(hotbar);
         return true;
@@ -219,7 +219,7 @@ public class HotbarView {
 
     public boolean isOverlaying(Hotbar hotbar) {
         for (int slot = 0; slot < hotbar.getIcons().length; slot++) {
-            Icon icon = hotbar.getIcon(slot);
+            ConfigIcon icon = hotbar.getIcon(slot);
             if (icon != null && icons[slot] != null)
                 return true;
         }

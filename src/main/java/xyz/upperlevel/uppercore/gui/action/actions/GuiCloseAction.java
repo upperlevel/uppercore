@@ -1,11 +1,9 @@
-package xyz.upperlevel.uppercore.gui.config.action.actions;
+package xyz.upperlevel.uppercore.gui.action.actions;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.GuiManager;
-import xyz.upperlevel.uppercore.gui.config.action.Action;
-import xyz.upperlevel.uppercore.gui.config.action.BaseActionType;
+import xyz.upperlevel.uppercore.gui.action.Action;
+import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 
 import java.util.Map;
 

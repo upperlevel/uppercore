@@ -26,7 +26,7 @@ public class ChestGui implements Gui {
     private PlaceholderValue<String> title;
     private int size;
     private InventoryType type;
-    private Icon[] icons;
+    private ConfigIcon[] icons;
     private int updateInterval = -1;
     private final Map<Player, UpdaterTask> updaters = new HashMap<>();
 
@@ -52,7 +52,7 @@ public class ChestGui implements Gui {
     public ChestGui(int size, PlaceholderValue<String> title) {
         this.title = title;
         this.size = size;
-        this.icons = new Icon[size];
+        this.icons = new ConfigIcon[size];
         onSetup();
     }
 
@@ -65,7 +65,7 @@ public class ChestGui implements Gui {
     public ChestGui(InventoryType type, PlaceholderValue<String> title) {
         this.type = type;
         this.title = title;
-        this.icons = new Icon[type.getDefaultSize()];
+        this.icons = new ConfigIcon[type.getDefaultSize()];
         onSetup();
     }
 
@@ -80,11 +80,11 @@ public class ChestGui implements Gui {
         this.size = size;
         this.type = type;
         if(size >= 0) {
-            this.icons = new Icon[size];
+            this.icons = new ConfigIcon[size];
             if(type != null)
                 throw new IllegalArgumentException("Cannot have both size and type present!");
         } else
-            this.icons = new Icon[type.getDefaultSize()];
+            this.icons = new ConfigIcon[type.getDefaultSize()];
         onSetup();
     }
 
@@ -92,14 +92,14 @@ public class ChestGui implements Gui {
     protected ChestGui(Plugin plugin, Config config) {
         if (config.has("type")) {
             type = config.getEnum("type", InventoryType.class);
-            icons = new Icon[type.getDefaultSize()];
+            icons = new ConfigIcon[type.getDefaultSize()];
         } else if (config.has("size")) {
             size = config.getInt("size");
             if (size % 9 != 0) {
                 plugin.getLogger().warning("In a gui: size must be a multiple of 9");
                 size = GuiSize.min(size);
             }
-            icons = new Icon[size];
+            icons = new ConfigIcon[size];
         } else
             throw new InvalidConfigurationException("Both 'type' and 'size' are empty!");
         updateInterval = config.getInt("update-interval", -1);
@@ -107,7 +107,7 @@ public class ChestGui implements Gui {
         Collection<Map<String, Object>> iconsData = (Collection<Map<String, Object>>) config.getCollection("icons");
         if (iconsData != null) {
             for (Map<String, Object> data : iconsData) {
-                Icon item = Icon.deserialize(plugin, Config.wrap(data));
+                ConfigIcon item = ConfigIcon.deserialize(plugin, Config.wrap(data));
                 icons[(int) data.get("slot")] = item;
             }
         }
@@ -133,7 +133,7 @@ public class ChestGui implements Gui {
      *
      * @param slot the slot to getHistories the item in
      */
-    public Icon getIcon(int slot) {
+    public ConfigIcon getIcon(int slot) {
         return icons[slot];
     }
 
@@ -148,7 +148,7 @@ public class ChestGui implements Gui {
     }
 
     public boolean addItem(ItemStack item, Link link) {
-        return addIcon(new Icon(item, link));
+        return addIcon(new ConfigIcon(item, link));
     }
 
     /**
@@ -157,10 +157,10 @@ public class ChestGui implements Gui {
      * @param icon the item to addIcons
      */
     public boolean addItem(ItemStack icon) {
-        return addIcon(new Icon(icon));
+        return addIcon(new ConfigIcon(icon));
     }
 
-    public boolean addIcon(Icon icon) {
+    public boolean addIcon(ConfigIcon icon) {
         int i = firstEmpty();
         if (i >= 0) {
             icons[i] = icon;
@@ -182,19 +182,19 @@ public class ChestGui implements Gui {
         return true;
     }
 
-    public boolean addIcons(Icon... icons) {
-        for (Icon icon : icons)
+    public boolean addIcons(ConfigIcon... icons) {
+        for (ConfigIcon icon : icons)
             if (!addIcon(icon))
                 return false;
         return true;
     }
 
     private void setItem(int slot, ItemStack item, Link link) {
-        setIcon(slot, new Icon(item, link));
+        setIcon(slot, new ConfigIcon(item, link));
     }
 
     public void setItem(int slot, ItemStack item) {
-        setIcon(slot, new Icon(item));
+        setIcon(slot, new ConfigIcon(item));
     }
 
     /**
@@ -203,15 +203,15 @@ public class ChestGui implements Gui {
      * @param slot the slot where to give the item
      * @param icon the item to give
      */
-    public void setIcon(int slot, Icon icon) {
+    public void setIcon(int slot, ConfigIcon icon) {
         icons[slot] = icon;
     }
 
     public void setItem(int[] slots, ItemStack item) {
-        setIcon(slots, new Icon(item));
+        setIcon(slots, new ConfigIcon(item));
     }
 
-    public void setIcon(int[] slots, Icon icon) {
+    public void setIcon(int[] slots, ConfigIcon icon) {
         for (int slot : slots)
             icons[slot] = icon;
     }
@@ -244,7 +244,7 @@ public class ChestGui implements Gui {
      *
      * @return links not null
      */
-    public List<Icon> getIcons() {
+    public List<ConfigIcon> getIcons() {
         return Arrays.stream(icons)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -273,7 +273,7 @@ public class ChestGui implements Gui {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-        Icon icon = icons[event.getSlot()];
+        ConfigIcon icon = icons[event.getSlot()];
         if (icon != null)
             icon.onClick(event);
     }
@@ -360,16 +360,16 @@ public class ChestGui implements Gui {
         }
 
         public Builder add(ItemResolver item, Link link) {
-            gui.addIcon(Icon.of(item, link));
+            gui.addIcon(ConfigIcon.of(item, link));
             return this;
         }
 
         public Builder add(Supplier<ItemStack> item, Link link) {
-            gui.addIcon(Icon.of(item, link));
+            gui.addIcon(ConfigIcon.of(item, link));
             return this;
         }
 
-        public Builder add(Icon icon) {
+        public Builder add(ConfigIcon icon) {
             gui.addIcon(icon);
             return this;
         }
@@ -379,7 +379,7 @@ public class ChestGui implements Gui {
             return this;
         }
 
-        public Builder addAll(Icon... icons) {
+        public Builder addAll(ConfigIcon... icons) {
             gui.addIcons(icons);
             return this;
         }
@@ -394,7 +394,7 @@ public class ChestGui implements Gui {
             return this;
         }
 
-        public Builder set(int slot, Icon icon) {
+        public Builder set(int slot, ConfigIcon icon) {
             gui.setIcon(slot, icon);
             return this;
         }
@@ -404,7 +404,7 @@ public class ChestGui implements Gui {
             return this;
         }
 
-        public Builder set(int[] slots, Icon icon) {
+        public Builder set(int[] slots, ConfigIcon icon) {
             gui.setIcon(slots, icon);
             return this;
         }
