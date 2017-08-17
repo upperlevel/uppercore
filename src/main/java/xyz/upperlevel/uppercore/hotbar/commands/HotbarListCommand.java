@@ -3,10 +3,7 @@ package xyz.upperlevel.uppercore.hotbar.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Registry;
-import xyz.upperlevel.uppercore.command.Argument;
-import xyz.upperlevel.uppercore.command.Command;
-import xyz.upperlevel.uppercore.command.Executor;
-import xyz.upperlevel.uppercore.command.Optional;
+import xyz.upperlevel.uppercore.command.*;
 import xyz.upperlevel.uppercore.hotbar.HotbarId;
 
 import java.util.Collection;
@@ -15,6 +12,7 @@ import java.util.StringJoiner;
 import static org.bukkit.ChatColor.*;
 import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
+@WithPermission(value = "list", desc = "Allows you to list all available hotbars")
 public class HotbarListCommand extends Command {
 
     public HotbarListCommand() {

@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.command.Argument;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.Executor;
+import xyz.upperlevel.uppercore.command.WithPermission;
 import xyz.upperlevel.uppercore.script.PrecompiledScript;
 import xyz.upperlevel.uppercore.script.Script;
 
@@ -12,6 +13,7 @@ import javax.script.ScriptEngine;
 import static org.bukkit.ChatColor.*;
 import static xyz.upperlevel.uppercore.script.ScriptManager.getEngineName;
 
+@WithPermission(value = "info", desc = "Allows you to see a script's info")
 public class ScriptInfoCommand extends Command {
     public ScriptInfoCommand() {
         super("info");

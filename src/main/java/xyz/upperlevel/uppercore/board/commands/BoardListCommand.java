@@ -6,10 +6,7 @@ import xyz.upperlevel.uppercore.Identifier;
 import xyz.upperlevel.uppercore.Registry;
 import xyz.upperlevel.uppercore.board.Board;
 import xyz.upperlevel.uppercore.board.BoardId;
-import xyz.upperlevel.uppercore.command.Argument;
-import xyz.upperlevel.uppercore.command.Command;
-import xyz.upperlevel.uppercore.command.Executor;
-import xyz.upperlevel.uppercore.command.Optional;
+import xyz.upperlevel.uppercore.command.*;
 
 import java.util.Collection;
 import java.util.StringJoiner;
@@ -17,6 +14,7 @@ import java.util.StringJoiner;
 import static org.bukkit.ChatColor.*;
 import static xyz.upperlevel.uppercore.Uppercore.boards;
 
+@WithPermission(value = "list", desc = "Allows you to list all available scoreboards")
 public class BoardListCommand extends Command {
 
     public BoardListCommand() {

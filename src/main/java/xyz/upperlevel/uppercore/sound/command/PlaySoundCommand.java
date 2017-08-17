@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.*;
 
+@WithPermission(value = "playsound", desc = "Allows you to play a sound from command", def = DefaultPermission.OP)
 public class PlaySoundCommand extends Command {
     public PlaySoundCommand() {
         super("playSound");

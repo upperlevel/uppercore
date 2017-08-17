@@ -7,6 +7,7 @@ import xyz.upperlevel.uppercore.command.*;
 import static org.bukkit.ChatColor.GREEN;
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
+@WithPermission(value = "close", desc = "Allows you to close a player's GUI")
 public class CloseGuiCommand extends Command {
 
     public CloseGuiCommand() {
@@ -15,7 +16,7 @@ public class CloseGuiCommand extends Command {
     }
 
     @Executor
-    public void run(CommandSender sender, @Argument("player") @Optional(sender = Sender.PLAYER) Player player) {
+    public void run(CommandSender sender, @Argument("player") Player player) {
         guis().close(player);
         sender.sendMessage(GREEN + "Gui closed!");
     }

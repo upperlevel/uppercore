@@ -144,8 +144,11 @@ public abstract class NodeCommand extends Command {
         @Executor
         public void run(CommandSender sender, @Argument("page") @Optional(value = "1") int page) {
             List<BaseComponent[]> entries = new ArrayList<>();
-            for (Command cmd : NodeCommand.this.getCommands())
-                entries.add(TextComponent.fromLegacyText(cmd.getHelpline(sender, true)));
+            for (Command cmd : NodeCommand.this.getCommands()) {
+                if(cmd.canExecute(sender)) {
+                    entries.add(TextComponent.fromLegacyText(cmd.getHelpline(sender, true)));
+                }
+            }
 
             int pages = TextUtil.getPages(1, entries.size(), 0);
 

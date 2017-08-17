@@ -2,10 +2,7 @@ package xyz.upperlevel.uppercore.script.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.command.Argument;
-import xyz.upperlevel.uppercore.command.Command;
-import xyz.upperlevel.uppercore.command.Executor;
-import xyz.upperlevel.uppercore.command.Optional;
+import xyz.upperlevel.uppercore.command.*;
 import xyz.upperlevel.uppercore.script.ScriptRegistry;
 
 import java.util.Collection;
@@ -14,6 +11,7 @@ import java.util.StringJoiner;
 import static org.bukkit.ChatColor.*;
 import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
+@WithPermission(value = "list", desc = "Allows you to list all registered scripts")
 public class ScriptListCommand extends Command {
 
     public ScriptListCommand() {

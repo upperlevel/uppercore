@@ -10,10 +10,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.command.Command;
-import xyz.upperlevel.uppercore.command.Executor;
-import xyz.upperlevel.uppercore.command.NodeCommand;
+import org.bukkit.plugin.PluginManager;
+import xyz.upperlevel.uppercore.command.*;
 import xyz.upperlevel.uppercore.update.method.ReplaceUpdateMethod;
 import xyz.upperlevel.uppercore.update.method.UpdateMethod;
 import xyz.upperlevel.uppercore.update.notifier.DefaultDownloadNotifier;
@@ -158,6 +158,21 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         public void setParent(NodeCommand parent) {
             super.setParent(parent);
             setMessage(buildMessage());
+        }
+
+        @Override
+        public void registerPermissions(PluginManager manager) {
+            //Already registered
+        }
+
+        @Override
+        public void calcPermissions() {
+            Permission perm = DownloadableUpdateChecker.this.getPermission();
+            if(perm != null) {
+                setPermission(perm);
+                if (getParent() != null)
+                    perm.addParent(getParent().getAnyPerm(), true);
+            }
         }
     }
 }
