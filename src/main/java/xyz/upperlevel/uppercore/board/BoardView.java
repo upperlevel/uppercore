@@ -70,7 +70,7 @@ public class BoardView {
             objective.setDisplayName(board.getTitle().resolve(player));
             List<String> lines = board.render(player);
             int pos = 0;
-            for (; pos < lines.size(); pos++)
+            for (; pos < lines.size() && pos < MAX_LINES; pos++)
                 this.lines[pos].render(lines.get(pos), lines.size() - pos);
             for (; pos < this.lines.length; pos++)
                 this.lines[pos].clear();
