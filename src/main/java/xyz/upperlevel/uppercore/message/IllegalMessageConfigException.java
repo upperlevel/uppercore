@@ -9,7 +9,7 @@ public class IllegalMessageConfigException extends IllegalStateException {
     private final String messagePath;
 
     public IllegalMessageConfigException(String path, String message) {
-        super("Cannot find message '" + path + '.' + message + "'!");
+        super("Cannot find message '" + (path.isEmpty() ? "" : path + '.') + message + "'!");
         this.path = path;
         this.messagePath = message;
     }
@@ -21,7 +21,7 @@ public class IllegalMessageConfigException extends IllegalStateException {
     }
 
     public IllegalMessageConfigException(String path, String message, InvalidConfigurationException e) {
-        super("Error in message '" + path + '.' + message + "': " + e.getConfigError());
+        super("Error in message '" + (path.isEmpty() ? "" : path + '.') + message + "': " + e.getConfigError());
         this.path = path;
         this.messagePath = message;
     }
