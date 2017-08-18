@@ -1,16 +1,15 @@
 package xyz.upperlevel.uppercore.database.impl;
 
-import com.google.gson.Gson;
 import lombok.Data;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.database.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,8 +48,8 @@ public class Flatfile implements Storage {
             private final File folder;
 
             public ImplDatabase() {
-                this.folder = new File("plugins", db);
-                this.folder.mkdirs();
+                folder = new File("plugins", db + File.separator + "db");
+                folder.mkdirs();
             }
 
             @Override
@@ -63,8 +62,8 @@ public class Flatfile implements Storage {
                 private final File folder;
 
                 public ImplTable(String id) {
-                    this.folder = new File(ImplDatabase.this.folder, id);
-                    this.folder.mkdirs();
+                    folder = new File(ImplDatabase.this.folder, id);
+                    folder.mkdirs();
                 }
 
                 @Override

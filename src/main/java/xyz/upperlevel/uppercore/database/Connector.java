@@ -26,7 +26,7 @@ public class Connector {
         this.storage = storages().get(stgStr);
         if (storage == null)
             throw new InvalidConfigurationException("Storage type not supported: " + stgStr);
-        this.database = config.has("database") ? config.getString("database") : plugin.getName().toLowerCase();
+        this.database = config.has("database") ? config.getString("database") : plugin.getName();
         this.host = config.getString("host");
         this.port = config.getInt("port", 0);
         this.user = config.getString("user");
