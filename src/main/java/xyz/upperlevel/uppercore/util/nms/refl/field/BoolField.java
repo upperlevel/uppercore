@@ -1,6 +1,6 @@
 package xyz.upperlevel.uppercore.util.nms.refl.field;
 
-import static xyz.upperlevel.uppercore.util.nms.Nms.handleException;
+import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
 
 public class BoolField {
     private final java.lang.reflect.Field handle;

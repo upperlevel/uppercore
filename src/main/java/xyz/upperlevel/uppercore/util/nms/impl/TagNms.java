@@ -6,7 +6,7 @@ import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import static xyz.upperlevel.uppercore.util.nms.Nms.handleException;
+import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
 
 public final class TagNms {
     public static final Class<?> CLASS;

@@ -6,6 +6,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import xyz.upperlevel.uppercore.util.nms.impl.entity.BoundingBoxNms;
+import xyz.upperlevel.uppercore.util.nms.impl.entity.EntityNms;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -54,28 +56,25 @@ public final class PlayerUtil {
         double minX = loc.getX() - radius;
         double minY = loc.getY() - radius;
         double minZ = loc.getZ() - radius;
-        double maxX = loc.getX() - radius;
-        double maxY = loc.getY() - radius;
-        double maxZ = loc.getZ() - radius;
+        double maxX = loc.getX() + radius;
+        double maxY = loc.getY() + radius;
+        double maxZ = loc.getZ() + radius;
 
-        int chMinX = (int) Math.floor((minX - 2.0) / 16.0);
-        int chMaxX = (int) Math.floor((maxX + 2.0) / 16.0);
-        int chMinZ = (int) Math.floor((minZ - 2.0) / 16.0);
-        int chMaxZ = (int) Math.floor((maxZ + 2.0) / 16.0);
+        int chMinX = (int) Math.floor(minX - 2.0) >> 4;
+        int chMaxX = (int) Math.floor(maxX + 2.0) >> 4;
+        int chMinZ = (int) Math.floor(minZ - 2.0) >> 4;
+        int chMaxZ = (int) Math.floor(maxZ + 2.0) >> 4;
 
-        for (int chX = chMinX; chX < chMaxX; chX++) {
-            for (int chZ = chMinZ; chZ < chMaxZ; chZ++) {
+        Object bb = BoundingBoxNms.toNms(minX, minY, minZ, maxX, maxY, maxZ);
+
+        for (int chX = chMinX; chX <= chMaxX; chX++) {
+            for (int chZ = chMinZ; chZ <= chMaxZ; chZ++) {
                 if (world.isChunkLoaded(chX, chZ)) {
                     for (Entity t : world.getChunkAt(chX, chZ).getEntities()) {
                         if (t instanceof Player && viewer != t) {
-                            Location l = t.getLocation();
-                            if (l.getX() >= minX &&
-                                    l.getX() <= maxX &&
-                                    l.getY() >= minY &&
-                                    l.getY() <= maxY &&
-                                    l.getZ() >= minZ &&
-                                    l.getZ() <= maxZ)
+                            if (BoundingBoxNms.intersect(bb, EntityNms.getBoundingBox(t))) {
                                 callback.accept((Player) t);
+                            }
                         }
                     }
                 }

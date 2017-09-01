@@ -6,11 +6,9 @@ import xyz.upperlevel.uppercore.util.nms.NmsPacket;
 import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
 import xyz.upperlevel.uppercore.util.nms.impl.entity.EntityNms;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
 
-import static xyz.upperlevel.uppercore.util.nms.Nms.handleException;
+import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
 
 public final class WorldNms {
     public static final Class<?> NMS_CLASS;

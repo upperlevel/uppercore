@@ -6,7 +6,7 @@ import xyz.upperlevel.uppercore.util.nms.NmsPacket;
 import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
 import xyz.upperlevel.uppercore.util.nms.refl.field.*;
 
-import static xyz.upperlevel.uppercore.util.nms.Nms.handleException;
+import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
 
 @RequiredArgsConstructor
 public class Class {
