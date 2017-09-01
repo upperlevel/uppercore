@@ -45,7 +45,7 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
             String str = matcher.group(1);
             String replacement = exec(player, str, finder);
             if(replacement != null)
-                matcher.appendReplacement(res, replacement);
+                matcher.appendReplacement(res, Matcher.quoteReplacement(replacement));
         }
         matcher.appendTail(res);
 
