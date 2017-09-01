@@ -34,7 +34,7 @@ public final class EntityNms {
             setTag = NMS_CLASS.getDeclaredMethod("f", TagNms.CLASS);
 
             getBoundingBox = NMS_CLASS.getDeclaredMethod("getBoundingBox");
-            height = NMS_CLASS.getDeclaredField("height");
+            height = NMS_CLASS.getDeclaredField("length");
             width = NMS_CLASS.getDeclaredField("width");
         } catch (Exception e) {
             throw new UnsupportedVersionException(e);
