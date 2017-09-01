@@ -2,9 +2,12 @@ package xyz.upperlevel.uppercore.util.nms.impl.entity;
 
 import org.bukkit.entity.Entity;
 import xyz.upperlevel.uppercore.util.nms.NmsPacket;
+import xyz.upperlevel.uppercore.util.nms.NmsVersion;
 import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
 import xyz.upperlevel.uppercore.util.nms.impl.TagNms;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
@@ -17,6 +20,8 @@ public final class EntityNms {
     private static final Method getTag;
     private static final Method setTag;
     private static final Method getBoundingBox;
+    private static final Field height;
+    private static final Field width;
 
     static {
         try {
@@ -29,6 +34,8 @@ public final class EntityNms {
             setTag = NMS_CLASS.getDeclaredMethod("f", TagNms.CLASS);
 
             getBoundingBox = NMS_CLASS.getDeclaredMethod("getBoundingBox");
+            height = NMS_CLASS.getDeclaredField("height");
+            width = NMS_CLASS.getDeclaredField("width");
         } catch (Exception e) {
             throw new UnsupportedVersionException(e);
         }
@@ -98,6 +105,32 @@ public final class EntityNms {
         } catch (Exception e) {
             handleException(e);
             return null;
+        }
+    }
+
+    public static double getHeight(Entity entity) {
+        if(NmsVersion.MINOR >= 11) {
+            return entity.getHeight();
+        } else {
+            try {
+                return height.getFloat(getHandle(entity));
+            } catch (IllegalAccessException e) {
+                handleException(e);
+                return -1.0;
+            }
+        }
+    }
+
+    public static double getWidth(Entity entity) {
+        if(NmsVersion.MINOR >= 11) {
+            return entity.getWidth();
+        } else {
+            try {
+                return width.getFloat(getHandle(entity));
+            } catch (IllegalAccessException e) {
+                handleException(e);
+                return -1.0;
+            }
         }
     }
 
