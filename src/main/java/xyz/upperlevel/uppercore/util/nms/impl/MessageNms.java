@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static xyz.upperlevel.uppercore.util.nms.Nms.handleException;
+import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
 import static xyz.upperlevel.uppercore.util.nms.impl.entity.PlayerNms.sendPacket;
 
 public class MessageNms {

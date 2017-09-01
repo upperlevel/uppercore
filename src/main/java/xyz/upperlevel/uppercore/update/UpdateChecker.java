@@ -82,11 +82,12 @@ public abstract class UpdateChecker {
             return lastState = VersionState.ERROR;
         }
 
+        String currentVersion = plugin.getDescription().getVersion();
         VersionComparator.Result comp;
         try {
-            comp = comparator.compare(plugin.getDescription().getVersion(), upVersion);
+            comp = comparator.compare(currentVersion, upVersion);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "[Updater] Error while comparing version: Unknown version format");
+            logger.log(Level.WARNING, "[Updater] Error while comparing version: Unknown version format: (up:" + upVersion + " curr:" + currentVersion + ")");
             return lastState = VersionState.ERROR;
         }
         switch (comp) {

@@ -50,7 +50,7 @@ public class Board {
     public Board(Board other) {
         this.title = other.title;
         this.updateInterval = other.updateInterval;
-        this.sections = other.sections;
+        this.sections = new ArrayList<>(other.sections);
         this.placeholders = other.placeholders;
     }
 

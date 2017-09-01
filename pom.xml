@@ -6,7 +6,7 @@
 
     <groupId>xyz.upperlevel.uppercore</groupId>
     <artifactId>uppercore</artifactId>
-    <version>1.0.1</version>
+    <version>1.1</version>
 
     <name>Uppercore</name>
     <description>The core of all Upperlevel's spigot projects.</description>
