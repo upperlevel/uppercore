@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 @Getter
 public class Uppercore extends JavaPlugin {
     public static final String SCRIPT_CONFIG = "script_engine.yml";
-    public static final String SPIGOT_ID = null;
-    public static final long SPIGET_ID = -1;
+    public static final String SPIGOT_ID = "uppercore.45866";
+    public static final long SPIGET_ID = 45866;
 
     private static Uppercore instance;
 

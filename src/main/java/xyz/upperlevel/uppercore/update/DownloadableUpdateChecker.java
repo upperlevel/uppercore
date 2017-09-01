@@ -67,6 +67,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
     @Override
     protected void notifyConsole() {
         getLogger().info("[Updater] Update found, use the " + command.getUsage() + " command for an automatic update");
+        getLogger().info("[Updater] or update manually " + getSpigotUrl());
     }
 
     public void update(CommandSender sender) {

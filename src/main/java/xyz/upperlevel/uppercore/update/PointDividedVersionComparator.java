@@ -9,7 +9,7 @@ public class PointDividedVersionComparator implements VersionComparator {
         String[] otherParts = other.split("\\.");
         for(int i = 0; i < currParts.length; i++) {
             if(i >= otherParts.length)
-                return Result.NEWER;
+                return Result.OLDER;
             int currPart = Integer.parseInt(currParts[i]);
             int otherPart = Integer.parseInt(otherParts[i]);
 
