@@ -6,10 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class HotbarView {
@@ -201,7 +198,7 @@ public class HotbarView {
     public boolean removeHotbar(Hotbar hotbar) {
         if (!isHolding(hotbar))
             return false;
-        Set<Integer> slots = new HashSet<>(slotsByHotbar.get(hotbar));
+        Set<Integer> slots = new HashSet<>(slotsByHotbar.getOrDefault(hotbar, Collections.emptySet()));
         for (int slot : slots)
             removeIcon(slot);
         hotbars.remove(hotbar);
