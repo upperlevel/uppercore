@@ -1,8 +1,12 @@
 package xyz.upperlevel.uppercore.util.nms.impl.entity;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.util.nms.NmsPacket;
+import xyz.upperlevel.uppercore.util.nms.NmsVersion;
 import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
+import xyz.upperlevel.uppercore.util.nms.impl.MessageNms;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -54,6 +58,14 @@ public class PlayerNms {
             connectionSendPacket.invoke(connection.get(rawPlayer), packet);
         } catch (Exception e) {
             handleException(e);
+        }
+    }
+
+    public static void sendActionBar(Player player, BaseComponent... action) {
+        if(NmsVersion.MINOR > 10 || (NmsVersion.MINOR == 9 && NmsVersion.RELEASE >= 2)) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, action);
+        } else {
+            sendPacket(player, MessageNms.actionBarPacket(action));
         }
     }
 }

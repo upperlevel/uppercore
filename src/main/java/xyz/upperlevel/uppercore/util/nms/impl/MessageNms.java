@@ -16,9 +16,17 @@ import static xyz.upperlevel.uppercore.util.nms.impl.entity.PlayerNms.sendPacket
 
 public class MessageNms {
     //-----------------json messages
-    private static Method getNmsComponent;
-    private static Constructor packetPlayOutChatConstructor;
-    private static Field packetPlayOutChatComponents;
+    private static final Method getNmsComponent;
+    private static final Constructor<?> packetPlayOutChatConstructor;
+
+    private static final Field packetPlayOutChatComponents;
+    //-----------------actionbar messages
+    private static final Constructor<?> packetPlayOutChatConstructorType;
+    private static final Object[] chatMessageTypes;
+    private static final byte MSG_CHAT = 0;
+    private static final byte MSG_SYSTEM = 1;
+    private static final byte MSG_GAME_INFO = 2;
+
 
     static {
         try {
@@ -31,8 +39,18 @@ public class MessageNms {
 
             getNmsComponent = chatSerialzer.getMethod("a", String.class);
             Class<?> packetChatClazz = NmsPacket.NMS.getClass("PacketPlayOutChat");
-            packetPlayOutChatConstructor = packetChatClazz.getConstructor(NmsPacket.NMS.getClass("IChatBaseComponent"));
+            Class<?> iChatBaseComponentClass = NmsPacket.NMS.getClass("IChatBaseComponent");
+            packetPlayOutChatConstructor = packetChatClazz.getConstructor(iChatBaseComponentClass);
             packetPlayOutChatComponents = packetChatClazz.getField("components");
+
+            if(NmsVersion.MINOR >= 12) {
+                Class<?> chatMessageType = NmsPacket.NMS.getClass("ChatMessageType");
+                chatMessageTypes = chatMessageType.getEnumConstants();
+                packetPlayOutChatConstructorType = packetChatClazz.getConstructor(iChatBaseComponentClass, chatMessageType);
+            } else {
+                chatMessageTypes = null;
+                packetPlayOutChatConstructorType = packetChatClazz.getConstructor(iChatBaseComponentClass, Byte.TYPE);
+            }
         } catch (Exception e) {
             throw new UnsupportedVersionException(e);
         }
@@ -50,6 +68,7 @@ public class MessageNms {
         /*
         IChatBaseComponent msg = ChatSerializer.a(JSON);
         PacketPlayOutChat packet = new PacketPlayOutChat(msg);
+        return packet;
          */
         try {
             Object msg = getNmsComponent.invoke(null, json);
@@ -60,14 +79,50 @@ public class MessageNms {
         }
     }
 
-    public static Object jsonPacket(BaseComponent[] json) {
+    public static Object jsonPacket(BaseComponent... components) {
         /*
-        IChatBaseComponent msg = ChatSerializer.a(JSON);
-        PacketPlayOutChat packet = new PacketPlayOutChat(msg);
+        PacketPlayOutChat packet = new PacketPlayOutChat(null);
+        packet.components = components;
+        return packet;
          */
         try {
             Object packet = packetPlayOutChatConstructor.newInstance((Object) null);
-            packetPlayOutChatComponents.set(packet, json);
+            packetPlayOutChatComponents.set(packet, components);
+            return packet;
+        }  catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            handleException(e);
+            return null;
+        }
+    }
+
+    public static Object actionBarPacket(Object ichatComponent) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        return packetPlayOutChatConstructorType.newInstance(ichatComponent, NmsVersion.MINOR >= 12 ? chatMessageTypes[MSG_GAME_INFO] : MSG_GAME_INFO);
+    }
+
+    public static Object actionBarPacket(String json) {
+        /*
+        IChatBaseComponent msg = ChatSerializer.a(JSON);
+        PacketPlayOutChat packet = new PacketPlayOutChat(msg, GAME_INFO);
+        return packet;
+         */
+        try {
+            Object msg = getNmsComponent.invoke(null, json);
+            return actionBarPacket(msg);
+        }  catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            handleException(e);
+            return null;
+        }
+    }
+
+    public static Object actionBarPacket(BaseComponent... actionMessage) {
+        /*
+        PacketPlayOutChat packet = new PacketPlayOutChat(null, GAME_INFO);
+        packet.components = components;
+        return packet;
+         */
+        try {
+            Object packet = actionBarPacket((Object)null);
+            packetPlayOutChatComponents.set(packet, actionMessage);
             return packet;
         }  catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             handleException(e);
