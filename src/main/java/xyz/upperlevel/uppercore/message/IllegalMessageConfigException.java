@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.message;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Getter;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
 

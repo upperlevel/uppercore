@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.sound;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Getter;
 import org.bukkit.Sound;
 import xyz.upperlevel.uppercore.Uppercore;

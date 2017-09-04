@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.util.nms.refl.field;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
 
 public class ByteField {

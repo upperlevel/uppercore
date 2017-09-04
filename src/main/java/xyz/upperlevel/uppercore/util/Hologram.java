@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.util;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Data;
 import org.bukkit.Chunk;
 import org.bukkit.Location;

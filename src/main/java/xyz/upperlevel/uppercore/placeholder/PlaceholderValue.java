@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.placeholder;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

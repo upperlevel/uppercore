@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.particle;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.bukkit.Color;

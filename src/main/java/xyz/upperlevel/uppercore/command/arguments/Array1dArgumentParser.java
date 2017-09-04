@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.command.arguments;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import xyz.upperlevel.uppercore.command.argument.ArgumentParser;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;

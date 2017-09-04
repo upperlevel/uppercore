@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.database;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import xyz.upperlevel.uppercore.database.impl.Flatfile;
 import xyz.upperlevel.uppercore.database.impl.MongoDb;
 import xyz.upperlevel.uppercore.database.impl.MySql;

@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.util.nms.impl.entity;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import xyz.upperlevel.uppercore.util.nms.NmsPacket;
 import xyz.upperlevel.uppercore.util.nms.NmsUtil;
 import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;

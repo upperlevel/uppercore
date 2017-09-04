@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.database.impl;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import com.rethinkdb.gen.ast.Get;
 import lombok.Data;
 import xyz.upperlevel.uppercore.database.*;

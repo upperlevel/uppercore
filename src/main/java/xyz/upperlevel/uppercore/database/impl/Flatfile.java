@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.database.impl;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Data;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

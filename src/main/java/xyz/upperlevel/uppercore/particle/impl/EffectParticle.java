@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.particle.impl;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import xyz.upperlevel.uppercore.particle.Particle;
 import xyz.upperlevel.uppercore.particle.ParticleEffect;
 import xyz.upperlevel.uppercore.particle.ParticleType;

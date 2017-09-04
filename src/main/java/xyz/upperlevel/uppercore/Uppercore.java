@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;

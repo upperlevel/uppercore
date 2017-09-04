@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.gui;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Loader;
 import xyz.upperlevel.uppercore.Registry;

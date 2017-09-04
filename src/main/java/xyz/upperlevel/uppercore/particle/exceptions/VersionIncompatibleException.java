@@ -1,5 +1,11 @@
 package xyz.upperlevel.uppercore.particle.exceptions;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
+
 /**
  * Represents a runtime exception that is thrown if a bukkit version is not compatible with this library
  * <p>

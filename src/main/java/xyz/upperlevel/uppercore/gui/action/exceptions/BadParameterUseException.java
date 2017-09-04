@@ -1,5 +1,11 @@
 package xyz.upperlevel.uppercore.gui.action.exceptions;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
+
 /**
  * This is called when a multiple required parameter action is being called using a single parameter
  */

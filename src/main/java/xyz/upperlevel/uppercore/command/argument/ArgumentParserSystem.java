@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.command.argument;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.NonNull;
 import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.command.argument.exceptions.ParseException;
