@@ -22,6 +22,10 @@ public class PlaySound {
         @Override
         public void play(Location loc, Player player) {
         }
+
+        @Override
+        public void play(Location loc) {
+        }
     };
 
 
@@ -55,7 +59,12 @@ public class PlaySound {
     }
 
     public void play(Location loc) {
-        play(loc, null);
+        loc.getWorld().playSound(
+                loc,
+                sound.resolve(null),
+                volume.resolve(null),
+                pitch.resolve(null)
+        );
     }
 
     public void play(Player player, PlaceholderRegistry<?> reg) {
