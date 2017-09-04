@@ -460,7 +460,7 @@ public interface Config {
         if (raw == null)
             return def;
         else {
-            Sound s = CompatibleSound.get(key);
+            Sound s = CompatibleSound.get(raw);
             if(s == null)
                 throw new InvalidConfigurationException("Cannot find sound \"" + raw + "\", is it supported?");
             else
