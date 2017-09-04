@@ -1,6 +1,10 @@
 package xyz.upperlevel.uppercore.hotbar;
 
-
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Data;
 import lombok.Getter;
 import org.bukkit.entity.Player;

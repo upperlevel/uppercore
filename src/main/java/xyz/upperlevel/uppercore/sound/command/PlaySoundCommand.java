@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.sound.command;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

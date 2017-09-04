@@ -1,6 +1,10 @@
 package xyz.upperlevel.uppercore.particle;
 
-
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

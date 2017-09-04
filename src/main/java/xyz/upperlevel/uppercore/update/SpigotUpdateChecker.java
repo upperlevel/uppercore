@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.update;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.plugin.Plugin;
 
 import java.io.BufferedReader;

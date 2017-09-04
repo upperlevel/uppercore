@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.board.arguments;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.Identifier;
 import xyz.upperlevel.uppercore.board.Board;

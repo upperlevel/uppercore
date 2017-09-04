@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.gui;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -19,6 +24,7 @@ import java.util.Arrays;
 import static org.bukkit.ChatColor.RED;
 
 public final class GuiUtil {
+	
     private static Sound DEF_ERROR_SOUND;//Yeah, it's a lazy initialization with a constant field
 
     public static ItemStack wool(DyeColor color, String name, String... lores) {

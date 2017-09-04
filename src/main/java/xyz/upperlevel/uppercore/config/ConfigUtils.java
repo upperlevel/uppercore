@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.config;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import com.google.common.collect.Maps;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;

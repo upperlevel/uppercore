@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.update.notifier;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import xyz.upperlevel.uppercore.Uppercore;

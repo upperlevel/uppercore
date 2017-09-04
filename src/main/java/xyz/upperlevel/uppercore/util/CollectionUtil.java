@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.util;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BinaryOperator;
@@ -9,20 +14,20 @@ import java.util.stream.Collectors;
 
 public final class CollectionUtil {
 
-    public static <K, U, M extends Map<K, U>> Collector<Map.Entry<K, U>, ?, M> toMap(Supplier<M> mapSupplier) {
-        return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, throwingMerger(), mapSupplier);
-    }
+	public static <K, U, M extends Map<K, U>> Collector<Map.Entry<K, U>, ?, M> toMap(Supplier<M> mapSupplier) {
+		return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, throwingMerger(), mapSupplier);
+	}
 
-    public static <K, U> Collector<Map.Entry<K, U>, ?, Map<K, U>> toMap() {
-        return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, throwingMerger(), HashMap::new);
-    }
+	public static <K, U> Collector<Map.Entry<K, U>, ?, Map<K, U>> toMap() {
+		return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, throwingMerger(), HashMap::new);
+	}
 
-    public static <T> BinaryOperator<T> throwingMerger() {
-        return (var0, var1) -> {
-            throw new IllegalStateException(String.format("Duplicate key %s", var0));
-        };
-    }
+	public static <T> BinaryOperator<T> throwingMerger() {
+		return (var0, var1) -> {
+			throw new IllegalStateException(String.format("Duplicate key %s", var0));
+		};
+	}
 
-
-    private CollectionUtil() {}
+	private CollectionUtil() {
+	}
 }

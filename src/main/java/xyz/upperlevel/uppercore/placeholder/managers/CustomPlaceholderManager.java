@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.placeholder.managers;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Getter;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;

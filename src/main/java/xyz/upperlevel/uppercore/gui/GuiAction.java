@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.gui;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import xyz.upperlevel.uppercore.gui.link.Link;
 
 import static xyz.upperlevel.uppercore.Uppercore.guis;

@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.command.argument.exceptions;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.Getter;
 
 import static org.bukkit.ChatColor.LIGHT_PURPLE;

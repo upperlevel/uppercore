@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.board;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;

@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.gui.action;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;

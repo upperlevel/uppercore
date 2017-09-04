@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.config;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;

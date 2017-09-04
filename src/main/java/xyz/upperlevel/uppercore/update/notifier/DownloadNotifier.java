@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.update.notifier;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.command.CommandSender;
 
 import java.util.logging.Logger;

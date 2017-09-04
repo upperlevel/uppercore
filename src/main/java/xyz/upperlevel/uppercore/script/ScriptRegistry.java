@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.script;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import com.google.common.io.Files;
 import lombok.Data;
 import org.bukkit.plugin.Plugin;

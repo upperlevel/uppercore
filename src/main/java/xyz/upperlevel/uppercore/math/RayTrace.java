@@ -1,5 +1,10 @@
 package xyz.upperlevel.uppercore.math;
 
+/*
+ * MIT License
+ * Copyright (c) 2017 upperlevel
+ * Please see LICENSE.txt for the full license
+ */
 import org.bukkit.Effect;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
