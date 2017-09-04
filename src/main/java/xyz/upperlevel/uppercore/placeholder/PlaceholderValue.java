@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigUtils;
+import xyz.upperlevel.uppercore.sound.CompatibleSound;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.function.BiConsumer;
@@ -85,6 +87,10 @@ public interface PlaceholderValue<T> {
 
     static PlaceholderValue<Color> colorValue(String string) {
         return value(string, ConfigUtils::parseColor, Color.BLACK);
+    }
+
+    static PlaceholderValue<Sound> soundValue(String string) {
+        return value(string, CompatibleSound::get, null);
     }
 
     static <T> PlaceholderValue<T> fake(T value) {
