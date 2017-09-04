@@ -19,6 +19,7 @@ import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.message.Message;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.sound.PlaySound;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,11 +150,11 @@ public class ConfigIcon {
 
         private String permission;
         private Message noPermissionError;
-        private Sound noPermissionSound;
+        private PlaySound noPermissionSound;
 
         private PlaceholderValue<Double> cost;
         private Message noMoneyError;
-        private Sound noMoneySound;
+        private PlaySound noMoneySound;
 
         private List<Action> actions = new ArrayList<>();
 
@@ -164,7 +165,7 @@ public class ConfigIcon {
             if (permission != null && !player.hasPermission(permission)) {
                 noPermissionError.send(player);
                 if (noPermissionSound != null)
-                    player.playSound(player.getLocation(), noPermissionSound, 1.0f, 1.0f);
+                    noPermissionSound.play(player);
                 return false;
             } else
                 return true;
@@ -182,7 +183,7 @@ public class ConfigIcon {
                 if (!res.transactionSuccess()) {
                     noMoneyError.send(player);
                     if (noMoneySound != null)
-                        player.playSound(player.getLocation(), noMoneySound, 1.0f, 1.0f);
+                        noPermissionSound.play(player);
                     Uppercore.logger().log(Level.INFO, res.errorMessage);
                     return false;
                 } else return true;
@@ -195,11 +196,11 @@ public class ConfigIcon {
             IconClick res = new IconClick();
             res.permission = (String) config.get("permission");
             res.noPermissionError = config.getMessage("no-permission-message", "You don't have permission!");
-            res.noPermissionSound = config.getSound("no-permission-sound");
+            res.noPermissionSound = config.getPlaySound("no-permission-sound");
 
             res.cost = PlaceholderValue.doubleValue(config.getString("cost", "0"));
             res.noMoneyError = config.getMessage("no-money-error", "You don't have enough money");
-            res.noMoneySound = config.getSound("no-money-sound");
+            res.noMoneySound = config.getPlaySound("no-money-sound");
 
             List<Object> actions = (List<Object>) config.get("actions");
             if (actions == null)

@@ -9,6 +9,7 @@ import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.message.Message;
 import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
+import xyz.upperlevel.uppercore.sound.PlaySound;
 import xyz.upperlevel.uppercore.util.LocUtil;
 
 import java.util.*;
@@ -477,6 +478,22 @@ public interface Config {
         if (sound == null)
             requiredPropertyNotFound(key);
         return sound;
+    }
+
+    //------------------------PlaySound
+
+    default PlaySound getPlaySound(String key, PlaySound def) {
+        Object raw = get(key);
+        return raw != null ? PlaySound.fromConfig(raw) : def;
+    }
+
+    default PlaySound getPlaySound(String key) {
+        return getPlaySound(key, null);
+    }
+
+    default PlaySound getPlaySoundRequired(String key) {
+        Object raw = getRequired(key);
+        return PlaySound.fromConfig(raw);
     }
 
     //------------------------Material
