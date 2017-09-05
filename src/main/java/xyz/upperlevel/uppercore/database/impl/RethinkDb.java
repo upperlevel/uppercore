@@ -38,6 +38,23 @@ public class RethinkDb implements Storage {
                 .connect());
     }
 
+    @Override
+    public boolean isSupported() {
+        try {
+            Class.forName("com.rethinkdb.RethinkDB");
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String[] getDownloadLinks() {
+        return new String[] {
+                "https://oss.sonatype.org/content/repositories/releases/com/rethinkdb/rethinkdb-driver/2.3.3/rethinkdb-driver-2.3.3.jar"
+        };
+    }
+
     @Data
     public class ConnectionImpl implements Connection {
         private final String db;

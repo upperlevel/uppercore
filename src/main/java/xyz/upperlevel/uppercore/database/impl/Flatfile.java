@@ -34,6 +34,17 @@ public class Flatfile implements Storage {
         return new ImplConnection(database);
     }
 
+    @Override
+    public boolean isSupported() {
+        //We use json.simple that is supported even in 1.8, so it should always be supported
+        return true;
+    }
+
+    @Override
+    public String[] getDownloadLinks() {
+        return new String[0];
+    }
+
     @Data
     public class ImplConnection implements Connection {
         private final String db;

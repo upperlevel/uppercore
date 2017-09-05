@@ -36,6 +36,23 @@ public class MongoDb implements Storage {
         ));
     }
 
+    @Override
+    public boolean isSupported() {
+        try {
+            Class.forName("com.mongodb.MongoClient");
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String[] getDownloadLinks() {
+        return new String[] {
+                "https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/3.5.0/mongo-java-driver-3.5.0.jar"
+        };
+    }
+
     @Data
     public class ImplConnection implements Connection {
         private final String db;

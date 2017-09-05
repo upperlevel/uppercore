@@ -78,6 +78,7 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.0.8</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- vault api -->
         <dependency>
@@ -85,6 +86,7 @@
             <artifactId>VaultAPI</artifactId>
             <version>1.6</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- metrics -->
         <dependency>
@@ -97,21 +99,24 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>2.6.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- mongodb -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.4.2</version>
-            <scope>compile</scope>
+            <version>3.5.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- rethinkdb -->
         <dependency>
             <groupId>com.rethinkdb</groupId>
             <artifactId>rethinkdb-driver</artifactId>
             <version>2.3.3</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

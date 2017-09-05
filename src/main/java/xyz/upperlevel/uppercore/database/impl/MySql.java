@@ -55,6 +55,23 @@ public class MySql implements Storage {
         }
     }
 
+    @Override
+    public boolean isSupported() {
+        try {
+            Class.forName("com.zaxxer.hikari.HikariDataSource");
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String[] getDownloadLinks() {
+        return new String[] {
+                "https://oss.sonatype.org/content/repositories/releases/com/zaxxer/HikariCP/2.6.1/HikariCP-2.6.1.jar"
+        };
+    }
+
     @Data
     public class ImplConnection implements Connection {
         private final String db;
