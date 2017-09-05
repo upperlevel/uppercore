@@ -94,14 +94,6 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>1.1</version>
         </dependency>
-        <!-- hikaricp -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>2.6.1</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
         <!-- mongodb -->
         <dependency>
             <groupId>org.mongodb</groupId>
