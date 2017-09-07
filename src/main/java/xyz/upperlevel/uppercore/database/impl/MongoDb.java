@@ -4,12 +4,14 @@ import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
 import lombok.Data;
 import xyz.upperlevel.uppercore.database.*;
 
 import java.util.Map;
 
 import static com.mongodb.MongoCredential.createCredential;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 
 public class MongoDb implements Storage {
@@ -78,7 +80,7 @@ public class MongoDb implements Storage {
 
             @Override
             public ImplTable table(String id) {
-                db.createCollection(id);
+                db.getCollection(id);
                 return new ImplTable(id);
             }
 
@@ -94,7 +96,6 @@ public class MongoDb implements Storage {
 
                 @Override
                 public ImplDocument document(String id) {
-                    table.insertOne(new org.bson.Document("_id", id));
                     return new ImplDocument(id);
                 }
 
@@ -110,12 +111,12 @@ public class MongoDb implements Storage {
 
                     @Override
                     public Map<String, Object> ask() {
-                        return doc;
+                        return doc == null ? emptyMap() : doc;
                     }
 
                     @Override
                     public void send(Map<String, Object> data) {
-                        table.updateOne(new org.bson.Document("_id", id), new org.bson.Document(data).append("_id", id));
+                        table.replaceOne(new org.bson.Document("_id", id), new org.bson.Document(data).append("_id", id), new UpdateOptions().upsert(true));
                     }
                 }
             }
