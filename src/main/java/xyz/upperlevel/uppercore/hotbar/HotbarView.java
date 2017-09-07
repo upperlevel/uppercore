@@ -37,11 +37,9 @@ public class HotbarView {
             item = null;
         items[slot] = item;
         player.getInventory().setItem(slot, item);
-        new Exception("PRINT SLOT").printStackTrace();
     }
 
     private void wipeSlot(int slot) {
-        new Exception("WIPE SLOT").printStackTrace();
         player.getInventory().setItem(slot, null);
         items[slot] = null;
     }
