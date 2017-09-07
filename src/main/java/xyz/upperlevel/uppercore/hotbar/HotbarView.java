@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.hotbar;
 
 import lombok.Data;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
@@ -56,6 +57,33 @@ public class HotbarView {
         }
     }
 
+    public boolean tryToSaveSlot(int slot) {
+        Inventory inv = player.getInventory();
+        ItemStack item = inv.getItem(slot);
+        if (item == null)
+            return true;
+        ListIterator<ItemStack> i = inv.iterator();
+        while (i.hasNext()) {
+            int ind = i.nextIndex();
+            ItemStack itm = i.next();
+            if (ind == slot || (ind < 9 && hotbarsBySlot[ind] != null))
+                continue;
+            if(itm == null) {
+                i.set(item);
+                return true;
+            } else if (itm.isSimilar(item)) {
+                int free = itm.getAmount() - itm.getMaxStackSize();
+                if(item.getAmount() > free) {
+                    itm.setAmount(itm.getMaxStackSize());
+                } else {
+                    itm.setAmount(itm.getAmount() + free);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void printHotbar(Hotbar hotbar) {
         for (int slot : getSlots(hotbar))
             printSlot(slot);
@@ -69,6 +97,8 @@ public class HotbarView {
     public void clear() {
         hotbars.clear();
         for (int slot = 0; slot < 9; slot++) {
+            if(!isIconSlot(slot))
+                continue;
             player.getInventory().setItem(slot, null);
             icons[slot] = null;
             items[slot] = null;
@@ -128,13 +158,20 @@ public class HotbarView {
     }
 
     private void setIcon(int slot, ConfigIcon icon, Hotbar hotbar) {
-        removeIcon(slot, false);
+        if(icon == null) {
+            removeIcon(slot, true);
+            return;
+        }
+
+        if(!removeIcon(slot, false)) {
+            tryToSaveSlot(slot);
+        }
         icons[slot] = icon;
         if (hotbar != null)
             slotsByHotbar.computeIfAbsent(hotbar, bar -> new HashSet<>()).add(slot);
         hotbarsBySlot[slot] = hotbar;
         printSlot(slot);
-        if (icon != null && icon.needUpdate() && getIconsCount(icon) == 1) {
+        if (icon.needUpdate() && getIconsCount(icon) == 1) {
             UpdaterTask task = new UpdaterTask(icon.getUpdateInterval(), () -> printIcon(icon));
             updaters.put(icon, task);
             task.start();
@@ -145,7 +182,9 @@ public class HotbarView {
         removeIcon(slot, true);
     }
 
-    private void removeIcon(int slot, boolean update) {
+    private boolean removeIcon(int slot, boolean update) {
+        if(hotbarsBySlot[slot] == null)
+            return false;
         for (Set<Integer> slots : slotsByHotbar.values())
             slots.remove(slot);
         hotbarsBySlot[slot] = null;
@@ -158,6 +197,7 @@ public class HotbarView {
         icons[slot] = null;
         if (update)
             wipeSlot(slot);
+        return true;
     }
 
     public int getFreeSlots() {

@@ -32,8 +32,9 @@ public class HotbarManager extends Manager<HotbarId> implements Listener {
     private void initialize(Player player) {
         HotbarView v = new HotbarView(player);
         views.put(player, v);
-        for (HotbarId onJoin : this.onJoin)
+        for (HotbarId onJoin : this.onJoin) {
             v.addHotbar(onJoin.get());
+        }
     }
 
     private void destroy(Player player) {

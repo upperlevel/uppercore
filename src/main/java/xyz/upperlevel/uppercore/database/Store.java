@@ -6,6 +6,7 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigUtils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 @Data
@@ -40,6 +41,11 @@ public class Store {
         }
         connector = new Connector(plugin, Config.wrap(ConfigUtils.loadConfig(file)).getConfigRequired("storage"));
         logger.info("\"" + CONFIG_NAME + "\" file loaded successfully!");
+        if(!connector.setup()) {
+            logger.severe("Cannot download drivers for " + connector.getStorage().getId() + ", please download them directly and put them into the db_driver folder");
+            logger.severe("Drivers: " + Arrays.toString(connector.getStorage().getDownloadLinks()));
+            return false;
+        }
         return true;
     }
 

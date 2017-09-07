@@ -27,7 +27,7 @@ public class Hotbar {
     }
 
     public Hotbar(Plugin plugin, Config config) {
-        if (config.has("icons"))
+        if (config.has("icons")) {
             for (Config section : config.getConfigList("icons")) {
                 ConfigIcon icon = ConfigIcon.deserialize(plugin, section);
                 int slot = section.getInt("slot", -1);
@@ -36,6 +36,7 @@ public class Hotbar {
                 else
                     icons[slot] = icon;
             }
+        }
     }
 
     /**
