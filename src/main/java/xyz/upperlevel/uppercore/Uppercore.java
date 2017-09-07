@@ -89,6 +89,8 @@ public class Uppercore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        hotbars.clearAll();
+        guis.closeAll();
     }
 
     public File getFile() {
