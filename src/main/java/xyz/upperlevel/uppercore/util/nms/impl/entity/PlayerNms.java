@@ -2,6 +2,8 @@ package xyz.upperlevel.uppercore.util.nms.impl.entity;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.util.nms.NmsPacket;
 import xyz.upperlevel.uppercore.util.nms.NmsVersion;
@@ -10,6 +12,7 @@ import xyz.upperlevel.uppercore.util.nms.impl.MessageNms;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
 
@@ -67,5 +70,13 @@ public class PlayerNms {
         } else {
             sendPacket(player, MessageNms.actionBarPacket(action));
         }
+    }
+
+    public static void sendActionBar(Player player, Collection<String> textActions) {
+        sendPacket(player, MessageNms.actionBarPacket(toJson(textActions)));
+    }
+
+    private static String toJson(Collection<String> text) {
+        return "{\"text\": \"" + ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, "\n")) + "\"}";
     }
 }
