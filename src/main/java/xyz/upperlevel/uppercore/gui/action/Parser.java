@@ -3,7 +3,6 @@ package xyz.upperlevel.uppercore.gui.action;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
@@ -189,7 +188,7 @@ public interface Parser<T> {
 
             @Override
             public Object save(CustomItem customItem) {
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
             }
         };
     }

@@ -10,31 +10,30 @@ import java.util.StringJoiner;
 
 @Getter
 public class InvalidConfigurationException extends RuntimeException{
-    private List<String> localizers;
-    @Getter
     private final String configError;
+    private List<String> locations;
 
-    public InvalidConfigurationException(String configError, String... localizers) {
+    public InvalidConfigurationException(String configError, String... locations) {
         super(configError);
         this.configError = configError;
-        this.localizers = new ArrayList<>(Arrays.asList(localizers));
+        this.locations = new ArrayList<>(Arrays.asList(locations));
     }
 
-    public InvalidConfigurationException(String configError, Throwable cause, String... localizers) {
+    public InvalidConfigurationException(String configError, Throwable cause, String... locations) {
         super(configError, cause);
         this.configError = configError;
-        this.localizers = new ArrayList<>(Arrays.asList(localizers));
+        this.locations = new ArrayList<>(Arrays.asList(locations));
     }
 
     public String getErrorMessage(String initialMessage)  {
-        List<String> localizers = getLocalizers();
-        Lists.reverse(localizers);
+        List<String> locations = getLocations();
+        Lists.reverse(locations);
 
-        if(localizers.size() > 0)
+        if(locations.size() > 0)
             initialMessage += ": ";
 
         StringJoiner joiner = new StringJoiner(", ");
-        for(String loc : localizers)
+        for(String loc : locations)
             joiner.add(loc);
         initialMessage += joiner.toString();
         initialMessage += " " + getConfigError();
@@ -46,8 +45,8 @@ public class InvalidConfigurationException extends RuntimeException{
         return getErrorMessage("Error");
     }
 
-    public void addLocalizer(String localizer) {
-        localizers.add(localizer);
+    public void addLocation(String location) {
+        locations.add(location);
     }
 
 }

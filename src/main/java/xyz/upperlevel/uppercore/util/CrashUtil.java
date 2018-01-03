@@ -62,7 +62,7 @@ public final class CrashUtil {
         try {
             loader.run();
         } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in " + name);
+            e.addLocation("in " + name);
             throw e;
         }
     }

@@ -1,0 +1,77 @@
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'maven'
+
+group = 'xyz.upperlevel.ulge'
+version = '1.2.3'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    // Maven Snapshots
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/";
+    }
+    // Spigot Api
+    maven {
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+    // Placeholder Api
+    maven {
+        url "http://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
+    // Vault
+    maven {
+        url "http://nexus.hc.to/content/repositories/pub_releases"
+    }
+    // Metrics
+    maven {
+        url "http://repo.bstats.org/content/repositories/releases/"
+    }
+}
+
+// Dependencies
+project.ext.mcVersion = '1.12-R0.1-SNAPSHOT'
+
+project.ext.anvilGuiApiVersion = '1.3'
+project.ext.lombokVersion = '1.16.16'
+project.ext.placeholderApiVersion = '2.0.8'
+project.ext.vaultApi = '1.6'
+project.ext.bstatsVersion = '1.1'
+project.ext.mongodbDriverVersion = '3.5.0'
+project.ext.rethinkdbDriverVersion = '2.3.3'
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.11.8'
+    testCompile 'org.scalatest:scalatest_2.11:3.0.0'
+
+    // Spigot Api
+    provided "org.spigotmc:spigot-api:${mcVersion}"
+
+    // Bukkit Api
+    provided "org.bukkit:bukkit:${mcVersion}"
+
+    // Anvil Gui Api
+    compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:${anvilGuiApiVersion}"
+
+    // Lombok
+    provided "org.projectlombok:lombok:${lombokVersion}"
+
+    // Placeholder Api
+    provided "me.clip:placeholderapi:${placeholderApiVersion}" optional
+
+    // Vault Api
+    provided "net.milkbow.vault:VaultAPI:${vaultApi}" optional
+
+    // Metrics
+    provided "org.bstats:bstats-bukkit:${bstatsVersion}"
+
+    // MongoDB Driver
+    provided "org.mongodb:mongo-java-driver:${mongodbDriverVersion}" optional
+
+    // RethinkDB Driver
+    provided "com.rethinkdb:rethinkdb-driver:${rethinkdbDriverVersion}" optional
+}

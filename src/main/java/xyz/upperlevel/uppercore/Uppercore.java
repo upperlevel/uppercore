@@ -3,7 +3,6 @@ package xyz.upperlevel.uppercore;
 import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.uppercore.board.BoardManager;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
 import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
 import xyz.upperlevel.uppercore.database.Connector;
@@ -29,7 +28,6 @@ public class Uppercore extends JavaPlugin {
 
     private static Uppercore instance;
 
-    private BoardManager boards;
     private GuiManager guis;
     private HotbarManager hotbars;
     private ScriptManager scripts;
@@ -63,7 +61,6 @@ public class Uppercore extends JavaPlugin {
             ArgumentParserSystem.initialize();
 
             // MANAGER
-            boards = new BoardManager();
             guis = new GuiManager();
             hotbars = new HotbarManager();
             scripts = new ScriptManager();
@@ -103,10 +100,6 @@ public class Uppercore extends JavaPlugin {
 
     public static Logger logger() {
         return instance.getLogger();
-    }
-
-    public static BoardManager boards() {
-        return instance.boards;
     }
 
     public static GuiManager guis() {

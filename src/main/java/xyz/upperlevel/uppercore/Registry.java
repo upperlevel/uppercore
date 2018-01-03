@@ -72,7 +72,7 @@ public abstract class Registry<T extends Identifier<?>> {
         try {
             entry = loader.load(plugin, id, file);
         } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in registrable " + id);
+            e.addLocation("in registrable " + id);
             throw e;
         }
         register(entry);

@@ -7,7 +7,6 @@ import xyz.upperlevel.uppercore.command.argument.exceptions.UnparsableTypeExcept
 import xyz.upperlevel.uppercore.command.arguments.*;
 import xyz.upperlevel.uppercore.gui.arguments.GuiArgumentParser;
 import xyz.upperlevel.uppercore.hotbar.arguments.HotbarArgumentParser;
-import xyz.upperlevel.uppercore.board.arguments.BoardArgumentParser;
 import xyz.upperlevel.uppercore.script.arguments.ScriptArgumentParser;
 import xyz.upperlevel.uppercore.sound.argument.SoundArgumentParser;
 
@@ -40,7 +39,6 @@ public final class ArgumentParserSystem {
 
         register(new GuiArgumentParser());
         register(new HotbarArgumentParser());
-        register(new BoardArgumentParser());
 
         register(new SoundArgumentParser());
         register(new ScriptArgumentParser());

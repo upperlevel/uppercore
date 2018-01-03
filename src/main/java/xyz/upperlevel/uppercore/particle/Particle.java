@@ -61,7 +61,7 @@ public abstract class Particle {
         } catch (IllegalArgumentException e) {
             throw new InvalidConfigurationException("Cannot load particle \"" + type + "\": ");
         } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in particle");
+            e.addLocation("in particle");
             throw e;
         }
     }

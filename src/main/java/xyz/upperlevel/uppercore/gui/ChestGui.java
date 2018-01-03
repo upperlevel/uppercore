@@ -319,7 +319,7 @@ public class ChestGui implements Gui {
         try {
             return new ChestGui(plugin, config);
         } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in gui " + id);
+            e.addLocation("in gui " + id);
             throw e;
         }
     }

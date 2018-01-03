@@ -7,7 +7,7 @@ import xyz.upperlevel.uppercore.gui.Gui;
 
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
-@WithPermission(value = "open", desc = "Allows you to open a specific GUI via command")
+@WithPermission(value = "open", desc = "Allows you to openBoard a specific GUI via command")
 public class OpenGuiCommand extends Command {
 
     public OpenGuiCommand() {

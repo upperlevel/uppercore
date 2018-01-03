@@ -49,7 +49,7 @@ public interface Config {
             try {
                 return ConfigUtils.parseDye(raw);
             } catch (InvalidConfigurationException e) {
-                e.addLocalizer("in property \"" + key + "\"");
+                e.addLocation("in property \"" + key + "\"");
                 throw e;
             }
         }
@@ -437,7 +437,7 @@ public interface Config {
             try {
                 return ConfigUtils.parseColor(raw);
             } catch (InvalidConfigurationException e) {
-                e.addLocalizer("in property \"" + key + "\"");
+                e.addLocation("in property \"" + key + "\"");
                 throw e;
             }
         }
@@ -688,7 +688,7 @@ public interface Config {
         try {
             return deserializer.apply(sub);
         } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in item " + key);
+            e.addLocation("in item " + key);
             throw e;
         }
     }

@@ -3,7 +3,6 @@ package xyz.upperlevel.uppercore.gui;
 import lombok.Data;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -85,7 +84,7 @@ public class ConfigIcon {
                 result.link = IconClick.deserialize(plugin, config.getConfig("click"));
             return result;
         } catch (InvalidConfigurationException e) {
-            e.addLocalizer("in gui display");
+            e.addLocation("in gui display");
             throw e;
         }
     }
