@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.itemstack.ItemResolver;
@@ -101,7 +101,7 @@ public class ChestGui implements Gui {
             }
             icons = new ConfigIcon[size];
         } else
-            throw new InvalidConfigurationException("Both 'type' and 'size' are empty!");
+            throw new InvalidConfigException("Both 'type' and 'size' are empty!");
         updateInterval = config.getInt("update-interval", -1);
         title = config.getMessageStrRequired("title");
         Collection<Map<String, Object>> iconsData = (Collection<Map<String, Object>>) config.getCollection("icons");
@@ -318,7 +318,7 @@ public class ChestGui implements Gui {
     public static ChestGui deserialize(Plugin plugin, String id, Config config) {
         try {
             return new ChestGui(plugin, config);
-        } catch (InvalidConfigurationException e) {
+        } catch (InvalidConfigException e) {
             e.addLocation("in gui " + id);
             throw e;
         }

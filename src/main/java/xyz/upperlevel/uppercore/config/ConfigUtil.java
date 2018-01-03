@@ -8,8 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.yaml.snakeyaml.Yaml;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,11 +16,9 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 import static java.lang.Integer.parseInt;
-import static java.lang.Integer.remainderUnsigned;
 import static xyz.upperlevel.uppercore.util.CollectionUtil.toMap;
 
-public final class ConfigUtils {
-
+public final class ConfigUtil {
     private static final Map<String, Color> COLOR_BY_NAME = new HashMap<String, Color>() {{
         put("WHITE", Color.WHITE);
         put("SILVER", Color.SILVER);
@@ -47,7 +44,7 @@ public final class ConfigUtils {
         try {
             return DyeColor.valueOf(s.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new InvalidConfigurationException("Cannot find dye color: \"" + s + "\"");
+            throw new InvalidConfigException("Cannot find dye color: \"" + s + "\"");
         }
     }
 
@@ -64,7 +61,7 @@ public final class ConfigUtils {
             } else
                 color = COLOR_BY_NAME.get(s.toUpperCase());
             if (color == null)
-                throw new InvalidConfigurationException("Invalid color \"" + s + "\", use \"R;G;B\", \"#RRGGBB\" or color name!");
+                throw new InvalidConfigException("Invalid color \"" + s + "\", use \"R;G;B\", \"#RRGGBB\" or color name!");
             else return color;
         } else
             return Color.fromRGB(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
@@ -72,11 +69,11 @@ public final class ConfigUtils {
 
     public static FireworkEffect.Type parseFireworkEffectType(String s) {
         if (s == null)
-            throw new InvalidConfigurationException("Missing firework effect type!");
+            throw new InvalidConfigException("Missing firework effect type!");
         try {
             return FireworkEffect.Type.valueOf(s.replace(' ', '_').toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new InvalidConfigurationException("Cannot find firework effect type: \"" + s + "\"");
+            throw new InvalidConfigException("Cannot find firework effect type: \"" + s + "\"");
         }
     }
 
@@ -90,18 +87,18 @@ public final class ConfigUtils {
 
     public static FileConfiguration loadConfig(File file) {
         if (!file.exists())
-            throw new InvalidConfigurationException("Cannot read file '" + file + "': no file found");
+            throw new InvalidConfigException("Cannot read file '" + file + "': no file found");
         if (!file.isFile())
-            throw new InvalidConfigurationException("Cannot read file '" + file + "': not a file");
+            throw new InvalidConfigException("Cannot read file '" + file + "': not a file");
         if (!file.canRead())
-            throw new InvalidConfigurationException("Cannot read file '" + file + "': cannot read");
+            throw new InvalidConfigException("Cannot read file '" + file + "': cannot read");
         YamlConfiguration config = new YamlConfiguration();
         try {
             config.load(file);
         } catch (IOException e) {
-            throw new InvalidConfigurationException("Cannot read file '" + file + "': " + e.getMessage(), e);
+            throw new InvalidConfigException("Cannot read file '" + file + "': " + e.getMessage(), e);
         } catch (org.bukkit.configuration.InvalidConfigurationException e) {
-            throw new InvalidConfigurationException("Invalid config file '" + file + "': " + e.getMessage(), e);
+            throw new InvalidConfigException("Invalid config file '" + file + "': " + e.getMessage(), e);
         }
         return config;
     }
@@ -149,6 +146,6 @@ public final class ConfigUtils {
                 .collect(toMap(LinkedHashMap::new));
     }
 
-    private ConfigUtils() {
+    private ConfigUtil() {
     }
 }

@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.ActionType;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
@@ -83,7 +83,7 @@ public class ConfigIcon {
             if (config.has("click"))
                 result.link = IconClick.deserialize(plugin, config.getConfig("click"));
             return result;
-        } catch (InvalidConfigurationException e) {
+        } catch (InvalidConfigException e) {
             e.addLocation("in gui display");
             throw e;
         }
@@ -195,11 +195,11 @@ public class ConfigIcon {
             IconClick res = new IconClick();
             res.permission = (String) config.get("permission");
             res.noPermissionError = config.getMessage("no-permission-message", "You don't have permission!");
-            res.noPermissionSound = config.getPlaySound("no-permission-sound");
+            res.noPermissionSound = config.getBukkitSound("no-permission-sound");
 
             res.cost = PlaceholderValue.doubleValue(config.getString("cost", "0"));
             res.noMoneyError = config.getMessage("no-money-error", "You don't have enough money");
-            res.noMoneySound = config.getPlaySound("no-money-sound");
+            res.noMoneySound = config.getBukkitSound("no-money-sound");
 
             List<Object> actions = (List<Object>) config.get("actions");
             if (actions == null)

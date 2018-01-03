@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore.message;
 
 import lombok.Getter;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 @Getter
 public class IllegalMessageConfigException extends IllegalStateException {
@@ -20,13 +20,13 @@ public class IllegalMessageConfigException extends IllegalStateException {
         this.messagePath = null;
     }
 
-    public IllegalMessageConfigException(String path, String message, InvalidConfigurationException e) {
+    public IllegalMessageConfigException(String path, String message, InvalidConfigException e) {
         super("Error in message '" + (path.isEmpty() ? "" : path + '.') + message + "': " + e.getConfigError());
         this.path = path;
         this.messagePath = message;
     }
 
-    public IllegalMessageConfigException(String path, InvalidConfigurationException e) {
+    public IllegalMessageConfigException(String path, InvalidConfigException e) {
         super("Error in message section '" + path + "': " + e.getConfigError());
         this.path = path;
         this.messagePath = null;

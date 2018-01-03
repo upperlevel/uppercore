@@ -7,7 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -101,7 +101,7 @@ public class PlaySound {
         } else if(o instanceof ConfigurationSection) {
             return new PlaySound(Config.wrap((ConfigurationSection)o));
         } else {
-            throw new InvalidConfigurationException("Expected: Sound or map, found: " + o.getClass().getSimpleName() + " (" + o + ")");
+            throw new InvalidConfigException("Expected: Sound or map, found: " + o.getClass().getSimpleName() + " (" + o + ")");
         }
     }
 }

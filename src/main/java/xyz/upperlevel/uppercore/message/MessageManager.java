@@ -4,7 +4,7 @@ import lombok.Data;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.util.CollectionUtil;
@@ -12,7 +12,6 @@ import xyz.upperlevel.uppercore.util.CollectionUtil;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -50,7 +49,7 @@ public class MessageManager {
             return new MessageManager(getPath(path), config.getConfigRequired(path));
         } catch (RequiredPropertyNotFoundException exception) {
             throw new IllegalMessageConfigException(getPath(path));
-        } catch (InvalidConfigurationException e) {
+        } catch (InvalidConfigException e) {
             throw new IllegalMessageConfigException(getPath(path), e);
         }
     }
@@ -60,7 +59,7 @@ public class MessageManager {
     }
 
     public Map<String, Message> load(String key) {
-        Map<String, Object> msg = config.getSection(key);
+        Map<String, Object> msg = config.getMap(key);
         if (msg != null) {
             return msg.entrySet()
                     .stream()

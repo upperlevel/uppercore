@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.particle.ParticleType;
 import xyz.upperlevel.uppercore.particle.data.ParticleBlockData;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import static xyz.upperlevel.uppercore.particle.ParticleEffect.BLOCK_DUST;
 
@@ -31,7 +31,7 @@ public class BlockDustParticle extends EffectParticle {
         Config block = data.getConfigRequired("block");
         Material type = block.getMaterialRequired("type");
         if(!type.isBlock())
-            throw new InvalidConfigurationException("Particle must be a block!", "in particle '" + ParticleType.BLOCK_DUST.name() + "'");
+            throw new InvalidConfigException("Particle must be a block!", "in particle '" + ParticleType.BLOCK_DUST.name() + "'");
         setBlockType(type);
         setBlockData(block.getByte("data", (byte)0));
         bake();

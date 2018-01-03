@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.itemstack.specials.*;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
@@ -80,11 +80,11 @@ public class CustomItem implements ItemResolver {
             flags = Collections.emptyList();
 
         if (config.has("enchantments")) {
-            Map<String, Object> stEnch = config.getSection("enchantments");
+            Map<String, Object> stEnch = config.getMap("enchantments");
             for(Map.Entry<String, Object> e : stEnch.entrySet()) {
                 Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase(Locale.ENGLISH));
                 if (ench == null)
-                    throw new InvalidConfigurationException("Cannot find enchantment: " + e.getKey());
+                    throw new InvalidConfigException("Cannot find enchantment: " + e.getKey());
                 else
                     enchantments.put(ench, PlaceholderValue.intValue(e.getValue().toString()));
             }

@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.database;
 import lombok.Data;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.ConfigUtils;
+import xyz.upperlevel.uppercore.config.ConfigUtil;
 
 import java.io.File;
 import java.util.Arrays;
@@ -39,7 +39,7 @@ public class Store {
                 return false;
             }
         }
-        connector = new Connector(plugin, Config.wrap(ConfigUtils.loadConfig(file)).getConfigRequired("storage"));
+        connector = new Connector(plugin, Config.wrap(ConfigUtil.loadConfig(file)).getConfigRequired("storage"));
         logger.info("\"" + CONFIG_NAME + "\" file loaded successfully!");
         if(!connector.setup()) {
             logger.severe("Cannot download drivers for " + connector.getStorage().getId() + ", please download them directly and put them into the db_driver folder");

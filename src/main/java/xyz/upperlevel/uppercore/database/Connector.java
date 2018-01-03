@@ -4,7 +4,7 @@ import lombok.Data;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.util.ExternalJarUtil;
 
 import java.io.File;
@@ -36,7 +36,7 @@ public class Connector {
         String stgStr = config.getStringRequired("type");
         this.storage = storages().get(stgStr);
         if (storage == null)
-            throw new InvalidConfigurationException("Storage type not supported: " + stgStr);
+            throw new InvalidConfigException("Storage type not supported: " + stgStr);
         this.database = config.getString("database", plugin.getName());
         this.host = config.getString("host");
         this.port = config.getInt("port", 0);

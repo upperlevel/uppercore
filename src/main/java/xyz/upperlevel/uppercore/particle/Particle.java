@@ -4,7 +4,7 @@ import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 @Data
 public abstract class Particle {
@@ -55,12 +55,12 @@ public abstract class Particle {
         String raw = data.getStringRequired("type");
         ParticleType type = ParticleType.get(raw);
         if(type == null)
-            throw new InvalidConfigurationException("Cannot find particle type \"" + raw + "\"");
+            throw new InvalidConfigException("Cannot find particle type \"" + raw + "\"");
         try {
             return type.create(data);
         } catch (IllegalArgumentException e) {
-            throw new InvalidConfigurationException("Cannot load particle \"" + type + "\": ");
-        } catch (InvalidConfigurationException e) {
+            throw new InvalidConfigException("Cannot load particle \"" + type + "\": ");
+        } catch (InvalidConfigException e) {
             e.addLocation("in particle");
             throw e;
         }

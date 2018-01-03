@@ -2,8 +2,8 @@ package xyz.upperlevel.uppercore.config;
 
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidVauleConfigException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigValueException;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.message.Message;
@@ -18,10 +18,11 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "deprecation"}) // -_-
 public interface Config {
-
     Object get(String key);
+
+    // Object
 
     default Object get(String key, Object defaultValue) {
         final Object res = get(key);
@@ -30,8 +31,9 @@ public interface Config {
 
     default Object getRequired(String key) {
         final Object res = get(key);
-        if (res == null)
-            requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
@@ -39,7 +41,7 @@ public interface Config {
         return get(key) != null;
     }
 
-    //------------------------DyeColor
+    // DyeColor
 
     default DyeColor getDye(String key, DyeColor def) {
         String raw = getString(key);
@@ -47,8 +49,8 @@ public interface Config {
             return def;
         else {
             try {
-                return ConfigUtils.parseDye(raw);
-            } catch (InvalidConfigurationException e) {
+                return ConfigUtil.parseDye(raw);
+            } catch (InvalidConfigException e) {
                 e.addLocation("in property \"" + key + "\"");
                 throw e;
             }
@@ -61,12 +63,13 @@ public interface Config {
 
     default DyeColor getDyeRequired(String key) {
         DyeColor color = getDye(key, null);
-        if (color == null)
-            requiredPropertyNotFound(key);
+        if (color == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return color;
     }
 
-    //------------------------String
+    // String
 
     default String getString(String key) {
         Object raw = get(key);
@@ -80,19 +83,20 @@ public interface Config {
 
     default String getStringRequired(String key) {
         String str = getString(key);
-        if (str == null)
-            requiredPropertyNotFound(key);
+        if (str == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return str;
     }
 
-    //--------------------------StringList
+    // String List
 
     default List<String> getStringList(String key) {
         List<String> res = null;
         try {
             res = (List<String>) get(key);
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "List");
+            throw new InvalidConfigValueException(key, get(key), "List");
         }
         return res;
     }
@@ -104,12 +108,13 @@ public interface Config {
 
     default List<String> getStringListRequired(String key) {
         List<String> res = getStringList(key);
-        if (res == null)
-            requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
-    //--------------------------List
+    // List
 
     default <T> List<T> getList(String key) {
         return (List<T>) get(key);
@@ -122,12 +127,13 @@ public interface Config {
 
     default <T> List<T> getListRequired(String key) {
         List<T> res = getList(key);
-        if (res == null)
-            requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
-    //-----------------------Message
+    // Message
 
     default Message getMessage(String key) {
         return Message.fromConfig(get(key));
@@ -140,17 +146,18 @@ public interface Config {
 
     default Message getMessage(String key, String def) {
         Message message = getMessage(key);
-        if(message != null)
+        if (message != null) {
             return message;
-        else
+        } else {
             return new Message(singletonList(PlaceholderValue.stringValue(def)));
+        }
     }
 
     default Message getMessageRequired(String key) {
         return Message.fromConfig(getRequired(key));
     }
 
-    //-----------------------MessageStr (String + placeholder + colors)
+    // Message String (String + Placeholders + Colors)
 
     default PlaceholderValue<String> getMessageStr(String key) {
         return PlaceholderValue.stringValue(getString(key));
@@ -169,7 +176,7 @@ public interface Config {
         return PlaceholderValue.stringValue(getStringRequired(key));
     }
 
-    //-----------------------Message List (String + placeholder + colors)
+    // Message List (String + Placeholders + Colors)
 
     default List<PlaceholderValue<String>> getMessageStrList(String key) {
         List<String> tmp = getStringList(key);
@@ -187,19 +194,20 @@ public interface Config {
 
     default List<PlaceholderValue<String>> getMessageStrListRequired(String key) {
         List<PlaceholderValue<String>> res = getMessageStrList(key);
-        if (res == null) requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
-
-    //------------------------Int
+    // Int
 
     default Integer getInt(String key) {
         Number res = null;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
+            throw new InvalidConfigValueException(key, get(key), "Number");
         }
         return res == null ? null : res.intValue();
     }
@@ -211,24 +219,24 @@ public interface Config {
 
     default int getIntRequired(String key) {
         Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         try {
             return ((Number) get(key)).intValue();
         } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
+            throw new InvalidConfigValueException(key, raw, "Number");
         }
     }
 
-    //------------------------Short
+    // Short
 
     default Short getShort(String key) {
         Number res = null;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
+            throw new InvalidConfigValueException(key, get(key), "Number");
         }
         return res == null ? null : res.shortValue();
     }
@@ -240,24 +248,24 @@ public interface Config {
 
     default short getShortRequired(String key) {
         Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         try {
             return ((Number) get(key)).shortValue();
         } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
+            throw new InvalidConfigValueException(key, raw, "Number");
         }
     }
 
-    //------------------------Byte
+    // Byte
 
     default Byte getByte(String key) {
-        Number res = null;
+        Number res;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
+            throw new InvalidConfigValueException(key, get(key), "Number");
         }
         return res == null ? null : res.byteValue();
     }
@@ -269,24 +277,24 @@ public interface Config {
 
     default byte getByteRequired(String key) {
         Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         try {
             return ((Number) get(key)).byteValue();
         } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
+            throw new InvalidConfigValueException(key, raw, "Number");
         }
     }
 
-    //------------------------Long
+    // Long
 
     default Long getLong(String key) {
-        Number res = null;
+        Number res;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
+            throw new InvalidConfigValueException(key, get(key), "Number");
         }
         return res == null ? null : res.longValue();
     }
@@ -298,21 +306,23 @@ public interface Config {
 
     default long getLongRequired(String key) {
         Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         try {
             return ((Number) get(key)).longValue();
         } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
+            throw new InvalidConfigValueException(key, raw, "Number");
         }
     }
 
-    //------------------------Bool
+    // Bool
 
     default Boolean getBool(String key) {
         Object raw = get(key);
-        if (raw == null) return null;
+        if (raw == null) {
+            return null;
+        }
         if (raw instanceof Boolean) {
             return (Boolean) raw;
         } else if (raw instanceof String) {
@@ -327,8 +337,7 @@ public interface Config {
         } else if (raw instanceof Number) {
             return ((Number) raw).intValue() == 1;
         }
-        invalidValue(key, raw, "Boolean");
-        return null;
+        throw new InvalidConfigValueException(key, raw, "Boolean");
     }
 
     default boolean getBool(String key, boolean def) {
@@ -338,20 +347,20 @@ public interface Config {
 
     default boolean getBoolRequired(String key) {
         Boolean raw = getBool(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return raw;
     }
 
-    //------------------------Float
+    // Float
 
     default Float getFloat(String key) {
         Number res;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
-            return null;
+            throw new InvalidConfigValueException(key, get(key), "Number");
         }
         return res == null ? null : res.floatValue();
     }
@@ -363,24 +372,24 @@ public interface Config {
 
     default float getFloatRequired(String key) {
         Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         try {
             return ((Number) get(key)).floatValue();
         } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
+            throw new InvalidConfigValueException(key, raw, "Number");
         }
     }
 
-    //------------------------Double
+    // Double
 
     default Double getDouble(String key) {
-        Number res = null;
+        Number res;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Number");
+            throw new InvalidConfigValueException(key, get(key), "Number");
         }
         return res == null ? null : res.doubleValue();
     }
@@ -392,17 +401,17 @@ public interface Config {
 
     default double getDoubleRequired(String key) {
         Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         try {
             return ((Number) get(key)).doubleValue();
         } catch (ClassCastException e) {
-            invalidValue(key, raw, "Number");
-            return -1;
+            throw new InvalidConfigValueException(key, raw, "Number");
         }
     }
 
-    //------------------------Enum
+    // Enum
 
     default <T extends Enum<T>> T getEnum(String key, Class<T> clazz) {
         String raw = getString(key);
@@ -411,7 +420,7 @@ public interface Config {
         try {
             return Enum.valueOf(clazz, raw);
         } catch (IllegalArgumentException e) {
-            throw new InvalidConfigurationException("Cannot find \"" + clazz.getSimpleName().toLowerCase() + "\" \"" + raw + "\"");
+            throw new InvalidConfigException("Cannot find \"" + clazz.getSimpleName().toLowerCase() + "\" \"" + raw + "\"");
         }
     }
 
@@ -422,21 +431,22 @@ public interface Config {
 
     default <T extends Enum<T>> T getEnumRequired(String key, Class<T> clazz) {
         T res = getEnum(key, clazz);
-        if (res == null)
-            requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
-    //------------------------Color
+    // Color
 
     default Color getColor(String key, Color def) {
         String raw = getString(key);
-        if (raw == null)
+        if (raw == null) {
             return def;
-        else {
+        } else {
             try {
-                return ConfigUtils.parseColor(raw);
-            } catch (InvalidConfigurationException e) {
+                return ConfigUtil.parseColor(raw);
+            } catch (InvalidConfigException e) {
                 e.addLocation("in property \"" + key + "\"");
                 throw e;
             }
@@ -449,23 +459,25 @@ public interface Config {
 
     default Color getColorRequired(String key) {
         Color color = getColor(key, null);
-        if (color == null)
-            requiredPropertyNotFound(key);
+        if (color == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return color;
     }
 
-    //------------------------Sound
+    // Sound
 
     default Sound getSound(String key, Sound def) {
         String raw = getString(key);
-        if (raw == null)
+        if (raw == null) {
             return def;
-        else {
-            Sound s = CompatibleSound.get(raw);
-            if(s == null)
-                throw new InvalidConfigurationException("Cannot find sound \"" + raw + "\", is it supported?");
-            else
-                return s;
+        } else {
+            Sound res = CompatibleSound.get(raw);
+            if (res == null) {
+                throw new InvalidConfigException("Cannot find sound \"" + raw + "\", is it supported?");
+            } else {
+                return res;
+            }
         }
     }
 
@@ -475,44 +487,48 @@ public interface Config {
 
     default Sound getSoundRequired(String key) {
         Sound sound = getSound(key, null);
-        if (sound == null)
-            requiredPropertyNotFound(key);
+        if (sound == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return sound;
     }
 
-    //------------------------PlaySound
+    // Bukkit Sound
 
-    default PlaySound getPlaySound(String key, PlaySound def) {
+    default PlaySound getBukkitSound(String key, PlaySound def) {
         Object raw = get(key);
         return raw != null ? PlaySound.fromConfig(raw) : def;
     }
 
-    default PlaySound getPlaySound(String key) {
-        return getPlaySound(key, null);
+    default PlaySound getBukkitSound(String key) {
+        return getBukkitSound(key, null);
     }
 
-    default PlaySound getPlaySoundRequired(String key) {
+    default PlaySound getBukkitSoundRequired(String key) {
         Object raw = getRequired(key);
         return PlaySound.fromConfig(raw);
     }
 
-    //------------------------Material
+    // Material
 
     default Material getMaterial(String key, Material def) {
         Object raw = get(key);
-        if (raw == null)
+        if (raw == null) {
             return def;
-        else {
-            Material res = null;
-            if (raw instanceof Number)
+        } else {
+            Material res;
+            if (raw instanceof Number) {
                 res = Material.getMaterial(((Number) raw).intValue());
-            else if (raw instanceof String) {
+            } else if (raw instanceof String) {
                 res = Material.getMaterial(((String) raw).replace(' ', '_').toUpperCase());
-            } else
-                invalidValue(key, raw, "String|Number");
-            if (res == null)
-                throw new InvalidConfigurationException("Cannot find material \"" + raw + "\"");
-            else return res;
+            } else {
+                throw new InvalidConfigValueException(key, raw, "String|Number");
+            }
+            if (res == null) {
+                throw new InvalidConfigException("Cannot find material \"" + raw + "\"");
+            } else {
+                return res;
+            }
         }
     }
 
@@ -522,52 +538,54 @@ public interface Config {
 
     default Material getMaterialRequired(String key) {
         Material mat = getMaterial(key, null);
-        if (mat == null)
-            requiredPropertyNotFound(key);
+        if (mat == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return mat;
     }
 
-    //------------------------Map
+    // Map
 
-    @SuppressWarnings("unchecked")//-_-
-    default Map<String, Object> getSection(String key) {
+    default Map<String, Object> getMap(String key) {
         Object raw = get(key);
-        if(raw == null)
+        if (raw == null) {
             return null;
-        if (raw instanceof Map)
+        }
+        if (raw instanceof Map) {
             return (Map<String, Object>) raw;
-        else if (raw instanceof ConfigurationSection)
+        } else if (raw instanceof ConfigurationSection) {
             return ((ConfigurationSection) raw).getValues(false);
-        else
-            invalidValue(key, raw, "Map");
-        return null;
+        } else {
+            throw new InvalidConfigValueException(key, raw, "Map");
+        }
     }
 
-    default Map<String, Object> getSection(String key, Map<String, Object> def) {
-        final Map<String, Object> res = getSection(key);
+    default Map<String, Object> getMap(String key, Map<String, Object> def) {
+        final Map<String, Object> res = getMap(key);
         return res != null ? res : def;
     }
 
-    default Map<String, Object> getSectionRequired(String key) {
-        Map<String, Object> res = getSection(key);
-        if (res == null)
-            requiredPropertyNotFound(key);
+    default Map<String, Object> getMapRequired(String key) {
+        Map<String, Object> res = getMap(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
-    //------------------------Config
+    // Config
 
     default Config getConfig(String key, Config def) {
         Object raw = get(key);
-        if (raw == null)
+        if (raw == null) {
             return def;
-        if (raw instanceof Map)
+        } else if (raw instanceof Map) {
             return Config.wrap((Map<String, Object>) raw);
-        else if (raw instanceof ConfigurationSection)
+        } else if (raw instanceof ConfigurationSection) {
             return Config.wrap((ConfigurationSection) raw);
-        else
-            invalidValue(key, raw, "Map");
-        return null;
+        } else {
+            throw new InvalidConfigValueException(key, raw, "Map");
+        }
     }
 
     default Config getConfig(String key) {
@@ -576,12 +594,13 @@ public interface Config {
 
     default Config getConfigRequired(String key) {
         Config res = getConfig(key, null);
-        if (res == null)
-            requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
-    //------------------------Config List
+    // Config List
 
     default List<Config> getConfigList(String key, List<Config> def) {
         Collection<Map<String, Object>> raw = getCollection(key);
@@ -597,20 +616,20 @@ public interface Config {
 
     default List<Config> getConfigListRequired(String key) {
         List<Config> res = getConfigList(key, null);
-        if (res == null)
-            requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
 
-    //------------------------Collection
+    // Collection
 
     default Collection getCollection(String key) {
         try {
             return ((Collection) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Collection");
-            return null;
+            throw new InvalidConfigValueException(key, get(key), "Collection");
         }
     }
 
@@ -621,17 +640,17 @@ public interface Config {
 
     default Collection getCollectionRequired(String key) {
         Object raw = get(key);
-        if (raw == null)
-            requiredPropertyNotFound(key);
+        if (raw == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         try {
             return ((Collection) get(key));
         } catch (ClassCastException e) {
-            invalidValue(key, get(key), "Collection");
-            return null;
+            throw new InvalidConfigValueException(key, get(key), "Collection");
         }
     }
 
-    //--------------------------Location
+    // Location
 
     default Location getLocation(String key, Location def) {
         try {
@@ -647,20 +666,21 @@ public interface Config {
 
     default Location getLocationRequired(String key) {
         Location l = getLocation(key);
-        if (l == null)
-            requiredPropertyNotFound(key);
+        if (l == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return l;
     }
 
-    //--------------------------LocationList
+    // Location List
 
     default List<Location> getLocationList(String key, List<Location> def) {
-        List<Config> cfgs = getConfigList(key);
+        List<Config> configs = getConfigList(key);
         List<Location> res = new ArrayList<>();
-        if (cfgs == null)
+        if (configs == null)
             return def;
         try {
-            for (Config cfg : cfgs)
+            for (Config cfg : configs)
                 res.add(LocUtil.deserialize(cfg));
         } catch (Exception e) {
             return def;
@@ -674,12 +694,13 @@ public interface Config {
 
     default List<Location> getLocationListRequired(String key) {
         List<Location> res = getLocationList(key);
-        if (res == null)
-            requiredPropertyNotFound(key);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
         return res;
     }
 
-    //--------------------------CustomItem
+    // Custom Item
 
     default CustomItem getCustomItem(String key, Function<Config, CustomItem> deserializer) {
         Config sub = getConfig(key);
@@ -687,7 +708,7 @@ public interface Config {
             return null;
         try {
             return deserializer.apply(sub);
-        } catch (InvalidConfigurationException e) {
+        } catch (InvalidConfigException e) {
             e.addLocation("in item " + key);
             throw e;
         }
@@ -709,23 +730,15 @@ public interface Config {
     default CustomItem getCustomItemRequired(String key) {
         CustomItem res = getCustomItem(key);
         if (res == null)
-            requiredPropertyNotFound(key);
+            throw new RequiredPropertyNotFoundException(key);
         return res;
     }
 
     default CustomItem getCustomItemRequired(String key, PlaceholderRegistry local) {
         CustomItem res = getCustomItem(key, local);
         if (res == null)
-            requiredPropertyNotFound(key);
+            throw new RequiredPropertyNotFoundException(key);
         return res;
-    }
-
-    static void requiredPropertyNotFound(String key) {
-        throw new RequiredPropertyNotFoundException(key);
-    }
-
-    static void invalidValue(String key, Object value, String expected) {
-        throw new InvalidVauleConfigException(key, value, expected);
     }
 
     static Config wrap(Map<String, Object> map) {

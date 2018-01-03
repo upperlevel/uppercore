@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore.util;
 
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -61,7 +61,7 @@ public final class CrashUtil {
     public static void loadSafe(String name, Runnable loader) {
         try {
             loader.run();
-        } catch (InvalidConfigurationException e) {
+        } catch (InvalidConfigException e) {
             e.addLocation("in " + name);
             throw e;
         }

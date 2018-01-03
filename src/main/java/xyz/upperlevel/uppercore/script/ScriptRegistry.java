@@ -5,7 +5,7 @@ import lombok.Data;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Loader;
 import xyz.upperlevel.uppercore.Registry;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -84,7 +84,7 @@ public class ScriptRegistry extends Registry<ScriptId> {
         try {
             return load(plugin, id, Files.toString(file, StandardCharsets.UTF_8), ext);
         } catch (IOException | ScriptException e) {
-            throw new InvalidConfigurationException("while loading script \"" + id + "\"");
+            throw new InvalidConfigException("while loading script \"" + id + "\"");
         }
     }
 }

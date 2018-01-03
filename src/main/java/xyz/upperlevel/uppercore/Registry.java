@@ -2,7 +2,7 @@ package xyz.upperlevel.uppercore;
 
 import lombok.Data;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigurationException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import java.io.File;
 import java.util.Collection;
@@ -71,7 +71,7 @@ public abstract class Registry<T extends Identifier<?>> {
         T entry;
         try {
             entry = loader.load(plugin, id, file);
-        } catch (InvalidConfigurationException e) {
+        } catch (InvalidConfigException e) {
             e.addLocation("in registrable " + id);
             throw e;
         }

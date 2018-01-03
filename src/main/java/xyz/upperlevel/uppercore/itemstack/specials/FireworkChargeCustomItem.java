@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.ConfigUtils;
+import xyz.upperlevel.uppercore.config.ConfigUtil;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static xyz.upperlevel.uppercore.config.ConfigUtils.parseFireworkEffectType;
+import static xyz.upperlevel.uppercore.config.ConfigUtil.parseFireworkEffectType;
 
 
 public class FireworkChargeCustomItem extends CustomItem {
@@ -40,11 +40,11 @@ public class FireworkChargeCustomItem extends CustomItem {
         boolean trail = config.getBool("trail", false);
         List<Color> colors = ((Collection<String>)config.getCollection("colors", Collections.emptyList()))
                 .stream()
-                .map(ConfigUtils::parseColor)
+                .map(ConfigUtil::parseColor)
                 .collect(Collectors.toList());
         List<Color> fadeColors = ((Collection<String>)config.getCollection("fade-colors", Collections.emptyList()))
                 .stream()
-                .map(ConfigUtils::parseColor)
+                .map(ConfigUtil::parseColor)
                 .collect(Collectors.toList());
         FireworkEffect.Type type = parseFireworkEffectType(config.getString("type", FireworkEffect.Type.BALL.name()));
         return FireworkEffect.builder()

@@ -46,7 +46,7 @@ public abstract class NodeCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, List<String> args) {
-        if(!canExecute(sender))
+        if (!canExecute(sender))
             return;
         super.execute(sender, args);
         if (args.isEmpty()) {
@@ -66,14 +66,14 @@ public abstract class NodeCommand extends Command {
 
     @Override
     public List<String> tabComplete(CommandSender sender, List<String> args) {
-        if(args.isEmpty()) {
+        if (args.isEmpty()) {
             return commands.stream()
                     .filter(c -> c.canExecute(sender))
                     .map(Command::getName)
                     .collect(Collectors.toList());
-        } else if(args.size() > 1) {
+        } else if (args.size() > 1) {
             Command sub = getCommand(args.get(0));
-            if(sub != null)
+            if (sub != null)
                 return sub.tabComplete(sender, args.subList(1, args.size()));
             else
                 return emptyList();
@@ -92,17 +92,17 @@ public abstract class NodeCommand extends Command {
     public void calcPermissions() {
         super.calcPermissions();
 
-        if(getPermission() != null) {
+        if (getPermission() != null) {
             WithChildPermission perm = getClass().getAnnotation(WithChildPermission.class);
             String path = getPermission().getName() + ".*";
             if (perm != null)
                 anyPerm = new Permission(path, perm.desc(), perm.def().get(this));
             else
                 anyPerm = new Permission(path, DefaultPermission.INHERIT.get(this));
-            if(getParent() != null)
+            if (getParent() != null)
                 anyPerm.addParent(getParent().anyPerm, true);
 
-            for(Command command : commands) {
+            for (Command command : commands) {
                 command.calcPermissions();
             }
         }
@@ -111,9 +111,9 @@ public abstract class NodeCommand extends Command {
     @Override
     public void registerPermissions(PluginManager manager) {
         super.registerPermissions(manager);
-        if(anyPerm != null)
+        if (anyPerm != null)
             manager.addPermission(anyPerm);
-        for(Command command : commands)
+        for (Command command : commands)
             command.registerPermissions(manager);
     }
 
@@ -130,11 +130,11 @@ public abstract class NodeCommand extends Command {
         protected String getPath() {
             List<String> path = new ArrayList<>();
             Command command = this;
-            while(command != null) {
+            while (command != null) {
                 path.add(command.getName());
                 command = command.getParent();
             }
-            StringJoiner joiner = new StringJoiner(" ","/","");
+            StringJoiner joiner = new StringJoiner(" ", "/", "");
             ListIterator<String> i = path.listIterator(path.size());
             while (i.hasPrevious())
                 joiner.add(i.previous());
@@ -145,7 +145,7 @@ public abstract class NodeCommand extends Command {
         public void run(CommandSender sender, @Argument("page") @Optional(value = "1") int page) {
             List<BaseComponent[]> entries = new ArrayList<>();
             for (Command cmd : NodeCommand.this.getCommands()) {
-                if(cmd.canExecute(sender)) {
+                if (cmd.canExecute(sender)) {
                     entries.add(TextComponent.fromLegacyText(cmd.getHelpline(sender, true)));
                 }
             }
@@ -164,7 +164,7 @@ public abstract class NodeCommand extends Command {
                 header = new TextComponent(GOLD + "Help for commands \"" + NodeCommand.this.getName() + "\" ");
 
                 TextComponent leftArrow = new TextComponent("[<]");
-                if(page <= 1) {
+                if (page <= 1) {
                     leftArrow.setColor(ChatColor.RED);
                 } else {
                     leftArrow.setColor(ChatColor.GREEN);
@@ -178,7 +178,7 @@ public abstract class NodeCommand extends Command {
                 header.addExtra(middle);
 
                 TextComponent rightArrow = new TextComponent("[>]");
-                if(page >= pages) {
+                if (page >= pages) {
                     rightArrow.setColor(ChatColor.RED);
                 } else {
                     rightArrow.setColor(ChatColor.GREEN);
