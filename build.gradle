@@ -1,12 +1,27 @@
 apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'maven'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-group = 'xyz.upperlevel.ulge'
-version = '1.2.3'
+group = 'xyz.upperlevel.uppercore'
+version = '1.3'
+
+description = "Global API for Spigot plugins"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
 
 repositories {
     mavenLocal()
@@ -33,45 +48,33 @@ repositories {
     }
 }
 
-// Dependencies
 project.ext.mcVersion = '1.12-R0.1-SNAPSHOT'
 
-project.ext.anvilGuiApiVersion = '1.3'
-project.ext.lombokVersion = '1.16.16'
-project.ext.placeholderApiVersion = '2.0.8'
-project.ext.vaultApi = '1.6'
-project.ext.bstatsVersion = '1.1'
-project.ext.mongodbDriverVersion = '3.5.0'
-project.ext.rethinkdbDriverVersion = '2.3.3'
-
 dependencies {
-    compile 'org.scala-lang:scala-library:2.11.8'
+    compileOnly 'org.scala-lang:scala-library:2.11.8'
+    compileOnly "org.projectlombok:lombok:1.16.18"
+
+    // Testing
     testCompile 'org.scalatest:scalatest_2.11:3.0.0'
+    testCompile "junit:junit:4.12"
 
-    // Spigot Api
-    provided "org.spigotmc:spigot-api:${mcVersion}"
+    compileOnly "org.spigotmc:spigot-api:${mcVersion}"
+    testCompileOnly "org.spigotmc:spigot-api:${mcVersion}"
+    compileOnly "org.bukkit:bukkit:${mcVersion}"
+    testCompileOnly "org.bukkit:bukkit:${mcVersion}"
 
-    // Bukkit Api
-    provided "org.bukkit:bukkit:${mcVersion}"
+    compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3"
+    compileOnly "me.clip:placeholderapi:2.0.8"
+    compileOnly "net.milkbowl.vault:VaultAPI:1.6"
 
-    // Anvil Gui Api
-    compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:${anvilGuiApiVersion}"
+    // Metrics Api is compiled but relocated
+    compile "org.bstats:bstats-bukkit:1.1"
 
-    // Lombok
-    provided "org.projectlombok:lombok:${lombokVersion}"
-
-    // Placeholder Api
-    provided "me.clip:placeholderapi:${placeholderApiVersion}" optional
-
-    // Vault Api
-    provided "net.milkbow.vault:VaultAPI:${vaultApi}" optional
-
-    // Metrics
-    provided "org.bstats:bstats-bukkit:${bstatsVersion}"
-
-    // MongoDB Driver
-    provided "org.mongodb:mongo-java-driver:${mongodbDriverVersion}" optional
-
-    // RethinkDB Driver
-    provided "com.rethinkdb:rethinkdb-driver:${rethinkdbDriverVersion}" optional
+    compileOnly "org.mongodb:mongo-java-driver:3.5.0"
+    compileOnly "com.rethinkdb:rethinkdb-driver:2.3.3"
 }
+
+shadowJar {
+    relocate "org.bstats", "${project.group}.libs.metrics"
+}
+project.tasks.assemble.dependsOn project.tasks.shadowJar

@@ -4,4 +4,4 @@ With Uppercore, you'll finally be able to create fully configurable and optimize
 
 ## Board
 Uppercore provides a Scoreboard Api that wraps the uncomfortable Spigot one (if you have ever used it you know what I'm talking about).
-See how to use it there. Learning it takes just few minutes!
+See how to use it [there](https://github.com/upperlevel/uppercore/wiki/Board). Learning it takes just few minutes!
