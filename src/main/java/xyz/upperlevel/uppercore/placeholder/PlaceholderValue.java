@@ -33,6 +33,9 @@ public interface PlaceholderValue<T> {
         return resolve(player, PlaceholderUtil.getRegistry());
     }
 
+    /**
+     * @return true only if no real placeholders need to be resolved (a.k.a this is a fake PlaceholderValue)
+     */
     default boolean hasPlaceholders() {
         return true;
     }

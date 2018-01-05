@@ -6,7 +6,7 @@ import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigValueException;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.message.Message;
+import xyz.upperlevel.uppercore.placeholder.message.Message;
 import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
 import xyz.upperlevel.uppercore.sound.PlaySound;

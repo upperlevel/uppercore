@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.message;
+package xyz.upperlevel.uppercore.placeholder.message;
 
 import lombok.Getter;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;

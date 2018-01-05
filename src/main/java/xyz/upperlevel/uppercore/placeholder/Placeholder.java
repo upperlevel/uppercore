@@ -6,6 +6,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * This class is the actual Placeholder resolver
+ */
 public interface Placeholder {
 
     String getId();

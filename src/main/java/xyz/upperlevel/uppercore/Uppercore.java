@@ -10,7 +10,7 @@ import xyz.upperlevel.uppercore.database.StorageManager;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
-import xyz.upperlevel.uppercore.message.MessageManager;
+import xyz.upperlevel.uppercore.placeholder.message.MessageManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.script.ScriptManager;
 import xyz.upperlevel.uppercore.update.DownloadableUpdateChecker;

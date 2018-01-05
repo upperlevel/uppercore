@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.message;
+package xyz.upperlevel.uppercore.placeholder.message;
 
 import lombok.Data;
 import org.bukkit.configuration.file.YamlConfiguration;

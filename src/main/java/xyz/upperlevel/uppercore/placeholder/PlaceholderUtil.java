@@ -5,11 +5,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.placeholder.events.PlaceholderManagerHookEvent;
 import xyz.upperlevel.uppercore.placeholder.managers.CustomPlaceholderManager;
 import xyz.upperlevel.uppercore.placeholder.managers.OfficialPlaceholderManager;
 
 public final class PlaceholderUtil {
-
     private static PlaceholderManager manager = null;
 
     private PlaceholderUtil() {
@@ -64,7 +64,12 @@ public final class PlaceholderUtil {
     }
 
     public static void tryHook() {
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        PlaceholderManagerHookEvent event = new PlaceholderManagerHookEvent();
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.getPlaceholderManager() != null) {
+            manager = event.getPlaceholderManager();
+            Uppercore.logger().info("Successfully hooked with custom PlaceholderManager");
+        } else if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             manager = new OfficialPlaceholderManager();
             Uppercore.logger().info("Successfully hooked into PlaceholderAPI");
         } else {
