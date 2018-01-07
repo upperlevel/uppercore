@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.database;
 
 import xyz.upperlevel.uppercore.database.impl.Flatfile;
 import xyz.upperlevel.uppercore.database.impl.MongoDb;
+import xyz.upperlevel.uppercore.database.impl.MySql;
 import xyz.upperlevel.uppercore.database.impl.RethinkDb;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ public class StorageManager {
         register(new Flatfile());
         register(new MongoDb());
         register(new RethinkDb());
+        register(new MySql());
     }
 
     /**
@@ -43,5 +45,9 @@ public class StorageManager {
 
     public RethinkDb rethinkdb() {
         return (RethinkDb) get("rethinkdb");
+    }
+
+    public MySql mysql() {
+        return (MySql) get("mysql");
     }
 }
