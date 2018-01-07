@@ -1,19 +1,17 @@
 package xyz.upperlevel.uppercore;
 
-import lombok.Data;
 import lombok.Getter;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Locale;
 
 import static java.util.Locale.ENGLISH;
-import static lombok.AccessLevel.NONE;
 
-@Data
 public class Identifier<T> {
+    @Getter
     private final Plugin plugin;
+    @Getter
     private final String id;
-    @Getter(NONE)
     private final T handle;
 
     public Identifier(Plugin plugin, String id, T handle) {

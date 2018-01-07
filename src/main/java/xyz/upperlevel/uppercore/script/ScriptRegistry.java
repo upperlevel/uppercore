@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.script;
 
 import com.google.common.io.Files;
-import lombok.Data;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Loader;
 import xyz.upperlevel.uppercore.Registry;
@@ -15,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 
 import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
-@Data
 public class ScriptRegistry extends Registry<ScriptId> {
     public static final Loader<ScriptId> LOADER = ScriptRegistry::load;
 

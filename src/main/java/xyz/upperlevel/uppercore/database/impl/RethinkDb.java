@@ -1,7 +1,8 @@
 package xyz.upperlevel.uppercore.database.impl;
 
 import com.rethinkdb.gen.ast.Get;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import xyz.upperlevel.uppercore.database.*;
 
 import java.util.Map;
@@ -55,8 +56,9 @@ public class RethinkDb implements Storage {
         };
     }
 
-    @Data
+    @RequiredArgsConstructor
     public class ConnectionImpl implements Connection {
+        @Getter
         private final String db;
         private final com.rethinkdb.net.Connection conn;
 
@@ -69,7 +71,7 @@ public class RethinkDb implements Storage {
             return new DatabaseImpl(r.db(db));
         }
 
-        @Data
+        @RequiredArgsConstructor
         public class DatabaseImpl implements Database {
             private final com.rethinkdb.gen.ast.Db db;
 
@@ -82,7 +84,7 @@ public class RethinkDb implements Storage {
                 return new TableImpl(db.table(id));
             }
 
-            @Data
+            @RequiredArgsConstructor
             public class TableImpl implements Table {
                 private final com.rethinkdb.gen.ast.Table table;
 
@@ -95,8 +97,9 @@ public class RethinkDb implements Storage {
                     return new DocumentImpl(id, table.get(id));
                 }
 
-                @Data
+               @RequiredArgsConstructor
                 public class DocumentImpl implements Document {
+                    @Getter
                     private final String id;
                     private final Get doc;
 

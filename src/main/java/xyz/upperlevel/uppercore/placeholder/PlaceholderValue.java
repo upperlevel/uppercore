@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.placeholder;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -112,8 +113,9 @@ public interface PlaceholderValue<T> {
         return new FalsePlaceholderValue<>(parsed);
     }
 
-    @Data
+    @RequiredArgsConstructor
     class FalsePlaceholderValue<T> implements PlaceholderValue<T> {
+        @Getter
         private final T value;
 
         @Override
@@ -136,9 +138,9 @@ public interface PlaceholderValue<T> {
         }
     }
 
-    @Data
     class SimplePlaceholderValue<T> implements PlaceholderValue<T> {
-        private String value;
+        @Getter
+        private final String value;
 
         private final Function<String, T> parser;
         private final BiConsumer<String, Exception> exceptionHandler;
@@ -175,9 +177,9 @@ public interface PlaceholderValue<T> {
         }
     }
 
-    @Data
     class StringPlaceholderValue implements PlaceholderValue<String> {
-        private String value;
+        @Getter
+        private final String value;
 
         public StringPlaceholderValue(String value) {
             this.value = value;

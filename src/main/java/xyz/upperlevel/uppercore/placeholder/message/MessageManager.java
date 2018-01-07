@@ -1,6 +1,6 @@
 package xyz.upperlevel.uppercore.placeholder.message;
 
-import lombok.Data;
+import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
@@ -17,9 +17,10 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Maps.immutableEntry;
 
-@Data
 public class MessageManager {
+    @Getter
     private final String path;
+    @Getter
     private final Config config;
 
     public MessageManager(String path, Config config) {

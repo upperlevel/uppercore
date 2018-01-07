@@ -1,11 +1,12 @@
 package xyz.upperlevel.uppercore;
 
-import lombok.Data;
+import lombok.Getter;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.LogRecord;
@@ -13,11 +14,14 @@ import java.util.logging.Logger;
 
 import static java.util.Locale.ENGLISH;
 
-@Data
 public abstract class Registry<T extends Identifier<?>> {
+    @Getter
     private final Plugin plugin;
+    @Getter
     private final Logger logger;
+    @Getter
     private final String id;
+    @Getter
     private final File folder;
     private final Map<String, T> entries = new HashMap<>();
 
@@ -42,6 +46,10 @@ public abstract class Registry<T extends Identifier<?>> {
 
     public Collection<T> get() {
         return entries.values();
+    }
+
+    public Map<String, T> getEntries() {
+        return Collections.unmodifiableMap(entries);
     }
 
     public void load(File file, Loader<T> loader) {

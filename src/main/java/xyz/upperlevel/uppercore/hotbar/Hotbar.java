@@ -1,23 +1,26 @@
 package xyz.upperlevel.uppercore.hotbar;
 
 
-import lombok.Data;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.gui.link.Link;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
-@Data
 public class Hotbar {
+    @Getter
     private ConfigIcon[] icons = new ConfigIcon[9];
+    @Getter
     private List<ConfigIcon> noSlotIcons = new ArrayList<>();
 
     private int nextFree = 0;

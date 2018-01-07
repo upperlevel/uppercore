@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.database.impl;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -45,8 +46,9 @@ public class Flatfile implements Storage {
         return new String[0];
     }
 
-    @Data
+    @RequiredArgsConstructor
     public class ImplConnection implements Connection {
+        @Getter
         private final String db;
 
         @Override
@@ -54,8 +56,8 @@ public class Flatfile implements Storage {
             return new ImplDatabase();
         }
 
-        @Data
         public class ImplDatabase implements Database {
+            @Getter
             private final File folder;
 
             public ImplDatabase() {
@@ -68,8 +70,8 @@ public class Flatfile implements Storage {
                 return new ImplTable(id);
             }
 
-            @Data
             public class ImplTable implements Table {
+                @Getter
                 private final File folder;
 
                 public ImplTable(String id) {
@@ -82,8 +84,8 @@ public class Flatfile implements Storage {
                     return new ImplDocument(id);
                 }
 
-                @Data
                 public class ImplDocument implements Document {
+                    @Getter
                     private final File file;
 
                     public ImplDocument(String id) {

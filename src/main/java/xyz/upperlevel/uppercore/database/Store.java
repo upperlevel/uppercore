@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.database;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigUtil;
@@ -9,14 +11,18 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-@Data
+@RequiredArgsConstructor
 public class Store {
     private static final String CONFIG_NAME = "store.yml";
 
+    @Getter
     private final Plugin plugin;
+    @Getter
     private final Logger logger;
+    @Getter
     private final File file;
 
+    @Getter
     private Connector connector;
 
     public Store(Plugin plugin) {

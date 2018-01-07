@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.database;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
@@ -17,16 +18,22 @@ import java.nio.file.StandardCopyOption;
 
 import static xyz.upperlevel.uppercore.Uppercore.storages;
 
-@Data
+@RequiredArgsConstructor
 public class Connector {
     private static File dir;
 
+    @Getter
     private final Plugin plugin;
 
+    @Getter
     private final Storage storage;
+    @Getter
     private final String database;
+    @Getter
     private final String host;
+    @Getter
     private final Integer port;
+    @Getter
     private final String user, password;
 
     private Connection connection;

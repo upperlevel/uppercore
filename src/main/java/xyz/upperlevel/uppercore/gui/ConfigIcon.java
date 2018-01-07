@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.gui;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.entity.Player;
@@ -8,16 +9,16 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
+import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.ActionType;
-import xyz.upperlevel.uppercore.economy.EconomyManager;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.gui.link.Link;
-import xyz.upperlevel.uppercore.placeholder.message.Message;
+import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.message.Message;
 import xyz.upperlevel.uppercore.sound.PlaySound;
 
 import java.util.ArrayList;
@@ -28,11 +29,14 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-@Data
 public class ConfigIcon {
-
+    @Getter
     private ItemResolver display;
+    @Getter
+    @Setter
     private Link link;
+    @Getter
+    @Setter
     private int updateInterval; // 0 or < 0 are considered null
 
     public ConfigIcon() {

@@ -8,7 +8,6 @@ import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 @Data
 public abstract class Particle {
-
     private final ParticleType type;
 
     protected float offsetX, offsetY, offsetZ;

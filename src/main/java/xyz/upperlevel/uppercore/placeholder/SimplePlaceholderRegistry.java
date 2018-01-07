@@ -1,13 +1,14 @@
 package xyz.upperlevel.uppercore.placeholder;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
 public class SimplePlaceholderRegistry implements PlaceholderRegistry<SimplePlaceholderRegistry> {
-
+    @Getter
+    @Setter
     private PlaceholderRegistry parent;
 
     private final Map<String, Placeholder> placeholders;

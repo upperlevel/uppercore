@@ -5,7 +5,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
-import lombok.Data;
+import lombok.Getter;
 import xyz.upperlevel.uppercore.database.*;
 
 import java.util.Map;
@@ -55,8 +55,8 @@ public class MongoDb implements Storage {
         };
     }
 
-    @Data
     public class ImplConnection implements Connection {
+        @Getter
         private final String db;
         private final MongoClient client;
 
@@ -70,8 +70,8 @@ public class MongoDb implements Storage {
             return new ImplDatabase();
         }
 
-        @Data
         public class ImplDatabase implements Database {
+            @Getter
             private final MongoDatabase db;
 
             public ImplDatabase() {
@@ -84,8 +84,8 @@ public class MongoDb implements Storage {
                 return new ImplTable(id);
             }
 
-            @Data
             public class ImplTable implements Table {
+                @Getter
                 private final String id;
                 private final MongoCollection<org.bson.Document> table;
 
@@ -99,8 +99,8 @@ public class MongoDb implements Storage {
                     return new ImplDocument(id);
                 }
 
-                @Data
                 public class ImplDocument implements Document {
+                    @Getter
                     private final String id;
                     private final org.bson.Document doc;
 

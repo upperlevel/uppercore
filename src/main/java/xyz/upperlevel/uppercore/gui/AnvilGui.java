@@ -1,20 +1,20 @@
 package xyz.upperlevel.uppercore.gui;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 
 @RequiredArgsConstructor
-@Data
 public class AnvilGui implements Gui {
+    @Getter
+    @Setter
     private String message;
+    @Getter
+    @Setter
     private AnvilGUI.ClickHandler listener = (player, input) -> "Not implemented!";
 
     @Override

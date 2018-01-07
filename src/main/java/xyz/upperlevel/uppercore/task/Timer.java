@@ -1,17 +1,18 @@
 package xyz.upperlevel.uppercore.task;
 
-import lombok.Data;
+import lombok.Getter;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Data
 public class Timer {
+    @Getter
     private final Plugin plugin;
     private BukkitRunnable task;
 
+    @Getter
     private final long start, each;
     private long current;
     private final Runnable tick, end;

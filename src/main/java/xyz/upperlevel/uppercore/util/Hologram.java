@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.util;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -10,16 +11,17 @@ import org.bukkit.entity.EntityType;
 import java.util.LinkedList;
 import java.util.List;
 
-@Data
 public class Hologram {
-
     public static final double LINE_HEIGHT = 0.25;
 
+    @Getter
+    @Setter
     private Location location;
 
     private final List<String> lines = new LinkedList<>();
     private final List<ArmorStand> entities = new LinkedList<>();
 
+    @Getter
     private boolean spawned = false;
 
     public Hologram(Location location) {

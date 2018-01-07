@@ -1,6 +1,6 @@
 package xyz.upperlevel.uppercore.hotbar;
 
-import lombok.Data;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -9,19 +9,25 @@ import xyz.upperlevel.uppercore.task.UpdaterTask;
 
 import java.util.*;
 
-@Data
-public class HotbarView {
 
+public class HotbarView {
+    @Getter
     private final Player player;
 
+    @Getter
     private final ConfigIcon[] icons = new ConfigIcon[9];
+    @Getter
     private final ItemStack[] items = new ItemStack[9];
 
+    @Getter
     private final Set<Hotbar> hotbars = new HashSet<>();
+    @Getter
     private final Map<ConfigIcon, UpdaterTask> updaters = new HashMap<>(); // one updater per hotbar
 
     // takes care of slots held by hotbars
+    @Getter
     private final Map<Hotbar, Set<Integer>> slotsByHotbar = new HashMap<>();
+    @Getter
     private final Hotbar[] hotbarsBySlot = new Hotbar[9];
 
     public HotbarView(Player player) {

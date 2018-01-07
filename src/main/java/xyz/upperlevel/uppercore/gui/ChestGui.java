@@ -1,6 +1,6 @@
 package xyz.upperlevel.uppercore.gui;
 
-import lombok.Data;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -8,12 +8,12 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
-import xyz.upperlevel.uppercore.task.UpdaterTask;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.itemstack.ItemResolver;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.gui.link.Link;
+import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.task.UpdaterTask;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -21,12 +21,15 @@ import java.util.stream.Collectors;
 
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
-@Data
 public class ChestGui implements Gui {
+    @Getter
     private PlaceholderValue<String> title;
+    @Getter
     private int size;
+    @Getter
     private InventoryType type;
     private ConfigIcon[] icons;
+    @Getter
     private int updateInterval = -1;
     private final Map<Player, UpdaterTask> updaters = new HashMap<>();
 
