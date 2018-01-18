@@ -14,6 +14,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import xyz.upperlevel.uppercore.command.*;
+import xyz.upperlevel.uppercore.command.function.WithCommand;
 import xyz.upperlevel.uppercore.update.method.ReplaceUpdateMethod;
 import xyz.upperlevel.uppercore.update.method.UpdateMethod;
 import xyz.upperlevel.uppercore.update.notifier.DefaultDownloadNotifier;
@@ -146,7 +147,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
             setDescription("Updates the plugin");
         }
 
-        @Executor
+        @WithCommand
         public void run(CommandSender sender) {
             if(getLastState() == VersionState.UPDATE_AVAILABLE || (needsRefresh() && check() == VersionState.UPDATE_AVAILABLE)) {
                 update(sender);

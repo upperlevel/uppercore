@@ -4,10 +4,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Registry;
 import xyz.upperlevel.uppercore.command.*;
-import xyz.upperlevel.uppercore.gui.Gui;
+import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.WithName;
+import xyz.upperlevel.uppercore.command.function.WithOptional;
+import xyz.upperlevel.uppercore.command.function.WithPermission;
 import xyz.upperlevel.uppercore.gui.GuiId;
-import xyz.upperlevel.uppercore.gui.GuiManager;
-import xyz.upperlevel.uppercore.gui.GuiRegistry;
 
 import java.util.Collection;
 import java.util.StringJoiner;
@@ -15,7 +16,7 @@ import java.util.StringJoiner;
 import static org.bukkit.ChatColor.*;
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
-@WithPermission(value = "list", desc = "Allows you to list all available guis")
+@WithPermission(value = "list", description = "Allows you to list all available guis")
 public class GuiListCommand extends Command {
 
     public GuiListCommand() {
@@ -23,8 +24,8 @@ public class GuiListCommand extends Command {
         setDescription("Lists all available guis.");
     }
 
-    @Executor
-    public void run(CommandSender sender, @Argument("plugin") @Optional Plugin plugin) {
+    @WithCommand
+    public void run(CommandSender sender, @WithName("plugin") @WithOptional Plugin plugin) {
         Collection<GuiId> guis;
         if (plugin != null) {
             Registry<GuiId> reg = guis().get(plugin);

@@ -2,11 +2,9 @@ package xyz.upperlevel.uppercore.script.commands;
 
 import xyz.upperlevel.uppercore.command.DefaultPermission;
 import xyz.upperlevel.uppercore.command.NodeCommand;
-import xyz.upperlevel.uppercore.command.WithChildPermission;
-import xyz.upperlevel.uppercore.command.WithPermission;
+import xyz.upperlevel.uppercore.command.function.WithPermission;
 
-@WithPermission(value = "script", def = DefaultPermission.OP)
-@WithChildPermission(desc = "Gives access to all script-related commands")
+@WithPermission(value = "script", defaultPermission = DefaultPermission.OP)
 public class ScriptCommand extends NodeCommand {
 
     public ScriptCommand() {

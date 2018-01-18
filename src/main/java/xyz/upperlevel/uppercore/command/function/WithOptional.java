@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command;
+package xyz.upperlevel.uppercore.command.function;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,9 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Optional {
-
+public @interface WithOptional {
     String[] value() default {};
-
-    Sender[] sender() default Sender.ALL;
 }

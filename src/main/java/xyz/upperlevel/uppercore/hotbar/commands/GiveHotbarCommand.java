@@ -3,12 +3,16 @@ package xyz.upperlevel.uppercore.hotbar.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.*;
+import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.WithName;
+import xyz.upperlevel.uppercore.command.function.WithOptional;
+import xyz.upperlevel.uppercore.command.function.WithPermission;
 import xyz.upperlevel.uppercore.hotbar.HotbarId;
 
 import static org.bukkit.ChatColor.GREEN;
 import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
-@WithPermission(value = "give", desc = "Allows you to give a specific hotbar via command")
+@WithPermission(value = "give", description = "Allows you to give a specific hotbar via command")
 public class GiveHotbarCommand extends Command {
 
     public GiveHotbarCommand() {
@@ -16,8 +20,8 @@ public class GiveHotbarCommand extends Command {
         setDescription("Gives a hotbar.");
     }
 
-    @Executor
-    public void run(CommandSender sender, @Argument("hotbar") HotbarId hotbar, @Argument("player") @Optional(sender = Sender.PLAYER) Player player) {
+    @WithCommand
+    public void run(CommandSender sender, @WithName("hotbar") HotbarId hotbar, @WithName("player") @WithOptional(senderType = SenderType.PLAYER) Player player) {
         if (player == null)
             player = (Player) sender;
         hotbars().view(player).addHotbar(hotbar.get());

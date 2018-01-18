@@ -5,32 +5,31 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public enum Sender {
-
+public enum SenderType {
     ALL {
         @Override
-        public boolean isCorrect(CommandSender sender) {
+        public boolean match(CommandSender sender) {
             return true;
         }
     },
     CONSOLE {
         @Override
-        public boolean isCorrect(CommandSender sender) {
+        public boolean match(CommandSender sender) {
             return sender instanceof ConsoleCommandSender;
         }
     },
     BLOCK {
         @Override
-        public boolean isCorrect(CommandSender sender) {
+        public boolean match(CommandSender sender) {
             return sender instanceof BlockCommandSender;
         }
     },
     PLAYER {
         @Override
-        public boolean isCorrect(CommandSender sender) {
+        public boolean match(CommandSender sender) {
             return sender instanceof Player;
         }
     };
 
-    public abstract boolean isCorrect(CommandSender sender);
+    public abstract boolean match(CommandSender sender);
 }

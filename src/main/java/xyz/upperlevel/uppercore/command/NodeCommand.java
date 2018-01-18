@@ -1,12 +1,15 @@
 package xyz.upperlevel.uppercore.command;
 
-import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.StringUtil;
+import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.WithName;
+import xyz.upperlevel.uppercore.command.function.WithOptional;
+import xyz.upperlevel.uppercore.command.function.WithPermission;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.*;
@@ -18,74 +21,34 @@ import static java.util.Collections.singletonList;
 import static org.bukkit.ChatColor.*;
 
 public abstract class NodeCommand extends Command {
-
-    @Getter
-    private final List<Command> commands = new ArrayList<>();
-
-    private final Map<String, Command> commandsByName = new HashMap<>();
+    private final Map<String, Command> commands = new HashMap<>();
     private final HelpCommand helpCmd = new HelpCommand();
-    @Getter
-    private Permission anyPerm;
 
     public NodeCommand(String name) {
         super(name);
-        register(helpCmd);
+        // register(helpCmd);
     }
 
-    public void register(Command command) {
-        commandsByName.put(command.getName().toLowerCase(), command);
-        for (String alias : command.getAliases())
-            commandsByName.put(alias.toLowerCase(), command);
-        command.setParent(this);
-        commands.add(command);
+    /**
+     * Adds the single command.
+     * If the command has already a parent, throws an exception.
+     */
+    public void add(Command command) {
+        if (command.getParent() != null) {
+            throw new IllegalArgumentException("The same instance of " + command.getClass().getSimpleName() + " is being registered more than one time");
+        }
+        commands.put(command.getName(), command);
+    }
+
+    /**
+     * Adds a list of commands.
+     */
+    public void add(List<Command> commands) {
+        commands.forEach(this::addCommand);
     }
 
     public Command getCommand(String name) {
-        return commandsByName.get(name.toLowerCase());
-    }
-
-    @Override
-    public void execute(CommandSender sender, List<String> args) {
-        if (!canExecute(sender))
-            return;
-        super.execute(sender, args);
-        if (args.isEmpty()) {
-            helpCmd.run(sender, 1);
-            return;
-        }
-        Command cmd = getCommand(args.get(0));
-        if (cmd == null || !cmd.canExecute(sender)) {
-            TextUtil.sendMessages(sender, asList(
-                    RED + "No commands found for \"" + LIGHT_PURPLE + args.get(0) + RED + "\". " + GOLD + "To see all commands use:",
-                    getUsage(sender, true)
-            ));
-            return;
-        }
-        cmd.execute(sender, args.subList(1, args.size()));
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, List<String> args) {
-        if (args.isEmpty()) {
-            return commands.stream()
-                    .filter(c -> c.canExecute(sender))
-                    .map(Command::getName)
-                    .collect(Collectors.toList());
-        } else if (args.size() > 1) {
-            Command sub = getCommand(args.get(0));
-            if (sub != null)
-                return sub.tabComplete(sender, args.subList(1, args.size()));
-            else
-                return emptyList();
-        } else {
-            String arg = args.get(0);
-
-            return commands.stream()
-                    .filter(c -> c.canExecute(sender))
-                    .map(Command::getName)
-                    .filter(s -> StringUtil.startsWithIgnoreCase(s, arg))
-                    .collect(Collectors.toList());
-        }
+        return commands.get(name.toLowerCase(Locale.ENGLISH));
     }
 
     @Override
@@ -117,6 +80,52 @@ public abstract class NodeCommand extends Command {
             command.registerPermissions(manager);
     }
 
+    @Override
+    public boolean call(CommandSender sender, List<String> args) {
+        if (!canExecute(sender)) {
+            return;
+        }
+        super.execute(sender, args);
+        if (args.isEmpty()) {
+            helpCmd.run(sender, 1);
+            return;
+        }
+        Command cmd = getCommand(args.get(0));
+        if (cmd == null || !cmd.canExecute(sender)) {
+            TextUtil.sendMessages(sender, asList(
+                    RED + "No commands found for \"" + LIGHT_PURPLE + args.get(0) + RED + "\". " + GOLD + "To see all commands use:",
+                    getUsage(sender, true)
+            ));
+            return;
+        }
+        cmd.execute(sender, args.subList(1, args.size()));
+        return;
+    }
+
+    @Override
+    public List<String> suggest(CommandSender sender, List<String> args) {
+        if (args.isEmpty()) {
+            return commands.stream()
+                    .filter(c -> c.canExecute(sender))
+                    .map(Command::getName)
+                    .collect(Collectors.toList());
+        } else if (args.size() > 1) {
+            Command sub = getCommand(args.get(0));
+            if (sub != null)
+                return sub.tabComplete(sender, args.subList(1, args.size()));
+            else
+                return emptyList();
+        } else {
+            String arg = args.get(0);
+
+            return commands.stream()
+                    .filter(c -> c.canExecute(sender))
+                    .map(Command::getName)
+                    .filter(s -> StringUtil.startsWithIgnoreCase(s, arg))
+                    .collect(Collectors.toList());
+        }
+    }
+
     @WithPermission("help")
     public class HelpCommand extends Command {
 
@@ -141,8 +150,8 @@ public abstract class NodeCommand extends Command {
             return joiner.toString();
         }
 
-        @Executor
-        public void run(CommandSender sender, @Argument("page") @Optional(value = "1") int page) {
+        @WithCommand
+        public void run(CommandSender sender, @WithName("page") @WithOptional(value = "1") int page) {
             List<BaseComponent[]> entries = new ArrayList<>();
             for (Command cmd : NodeCommand.this.getCommands()) {
                 if (cmd.canExecute(sender)) {

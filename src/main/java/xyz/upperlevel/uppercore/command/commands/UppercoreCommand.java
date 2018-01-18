@@ -2,15 +2,13 @@ package xyz.upperlevel.uppercore.command.commands;
 
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.NodeCommand;
-import xyz.upperlevel.uppercore.command.WithChildPermission;
-import xyz.upperlevel.uppercore.command.WithPermission;
+import xyz.upperlevel.uppercore.command.function.WithPermission;
 import xyz.upperlevel.uppercore.gui.commands.GuiCommand;
 import xyz.upperlevel.uppercore.hotbar.commands.HotbarCommand;
 import xyz.upperlevel.uppercore.script.commands.ScriptCommand;
 import xyz.upperlevel.uppercore.sound.command.PlaySoundCommand;
 
 @WithPermission("uppercore")
-@WithChildPermission(desc = "Gives access to all uppercore commands")
 public class UppercoreCommand extends NodeCommand {
 
     public UppercoreCommand() {
