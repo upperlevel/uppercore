@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.command;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-public enum DefaultPermission {
+public enum DefaultPermissionUser {
     TRUE {
         @Override
         public PermissionDefault get(Command command) {
@@ -20,7 +20,7 @@ public enum DefaultPermission {
         @Override
         public PermissionDefault get(Command command) {
             Command parent = command.getParent();
-            return (parent == null || parent.getPermission() == null) ? PermissionDefault.TRUE : parent.getPermission().getDefault();
+            return (parent == null || parent.getPermissionPortion() == null) ? PermissionDefault.TRUE : parent.getPermissionPortion().getDefault();
         }
     },
     NOT_OP {

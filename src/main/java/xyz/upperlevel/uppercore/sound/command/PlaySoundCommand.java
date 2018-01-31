@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.command.function.WithName;
 import xyz.upperlevel.uppercore.command.function.WithOptional;
 import xyz.upperlevel.uppercore.command.function.WithPermission;
 
-@WithPermission(value = "playsound", description = "Allows you to play a sound from command", defaultPermission = DefaultPermission.OP)
+@WithPermission(value = "playsound", description = "Allows you to play a sound from command", defaultUser = DefaultPermissionUser.OP)
 public class PlaySoundCommand extends Command {
     public PlaySoundCommand() {
         super("playSound");

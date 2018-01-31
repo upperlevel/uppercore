@@ -19,11 +19,19 @@ public class CommandParameter {
 
     @Getter
     @Setter
-    private String[] defaultValue;
+    private Object defaultValue;
 
     @Getter
     @Setter
-    private Permission permission;
+    private Permission relativePermission;
+
+    @Getter
+    @Setter
+    private PermissionCompleter permissionCompleter;
+
+    @Getter
+    @Setter
+    private Permission permission; // The resulting permission
 
     @Getter
     @Setter
@@ -33,10 +41,14 @@ public class CommandParameter {
         this.parent = parent;
     }
 
-    /**
-     * Registers only this permission.
-     * May be overridden to register other permissions.
-     */
+    public void completePermission() {
+        Permission parentPermission = null;
+        if (parent != null) {
+            parentPermission = parent.getPermission();
+        }
+        permission = permissionCompleter.complete(parentPermission, relativePermission);
+    }
+
     public void registerPermission(PluginManager pluginManager) {
         if (permission != null) {
             pluginManager.addPermission(permission);

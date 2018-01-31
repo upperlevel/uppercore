@@ -163,7 +163,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         }
 
         @Override
-        public void registerPermissions(PluginManager manager) {
+        public void registerPermission(PluginManager manager) {
             //Already registered
         }
 

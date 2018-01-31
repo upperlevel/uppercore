@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -29,6 +30,13 @@ public abstract class Command implements CommandExecutor, TabCompleter {
 
     @Getter
     @Setter
+    private Permission permissionPortion;
+
+    @Getter
+    @Setter
+    private PermissionCompleter permissionCompleter = PermissionCompleter.NONE;
+
+    @Getter
     private Permission permission;
 
     @Getter
@@ -43,10 +51,22 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     }
 
     /**
-     * Registers the permissions of this command.
-     * By default registers the only one it has, but may be overridden.
+     * Initializes the completed permission based on parent.
+     * It is called when the command is subscribed.
      */
-    public void registerPermissions(PluginManager pluginManager) {
+    public void completePermission() {
+        Permission parentPermission = null;
+        if (parent != null) {
+            parentPermission = parent.getPermission();
+        }
+        permission = permissionCompleter.complete(parentPermission, permissionPortion);
+    }
+
+    /**
+     * Register the completed permission.
+     * If {@code null} does nothing.
+     */
+    public void registerPermission(PluginManager pluginManager) {
         if (permission != null) {
             pluginManager.addPermission(permission);
         }
@@ -116,12 +136,10 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         setDescription(cmd.getDescription());
         cmd.setExecutor(this);
         cmd.setTabCompleter(this);
-        registerPermissions(Bukkit.getPluginManager());
-    }
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
+        // Registers permissions
+        completePermission();
+        registerPermission(Bukkit.getPluginManager());
     }
 
     /**
@@ -130,7 +148,17 @@ public abstract class Command implements CommandExecutor, TabCompleter {
      * @param sender    the sender
      * @param arguments the arguments
      */
-    public abstract boolean call(CommandSender sender, List<String> arguments);
+    public boolean call(CommandSender sender, List<String> arguments) {
+        // Here we check the permission
+        if (sender.hasPermission(permission)) {
+            sender.sendMessage(ChatColor.RED + "You do not have enough permissions to run this command.");
+            return false;
+        }
+        onCall(sender, arguments);
+        return true;
+    }
+
+    protected abstract boolean onCall(CommandSender sender, List<String> arguments);
 
     /**
      * Called when the command may be tab-completed.

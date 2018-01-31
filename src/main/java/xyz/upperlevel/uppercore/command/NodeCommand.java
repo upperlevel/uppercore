@@ -1,15 +1,13 @@
 package xyz.upperlevel.uppercore.command;
 
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.StringUtil;
-import xyz.upperlevel.uppercore.command.function.WithCommand;
-import xyz.upperlevel.uppercore.command.function.WithName;
-import xyz.upperlevel.uppercore.command.function.WithOptional;
-import xyz.upperlevel.uppercore.command.function.WithPermission;
+import xyz.upperlevel.uppercore.command.function.*;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.*;
@@ -22,28 +20,25 @@ import static org.bukkit.ChatColor.*;
 
 public abstract class NodeCommand extends Command {
     private final Map<String, Command> commands = new HashMap<>();
-    private final HelpCommand helpCmd = new HelpCommand();
+
+    @Getter
+    private Permission everyPermission; // the * permission
 
     public NodeCommand(String name) {
         super(name);
-        // register(helpCmd);
     }
 
-    /**
-     * Adds the single command.
-     * If the command has already a parent, throws an exception.
-     */
-    public void add(Command command) {
+    public void addCommand(Command command) {
         if (command.getParent() != null) {
-            throw new IllegalArgumentException("The same instance of " + command.getClass().getSimpleName() + " is being registered more than one time");
+            throw new IllegalArgumentException("The same instance of " + command.getClass().getSimpleName() + " is registered in more than one NodeCommand");
         }
         commands.put(command.getName(), command);
+        for (String alias : command.getAliases()) {
+            commands.put(alias, command);
+        }
     }
 
-    /**
-     * Adds a list of commands.
-     */
-    public void add(List<Command> commands) {
+    public void addCommand(List<Command> commands) {
         commands.forEach(this::addCommand);
     }
 
@@ -52,76 +47,69 @@ public abstract class NodeCommand extends Command {
     }
 
     @Override
-    public void calcPermissions() {
-        super.calcPermissions();
-
+    public void completePermission() {
+        super.completePermission(); // completes the default permission
         if (getPermission() != null) {
-            WithChildPermission perm = getClass().getAnnotation(WithChildPermission.class);
+            WithEveryPermission annotation = getClass().getAnnotation(WithEveryPermission.class);
             String path = getPermission().getName() + ".*";
-            if (perm != null)
-                anyPerm = new Permission(path, perm.desc(), perm.def().get(this));
-            else
-                anyPerm = new Permission(path, DefaultPermission.INHERIT.get(this));
-            if (getParent() != null)
-                anyPerm.addParent(getParent().anyPerm, true);
-
-            for (Command command : commands) {
-                command.calcPermissions();
+            if (annotation != null) {
+                everyPermission = new Permission(path, annotation.description(), annotation.defaultUser().get(this));
+            } else {
+                everyPermission = new Permission(path, DefaultPermissionUser.INHERIT.get(this));
+            }
+            if (getParent() != null) {
+                everyPermission.addParent(getParent().everyPermission, true);
             }
         }
+        for (Command command : commands.values()) { // completes all sub commands permissions
+            command.completePermission();
+        }
     }
 
     @Override
-    public void registerPermissions(PluginManager manager) {
-        super.registerPermissions(manager);
-        if (anyPerm != null)
-            manager.addPermission(anyPerm);
-        for (Command command : commands)
-            command.registerPermissions(manager);
+    public void registerPermission(PluginManager pluginManager) {
+        super.registerPermission(pluginManager);
+        for (Command command : commands.values()) { // registers all sub commands permission
+            command.registerPermission(pluginManager);
+        }
     }
 
     @Override
-    public boolean call(CommandSender sender, List<String> args) {
-        if (!canExecute(sender)) {
-            return;
+    protected boolean onCall(CommandSender sender, List<String> arguments) {
+        if (arguments.isEmpty()) {
+            sender.sendMessage(ChatColor.RED + "Not enough arguments. You must specify the command name.");
+            return false;
         }
-        super.execute(sender, args);
-        if (args.isEmpty()) {
-            helpCmd.run(sender, 1);
-            return;
+        Command cmd = getCommand(arguments.get(0));
+        if (cmd == null || !sender.hasPermission(cmd.getPermission())) {
+            sender.sendMessage(ChatColor.RED + "No command found for: " + arguments.get(0));
+            return false;
         }
-        Command cmd = getCommand(args.get(0));
-        if (cmd == null || !cmd.canExecute(sender)) {
-            TextUtil.sendMessages(sender, asList(
-                    RED + "No commands found for \"" + LIGHT_PURPLE + args.get(0) + RED + "\". " + GOLD + "To see all commands use:",
-                    getUsage(sender, true)
-            ));
-            return;
-        }
-        cmd.execute(sender, args.subList(1, args.size()));
-        return;
+        cmd.call(sender, arguments.subList(1, arguments.size()));
+        return true;
     }
 
     @Override
-    public List<String> suggest(CommandSender sender, List<String> args) {
-        if (args.isEmpty()) {
-            return commands.stream()
-                    .filter(c -> c.canExecute(sender))
+    public List<String> suggest(CommandSender sender, List<String> arguments) {
+        if (arguments.isEmpty()) { // if there is no argument we list all runnable commands
+            return commands.values()
+                    .stream()
+                    .filter(command -> sender.hasPermission(command.getPermission()))
                     .map(Command::getName)
                     .collect(Collectors.toList());
-        } else if (args.size() > 1) {
-            Command sub = getCommand(args.get(0));
-            if (sub != null)
-                return sub.tabComplete(sender, args.subList(1, args.size()));
-            else
-                return emptyList();
-        } else {
-            String arg = args.get(0);
-
-            return commands.stream()
-                    .filter(c -> c.canExecute(sender))
+        } else if (arguments.size() > 1) { // if there are more than one argument we get sub command and ask a suggestion
+            Command command = getCommand(arguments.get(0));
+            if (command != null) {
+                return command.suggest(sender, arguments.subList(1, arguments.size()));
+            }
+            return Collections.emptyList();
+        } else { // if there is just one argument we need to get the commands that starts with it
+            String argument = arguments.get(0);
+            return commands.values()
+                    .stream()
+                    .filter(command -> sender.hasPermission(command.getPermission()))
                     .map(Command::getName)
-                    .filter(s -> StringUtil.startsWithIgnoreCase(s, arg))
+                    .filter(name -> StringUtil.startsWithIgnoreCase(name, argument))
                     .collect(Collectors.toList());
         }
     }

@@ -1,10 +1,10 @@
 package xyz.upperlevel.uppercore.gui.commands;
 
-import xyz.upperlevel.uppercore.command.DefaultPermission;
+import xyz.upperlevel.uppercore.command.DefaultPermissionUser;
 import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.command.function.WithPermission;
 
-@WithPermission(value = "gui", defaultPermission = DefaultPermission.OP)
+@WithPermission(value = "gui", defaultUser = DefaultPermissionUser.OP)
 public class GuiCommand extends NodeCommand {
 
     public GuiCommand() {

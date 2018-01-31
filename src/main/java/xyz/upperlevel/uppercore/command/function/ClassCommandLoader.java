@@ -12,10 +12,9 @@ public class ClassCommandLoader implements CommandLoader<Class<?>> {
     public List<Command> load(Class<?> something) {
         List<Command> commands = new ArrayList<>();
         for (Method method : something.getMethods()) {
-            WithCommand annotation = method.getAnnotation(WithCommand.class);
-            if (annotation != null) {
-                // The it is a command method
-                commands.add(new FunctionCommand(method.getName(), method));
+            WithCommand command = method.getAnnotation(WithCommand.class);
+            if (command != null) {
+                commands.add(new FunctionalCommand(method.getName(), method));
             }
         }
         return commands;
