@@ -138,7 +138,7 @@ public abstract class NodeCommand extends Command {
             return joiner.toString();
         }
 
-        @WithCommand
+        @AsCommand
         public void run(CommandSender sender, @WithName("page") @WithOptional(value = "1") int page) {
             List<BaseComponent[]> entries = new ArrayList<>();
             for (Command cmd : NodeCommand.this.getCommands()) {

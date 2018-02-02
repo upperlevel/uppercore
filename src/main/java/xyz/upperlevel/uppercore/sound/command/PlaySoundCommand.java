@@ -4,7 +4,7 @@ import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.*;
-import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.AsCommand;
 import xyz.upperlevel.uppercore.command.function.WithName;
 import xyz.upperlevel.uppercore.command.function.WithOptional;
 import xyz.upperlevel.uppercore.command.function.WithPermission;
@@ -16,7 +16,7 @@ public class PlaySoundCommand extends Command {
         setDescription("Plays the sound to the player (used for testing)");
     }
 
-    @WithCommand(sender = SenderType.PLAYER)
+    @AsCommand(sender = SenderType.PLAYER)
     public void run(CommandSender sender, @WithName("sound")Sound sound, @WithOptional @WithName("volume")Float volume, @WithOptional @WithName("pitch")Float pitch) {
         Player player = (Player)sender;
         if(volume != null && pitch != null)

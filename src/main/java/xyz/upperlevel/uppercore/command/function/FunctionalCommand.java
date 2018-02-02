@@ -5,27 +5,31 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import xyz.upperlevel.uppercore.command.Command;
+import xyz.upperlevel.uppercore.command.function.parameter.ArgumentParseException;
+import xyz.upperlevel.uppercore.command.function.parameter.ArgumentParser;
+import xyz.upperlevel.uppercore.command.function.parameter.ArgumentParserManager;
 import xyz.upperlevel.uppercore.command.function.parameter.FunctionalParameter;
-import xyz.upperlevel.uppercore.command.function.parameter.ParameterParseException;
-import xyz.upperlevel.uppercore.command.function.parameter.ParameterAdapter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.lang.reflect.Parameter;
+import java.util.*;
 
 public class FunctionalCommand extends Command {
+    @Getter
+    private Object residence; // where the command function is at
+
     @Getter
     private Method function;
 
     @Getter
     private FunctionalParameter[] parameters;
 
-    public FunctionalCommand(String name, Method function) {
+    public FunctionalCommand(String name, Object residence, Method function, ArgumentParserManager parserManager) {
         super(name);
-        WithCommand command = function.getAnnotation(WithCommand.class);
+        this.residence = residence;
+        this.function = function;
+        AsCommand command = function.getAnnotation(AsCommand.class);
         if (command == null) {
             throw new IllegalArgumentException("@FunctionalCommand not found above function: " + function.getName());
         }
@@ -34,10 +38,15 @@ public class FunctionalCommand extends Command {
             setPermissionPortion(new Permission(permission.value(), permission.description(), permission.defaultUser().get(this)));
             setPermissionCompleter(permission.completer());
         }
-        this.function = function;
         this.parameters = new FunctionalParameter[function.getParameterCount() - 1];
-        for (int i = 0; i < function.getParameterCount() - 1; i++) {
-            this.parameters[i] = new FunctionalParameter(function.getParameters()[i], , this);
+        for (int i = 1; i < function.getParameterCount() - 1; i++) {
+            Parameter parameter = function.getParameters()[i];
+            ArgumentParser parser = parserManager.getParser(parameter.getType());
+            if (parser != null) {
+                this.parameters[i] = new FunctionalParameter(parameter, parser, this);
+            } else {
+                throw new IllegalArgumentException("No ArgumentParser found for parameter type: " + parameter.getType());
+            }
         }
     }
 
@@ -72,7 +81,7 @@ public class FunctionalCommand extends Command {
         objects.add(sender); // The first parameter MUST be always the CommandSender
         int currArgIndex = 0;
         for (FunctionalParameter parameter : parameters) {
-            ParameterAdapter solver = parameter.getSolver();
+            ArgumentParser parser = parameter.getParser();
             if (!sender.hasPermission(parameter.getPermission())) {
                 if (parameter.isOptional()) { // if the parameter is optional we add its default value
                     objects.add(parameter.getDefaultValue());
@@ -88,13 +97,13 @@ public class FunctionalCommand extends Command {
                         throw new IllegalArgumentException("Not enough arguments typed to run this command!"); // TODO
                     }
                 } else { // if we have other arguments to use
-                    int consumed = solver.getConsumeCount();
+                    int consumed = parser.getConsumedCount();
                     if (consumed < 0) {
                         consumed = arguments.size() - currArgIndex;
                     }
                     try {
-                        objects.add(solver.adapt(arguments.subList(currArgIndex, currArgIndex + consumed)));
-                    } catch (ParameterParseException exception) {
+                        objects.add(parser.parse(arguments.subList(currArgIndex, currArgIndex + consumed)));
+                    } catch (ArgumentParseException exception) {
                         throw new IllegalArgumentException("An argument mismatch its original type: ", exception);
                     }
                     currArgIndex += consumed;
@@ -118,11 +127,11 @@ public class FunctionalCommand extends Command {
             if (!sender.hasPermission(parameter.getPermission())) { // if the sender has not enough permissions for this parameter
                 return Collections.emptyList(); // we does not suggest nothing to him
             }
-            ParameterAdapter solver = parameter.getSolver();
+            ArgumentParser solver = parameter.getParser();
             if (start >= arguments.size()) {
                 return solver.suggest(Collections.emptyList());
             } else {
-                int consumed = solver.getConsumeCount();
+                int consumed = solver.getConsumedCount();
                 if (consumed < 0 || consumed >= arguments.size() + start) { // if the current consumed count is unlimited or exceed all of our arguments
                     return solver.suggest(arguments.subList(start, arguments.size())); // we are ready to suggest!
                 } else {
@@ -131,5 +140,28 @@ public class FunctionalCommand extends Command {
             }
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Loads a list of command from the class they are in.
+     *
+     * @param residence             the instance of the class from which it loads the command functions
+     * @param argumentParserManager the object that associates an argument parser to each parameter
+     * @return the list of commands loaded
+     */
+    public static List<Command> load(Object residence, ArgumentParserManager argumentParserManager) {
+        List<Command> result = new ArrayList<>();
+        for (Method function : residence.getClass().getMethods()) {
+            AsCommand annotation = function.getAnnotation(AsCommand.class);
+            if (annotation != null) { // if it is a command function
+                result.add(new FunctionalCommand(
+                        function.getName(), // todo at the moment the command name is the name of the function
+                        residence,
+                        function,
+                        argumentParserManager // we need also this to load function parameters
+                ));
+            }
+        }
+        return result;
     }
 }

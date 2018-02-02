@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.script.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.command.*;
-import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.AsCommand;
 import xyz.upperlevel.uppercore.command.function.WithName;
 import xyz.upperlevel.uppercore.command.function.WithOptional;
 import xyz.upperlevel.uppercore.command.function.WithPermission;
@@ -23,7 +23,7 @@ public class ScriptListCommand extends Command {
         setDescription("Shows scripts.");
     }
 
-    @WithCommand
+    @AsCommand
     public void run(CommandSender sender, @WithName("plugin") @WithOptional Plugin plugin) {
         Collection<String> scriptNames;
         if (plugin != null) {

@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.hotbar.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.*;
-import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.AsCommand;
 import xyz.upperlevel.uppercore.command.function.WithName;
 import xyz.upperlevel.uppercore.command.function.WithOptional;
 import xyz.upperlevel.uppercore.command.function.WithPermission;
@@ -20,7 +20,7 @@ public class GiveHotbarCommand extends Command {
         setDescription("Gives a hotbar.");
     }
 
-    @WithCommand
+    @AsCommand
     public void run(CommandSender sender, @WithName("hotbar") HotbarId hotbar, @WithName("player") @WithOptional(senderType = SenderType.PLAYER) Player player) {
         if (player == null)
             player = (Player) sender;

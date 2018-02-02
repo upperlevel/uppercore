@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.script.commands;
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.command.function.WithName;
 import xyz.upperlevel.uppercore.command.Command;
-import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.AsCommand;
 import xyz.upperlevel.uppercore.command.function.WithPermission;
 import xyz.upperlevel.uppercore.script.PrecompiledScript;
 import xyz.upperlevel.uppercore.script.Script;
@@ -20,7 +20,7 @@ public class ScriptInfoCommand extends Command {
         setDescription("Shows info about a script.");
     }
 
-    @WithCommand
+    @AsCommand
     public void run(CommandSender sender, @WithName("script") Script script) {
         ScriptEngine engine = script.getEngine();
         //TODO: add script execution time logging

@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Registry;
 import xyz.upperlevel.uppercore.command.*;
-import xyz.upperlevel.uppercore.command.function.WithCommand;
+import xyz.upperlevel.uppercore.command.function.AsCommand;
 import xyz.upperlevel.uppercore.command.function.WithName;
 import xyz.upperlevel.uppercore.command.function.WithOptional;
 import xyz.upperlevel.uppercore.command.function.WithPermission;
@@ -24,7 +24,7 @@ public class GuiListCommand extends Command {
         setDescription("Lists all available guis.");
     }
 
-    @WithCommand
+    @AsCommand
     public void run(CommandSender sender, @WithName("plugin") @WithOptional Plugin plugin) {
         Collection<GuiId> guis;
         if (plugin != null) {

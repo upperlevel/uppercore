@@ -5,14 +5,14 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 
-public class ParameterParseException extends Exception {
+public class ArgumentParseException extends Exception {
     @Getter
     private Class<?> parameterType;
 
     @Getter
     private List<String> arguments;
 
-    public ParameterParseException(Class<?> parameterType, List<String> arguments) {
+    public ArgumentParseException(Class<?> parameterType, List<String> arguments) {
         this.parameterType = parameterType;
         this.arguments = arguments;
     }

@@ -12,12 +12,12 @@ public class FunctionalParameter extends CommandParameter {
     private Parameter parameter;
 
     @Getter
-    private ParameterAdapter solver;
+    private ArgumentParser parser;
 
-    public FunctionalParameter(Parameter parameter, ParameterAdapter solver, FunctionalCommand command) {
+    public FunctionalParameter(Parameter parameter, ArgumentParser parser, FunctionalCommand command) {
         super(command);
         this.parameter = parameter;
-        this.solver = solver;
+        this.parser = parser;
         WithName name = parameter.getAnnotation(WithName.class);
         if (name != null) {
             setName(name.value());
