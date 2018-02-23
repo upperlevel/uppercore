@@ -1,9 +1,8 @@
-package xyz.upperlevel.uppercore.game;
+package xyz.upperlevel.uppercore.game.arena;
 
 import lombok.Getter;
 
 public class PhaseManager {
-
     @Getter
     private Phase phase;
 
