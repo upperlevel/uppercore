@@ -1,7 +1,9 @@
-apply plugin: 'java'
-apply plugin: 'scala'
-apply plugin: 'maven'
-apply plugin: 'com.github.johnrengelman.shadow'
+plugins {
+    id 'java'
+    id 'maven'
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'io.franzbecker.gradle-lombok' version '1.11'
+}
 
 group = 'xyz.upperlevel.uppercore'
 version = '1.3'
@@ -11,24 +13,16 @@ description = "Global API for Spigot plugins"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
-    }
+project.ext {
+    mcVersion = '1.12-R0.1-SNAPSHOT'
 }
 
 repositories {
     mavenLocal()
-    mavenCentral()
+    jcenter()
     // Maven Snapshots
     maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/";
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
     // Spigot Api
     maven {
@@ -48,20 +42,15 @@ repositories {
     }
 }
 
-project.ext.mcVersion = '1.12-R0.1-SNAPSHOT'
-
 dependencies {
-    compileOnly 'org.scala-lang:scala-library:2.11.8'
-    compileOnly "org.projectlombok:lombok:1.16.18"
 
     // Testing
-    testCompile 'org.scalatest:scalatest_2.11:3.0.0'
     testCompile "junit:junit:4.12"
 
-    compileOnly "org.spigotmc:spigot-api:${mcVersion}"
-    testCompileOnly "org.spigotmc:spigot-api:${mcVersion}"
-    compileOnly "org.bukkit:bukkit:${mcVersion}"
-    testCompileOnly "org.bukkit:bukkit:${mcVersion}"
+    compileOnly "org.spigotmc:spigot-api:" + mcVersion
+    testCompileOnly "org.spigotmc:spigot-api:" + mcVersion
+    compileOnly "org.bukkit:bukkit:" + mcVersion
+    testCompileOnly "org.bukkit:bukkit:" + mcVersion
 
     compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3"
     compileOnly "me.clip:placeholderapi:2.0.8"
@@ -76,5 +65,8 @@ dependencies {
 
 shadowJar {
     relocate "org.bstats", "${project.group}.libs.metrics"
+    baseName = 'Uppercore'
+    classifier = null
+    version = null
 }
 project.tasks.assemble.dependsOn project.tasks.shadowJar
