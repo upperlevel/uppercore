@@ -32,10 +32,11 @@ public class MessageNms {
         try {
             Class<?> chatSerialzer;
 
-            if(NmsVersion.MINOR > 8 || (NmsVersion.MINOR == 8 && NmsVersion.RELEASE != 1))
+            if (NmsVersion.MINOR > 8 || (NmsVersion.MINOR == 8 && NmsVersion.RELEASE != 1)) {
                 chatSerialzer = NmsPacket.NMS.getClass("IChatBaseComponent$ChatSerializer");
-            else
+            } else {
                 chatSerialzer = NmsPacket.NMS.getClass("ChatSerializer");
+            }
 
             getNmsComponent = chatSerialzer.getMethod("a", String.class);
             Class<?> packetChatClazz = NmsPacket.NMS.getClass("PacketPlayOutChat");
@@ -43,7 +44,7 @@ public class MessageNms {
             packetPlayOutChatConstructor = packetChatClazz.getConstructor(iChatBaseComponentClass);
             packetPlayOutChatComponents = packetChatClazz.getField("components");
 
-            if(NmsVersion.MINOR >= 12) {
+            if (NmsVersion.MINOR >= 12) {
                 Class<?> chatMessageType = NmsPacket.NMS.getClass("ChatMessageType");
                 chatMessageTypes = chatMessageType.getEnumConstants();
                 packetPlayOutChatConstructorType = packetChatClazz.getConstructor(iChatBaseComponentClass, chatMessageType);

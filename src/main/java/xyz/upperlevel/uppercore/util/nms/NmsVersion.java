@@ -15,13 +15,13 @@ public class NmsVersion {
         VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         Pattern pattern = Pattern.compile("v([0-9]+)_([0-9]+)_R([0-9]+)");
         Matcher m = pattern.matcher(VERSION);
-        if(m.matches()) {
-            MAJOR = Integer.parseInt(m.group(1));
-            MINOR = Integer.parseInt(m.group(2));
-            RELEASE = Integer.parseInt(m.group(3));
-        } else {
+        if (!m.matches()) {
             throw new IllegalStateException("Cannot parse version \"" + VERSION + "\", make sure it follows \"v<major>_<minor>...\"");
         }
+        MAJOR = Integer.parseInt(m.group(1));
+        MINOR = Integer.parseInt(m.group(2));
+        RELEASE = Integer.parseInt(m.group(3));
+
     }
 
 }

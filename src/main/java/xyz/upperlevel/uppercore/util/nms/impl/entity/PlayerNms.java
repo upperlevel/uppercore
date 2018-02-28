@@ -33,6 +33,12 @@ public class PlayerNms {
         }
     }
 
+    /**
+     * Gets the NMS handle from the player.
+     *
+     * @param player the player
+     * @return the player's NMS handle
+     */
     public static Object getHandle(Player player) {
         try {
             return getHandle.invoke(player);
@@ -42,6 +48,12 @@ public class PlayerNms {
         }
     }
 
+    /**
+     * Gets the player's connection.
+     *
+     * @param player the player
+     * @return the player's connection
+     */
     public static Object getConnection(Player player) {
         try {
             return connection.get(getHandle.invoke(player));
@@ -51,6 +63,12 @@ public class PlayerNms {
         }
     }
 
+    /**
+     * Sends a packet to the player
+     *
+     * @param player the player
+     * @param packet the packet to send
+     */
     public static void sendPacket(Player player, Object packet) {
         /*
         EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
@@ -64,18 +82,35 @@ public class PlayerNms {
         }
     }
 
+    /**
+     * Sends an action bar to the player using {@link BaseComponent}s as content
+     *
+     * @param player the targeted player
+     * @param action the content of the action bar
+     */
     public static void sendActionBar(Player player, BaseComponent... action) {
-        if(NmsVersion.MINOR > 10 || (NmsVersion.MINOR == 9 && NmsVersion.RELEASE >= 2)) {
+        if (NmsVersion.MINOR > 10 || (NmsVersion.MINOR == 9 && NmsVersion.RELEASE >= 2)) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, action);
         } else {
             sendPacket(player, MessageNms.actionBarPacket(action));
         }
     }
 
+    /**
+     * Sends an action bar to the player using plain text as context
+     *
+     * @param player the targeted player
+     * @param textActions the plain-text content of the action bar
+     */
     public static void sendActionBar(Player player, Collection<String> textActions) {
         sendPacket(player, MessageNms.actionBarPacket(toJson(textActions)));
     }
 
+    /**
+     * Translates plain-text lines into readable json
+     * @param text plain-text lines
+     * @return parsable json
+     */
     private static String toJson(Collection<String> text) {
         return "{\"text\": \"" + ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, "\n")) + "\"}";
     }

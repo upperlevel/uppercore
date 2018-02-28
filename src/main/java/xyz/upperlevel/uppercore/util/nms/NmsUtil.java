@@ -18,9 +18,9 @@ public final class NmsUtil {
         return searchMethod(clazz.getDeclaredMethods(), returnType, args);
     }
 
-    public static Method searchMethod(Method[] classes, Class<?> returnType, Class<?>... args) throws NoSuchMethodException {
-        for(Method method : classes) {
-            if(     method.getReturnType() == returnType &&
+    public static Method searchMethod(Method[] methods, Class<?> returnType, Class<?>... args) throws NoSuchMethodException {
+        for (Method method : methods) {
+            if (     method.getReturnType() == returnType &&
                     Arrays.equals(method.getParameterTypes(), args)) {
                 return method;
             }

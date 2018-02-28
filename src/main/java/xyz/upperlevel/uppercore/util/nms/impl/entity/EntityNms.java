@@ -41,6 +41,12 @@ public final class EntityNms {
         }
     }
 
+    /**
+     * Gets the NMS handle from the entity.
+     *
+     * @param entity the entity
+     * @return the entity's NMS handle
+     */
     public static Object getHandle(Entity entity) {
         try {
             return getHandle.invoke(entity);
@@ -50,16 +56,13 @@ public final class EntityNms {
         }
     }
 
-    public static Object getTag(Entity entity, Object tag) {
-        try {
-            return getTag.invoke(entity, tag);
-        } catch (Exception e) {
-            handleException(e);
-            return null;
-        }
-    }
-
-    public static void setTag(Entity entity, Object tag) {
+    /**
+     * Gets a specific tag from an entity.
+     *
+     * @param entity the entity
+     * @param tag the tag object to fill
+     */
+    public static void getTag(Entity entity, Object tag) {
         try {
             getTag.invoke(entity, tag);
         } catch (Exception e) {
@@ -67,6 +70,26 @@ public final class EntityNms {
         }
     }
 
+    /**
+     * Updates the entity's tag.
+     *
+     * @param entity the entity
+     * @param tag the tag to replace
+     */
+    public static void setTag(Entity entity, Object tag) {
+        try {
+            setTag.invoke(entity, tag);
+        } catch (Exception e) {
+            handleException(e);
+        }
+    }
+
+    /**
+     * Edits in an efficient way the entity tags.
+     *
+     * @param entity the entity
+     * @param tagConsumer the tag editor
+     */
     public static void editTag(Entity entity, Consumer<Object> tagConsumer) {
         try {
             Object handle = EntityNms.getHandle(entity);
@@ -79,18 +102,42 @@ public final class EntityNms {
         }
     }
 
+    /**
+     * Removes or readds Artificial Intelligence to the entity.
+     *
+     * @param entity the entity
+     * @param value if true the AI will be removed, if false the entity will regain AI
+     */
     public static void setNoAI(Entity entity, boolean value) {
         editTag(entity, tag -> TagNms.set(tag, "NoAI", value));
     }
 
+    /**
+     * Removes or readds sounds to the entity.
+     *
+     * @param entity the entity
+     * @param value if true the sounds will be removed, if false the entity will regain sounds
+     */
     public static void setSilent(Entity entity, boolean value) {
         editTag(entity, tag -> TagNms.set(tag, "Silent", value));
     }
 
+    /**
+     * Removes or readds invulnerability to the entity..
+     *
+     * @param entity the entity
+     * @param value if true the invulnerability will be added, if false the entity will become mortal
+     */
     public static void setInvulnerable(Entity entity, boolean value) {
         editTag(entity, tag -> TagNms.set(tag, "Invulnerable", value));
     }
 
+    /**
+     * Completely freezes or unfreezes the entity.
+     *
+     * @param entity the entity
+     * @param value if true the entity will freeze, if false the entity will unfreeze
+     */
     public static void freeze(Entity entity, boolean value) {
         editTag(entity, tag -> {
             TagNms.set(tag, "NoAI", value);
@@ -108,8 +155,14 @@ public final class EntityNms {
         }
     }
 
+    /**
+     * Gets the entity's height.
+     *
+     * @param entity the entity to check
+     * @return the entity height
+     */
     public static double getHeight(Entity entity) {
-        if(NmsVersion.MINOR >= 11) {
+        if (NmsVersion.MINOR >= 11) {
             return entity.getHeight();
         } else {
             try {
@@ -121,8 +174,14 @@ public final class EntityNms {
         }
     }
 
+    /**
+     * Gets the entity's width.
+     *
+     * @param entity the entity to check
+     * @return the entity width
+     */
     public static double getWidth(Entity entity) {
-        if(NmsVersion.MINOR >= 11) {
+        if (NmsVersion.MINOR >= 11) {
             return entity.getWidth();
         } else {
             try {
