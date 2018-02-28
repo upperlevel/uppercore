@@ -3,7 +3,6 @@ package xyz.upperlevel.uppercore.particle;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import xyz.upperlevel.uppercore.particle.data.ParticleBlockData;
@@ -17,31 +16,6 @@ import xyz.upperlevel.uppercore.util.nms.NmsVersion;
 import java.util.*;
 import java.util.stream.Stream;
 
-/**
- * <b>ParticleEffect Library</b>
- * <p>
- * This library was created by @DarkBlade12 and allows you to display all Minecraft particle effects on a Bukkit server
- * <p>
- * You are welcome to use it, modify it and redistribute it under the following conditions:
- * <ul>
- * <li>Don't claim this class as your own
- * <li>Don't removeHotbar this disclaimer
- * </ul>
- * <p>
- * Special thanks:
- * <ul>
- * <li>@microgeek (original idea, names and packet parameters)
- * <li>@ShadyPotato (1.8 names, ids and packet parameters)
- * <li>@RingOfStorms (particle behavior)
- * <li>@Cybermaxke (particle behavior)
- * <li>@JamieSinn (hosting a jenkins server and documentation for particleeffect)
- * </ul>
- * <p>
- * <i>It would be nice if you provide credit to me if you use this class in a published project</i>
- *
- * @author DarkBlade12
- * @version 1.7
- */
 public enum ParticleEffect {
     /**
      * A particle effect which is displayed by exploding tnt and creepers:
@@ -399,7 +373,7 @@ public enum ParticleEffect {
     }
 
     /**
-     * Construct a new particle effect
+     * Construct a new particle effect.
      *
      * @param name Name of this particle effect
      * @param id Id of this particle effect
@@ -415,7 +389,7 @@ public enum ParticleEffect {
     }
 
     /**
-     * Returns the name of this particle effect
+     * Returns the name of this particle effect.
      *
      * @return The name
      */
@@ -433,27 +407,27 @@ public enum ParticleEffect {
     }
 
     /**
-     * Returns the required version for this particle effect (1.x)
+     * Returns the minimal minor version for this particle effect (1.x).
      *
-     * @return The required version
+     * @return the required version
      */
     public int getRequiredVersion() {
         return requiredVersion;
     }
 
     /**
-     * Determine if this particle effect has a specific property
+     * Determines if this particle effect has a specific property.
      *
-     * @return Whether it has the property or not
+     * @return whether it has the property or not
      */
     public boolean hasProperty(ParticleProperty property) {
         return properties.contains(property);
     }
 
     /**
-     * Determine if this particle effect is supported by your current server version
+     * Determines if this particle effect is supported by your current server version.
      *
-     * @return Whether the particle effect is supported or not
+     * @return whether the particle effect is supported or not
      */
     public boolean isSupported() {
         return requiredVersion == -1 || NmsVersion.MINOR >= requiredVersion;
@@ -462,28 +436,28 @@ public enum ParticleEffect {
     /**
      * Returns the particle effect with the given name
      *
-     * @param name Name of the particle effect
-     * @return The particle effect
+     * @param name name of the particle effect
+     * @return the particle effect with the specified name
      */
     public static ParticleEffect fromName(String name) {
         return NAME_MAP.get(name.toLowerCase());
     }
 
     /**
-     * Returns the particle effect with the given id
+     * Returns the particle effect with the given id.
      *
-     * @param id Id of the particle effect
-     * @return The particle effect
+     * @param id id of the particle effect
+     * @return the particle effect with the specified id
      */
     public static ParticleEffect fromId(int id) {
         return ID_MAP.get(id);
     }
 
     /**
-     * Determine if water is at a certain location
+     * Determines if water is at a certain location
      *
-     * @param location Location to check
-     * @return Whether water is at this location or not
+     * @param location location to check
+     * @return whether water is at this location or not
      */
     private static boolean isWater(Location location) {
         Material material = location.getBlock().getType();
@@ -491,49 +465,29 @@ public enum ParticleEffect {
     }
 
     /**
-     * Determine if the distance between @param location and one of the players exceeds 256
+     * Determines if the data type for a particle effect is valid.
      *
-     * @param location Location to check
-     * @return Whether the distance exceeds 256 or not
+     * @param effect particle effect
+     * @param data particle data
+     * @return whether the data type is valid or not
      */
-    private static boolean isLongDistance(Location location, Iterable<Player> players) {
-        World world = location.getWorld();
-        for (Player player : players) {
-            Location playerLocation = player.getLocation();
-            if (world != playerLocation.getWorld() || playerLocation.distanceSquared(location) < 65536) {
-                continue;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Determine if the data type for a particle effect is correct
-     *
-     * @param effect Particle effect
-     * @param data Particle data
-     * @return Whether the data type is correct or not
-     */
-    private static boolean isDataCorrect(ParticleEffect effect, ParticleData data) {
+    private static boolean isDataValid(ParticleEffect effect, ParticleData data) {
         return ((effect == BLOCK_CRACK || effect == BLOCK_DUST) && data instanceof ParticleBlockData) || (effect == ITEM_CRACK && data instanceof ParticleItemData);
     }
 
     /**
-     * Displays a particle effect which is only visible for all players within a certain range in the world of @param center
+     * Displays a particle effect which is only visible for all players within a certain range in the world of @param center.
      *
-     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
-     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
-     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
-     * @param speed Display speed of the particles
-     * @param amount Amount of particles
-     * @param center Center location of the effect
-     * @param range Range of the visibility
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect requires water and none is at the center location
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, double)
+     * @param offsetX maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ maximum distance particles can fly away from the center on the z-axis
+     * @param speed display speed of the particles
+     * @param amount amount of particles
+     * @param center center location of the effect
+     * @param range range of the visibility
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect requires water and none is at the center location
      */
     public void display(float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, double range) {
         if (!isSupported()) {
@@ -549,20 +503,18 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a particle effect which is only visible for the specified players
+     * Displays a particle effect which is only visible for the specified players.
      *
-     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
-     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
-     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
-     * @param speed Display speed of the particles
-     * @param amount Amount of particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect requires water and none is at the center location
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param offsetX maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ maximum distance particles can fly away from the center on the z-axis
+     * @param speed display speed of the particles
+     * @param amount amount of particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect requires water and none is at the center location
      */
     public void display(float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Iterable<Player> players) {
         if (!isSupported()) {
@@ -579,20 +531,18 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a particle effect which is only visible for the specified players
+     * Displays a particle effect which is only visible for the specified players.
      *
-     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
-     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
-     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
-     * @param speed Display speed of the particles
-     * @param amount Amount of particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect requires water and none is at the center location
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param offsetX maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ maximum distance particles can fly away from the center on the z-axis
+     * @param speed display speed of the particles
+     * @param amount amount of particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect requires water and none is at the center location
      */
     public void display(float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Stream<Player> players) {
         if (!isSupported()) {
@@ -608,36 +558,33 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a particle effect which is only visible for the specified players
+     * Displays a particle effect which is only visible for the specified players.
      *
-     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
-     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
-     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
-     * @param speed Display speed of the particles
-     * @param amount Amount of particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect requires water and none is at the center location
-     * @see #display(float, float, float, float, int, Location, List)
+     * @param offsetX maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ maximum distance particles can fly away from the center on the z-axis
+     * @param speed display speed of the particles
+     * @param amount amount of particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect requires water and none is at the center location
      */
     public void display(float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Player... players) {
         display(offsetX, offsetY, offsetZ, speed, amount, center, Arrays.asList(players));
     }
 
     /**
-     * Displays a single particle which flies into a determined direction and is only visible for all players within a certain range in the world of @param center
+     * Displays a single particle which flies into a determined direction and is only visible for all players within a certain range in the world of @param center.
      *
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particle
-     * @param center Center location of the effect
-     * @param range Range of the visibility
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect is not directional or if it requires water and none is at the center location
-     * @see ParticlePacket#ParticlePacket(ParticleEffect, Vector, float, boolean, ParticleData)
-     * @see ParticlePacket#sendTo(Location, double)
+     * @param direction direction of the particle
+     * @param speed display speed of the particle
+     * @param center center location of the effect
+     * @param range range of the visibility
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect is not directional or if it requires water and none is at the center location
      */
     public void display(Vector direction, float speed, Location center, double range) {
         if (!isSupported()) {
@@ -656,17 +603,15 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a single particle which flies into a determined direction and is only visible for the specified players
+     * Displays a single particle which flies into a determined direction and is only visible for the specified players.
      *
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particle
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect is not directional or if it requires water and none is at the center location
-     * @see ParticlePacket#ParticlePacket(ParticleEffect, Vector, float, boolean, ParticleData)
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param direction direction of the particle
+     * @param speed display speed of the particle
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect is not directional or if it requires water and none is at the center location
      */
     public void display(Vector direction, float speed, Location center, Iterable<Player> players) {
         if (!isSupported()) {
@@ -685,17 +630,15 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a single particle which flies into a determined direction and is only visible for the specified players
+     * Displays a single particle which flies into a determined direction and is only visible for the specified players.
      *
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particle
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect is not directional or if it requires water and none is at the center location
-     * @see ParticlePacket#ParticlePacket(ParticleEffect, Vector, float, boolean, ParticleData)
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param direction direction of the particle
+     * @param speed display speed of the particle
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect is not directional or if it requires water and none is at the center location
      */
     public void display(Vector direction, float speed, Location center, Stream<Player> players) {
         if (!isSupported()) {
@@ -714,31 +657,28 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a single particle which flies into a determined direction and is only visible for the specified players
+     * Displays a single particle which flies into a determined direction and is only visible for the specified players.
      *
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particle
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect requires additional data
-     * @throws IllegalArgumentException If the particle effect is not directional or if it requires water and none is at the center location
-     * @see #display(Vector, float, Location, List)
+     * @param direction direction of the particle
+     * @param speed display speed of the particle
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect requires additional data
+     * @throws IllegalArgumentException if the particle effect is not directional or if it requires water and none is at the center location
      */
     public void display(Vector direction, float speed, Location center, Player... players) {
         display(direction, speed, center, Arrays.asList(players));
     }
 
     /**
-     * Displays a single particle which is colored and only visible for all players within a certain range in the world of @param center
+     * Displays a single particle which is colored and only visible for all players within a certain range in the world of @param center.
      *
-     * @param color Color of the particle
-     * @param center Center location of the effect
-     * @param range Range of the visibility
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleColorException If the particle effect is not colorable or the color type is incorrect
-     * @see ParticlePacket#ParticlePacket(ParticleEffect, ParticleColor, boolean)
-     * @see ParticlePacket#sendTo(Location, double)
+     * @param color color of the particle
+     * @param center center location of the effect
+     * @param range range of the visibility
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleColorException if the particle effect is not colorable or the color type is incorrect
      */
     public void display(ParticleColor color, Location center, double range) {
         if (!isSupported()) {
@@ -751,15 +691,13 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a single particle which is colored and only visible for the specified players
+     * Displays a single particle which is colored and only visible for the specified players.
      *
-     * @param color Color of the particle
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleColorException If the particle effect is not colorable or the color type is incorrect
-     * @see ParticlePacket#ParticlePacket(ParticleEffect, ParticleColor, boolean)
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param color color of the particle
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleColorException if the particle effect is not colorable or the color type is incorrect
      */
     public void display(ParticleColor color, Location center, Iterable<Player> players) {
         if (!isSupported()) {
@@ -774,32 +712,29 @@ public enum ParticleEffect {
     /**
      * Displays a single particle which is colored and only visible for the specified players
      *
-     * @param color Color of the particle
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleColorException If the particle effect is not colorable or the color type is incorrect
-     * @see #display(ParticleColor, Location, List)
+     * @param color color of the particle
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleColorException if the particle effect is not colorable or the color type is incorrect
      */
     public void display(ParticleColor color, Location center, Player... players) {
         display(color, center, Arrays.asList(players));
     }
 
     /**
-     * Displays a particle effect which requires additional data and is only visible for all players within a certain range in the world of @param center
+     * Displays a particle effect which requires additional data and is only visible for all players within a certain range in the world of @param center.
      *
-     * @param data Data of the effect
-     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
-     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
-     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
-     * @param speed Display speed of the particles
-     * @param amount Amount of particles
-     * @param center Center location of the effect
-     * @param range Range of the visibility
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, double)
+     * @param data data of the effect
+     * @param offsetX maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ maximum distance particles can fly away from the center on the z-axis
+     * @param speed display speed of the particles
+     * @param amount amount of particles
+     * @param center center location of the effect
+     * @param range range of the visibility
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect does not require additional data or if the data type is incorrect
      */
     public void display(ParticleData data, float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, double range) {
         if (!isSupported()) {
@@ -808,27 +743,25 @@ public enum ParticleEffect {
         if (!hasProperty(ParticleProperty.REQUIRES_DATA)) {
             throw new ParticleDataException("This particle effect does not require additional data");
         }
-        if (!isDataCorrect(this, data)) {
+        if (!isDataValid(this, data)) {
             throw new ParticleDataException("The particle data type is incorrect");
         }
         new ParticlePacket(this, offsetX, offsetY, offsetZ, speed, amount, range > 256, data).sendTo(center, range);
     }
 
     /**
-     * Displays a particle effect which requires additional data and is only visible for the specified players
+     * Displays a particle effect which requires additional data and is only visible for the specified players.
      *
-     * @param data Data of the effect
-     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
-     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
-     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
-     * @param speed Display speed of the particles
-     * @param amount Amount of particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param data data of the effect
+     * @param offsetX maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ maximum distance particles can fly away from the center on the z-axis
+     * @param speed display speed of the particles
+     * @param amount amount of particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect does not require additional data or if the data type is incorrect
      */
     public void display(ParticleData data, float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Iterable<Player> players) {
         if (!isSupported()) {
@@ -837,43 +770,40 @@ public enum ParticleEffect {
         if (!hasProperty(ParticleProperty.REQUIRES_DATA)) {
             throw new ParticleDataException("This particle effect does not require additional data");
         }
-        if (!isDataCorrect(this, data)) {
+        if (!isDataValid(this, data)) {
             throw new ParticleDataException("The particle data type is incorrect");
         }
         new ParticlePacket(this, offsetX, offsetY, offsetZ, speed, amount, true, data).sendTo(center, players);
     }
 
     /**
-     * Displays a particle effect which requires additional data and is only visible for the specified players
+     * Displays a particle effect which requires additional data and is only visible for the specified players.
      *
-     * @param data Data of the effect
-     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
-     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
-     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
-     * @param speed Display speed of the particles
-     * @param amount Amount of particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
-     * @see #display(ParticleData, float, float, float, float, int, Location, List)
+     * @param data data of the effect
+     * @param offsetX maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ maximum distance particles can fly away from the center on the z-axis
+     * @param speed display speed of the particles
+     * @param amount amount of particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect does not require additional data or if the data type is incorrect
      */
     public void display(ParticleData data, float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Player... players) {
         display(data, offsetX, offsetY, offsetZ, speed, amount, center, Arrays.asList(players));
     }
 
     /**
-     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for all players within a certain range in the world of @param center
+     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for all players within a certain range in the world of @param center.
      *
-     * @param data Data of the effect
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particles
-     * @param center Center location of the effect
-     * @param range Range of the visibility
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, double)
+     * @param data data of the effect
+     * @param direction direction of the particle
+     * @param speed display speed of the particles
+     * @param center center location of the effect
+     * @param range range of the visibility
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect does not require additional data or if the data type is incorrect
      */
     public void display(ParticleData data, Vector direction, float speed, Location center, double range) {
         if (!isSupported()) {
@@ -882,24 +812,22 @@ public enum ParticleEffect {
         if (!hasProperty(ParticleProperty.REQUIRES_DATA)) {
             throw new ParticleDataException("This particle effect does not require additional data");
         }
-        if (!isDataCorrect(this, data)) {
+        if (!isDataValid(this, data)) {
             throw new ParticleDataException("The particle data type is incorrect");
         }
         new ParticlePacket(this, direction, speed, range > 256, data).sendTo(center, range);
     }
 
     /**
-     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for the specified players
+     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for the specified players.
      *
-     * @param data Data of the effect
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param data data of the effect
+     * @param direction direction of the particle
+     * @param speed display speed of the particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect does not require additional data or if the data type is incorrect
      */
     public void display(ParticleData data, Vector direction, float speed, Location center, Iterable<Player> players) {
         if (!isSupported()) {
@@ -908,24 +836,22 @@ public enum ParticleEffect {
         if (!hasProperty(ParticleProperty.REQUIRES_DATA)) {
             throw new ParticleDataException("This particle effect does not require additional data");
         }
-        if (!isDataCorrect(this, data)) {
+        if (!isDataValid(this, data)) {
             throw new ParticleDataException("The particle data type is incorrect");
         }
         new ParticlePacket(this, direction, speed, true, data).sendTo(center, players);
     }
 
     /**
-     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for the specified players
+     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for the specified players.
      *
-     * @param data Data of the effect
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
-     * @see ParticlePacket
-     * @see ParticlePacket#sendTo(Location, List)
+     * @param data data of the effect
+     * @param direction direction of the particle
+     * @param speed display speed of the particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect does not require additional data or if the data type is incorrect
      */
     public void display(ParticleData data, Vector direction, float speed, Location center, Stream<Player> players) {
         if (!isSupported()) {
@@ -934,35 +860,29 @@ public enum ParticleEffect {
         if (!hasProperty(ParticleProperty.REQUIRES_DATA)) {
             throw new ParticleDataException("This particle effect does not require additional data");
         }
-        if (!isDataCorrect(this, data)) {
+        if (!isDataValid(this, data)) {
             throw new ParticleDataException("The particle data type is incorrect");
         }
         new ParticlePacket(this, direction, speed, true, data).sendTo(center, players);
     }
 
     /**
-     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for the specified players
+     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for the specified players.
      *
-     * @param data Data of the effect
-     * @param direction Direction of the particle
-     * @param speed Display speed of the particles
-     * @param center Center location of the effect
-     * @param players Receivers of the effect
-     * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
-     * @see #display(ParticleData, Vector, float, Location, List)
+     * @param data data of the effect
+     * @param direction direction of the particle
+     * @param speed display speed of the particles
+     * @param center center location of the effect
+     * @param players receivers of the effect
+     * @throws ParticleVersionException if the particle effect is not supported by the server version
+     * @throws ParticleDataException if the particle effect does not require additional data or if the data type is incorrect
      */
     public void display(ParticleData data, Vector direction, float speed, Location center, Player... players) {
         display(data, direction, speed, center, Arrays.asList(players));
     }
 
     /**
-     * Represents the property of a particle effect
-     * <p>
-     * This class is part of the <b>ParticleEffect Library</b> and follows the same usage conditions
-     *
-     * @author DarkBlade12
-     * @since 1.7
+     * Represents the property of a particle effect.
      */
     public enum ParticleProperty {
         /**

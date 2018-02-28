@@ -3,12 +3,7 @@ package xyz.upperlevel.uppercore.particle.data;
 import org.bukkit.Material;
 
 /**
- * Represents the item data for the {@link ParticleEffect#ITEM_CRACK} effect
- * <p>
- * This class is part of the <b>ParticleEffect Library</b> and follows the same usage conditions
- *
- * @author DarkBlade12
- * @since 1.6
+ * Represents the item data for the {@link xyz.upperlevel.uppercore.particle.ParticleEffect#ITEM_CRACK} effect
  */
 public class ParticleItemData extends ParticleData {
     /**
