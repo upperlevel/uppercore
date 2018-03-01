@@ -1,6 +1,6 @@
-package xyz.upperlevel.uppercore.util.nms.exceptions;
+package xyz.upperlevel.uppercore.nms.exceptions;
 
-import static xyz.upperlevel.uppercore.util.nms.NmsVersion.VERSION;
+import static xyz.upperlevel.uppercore.nms.NmsVersion.VERSION;
 
 public class UnsupportedVersionException extends RuntimeException {
 

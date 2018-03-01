@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.uppercore.util.nms.impl.MessageNms;
+import xyz.upperlevel.uppercore.nms.impl.MessageNms;
 
 import java.util.ArrayList;
 import java.util.BitSet;

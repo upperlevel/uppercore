@@ -1,6 +1,6 @@
-package xyz.upperlevel.uppercore.util.nms;
+package xyz.upperlevel.uppercore.nms;
 
-import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
+import xyz.upperlevel.uppercore.nms.exceptions.UnsupportedVersionException;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

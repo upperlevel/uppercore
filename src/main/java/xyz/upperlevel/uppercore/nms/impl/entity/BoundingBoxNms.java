@@ -1,13 +1,13 @@
-package xyz.upperlevel.uppercore.util.nms.impl.entity;
+package xyz.upperlevel.uppercore.nms.impl.entity;
 
-import xyz.upperlevel.uppercore.util.nms.NmsPacket;
-import xyz.upperlevel.uppercore.util.nms.NmsUtil;
-import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
+import xyz.upperlevel.uppercore.nms.NmsPacket;
+import xyz.upperlevel.uppercore.nms.NmsUtil;
+import xyz.upperlevel.uppercore.nms.exceptions.UnsupportedVersionException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
+import static xyz.upperlevel.uppercore.nms.NmsUtil.handleException;
 
 public final class BoundingBoxNms {
     public static final Class<?> NMS_CLASS;

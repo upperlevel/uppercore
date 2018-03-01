@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.util.nms;
+package xyz.upperlevel.uppercore.nms;
 
 import org.bukkit.Bukkit;
 
@@ -21,7 +21,6 @@ public class NmsVersion {
         MAJOR = Integer.parseInt(m.group(1));
         MINOR = Integer.parseInt(m.group(2));
         RELEASE = Integer.parseInt(m.group(3));
-
     }
 
 }

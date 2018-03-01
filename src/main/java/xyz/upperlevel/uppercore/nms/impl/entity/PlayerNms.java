@@ -1,20 +1,20 @@
-package xyz.upperlevel.uppercore.util.nms.impl.entity;
+package xyz.upperlevel.uppercore.nms.impl.entity;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.uppercore.util.nms.NmsPacket;
-import xyz.upperlevel.uppercore.util.nms.NmsVersion;
-import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
-import xyz.upperlevel.uppercore.util.nms.impl.MessageNms;
+import xyz.upperlevel.uppercore.nms.NmsPacket;
+import xyz.upperlevel.uppercore.nms.NmsVersion;
+import xyz.upperlevel.uppercore.nms.exceptions.UnsupportedVersionException;
+import xyz.upperlevel.uppercore.nms.impl.MessageNms;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
+import static xyz.upperlevel.uppercore.nms.NmsUtil.handleException;
 
 public class PlayerNms {
     public static final Class<?> CLASS;
@@ -64,7 +64,7 @@ public class PlayerNms {
     }
 
     /**
-     * Sends a packet to the player
+     * Sends a packet to the player.
      *
      * @param player the player
      * @param packet the packet to send
@@ -83,7 +83,7 @@ public class PlayerNms {
     }
 
     /**
-     * Sends an action bar to the player using {@link BaseComponent}s as content
+     * Sends an action bar to the player using {@link BaseComponent}s as content.
      *
      * @param player the targeted player
      * @param action the content of the action bar
@@ -97,7 +97,7 @@ public class PlayerNms {
     }
 
     /**
-     * Sends an action bar to the player using plain text as context
+     * Sends an action bar to the player using plain text as context.
      *
      * @param player the targeted player
      * @param textActions the plain-text content of the action bar
@@ -107,7 +107,7 @@ public class PlayerNms {
     }
 
     /**
-     * Translates plain-text lines into readable json
+     * Translates plain-text lines into readable json.
      * @param text plain-text lines
      * @return parsable json
      */

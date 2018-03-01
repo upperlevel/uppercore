@@ -1,17 +1,16 @@
-package xyz.upperlevel.uppercore.util.nms.impl.entity;
+package xyz.upperlevel.uppercore.nms.impl.entity;
 
 import org.bukkit.entity.Entity;
-import xyz.upperlevel.uppercore.util.nms.NmsPacket;
-import xyz.upperlevel.uppercore.util.nms.NmsVersion;
-import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
-import xyz.upperlevel.uppercore.util.nms.impl.TagNms;
+import xyz.upperlevel.uppercore.nms.NmsPacket;
+import xyz.upperlevel.uppercore.nms.NmsVersion;
+import xyz.upperlevel.uppercore.nms.exceptions.UnsupportedVersionException;
+import xyz.upperlevel.uppercore.nms.impl.TagNms;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
+import static xyz.upperlevel.uppercore.nms.NmsUtil.handleException;
 
 public final class EntityNms {
     public static final Class<?> NMS_CLASS;
@@ -140,9 +139,10 @@ public final class EntityNms {
      */
     public static void freeze(Entity entity, boolean value) {
         editTag(entity, tag -> {
-            TagNms.set(tag, "NoAI", value);
-            TagNms.set(tag, "Silent", value);
-            TagNms.set(tag, "Invulnerable", value);
+            byte b = (byte) (value ? 1 : 0);
+            TagNms.setByte(tag, "NoAI", b);
+            TagNms.setByte(tag, "Silent", b);
+            TagNms.setByte(tag, "Invulnerable", b);
         });
     }
 

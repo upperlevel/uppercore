@@ -1,18 +1,18 @@
-package xyz.upperlevel.uppercore.util.nms.impl;
+package xyz.upperlevel.uppercore.nms.impl;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.uppercore.util.nms.NmsPacket;
-import xyz.upperlevel.uppercore.util.nms.NmsVersion;
-import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
+import xyz.upperlevel.uppercore.nms.NmsPacket;
+import xyz.upperlevel.uppercore.nms.NmsVersion;
+import xyz.upperlevel.uppercore.nms.exceptions.UnsupportedVersionException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static xyz.upperlevel.uppercore.util.nms.NmsUtil.handleException;
-import static xyz.upperlevel.uppercore.util.nms.impl.entity.PlayerNms.sendPacket;
+import static xyz.upperlevel.uppercore.nms.NmsUtil.handleException;
+import static xyz.upperlevel.uppercore.nms.impl.entity.PlayerNms.sendPacket;
 
 public class MessageNms {
     //-----------------json messages
@@ -57,14 +57,31 @@ public class MessageNms {
         }
     }
 
+    /**
+     * Sends raw json to Player.
+     *
+     * @param player the receiver
+     * @param json raw json to send
+     */
     public static void sendJson(Player player, String json) {
         sendPacket(player, jsonPacket(json));
     }
 
+    /**
+     * Sends raw json to Player.
+     *
+     * @param player the receiver
+     * @param json json to send
+     */
     public static void sendJson(Player player, BaseComponent... json) {
         sendPacket(player, jsonPacket(json));
     }
 
+    /**
+     * Creates PlayOutChat packet from raw json.
+     *
+     * @param json raw json to wrap
+     */
     public static Object jsonPacket(String json) {
         /*
         IChatBaseComponent msg = ChatSerializer.a(JSON);
@@ -80,6 +97,11 @@ public class MessageNms {
         }
     }
 
+    /**
+     * Creates PlayOutChat packet from components.
+     *
+     * @param components components to include
+     */
     public static Object jsonPacket(BaseComponent... components) {
         /*
         PacketPlayOutChat packet = new PacketPlayOutChat(null);
@@ -100,6 +122,12 @@ public class MessageNms {
         return packetPlayOutChatConstructorType.newInstance(ichatComponent, NmsVersion.MINOR >= 12 ? chatMessageTypes[MSG_GAME_INFO] : MSG_GAME_INFO);
     }
 
+    /**
+     * Creates a Action bar packet from raw json.
+     *
+     * @param json the raw json
+     * @return the action bar packet
+     */
     public static Object actionBarPacket(String json) {
         /*
         IChatBaseComponent msg = ChatSerializer.a(JSON);
@@ -115,6 +143,12 @@ public class MessageNms {
         }
     }
 
+    /**
+     * Creates a Action bar packet from json components.
+     *
+     * @param actionMessage the components to include
+     * @return the action bar packet
+     */
     public static Object actionBarPacket(BaseComponent... actionMessage) {
         /*
         PacketPlayOutChat packet = new PacketPlayOutChat(null, GAME_INFO);

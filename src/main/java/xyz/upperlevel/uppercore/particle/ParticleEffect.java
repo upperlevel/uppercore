@@ -11,7 +11,7 @@ import xyz.upperlevel.uppercore.particle.data.ParticleItemData;
 import xyz.upperlevel.uppercore.particle.exceptions.ParticleColorException;
 import xyz.upperlevel.uppercore.particle.exceptions.ParticleDataException;
 import xyz.upperlevel.uppercore.particle.exceptions.ParticleVersionException;
-import xyz.upperlevel.uppercore.util.nms.NmsVersion;
+import xyz.upperlevel.uppercore.nms.NmsVersion;
 
 import java.util.*;
 import java.util.stream.Stream;

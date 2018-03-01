@@ -1,8 +1,8 @@
-package xyz.upperlevel.uppercore.util.nms;
+package xyz.upperlevel.uppercore.nms;
 
 import lombok.Getter;
 
-import static xyz.upperlevel.uppercore.util.nms.NmsVersion.VERSION;
+import static xyz.upperlevel.uppercore.nms.NmsVersion.VERSION;
 
 public enum NmsPacket {
     NMS("net.minecraft.server"),

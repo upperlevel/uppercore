@@ -8,10 +8,10 @@ import org.bukkit.util.Vector;
 import xyz.upperlevel.uppercore.particle.data.ParticleData;
 import xyz.upperlevel.uppercore.particle.exceptions.PacketInstantiationException;
 import xyz.upperlevel.uppercore.particle.exceptions.PacketSendingException;
-import xyz.upperlevel.uppercore.util.nms.NmsPacket;
-import xyz.upperlevel.uppercore.util.nms.NmsVersion;
-import xyz.upperlevel.uppercore.util.nms.exceptions.UnsupportedVersionException;
-import xyz.upperlevel.uppercore.util.nms.impl.entity.PlayerNms;
+import xyz.upperlevel.uppercore.nms.NmsPacket;
+import xyz.upperlevel.uppercore.nms.NmsVersion;
+import xyz.upperlevel.uppercore.nms.exceptions.UnsupportedVersionException;
+import xyz.upperlevel.uppercore.nms.impl.entity.PlayerNms;
 
 import java.lang.reflect.Constructor;
 import java.util.function.Consumer;

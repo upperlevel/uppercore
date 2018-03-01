@@ -6,14 +6,14 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import xyz.upperlevel.uppercore.util.nms.impl.entity.BoundingBoxNms;
-import xyz.upperlevel.uppercore.util.nms.impl.entity.EntityNms;
+import xyz.upperlevel.uppercore.nms.impl.entity.BoundingBoxNms;
+import xyz.upperlevel.uppercore.nms.impl.entity.EntityNms;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import static xyz.upperlevel.uppercore.util.nms.NmsVersion.MINOR;
-import static xyz.upperlevel.uppercore.util.nms.NmsVersion.RELEASE;
+import static xyz.upperlevel.uppercore.nms.NmsVersion.MINOR;
+import static xyz.upperlevel.uppercore.nms.NmsVersion.RELEASE;
 
 public final class PlayerUtil {
     private static final boolean USE_NEW_PLAYER_FINDER = MINOR > 8 || (MINOR == 8 && RELEASE >= 2);
