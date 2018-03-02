@@ -9,7 +9,6 @@ import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
 import xyz.upperlevel.uppercore.script.Script;
-import xyz.upperlevel.uppercore.script.ScriptId;
 
 import javax.script.ScriptException;
 import java.util.Map;
@@ -18,6 +17,7 @@ import java.util.logging.Level;
 import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
 
+// TODO
 public class ScriptAction extends Action<ScriptAction> {
 
     public static final ScriptActionType TYPE = new ScriptActionType();
@@ -33,6 +33,7 @@ public class ScriptAction extends Action<ScriptAction> {
 
     @Override
     public void run(Player player) {
+        /*
         if (script == null) {
             ScriptId scriptId = scripts().get(id);
             if (scriptId == null) {
@@ -48,6 +49,7 @@ public class ScriptAction extends Action<ScriptAction> {
         } catch (ScriptException e) {
             Uppercore.logger().log(Level.SEVERE, "Error while executing script \"" + id + "\"", e);
         }
+        */
     }
 
 

@@ -6,8 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
 
 import javax.script.ScriptEngine;
@@ -21,7 +19,7 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ScriptManager extends Manager<ScriptId> {
+public class ScriptManager {
 
     @Getter
     private File classPath;
@@ -96,15 +94,12 @@ public class ScriptManager extends Manager<ScriptId> {
             extensionsToEngineName.put(obj.getKey(), obj.getValue().toString());
     }
 
-    public void register(Plugin plugin, String id, Script script) {
-        register(new ScriptId(plugin, id, script));
-    }
-
     public void setupMetrics(Metrics metrics) {
         metrics.addCustomChart(new Metrics.AdvancedPie("script_engines_used") {
 
             @Override
             public HashMap<String, Integer> getValues(HashMap<String, Integer> map) {
+                /* Todo:
                 Map<String, Long> counts = get()
                         .stream()
                         .collect(
@@ -113,13 +108,10 @@ public class ScriptManager extends Manager<ScriptId> {
                         );
                 for (Map.Entry<String, Long> e : counts.entrySet())
                     map.put(e.getKey(), Math.toIntExact(e.getValue()));
+                    */
                 return map;
             }
         });
-    }
-
-    public static ScriptRegistry subscribe(Plugin plugin) {
-        return new ScriptRegistry(plugin);
     }
 
     public static String getEngineName(ScriptEngine engine) {

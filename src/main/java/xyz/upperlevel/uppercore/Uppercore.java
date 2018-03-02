@@ -3,15 +3,12 @@ package xyz.upperlevel.uppercore;
 import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
-import xyz.upperlevel.uppercore.command.commands.UppercoreCommand;
 import xyz.upperlevel.uppercore.database.Connector;
 import xyz.upperlevel.uppercore.database.StorageManager;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
-import xyz.upperlevel.uppercore.hotbar.HotbarManager;
-import xyz.upperlevel.uppercore.placeholder.message.MessageManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.message.MessageManager;
 import xyz.upperlevel.uppercore.script.ScriptManager;
 import xyz.upperlevel.uppercore.update.DownloadableUpdateChecker;
 import xyz.upperlevel.uppercore.update.SpigetUpdateChecker;
@@ -29,7 +26,6 @@ public class Uppercore extends JavaPlugin {
     private static Uppercore instance;
 
     private GuiManager guis;
-    private HotbarManager hotbars;
     private ScriptManager scripts;
     private StorageManager storages;
 
@@ -57,12 +53,8 @@ public class Uppercore extends JavaPlugin {
             PlaceholderUtil.tryHook();
             EconomyManager.enable();
 
-            //Command setup
-            ArgumentParserSystem.initialize();
-
             // MANAGER
             guis = new GuiManager();
-            hotbars = new HotbarManager();
             scripts = new ScriptManager();
             storages = new StorageManager();
 
@@ -74,10 +66,6 @@ public class Uppercore extends JavaPlugin {
 
             //Metrics custom data setup
             scripts.setupMetrics(metrics);
-
-
-            //Gui setup
-            new UppercoreCommand().subscribe();
         } catch (Throwable t) {
             CrashUtil.saveCrash(this, t);
             setEnabled(false);
@@ -86,8 +74,6 @@ public class Uppercore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        hotbars.clearAll();
-        guis.closeAll();
     }
 
     public File getFile() {
@@ -108,10 +94,6 @@ public class Uppercore extends JavaPlugin {
 
     public static ScriptManager scripts() {
         return instance.scripts;
-    }
-
-    public static HotbarManager hotbars() {
-        return instance.hotbars;
     }
 
     public static MessageManager messages() {

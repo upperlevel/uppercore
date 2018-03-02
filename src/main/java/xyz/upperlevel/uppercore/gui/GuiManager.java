@@ -11,7 +11,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import xyz.upperlevel.uppercore.Manager;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.events.*;
 
@@ -32,7 +31,7 @@ import java.util.Map;
  * This system does not support recursion
  */
 @Getter
-public class GuiManager extends Manager<GuiId> implements Listener {
+public class GuiManager implements Listener {
     private final Map<Player, LinkedList<Gui>> histories = new HashMap<>();
     private boolean called = false;
 
@@ -281,7 +280,7 @@ public class GuiManager extends Manager<GuiId> implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() == e.getInventory())
+        // Todo: if (e.getClickedInventory() == e.getInventory())
             onClick(e);
         if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
             if (getHistory((Player) e.getWhoClicked()) != null)

@@ -114,6 +114,7 @@ public abstract class NodeCommand extends Command {
         }
     }
 
+    /*
     @WithPermission("help")
     public class HelpCommand extends Command {
 
@@ -194,6 +195,5 @@ public abstract class NodeCommand extends Command {
                     TextUtil.getComponentPage(singletonList(new BaseComponent[]{header}), entries, emptyList(), page - 1)
             );
         }
-    }
-
+    }*/
 }

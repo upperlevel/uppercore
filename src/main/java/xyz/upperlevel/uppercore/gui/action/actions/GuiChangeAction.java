@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.gui.GuiId;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -16,6 +15,7 @@ import java.util.Map;
 
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
+// TODO
 public class GuiChangeAction extends Action<GuiChangeAction> {
 
     public static final GuiChangeActionType TYPE = new GuiChangeActionType();
@@ -31,12 +31,14 @@ public class GuiChangeAction extends Action<GuiChangeAction> {
     @Override
     public void run(Player player) {
         String guiId = this.guiId.resolve(player);
+        /*
         GuiId gui = guis().get(guiId);
         if (gui == null) {
             Uppercore.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;
         }
         guis().change(player, gui.get());
+        */
     }
 
 

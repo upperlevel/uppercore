@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static xyz.upperlevel.uppercore.Uppercore.hotbars;
-
 public class Hotbar {
     @Getter
     private ConfigIcon[] icons = new ConfigIcon[9];
@@ -198,12 +196,13 @@ public class Hotbar {
     }
 
     public boolean give(Player player) {
-        hotbars().view(player).addHotbar(this);
-        return true;
+        // TODO: hotbars().view(player).addHotbar(this);
+        return false;
     }
 
     public boolean remove(Player player) {
-        return hotbars().view(player).removeHotbar(this);
+        // TODO: return hotbars().view(player).removeHotbar(this);
+        return false;
     }
 
     /**

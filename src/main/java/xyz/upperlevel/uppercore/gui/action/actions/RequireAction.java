@@ -5,23 +5,16 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
-import xyz.upperlevel.uppercore.hotbar.HotbarId;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
-import xyz.upperlevel.uppercore.script.ScriptId;
 
-import javax.script.ScriptException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
-import static xyz.upperlevel.uppercore.Uppercore.hotbars;
-import static xyz.upperlevel.uppercore.Uppercore.scripts;
-
+// TODO
 @Getter
 public class RequireAction extends Action<RequireAction> {
 
@@ -60,6 +53,7 @@ public class RequireAction extends Action<RequireAction> {
     }
 
     private boolean hasHotbar(Player player, PlaceholderValue<String> hotbarId) {
+        /*
         final String id = hotbarId.resolve(player);
         HotbarId hotbar = hotbars().get(id);
         if (hotbar == null) {
@@ -67,9 +61,12 @@ public class RequireAction extends Action<RequireAction> {
             return false;
         }
         return hotbars().isHolding(player, hotbar.get());
+        */
+        return false;
     }
 
     private boolean testScript(Player player, String id) {
+        /*
         ScriptId script = scripts().get(id);
         if (script == null) {
             Uppercore.logger().severe("Cannot find script '" + id + "'");
@@ -88,6 +85,8 @@ public class RequireAction extends Action<RequireAction> {
             Uppercore.logger().severe("Bad return type in script '" + id + "', must be boolean for a require action!");
             return true;
         }
+        */
+        return false;
     }
 
 

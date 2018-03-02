@@ -147,9 +147,9 @@ public abstract class UpdateChecker {
     }
 
     protected void notifyPlayers() {
-        for(Player player : Bukkit.getOnlinePlayers())
-            if(player.hasPermission(permission))
-                player.spigot().sendMessage(message);
+        //for(Player player : Bukkit.getOnlinePlayers())
+            //if(player.hasPermission(permission))
+                // Todo: player.spigot().sendMessage(message);
     }
 
     protected BaseComponent[] buildMessage() {

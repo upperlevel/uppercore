@@ -1,12 +1,11 @@
 plugins {
-    id 'java'
-    id 'maven'
-    id 'com.github.johnrengelman.shadow' version '2.0.2'
-    id 'io.franzbecker.gradle-lombok' version '1.11'
+    id "java"
+    id "maven"
+    id "com.github.johnrengelman.shadow" version "2.0.2"
 }
 
-group = 'xyz.upperlevel.uppercore'
-version = '1.3'
+group = "xyz.upperlevel.uppercore"
+version = "1.3"
 
 description = "Global API for Spigot plugins"
 
@@ -14,50 +13,45 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 project.ext {
-    mcVersion = '1.12-R0.1-SNAPSHOT'
+    mcVersion = "1.12-R0.1-SNAPSHOT"
 }
 
 repositories {
     mavenLocal()
-    jcenter()
-    // Maven Snapshots
+    mavenCentral()
+
     maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
+        url "https://oss.sonatype.org/content/repositories/snapshots/" // maven snapshots
     }
-    // Spigot Api
     maven {
-        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" // bukkit
     }
-    // Placeholder Api
     maven {
         url "http://repo.extendedclip.com/content/repositories/placeholderapi/"
     }
-    // Vault
     maven {
-        url "http://nexus.hc.to/content/repositories/pub_releases"
+        url "http://nexus.hc.to/content/repositories/pub_releases" // vault
     }
-    // Metrics
     maven {
-        url "http://repo.bstats.org/content/repositories/releases/"
+        url "http://repo.bstats.org/content/repositories/releases/" // metrics
     }
 }
 
 dependencies {
-
-    // Testing
+    compileOnly "org.projectlombok:lombok:1.16.20"
     testCompile "junit:junit:4.12"
 
     compileOnly "org.spigotmc:spigot-api:" + mcVersion
     testCompileOnly "org.spigotmc:spigot-api:" + mcVersion
+
     compileOnly "org.bukkit:bukkit:" + mcVersion
     testCompileOnly "org.bukkit:bukkit:" + mcVersion
 
-    compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3"
-    compileOnly "me.clip:placeholderapi:2.0.8"
-    compileOnly "net.milkbowl.vault:VaultAPI:1.6"
+    compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3" // anvil-gui
+    compileOnly "me.clip:placeholderapi:2.0.8" // placeholder-api
+    compileOnly "net.milkbowl.vault:VaultAPI:1.6" // vault
 
-    // Metrics Api is compiled but relocated
-    compile "org.bstats:bstats-bukkit:1.1"
+    compile "org.bstats:bstats-bukkit:1.1" // metrics
 
     compileOnly "org.mongodb:mongo-java-driver:3.5.0"
     compileOnly "com.rethinkdb:rethinkdb-driver:2.3.3"
@@ -65,7 +59,7 @@ dependencies {
 
 shadowJar {
     relocate "org.bstats", "${project.group}.libs.metrics"
-    baseName = 'Uppercore'
+    baseName = "Uppercore"
     classifier = null
     version = null
 }

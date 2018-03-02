@@ -27,12 +27,13 @@ import java.net.URLConnection;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
+// TODO
 public abstract class DownloadableUpdateChecker extends UpdateChecker {
-
+/*
     @Getter
     @Setter
     private UpdateCommand command;
-
+*/
     @Getter
     @Setter
     private DownloadNotifier.Constructor downloadNotifierConstructor = DefaultDownloadNotifier::new;
@@ -46,20 +47,21 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
     }
 
 
+    /*
     protected UpdateCommand buildCommand() {
         return new UpdateCommand();
-    }
+    }*/
 
     @Override
     protected BaseComponent[] buildMessage() {
-        if(command == null)
-            command = buildCommand();
+       // if(command == null)
+       //     command = buildCommand();
         return new ComponentBuilder("[" + getPlugin().getDescription().getName() + "] Update available!")
                 .color(ChatColor.GOLD)
                 .bold(true)
                 .append("(Click ")
                 .append("HERE")
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.getUsage()))
+         //       .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.getUsage()))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Update " + getPlugin().getDescription().getName()).create()))
                 .append(" to update)")
                 .create();
@@ -67,7 +69,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
 
     @Override
     protected void notifyConsole() {
-        getLogger().info("[Updater] Update found, use the " + command.getUsage() + " command for an automatic update");
+      //  getLogger().info("[Updater] Update found, use the " + command.getUsage() + " command for an automatic update");
         getLogger().info("[Updater] or update manually " + getSpigotUrl());
     }
 
@@ -83,6 +85,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
             download = null;
         }
         if(download == null) {
+            /*
             sender.spigot().sendMessage(
                     new ComponentBuilder("Cannot get download link! please download the update manually")
                             .color(ChatColor.RED)
@@ -92,6 +95,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
                             .event(new ClickEvent(ClickEvent.Action.OPEN_URL, getSpigotUrl().toString()))
                             .create()
             );
+            */
             return;
         }
         File pluginFile = createUpdateFile();
@@ -140,7 +144,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         }
     }
 
-
+    /* Todo
     public class UpdateCommand extends Command {
         public UpdateCommand() {
             super("update");
@@ -177,4 +181,5 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
             }
         }
     }
+    */
 }
