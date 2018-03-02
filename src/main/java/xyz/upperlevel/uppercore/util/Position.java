@@ -1,38 +1,54 @@
 package xyz.upperlevel.uppercore.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import xyz.upperlevel.uppercore.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Position implements Cloneable, ConfigurationSerializable {
-
+public class Position implements ConfigurationSerializable {
+    @Getter
+    @Setter
     private double x, y, z;
-    private double yaw, pitch;
+
+    @Getter
+    @Setter
+    private float yaw, pitch;
+
+    public Position() {
+    }
+
+    public Position(double x, double y, double z, float yaw, float pitch) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
 
     public Position(Location location) {
-        x = location.getX();
-        y = location.getY();
-        z = location.getZ();
-        yaw = location.getYaw();
-        pitch = location.getPitch();
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+        this.yaw = location.getYaw();
+        this.pitch = location.getPitch();
     }
 
     public Location toLocation(World world) {
-        return new Location(world, x, y, z, (float) yaw, (float) pitch);
+        return new Location(world, x, y, z, yaw, pitch);
     }
 
     public Block toBlock(World world) {
         return toLocation(world).getBlock();
+    }
+
+    public Position copy() {
+        return new Position(x, y, z, yaw, pitch);
     }
 
     @Override
@@ -60,20 +76,13 @@ public class Position implements Cloneable, ConfigurationSerializable {
     }
 
     public static Position deserialize(Map<String, Object> data) {
-        Position position = new Position();
-        position.x = (double) data.get("x");
-        position.y = (double) data.get("y");
-        position.z = (double) data.get("z");
-        position.yaw = (double) data.get("yaw");
-        position.pitch = (double) data.get("pitch");
-        return position;
-    }
-
-    public static Position from(Location location) {
-        return new Position(location);
-    }
-
-    public static Position from(Block block) {
-        return new Position(block.getLocation());
+        Config cfg = Config.wrap(data);
+        Position r = new Position();
+        r.x = cfg.getDouble("x");
+        r.y = cfg.getDouble("y");
+        r.z = cfg.getDouble("z");
+        r.yaw = cfg.getFloat("yaw");
+        r.pitch = cfg.getFloat("pitch");
+        return r;
     }
 }
