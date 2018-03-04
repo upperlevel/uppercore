@@ -1,11 +1,12 @@
 package xyz.upperlevel.uppercore.database.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import xyz.upperlevel.uppercore.database.*;
+import xyz.upperlevel.uppercore.database.Database;
+import xyz.upperlevel.uppercore.database.Document;
+import xyz.upperlevel.uppercore.database.Storage;
+import xyz.upperlevel.uppercore.database.Table;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,30 +15,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Flatfile implements Storage {
-    @Override
-    public String getId() {
-        return "flatfile";
-    }
-
-    @Override
-    public Connection connect(String database) {
-        return new ImplConnection(database);
-    }
-
-    @Override
-    public Connection connect(String database, String host, int port) {
-        return new ImplConnection(database);
-    }
-
-    @Override
-    public Connection connect(String database, String host, int port, String user, String password) {
-        return new ImplConnection(database);
+@SuppressWarnings("unchecked")
+@Deprecated
+public class Flatfile extends Storage {
+    public Flatfile() {
+        super("flatfile");
     }
 
     @Override
     public boolean isSupported() {
-        //We use json.simple that is supported even in 1.8, so it should always be supported
+        // We use json.simple that is supported even in 1.8, so it should always be supported
         return true;
     }
 
@@ -46,75 +33,75 @@ public class Flatfile implements Storage {
         return new String[0];
     }
 
-    @RequiredArgsConstructor
-    public class ImplConnection implements Connection {
-        @Getter
-        private final String db;
 
-        @Override
-        public ImplDatabase database() {
-            return new ImplDatabase();
+    @Override
+    public Database onConnect(String address, int port, String database, String password, String username) {
+        // Database
+        File db = new File("plugins", database + File.separator + "db");
+        db.mkdirs();
+
+        return new DatabaseImpl(db);
+    }
+
+    // Database
+    public class DatabaseImpl implements Database {
+        private final File db;
+
+        public DatabaseImpl(File db) {
+            this.db = db;
         }
 
-        public class ImplDatabase implements Database {
-            @Getter
-            private final File folder;
+        @Override
+        public Table table(String id) {
+            File folder = new File(db, id);
+            folder.mkdirs();
 
-            public ImplDatabase() {
-                folder = new File("plugins", db + File.separator + "db");
-                folder.mkdirs();
+            return new TableImpl(folder);
+        }
+
+        // Table
+        public class TableImpl implements Table {
+            private final File table;
+
+            public TableImpl(File table) {
+                this.table = table;
             }
 
             @Override
-            public Table table(String id) {
-                return new ImplTable(id);
+            public Document document(String id) {
+                File document = new File(table, id + ".json");
+                try {
+                    document.createNewFile();
+                } catch (IOException ignored) {
+                }
+                return new DocumentImpl(document);
             }
 
-            public class ImplTable implements Table {
-                @Getter
-                private final File folder;
+            // Document
+            public class DocumentImpl implements Document {
+                private final File document;
 
-                public ImplTable(String id) {
-                    folder = new File(ImplDatabase.this.folder, id);
-                    folder.mkdirs();
+                public DocumentImpl(File document) {
+                    this.document = document;
                 }
 
                 @Override
-                public Document document(String id) {
-                    return new ImplDocument(id);
+                public Map<String, Object> ask() {
+                    JSONParser parser = new JSONParser();
+                    try {
+                        return (Map<String, Object>) parser.parse(new FileReader(document));
+                    } catch (IOException | ParseException e) {
+                        return new HashMap<>();
+                    }
                 }
 
-                public class ImplDocument implements Document {
-                    @Getter
-                    private final File file;
-
-                    public ImplDocument(String id) {
-                        this.file = new File(ImplTable.this.getFolder(), id + ".json");
-                        try {
-                            this.file.createNewFile();
-                        } catch (IOException ignored) {
-                        }
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public Map<String, Object> ask() {
-                        JSONParser parser = new JSONParser();
-                        try {
-                            return (Map<String, Object>) parser.parse(new FileReader(file));
-                        } catch (IOException | ParseException e) {
-                            return new HashMap<>();
-                        }
-                    }
-
-                    @Override
-                    public void send(Map<String, Object> data) {
-                        try (FileWriter fw = new FileWriter(file)) {
-                            fw.write(new JSONObject(data).toJSONString());
-                            fw.flush();
-                        } catch (IOException e) {
-                            throw new IllegalStateException("Error while writing to \"" + file + "\": " + e);
-                        }
+                @Override
+                public void send(Map<String, Object> data) {
+                    try (FileWriter writer = new FileWriter(document)) {
+                        writer.write(new JSONObject(data).toJSONString());
+                        writer.flush();
+                    } catch (IOException exception) {
+                        throw new IllegalStateException("Cannot write to: " + document.getPath(), exception);
                     }
                 }
             }

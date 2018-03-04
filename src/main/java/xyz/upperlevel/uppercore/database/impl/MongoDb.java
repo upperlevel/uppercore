@@ -1,41 +1,21 @@
 package xyz.upperlevel.uppercore.database.impl;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
-import lombok.Getter;
 import xyz.upperlevel.uppercore.database.*;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static com.mongodb.MongoCredential.createCredential;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonList;
 
-public class MongoDb implements Storage {
-    @Override
-    public String getId() {
-        return "mongodb";
-    }
-
-    @Override
-    public Connection connect(String database) {
-        return connect(database, "localhost", 27017);
-    }
-
-    @Override
-    public Connection connect(String database, String host, int port) {
-        return new ImplConnection(database, new MongoClient(host, port));
-    }
-
-    @Override
-    public Connection connect(String database, String host, int port, String user, String password) {
-        return new ImplConnection(database, new MongoClient(
-                new ServerAddress(host, port),
-                singletonList(createCredential(user, database, password.toCharArray()))
-        ));
+public class MongoDb extends Storage {
+    public MongoDb() {
+        super("mongodb");
     }
 
     @Override
@@ -50,74 +30,67 @@ public class MongoDb implements Storage {
 
     @Override
     public String[] getDownloadLinks() {
-        return new String[] {
+        return new String[]{
                 "https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/3.5.0/mongo-java-driver-3.5.0.jar"
         };
     }
 
-    public class ImplConnection implements Connection {
-        @Getter
-        private final String db;
-        private final MongoClient client;
+    @Override
+    public Database onConnect(String address, int port, String database, String password, String username) {
+        // Connection
+        MongoCredential credential = createCredential(username, database, password.toCharArray());
+        MongoClient client = new MongoClient(new ServerAddress(address, port), Collections.singletonList(credential));
 
-        public ImplConnection(String db, MongoClient client) {
-            this.db = db;
+        return new DatabaseImpl(client, client.getDatabase(database));
+    }
+
+    // Database
+    public class DatabaseImpl implements Database {
+        private final MongoClient client;
+        private final MongoDatabase db;
+
+        public DatabaseImpl(MongoClient client, MongoDatabase db) {
             this.client = client;
+            this.db = db;
         }
 
         @Override
-        public ImplDatabase database() {
-            return new ImplDatabase();
+        public TableImpl table(String id) {
+            return new TableImpl(db.getCollection(id));
         }
 
-        public class ImplDatabase implements Database {
-            @Getter
-            private final MongoDatabase db;
+        // Table
+        public class TableImpl implements Table {
+            private final MongoCollection<org.bson.Document> table;
 
-            public ImplDatabase() {
-                this.db = client.getDatabase(ImplConnection.this.db);
+            public TableImpl(MongoCollection<org.bson.Document> table) {
+                this.table = table;
             }
 
             @Override
-            public ImplTable table(String id) {
-                db.getCollection(id);
-                return new ImplTable(id);
+            public DocumentImpl document(String id) {
+                return new DocumentImpl(id);
             }
 
-            public class ImplTable implements Table {
-                @Getter
+            // Document
+            public class DocumentImpl implements Document {
                 private final String id;
-                private final MongoCollection<org.bson.Document> table;
 
-                public ImplTable(String id) {
+                public DocumentImpl(String id) {
                     this.id = id;
-                    this.table = db.getCollection(id);
                 }
 
                 @Override
-                public ImplDocument document(String id) {
-                    return new ImplDocument(id);
+                public Map<String, Object> ask() {
+                    return table.find(new org.bson.Document("_id", id)).limit(1).first();
                 }
 
-                public class ImplDocument implements Document {
-                    @Getter
-                    private final String id;
-                    private final org.bson.Document doc;
-
-                    public ImplDocument(String id) {
-                        this.id = id;
-                        this.doc = table.find(new org.bson.Document("_id", id)).limit(1).first();
-                    }
-
-                    @Override
-                    public Map<String, Object> ask() {
-                        return doc == null ? emptyMap() : doc;
-                    }
-
-                    @Override
-                    public void send(Map<String, Object> data) {
-                        table.replaceOne(new org.bson.Document("_id", id), new org.bson.Document(data).append("_id", id), new UpdateOptions().upsert(true));
-                    }
+                @Override
+                public void send(Map<String, Object> data) {
+                    table.replaceOne(
+                            new org.bson.Document("_id", id),
+                            new org.bson.Document(data).append("_id", id),
+                            new UpdateOptions().upsert(true));
                 }
             }
         }

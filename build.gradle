@@ -74,6 +74,7 @@ dependencies {
 
     compileOnly "org.mongodb:mongo-java-driver:3.5.0"
     compileOnly "com.rethinkdb:rethinkdb-driver:2.3.3"
+    compileOnly "org.dizitart:nitrite:2.1.1"
 }
 
 shadowJar {
