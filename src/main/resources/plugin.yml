@@ -1,10 +1,6 @@
-name: ${project.name}
-version: ${project.version}
-main: ${mainClass}
-author: upperlevel
-description: ${project.description}
-softdepend: [PlaceholderAPI]
-
-commands:
-  uppercore:
-    description: 'Commands for Uppercore.'
+name: Uppercore
+version: @project.version@
+main: "xyz.upperlevel.uppercore.Uppercore"
+author: [Uppercore]
+description: "Huge API that covers and adds Spigot utilities!"
+softdepend: [PlaceholderAPI, Vault]
