@@ -1,0 +1,10 @@
+
+
+arena.create: '&aYou have created the arena: %arena_name%'
+arena.destroy: '&aYou have destroyed the arena: %arena_name%'
+arena.list: '&aList of created arena (%arena_count%): %arena_list%'
+arena.info:
+- '&aAbout %arena_name%:'
+- '%arena_info%'
+arena.join: '&aYou joined the arena: %arena_name%'
+arena.leave: '&aYou left the arena: %arena_name%'

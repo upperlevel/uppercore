@@ -20,9 +20,6 @@ public abstract class Arena {
     @Getter
     private String displayName;
 
-    /**
-     * A description foreach arena? Why not!?
-     */
     @Getter
     private String description = null;
 
@@ -31,23 +28,13 @@ public abstract class Arena {
 
     private Map<UUID, Player> players = new HashMap<>();
 
-    /**
-     * The place where players will be teleported when they join the arena.
-     */
     @Getter
     @Setter
     private Location lobby;
 
-    /**
-     * Minimum number of players needed to start the game.
-     */
     @Getter
     private int minPlayers = 1;
 
-    /**
-     * Maximum number of players that can have this arena.
-     * If {@code -1} is unlimited.
-     */
     @Getter
     private int maxPlayers = -1;
 
@@ -56,12 +43,9 @@ public abstract class Arena {
         this.displayName = id;
 
         this.phaseManager = new PhaseManager();
-        phaseManager.setPhase(getLobbyPhase());
+        phaseManager.next(getLobbyPhase());
     }
 
-    /**
-     * Requires {@link LobbyPhase} implementation.
-     */
     public abstract LobbyPhase getLobbyPhase();
 
     public int getPlayersCount() {

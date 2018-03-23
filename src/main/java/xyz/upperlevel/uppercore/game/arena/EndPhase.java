@@ -1,10 +1,15 @@
 package xyz.upperlevel.uppercore.game.arena;
 
-/**
- * The final phase.
- * This phase should give points to the winners and congrats with them.
- */
+import lombok.Getter;
+
 public abstract class EndPhase implements Phase {
+    @Getter
+    private final Arena arena;
+
+    public EndPhase(Arena arena) {
+        this.arena = arena;
+    }
+
     @Override
     public void onEnable(Phase previous) {
     }

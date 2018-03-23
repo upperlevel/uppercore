@@ -4,14 +4,19 @@ import lombok.Getter;
 
 public class PhaseManager {
     @Getter
-    private Phase phase;
+    private Phase current;
 
-    public void setPhase(Phase phase) {
-        Phase old = this.phase;
-        if (old != null)
+    public PhaseManager() {
+    }
+
+    public void next(Phase phase) {
+        Phase old = current;
+        if (old != null) {
             old.onDisable(phase);
-        this.phase = phase;
-        if (phase != null)
+        }
+        current = phase;
+        if (phase != null) {
             phase.onEnable(old);
+        }
     }
 }
