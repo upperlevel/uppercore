@@ -4,6 +4,7 @@ plugins {
     id "java"
     id "maven"
     id "com.github.johnrengelman.shadow" version "2.0.2"
+    id "checkstyle"
 }
 
 group = "xyz.upperlevel.uppercore"
@@ -84,6 +85,16 @@ shadowJar {
     version = null
 }
 project.tasks.assemble.dependsOn project.tasks.shadowJar
+
+checkstyle {
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    configProperties = [
+            'configDir': rootProject.file('config/checkstyle'),
+            'baseDir': rootDir,
+    ]
+    toolVersion = '7.3'
+    //ignoreFailures = true
+}
 
 task buildTest(type: Jar) {
     from sourceSets.integrationTest.output

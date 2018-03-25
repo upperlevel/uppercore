@@ -5,20 +5,23 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import xyz.upperlevel.uppercore.nms.NmsVersion;
 import xyz.upperlevel.uppercore.particle.data.ParticleBlockData;
 import xyz.upperlevel.uppercore.particle.data.ParticleData;
 import xyz.upperlevel.uppercore.particle.data.ParticleItemData;
 import xyz.upperlevel.uppercore.particle.exceptions.ParticleColorException;
 import xyz.upperlevel.uppercore.particle.exceptions.ParticleDataException;
 import xyz.upperlevel.uppercore.particle.exceptions.ParticleVersionException;
-import xyz.upperlevel.uppercore.nms.NmsVersion;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public enum ParticleEffect {
     /**
-     * A particle effect which is displayed by exploding tnt and creepers:
+     * A particle effect which is displayed by exploding tnt and creepers.
      * <ul>
      * <li>It looks like a white cloud
      * <li>The speed value influences the velocity at which the particle flies off
@@ -26,7 +29,7 @@ public enum ParticleEffect {
      */
     EXPLOSION_NORMAL("explode", 0, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by exploding ghast fireballs and wither skulls:
+     * A particle effect which is displayed by exploding ghast fireballs and wither skulls.
      * <ul>
      * <li>It looks like a gray ball which is fading away
      * <li>The speed value slightly influences the size of this particle effect
@@ -34,7 +37,7 @@ public enum ParticleEffect {
      */
     EXPLOSION_LARGE("largeexplode", 1, -1),
     /**
-     * A particle effect which is displayed by exploding tnt and creepers:
+     * A particle effect which is displayed by exploding tnt and creepers.
      * <ul>
      * <li>It looks like a crowd of gray balls which are fading away
      * <li>The speed value has no influence on this particle effect
@@ -42,7 +45,7 @@ public enum ParticleEffect {
      */
     EXPLOSION_HUGE("hugeexplosion", 2, -1),
     /**
-     * A particle effect which is displayed by launching fireworks:
+     * A particle effect which is displayed by launching fireworks.
      * <ul>
      * <li>It looks like a white star which is sparkling
      * <li>The speed value influences the velocity at which the particle flies off
@@ -50,7 +53,7 @@ public enum ParticleEffect {
      */
     FIREWORKS_SPARK("fireworksSpark", 3, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by swimming entities and arrows in water:
+     * A particle effect which is displayed by swimming entities and arrows in water.
      * <ul>
      * <li>It looks like a bubble
      * <li>The speed value influences the velocity at which the particle flies off
@@ -58,7 +61,7 @@ public enum ParticleEffect {
      */
     WATER_BUBBLE("bubble", 4, -1, ParticleProperty.DIRECTIONAL, ParticleProperty.REQUIRES_WATER),
     /**
-     * A particle effect which is displayed by swimming entities and shaking wolves:
+     * A particle effect which is displayed by swimming entities and shaking wolves.
      * <ul>
      * <li>It looks like a blue drop
      * <li>The speed value has no influence on this particle effect
@@ -66,7 +69,7 @@ public enum ParticleEffect {
      */
     WATER_SPLASH("splash", 5, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed on water when fishing:
+     * A particle effect which is displayed on water when fishing.
      * <ul>
      * <li>It looks like a blue droplet
      * <li>The speed value influences the velocity at which the particle flies off
@@ -74,7 +77,7 @@ public enum ParticleEffect {
      */
     WATER_WAKE("wake", 6, 7, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by water:
+     * A particle effect which is displayed by water.
      * <ul>
      * <li>It looks like a tiny blue square
      * <li>The speed value has no influence on this particle effect
@@ -82,7 +85,7 @@ public enum ParticleEffect {
      */
     SUSPENDED("suspended", 7, -1, ParticleProperty.REQUIRES_WATER),
     /**
-     * A particle effect which is displayed by air when close to bedrock and the in the void:
+     * A particle effect which is displayed by air when close to bedrock and the in the void.
      * <ul>
      * <li>It looks like a tiny gray square
      * <li>The speed value has no influence on this particle effect
@@ -90,7 +93,7 @@ public enum ParticleEffect {
      */
     SUSPENDED_DEPTH("depthSuspend", 8, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed when landing a critical hit and by arrows:
+     * A particle effect which is displayed when landing a critical hit and by arrows.
      * <ul>
      * <li>It looks like a light brown cross
      * <li>The speed value influences the velocity at which the particle flies off
@@ -98,7 +101,7 @@ public enum ParticleEffect {
      */
     CRIT("crit", 9, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed when landing a hit with an enchanted weapon:
+     * A particle effect which is displayed when landing a hit with an enchanted weapon.
      * <ul>
      * <li>It looks like a cyan star
      * <li>The speed value influences the velocity at which the particle flies off
@@ -106,7 +109,7 @@ public enum ParticleEffect {
      */
     CRIT_MAGIC("magicCrit", 10, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by primed tnt, torches, droppers, dispensers, end portals, brewing stands and monster spawners:
+     * A particle effect which is displayed by primed tnt, torches, droppers, dispensers, end portals, brewing stands and monster spawners.
      * <ul>
      * <li>It looks like a little gray cloud
      * <li>The speed value influences the velocity at which the particle flies off
@@ -114,7 +117,7 @@ public enum ParticleEffect {
      */
     SMOKE_NORMAL("smoke", 11, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by fire, minecarts with furnace and blazes:
+     * A particle effect which is displayed by fire, minecarts with furnace and blazes.
      * <ul>
      * <li>It looks like a large gray cloud
      * <li>The speed value influences the velocity at which the particle flies off
@@ -122,7 +125,7 @@ public enum ParticleEffect {
      */
     SMOKE_LARGE("largesmoke", 12, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed when splash potions or bottles o' enchanting hit something:
+     * A particle effect which is displayed when splash potions or bottles o' enchanting hit something.
      * <ul>
      * <li>It looks like a white swirl
      * <li>The speed value causes the particle to only move upwards when set to 0
@@ -131,7 +134,7 @@ public enum ParticleEffect {
      */
     SPELL("spell", 13, -1),
     /**
-     * A particle effect which is displayed when instant splash potions hit something:
+     * A particle effect which is displayed when instant splash potions hit something.
      * <ul>
      * <li>It looks like a white cross
      * <li>The speed value causes the particle to only move upwards when set to 0
@@ -140,7 +143,7 @@ public enum ParticleEffect {
      */
     SPELL_INSTANT("instantSpell", 14, -1),
     /**
-     * A particle effect which is displayed by entities with active potion effects:
+     * A particle effect which is displayed by entities with active potion effects.
      * <ul>
      * <li>It looks like a colored swirl
      * <li>The speed value causes the particle to be colored black when set to 0
@@ -149,7 +152,7 @@ public enum ParticleEffect {
      */
     SPELL_MOB("mobSpell", 15, -1, ParticleProperty.COLORABLE),
     /**
-     * A particle effect which is displayed by entities with active potion effects applied through a beacon:
+     * A particle effect which is displayed by entities with active potion effects applied through a beacon.
      * <ul>
      * <li>It looks like a transparent colored swirl
      * <li>The speed value causes the particle to be always colored black when set to 0
@@ -158,7 +161,7 @@ public enum ParticleEffect {
      */
     SPELL_MOB_AMBIENT("mobSpellAmbient", 16, -1, ParticleProperty.COLORABLE),
     /**
-     * A particle effect which is displayed by witches:
+     * A particle effect which is displayed by witches.
      * <ul>
      * <li>It looks like a purple cross
      * <li>The speed value causes the particle to only move upwards when set to 0
@@ -167,7 +170,7 @@ public enum ParticleEffect {
      */
     SPELL_WITCH("witchMagic", 17, -1),
     /**
-     * A particle effect which is displayed by blocks beneath a water source:
+     * A particle effect which is displayed by blocks beneath a water source.
      * <ul>
      * <li>It looks like a blue drip
      * <li>The speed value has no influence on this particle effect
@@ -175,7 +178,7 @@ public enum ParticleEffect {
      */
     DRIP_WATER("dripWater", 18, -1),
     /**
-     * A particle effect which is displayed by blocks beneath a lava source:
+     * A particle effect which is displayed by blocks beneath a lava source.
      * <ul>
      * <li>It looks like an orange drip
      * <li>The speed value has no influence on this particle effect
@@ -183,7 +186,7 @@ public enum ParticleEffect {
      */
     DRIP_LAVA("dripLava", 19, -1),
     /**
-     * A particle effect which is displayed when attacking a villager in a village:
+     * A particle effect which is displayed when attacking a villager in a village.
      * <ul>
      * <li>It looks like a cracked gray heart
      * <li>The speed value has no influence on this particle effect
@@ -191,7 +194,7 @@ public enum ParticleEffect {
      */
     VILLAGER_ANGRY("angryVillager", 20, -1),
     /**
-     * A particle effect which is displayed when using bone meal and trading with a villager in a village:
+     * A particle effect which is displayed when using bone meal and trading with a villager in a village.
      * <ul>
      * <li>It looks like a green star
      * <li>The speed value has no influence on this particle effect
@@ -199,7 +202,7 @@ public enum ParticleEffect {
      */
     VILLAGER_HAPPY("happyVillager", 21, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by mycelium:
+     * A particle effect which is displayed by mycelium.
      * <ul>
      * <li>It looks like a tiny gray square
      * <li>The speed value has no influence on this particle effect
@@ -207,7 +210,7 @@ public enum ParticleEffect {
      */
     TOWN_AURA("townaura", 22, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by note blocks:
+     * A particle effect which is displayed by note blocks.
      * <ul>
      * <li>It looks like a colored note
      * <li>The speed value causes the particle to be colored green when set to 0
@@ -215,7 +218,7 @@ public enum ParticleEffect {
      */
     NOTE("note", 23, -1, ParticleProperty.COLORABLE),
     /**
-     * A particle effect which is displayed by nether portals, endermen, ender pearls, eyes of ender, ender chests and dragon eggs:
+     * A particle effect which is displayed by nether portals, endermen, ender pearls, eyes of ender, ender chests and dragon eggs.
      * <ul>
      * <li>It looks like a purple cloud
      * <li>The speed value influences the spread of this particle effect
@@ -223,7 +226,7 @@ public enum ParticleEffect {
      */
     PORTAL("portal", 24, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by enchantment tables which are nearby bookshelves:
+     * A particle effect which is displayed by enchantment tables which are nearby bookshelves.
      * <ul>
      * <li>It looks like a cryptic white letter
      * <li>The speed value influences the spread of this particle effect
@@ -231,7 +234,7 @@ public enum ParticleEffect {
      */
     ENCHANTMENT_TABLE("enchantmenttable", 25, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by torches, active furnaces, magma cubes and monster spawners:
+     * A particle effect which is displayed by torches, active furnaces, magma cubes and monster spawners.
      * <ul>
      * <li>It looks like a tiny flame
      * <li>The speed value influences the velocity at which the particle flies off
@@ -239,7 +242,7 @@ public enum ParticleEffect {
      */
     FLAME("flame", 26, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by lava:
+     * A particle effect which is displayed by lava.
      * <ul>
      * <li>It looks like a spark
      * <li>The speed value has no influence on this particle effect
@@ -247,7 +250,7 @@ public enum ParticleEffect {
      */
     LAVA("lava", 27, -1),
     /**
-     * A particle effect which is currently unused:
+     * A particle effect which is currently unused.
      * <ul>
      * <li>It looks like a transparent gray square
      * <li>The speed value has no influence on this particle effect
@@ -255,7 +258,7 @@ public enum ParticleEffect {
      */
     FOOTSTEP("footstep", 28, -1),
     /**
-     * A particle effect which is displayed when a mob dies:
+     * A particle effect which is displayed when a mob dies.
      * <ul>
      * <li>It looks like a large white cloud
      * <li>The speed value influences the velocity at which the particle flies off
@@ -263,7 +266,7 @@ public enum ParticleEffect {
      */
     CLOUD("cloud", 29, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by redstone ore, powered redstone, redstone torches and redstone repeaters:
+     * A particle effect which is displayed by redstone ore, powered redstone, redstone torches and redstone repeaters.
      * <ul>
      * <li>It looks like a tiny colored cloud
      * <li>The speed value causes the particle to be colored red when set to 0
@@ -271,7 +274,7 @@ public enum ParticleEffect {
      */
     REDSTONE("reddust", 30, -1, ParticleProperty.COLORABLE),
     /**
-     * A particle effect which is displayed when snowballs hit a block:
+     * A particle effect which is displayed when snowballs hit a block.
      * <ul>
      * <li>It looks like a little piece with the snowball texture
      * <li>The speed value has no influence on this particle effect
@@ -279,7 +282,7 @@ public enum ParticleEffect {
      */
     SNOWBALL("snowballpoof", 31, -1),
     /**
-     * A particle effect which is currently unused:
+     * A particle effect which is currently unused.
      * <ul>
      * <li>It looks like a tiny white cloud
      * <li>The speed value influences the velocity at which the particle flies off
@@ -287,7 +290,7 @@ public enum ParticleEffect {
      */
     SNOW_SHOVEL("snowshovel", 32, -1, ParticleProperty.DIRECTIONAL),
     /**
-     * A particle effect which is displayed by slimes:
+     * A particle effect which is displayed by slimes.
      * <ul>
      * <li>It looks like a tiny part of the slimeball icon
      * <li>The speed value has no influence on this particle effect
@@ -295,7 +298,7 @@ public enum ParticleEffect {
      */
     SLIME("slime", 33, -1),
     /**
-     * A particle effect which is displayed when breeding and taming animals:
+     * A particle effect which is displayed when breeding and taming animals.
      * <ul>
      * <li>It looks like a red heart
      * <li>The speed value has no influence on this particle effect
@@ -303,7 +306,7 @@ public enum ParticleEffect {
      */
     HEART("heart", 34, -1),
     /**
-     * A particle effect which is displayed by barriers:
+     * A particle effect which is displayed by barriers.
      * <ul>
      * <li>It looks like a red box with a slash through it
      * <li>The speed value has no influence on this particle effect
@@ -311,14 +314,14 @@ public enum ParticleEffect {
      */
     BARRIER("barrier", 35, 8),
     /**
-     * A particle effect which is displayed when breaking a tool or eggs hit a block:
+     * A particle effect which is displayed when breaking a tool or eggs hit a block.
      * <ul>
      * <li>It looks like a little piece with an item texture
      * </ul>
      */
     ITEM_CRACK("iconcrack", 36, -1, ParticleProperty.DIRECTIONAL, ParticleProperty.REQUIRES_DATA),
     /**
-     * A particle effect which is displayed when breaking blocks or sprinting:
+     * A particle effect which is displayed when breaking blocks or sprinting.
      * <ul>
      * <li>It looks like a little piece with a block texture
      * <li>The speed value has no influence on this particle effect
@@ -326,14 +329,14 @@ public enum ParticleEffect {
      */
     BLOCK_CRACK("blockcrack", 37, -1, ParticleProperty.REQUIRES_DATA),
     /**
-     * A particle effect which is displayed when falling:
+     * A particle effect which is displayed when falling.
      * <ul>
      * <li>It looks like a little piece with a block texture
      * </ul>
      */
     BLOCK_DUST("blockdust", 38, 7, ParticleProperty.DIRECTIONAL, ParticleProperty.REQUIRES_DATA),
     /**
-     * A particle effect which is displayed when rain hits the ground:
+     * A particle effect which is displayed when rain hits the ground.
      * <ul>
      * <li>It looks like a blue droplet
      * <li>The speed value has no influence on this particle effect
@@ -341,14 +344,14 @@ public enum ParticleEffect {
      */
     WATER_DROP("droplet", 39, 8),
     /**
-     * A particle effect which is currently unused:
+     * A particle effect which is currently unused.
      * <ul>
      * <li>It has no visual effect
      * </ul>
      */
     ITEM_TAKE("take", 40, 8),
     /**
-     * A particle effect which is displayed by elder guardians:
+     * A particle effect which is displayed by elder guardians.
      * <ul>
      * <li>It looks like the shape of the elder guardian
      * <li>The speed value has no influence on this particle effect
@@ -398,7 +401,7 @@ public enum ParticleEffect {
     }
 
     /**
-     * Returns the id of this particle effect
+     * Returns the id of this particle effect.
      *
      * @return The id
      */
@@ -434,7 +437,7 @@ public enum ParticleEffect {
     }
 
     /**
-     * Returns the particle effect with the given name
+     * Returns the particle effect with the given name.
      *
      * @param name name of the particle effect
      * @return the particle effect with the specified name
@@ -710,7 +713,7 @@ public enum ParticleEffect {
     }
 
     /**
-     * Displays a single particle which is colored and only visible for the specified players
+     * Displays a single particle which is colored and only visible for the specified players.
      *
      * @param color color of the particle
      * @param center center location of the effect
@@ -886,19 +889,19 @@ public enum ParticleEffect {
      */
     public enum ParticleProperty {
         /**
-         * The particle effect requires water to be displayed
+         * The particle effect requires water to be displayed.
          */
         REQUIRES_WATER,
         /**
-         * The particle effect requires block or item data to be displayed
+         * The particle effect requires block or item data to be displayed.
          */
         REQUIRES_DATA,
         /**
-         * The particle effect uses the offsets as direction values
+         * The particle effect uses the offsets as direction values.
          */
         DIRECTIONAL,
         /**
-         * The particle effect uses the offsets as color values
+         * The particle effect uses the offsets as color values.
          */
         COLORABLE;
     }

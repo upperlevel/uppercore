@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -19,25 +20,25 @@ import static java.lang.Integer.parseInt;
 import static xyz.upperlevel.uppercore.util.CollectionUtil.toMap;
 
 public final class ConfigUtil {
-    private static final Map<String, Color> COLOR_BY_NAME = new HashMap<String, Color>() {{
-        put("WHITE", Color.WHITE);
-        put("SILVER", Color.SILVER);
-        put("GRAY", Color.GRAY);
-        put("BLACK", Color.BLACK);
-        put("RED", Color.RED);
-        put("MAROON", Color.MAROON);
-        put("YELLOW", Color.YELLOW);
-        put("OLIVE", Color.OLIVE);
-        put("LIME", Color.LIME);
-        put("GREEN", Color.GREEN);
-        put("AQUA", Color.AQUA);
-        put("TEAL", Color.TEAL);
-        put("BLUE", Color.BLUE);
-        put("NAVY", Color.NAVY);
-        put("FUCHSIA", Color.FUCHSIA);
-        put("PURPLE", Color.PURPLE);
-        put("ORANGE", Color.ORANGE);
-    }};
+    private static final Map<String, Color> COLOR_BY_NAME = new HashMap<>(ImmutableMap.<String, Color>builder()
+            .put("WHITE", Color.WHITE)
+            .put("SILVER", Color.SILVER)
+            .put("GRAY", Color.GRAY)
+            .put("BLACK", Color.BLACK)
+            .put("RED", Color.RED)
+            .put("MAROON", Color.MAROON)
+            .put("YELLOW", Color.YELLOW)
+            .put("OLIVE", Color.OLIVE)
+            .put("LIME", Color.LIME)
+            .put("GREEN", Color.GREEN)
+            .put("AQUA", Color.AQUA)
+            .put("TEAL", Color.TEAL)
+            .put("BLUE", Color.BLUE)
+            .put("NAVY", Color.NAVY)
+            .put("FUCHSIA", Color.FUCHSIA)
+            .put("PURPLE", Color.PURPLE)
+            .put("ORANGE", Color.ORANGE)
+            .build());
 
     public static DyeColor parseDye(String s) {
         if (s == null) return DyeColor.BLACK;
