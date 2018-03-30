@@ -1,11 +1,32 @@
 package xyz.upperlevel.uppercore.board;
 
 import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public interface ConfigBoard {
+/**
+ * Implementation of {@link Board} that takes both title and lines from config.
+ */
+public class ConfigBoard implements Board {
+    private PlaceholderValue<String> title;
+    private PlaceholderValue<String>[] lines;
+
+    @SuppressWarnings("unchecked")
+    public ConfigBoard(Config config) {
+        title = config.getMessageStrRequired("title");
+        lines = config.getMessageStrList("lines", Collections.emptyList()).toArray(new PlaceholderValue[0]);
+    }
+
+    public ConfigBoard(PlaceholderValue<String> title, PlaceholderValue<String>[] lines) {
+        this.title = title;
+        this.lines = lines;
+    }
+
     /**
      * Gets the title of the board based on the player and placeholders.
      *
@@ -13,7 +34,9 @@ public interface ConfigBoard {
      * @param placeholderRegistry the placeholders
      * @return the title
      */
-    String getTitle(Player holder, PlaceholderRegistry placeholderRegistry);
+    public String getTitle(Player holder, PlaceholderRegistry placeholderRegistry) {
+        return title.resolve(holder, placeholderRegistry);
+    }
 
     /**
      * Gets the lines of the board based on the player and placeholders.
@@ -22,30 +45,12 @@ public interface ConfigBoard {
      * @param placeholderRegistry the placeholders
      * @return the title
      */
-    List<String> getLines(Player holder, PlaceholderRegistry placeholderRegistry);
-
-    default BoardView create(Player player, PlaceholderRegistry placeholderRegistry) {
-        return new View(player, this, placeholderRegistry);
-    }
-
-    class View extends BoardView {
-        private final ConfigBoard configBoard;
-        private final PlaceholderRegistry placeholderRegistry;
-
-        public View(Player player, ConfigBoard configBoard, PlaceholderRegistry placeholderRegistry) {
-            super(player);
-            this.configBoard = configBoard;
-            this.placeholderRegistry = placeholderRegistry;
+    public List<String> getLines(Player holder, PlaceholderRegistry placeholderRegistry) {
+        int length = lines.length;
+        String[] realLines = new String[length];
+        for (int i = 0; i < length; i++) {
+            realLines[i] = lines[i].resolve(holder, placeholderRegistry);
         }
-
-        @Override
-        public String getTitle() {
-            return configBoard.getTitle(getHolder(), placeholderRegistry);
-        }
-
-        @Override
-        public List<String> getLines() {
-            return configBoard.getLines(getHolder(), placeholderRegistry);
-        }
+        return Arrays.asList(realLines);
     }
 }

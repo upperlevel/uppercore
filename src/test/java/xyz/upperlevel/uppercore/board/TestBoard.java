@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.board;
 
 import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,12 @@ import static org.bukkit.ChatColor.YELLOW;
 
 public class TestBoard implements Board {
     @Override
-    public String getTitle(Player holder) {
+    public String getTitle(Player holder, PlaceholderRegistry placeholderRegistry) {
         return BLUE + holder.getName();
     }
 
     @Override
-    public List<String> getLines(Player holder) {
+    public List<String> getLines(Player holder, PlaceholderRegistry placeholderRegistry) {
         List<String> result = new ArrayList<>();
         result.add("Name: " + RED + holder.getName());
         result.add("");
