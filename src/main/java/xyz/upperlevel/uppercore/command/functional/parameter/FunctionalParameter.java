@@ -1,9 +1,9 @@
-package xyz.upperlevel.uppercore.command.function.parameter;
+package xyz.upperlevel.uppercore.command.functional.parameter;
 
 import lombok.Getter;
 import org.bukkit.permissions.Permission;
 import xyz.upperlevel.uppercore.command.CommandParameter;
-import xyz.upperlevel.uppercore.command.function.*;
+import xyz.upperlevel.uppercore.command.functional.*;
 
 import java.lang.reflect.Parameter;
 
@@ -29,7 +29,7 @@ public class FunctionalParameter extends CommandParameter {
         }
         WithPermission permission = parameter.getAnnotation(WithPermission.class);
         if (permission != null) {
-            setRelativePermission(new Permission(permission.value(), permission.description(), permission.defaultUser().get(command)));
+            setPermissionPortion(new Permission(permission.value(), permission.description(), permission.defaultUser().get(command)));
             setPermissionCompleter(permission.completer());
         }
     }

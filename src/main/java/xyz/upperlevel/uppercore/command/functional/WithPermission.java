@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command.function;
+package xyz.upperlevel.uppercore.command.functional;
 
 import xyz.upperlevel.uppercore.command.DefaultPermissionUser;
 import xyz.upperlevel.uppercore.command.PermissionCompleter;
@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.METHOD})
 public @interface WithPermission {
-    String value();
+    String value() default "";
 
     String description() default "";
 

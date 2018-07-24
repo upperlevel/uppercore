@@ -1,9 +1,8 @@
-package xyz.upperlevel.uppercore.command.function.parameter;
+package xyz.upperlevel.uppercore.command.functional.parameter;
 
 import org.apache.commons.lang.StringUtils;
-import xyz.upperlevel.uppercore.command.function.parameter.ArgumentParseException;
-import xyz.upperlevel.uppercore.command.function.parameter.AsArgumentParser;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -101,5 +100,14 @@ public final class PrimitiveArgumentParsers {
     )
     public String parseString(List<String> arguments) throws ArgumentParseException {
         return StringUtils.join(arguments, " ");
+    }
+
+    // Array
+    @AsArgumentParser(
+            parsableTypes = {String[].class},
+            consumeCount = -1
+    )
+    public String[] parseArray(List<String> args) throws ArgumentParseException {
+        return args.toArray(new String[0]);
     }
 }

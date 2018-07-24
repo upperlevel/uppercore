@@ -1,12 +1,11 @@
-package xyz.upperlevel.uppercore.command.function;
+package xyz.upperlevel.uppercore.command.functional;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.PARAMETER)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WithOptional {
-    String[] value() default {};
+public @interface AsCommand {
 }

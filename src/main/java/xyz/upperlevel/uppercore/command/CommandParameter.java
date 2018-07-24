@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.command;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
 public class CommandParameter {
@@ -23,7 +24,7 @@ public class CommandParameter {
 
     @Getter
     @Setter
-    private Permission relativePermission;
+    private Permission permissionPortion;
 
     @Getter
     @Setter
@@ -31,7 +32,7 @@ public class CommandParameter {
 
     @Getter
     @Setter
-    private Permission permission; // The resulting permission
+    private Permission permission;
 
     @Getter
     @Setter
@@ -39,6 +40,9 @@ public class CommandParameter {
 
     public CommandParameter(Command parent) {
         this.parent = parent;
+
+        this.permissionPortion = new Permission(name, PermissionDefault.TRUE);
+        this.permissionCompleter = PermissionCompleter.INHERIT;
     }
 
     public void completePermission() {
@@ -46,7 +50,7 @@ public class CommandParameter {
         if (parent != null) {
             parentPermission = parent.getPermission();
         }
-        permission = permissionCompleter.complete(parentPermission, relativePermission);
+        permission = permissionCompleter.complete(parentPermission, permissionPortion);
     }
 
     public void registerPermission(PluginManager pluginManager) {

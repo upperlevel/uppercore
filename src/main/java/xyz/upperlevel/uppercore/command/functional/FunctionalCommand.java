@@ -1,19 +1,22 @@
-package xyz.upperlevel.uppercore.command.function;
+package xyz.upperlevel.uppercore.command.functional;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.Command;
-import xyz.upperlevel.uppercore.command.function.parameter.ArgumentParseException;
-import xyz.upperlevel.uppercore.command.function.parameter.ArgumentParser;
-import xyz.upperlevel.uppercore.command.function.parameter.ArgumentParserManager;
-import xyz.upperlevel.uppercore.command.function.parameter.FunctionalParameter;
+import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParseException;
+import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParser;
+import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParserManager;
+import xyz.upperlevel.uppercore.command.functional.parameter.FunctionalParameter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
+
+import static xyz.upperlevel.uppercore.Uppercore.logger;
 
 public class FunctionalCommand extends Command {
     @Getter
@@ -29,6 +32,7 @@ public class FunctionalCommand extends Command {
         super(name);
         this.residence = residence;
         this.function = function;
+
         AsCommand command = function.getAnnotation(AsCommand.class);
         if (command == null) {
             throw new IllegalArgumentException("@FunctionalCommand not found above function: " + function.getName());
@@ -39,13 +43,13 @@ public class FunctionalCommand extends Command {
             setPermissionCompleter(permission.completer());
         }
         this.parameters = new FunctionalParameter[function.getParameterCount() - 1];
-        for (int i = 1; i < function.getParameterCount() - 1; i++) {
-            Parameter parameter = function.getParameters()[i];
+        for (int i = 0; i < function.getParameterCount() - 1; i++) {
+            Parameter parameter = function.getParameters()[i + 1];
             ArgumentParser parser = parserManager.getParser(parameter.getType());
             if (parser != null) {
                 this.parameters[i] = new FunctionalParameter(parameter, parser, this);
             } else {
-                throw new IllegalArgumentException("No ArgumentParser found for parameter type: " + parameter.getType());
+                throw new IllegalArgumentException("No ArgumentParser found for parameter type: " + parameter.getType().getName());
             }
         }
     }

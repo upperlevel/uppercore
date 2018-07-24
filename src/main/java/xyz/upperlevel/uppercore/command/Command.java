@@ -5,17 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.Server;
+import org.bukkit.command.*;
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import xyz.upperlevel.uppercore.Uppercore;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public abstract class Command implements CommandExecutor, TabCompleter {
+public abstract class Command {
     @Getter
     NodeCommand parent;
 
@@ -26,7 +27,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
 
     @Getter
     @Setter
-    private String description;
+    private String description = "No description";
 
     @Getter
     @Setter
@@ -44,16 +45,16 @@ public abstract class Command implements CommandExecutor, TabCompleter {
 
     public Command(String name) {
         this.name = name.toLowerCase(Locale.ENGLISH);
+
+        // Default 'permissionPortion' corresponds to command name
+        this.permissionPortion = new Permission(this.name, PermissionDefault.NOT_OP);
+        this.permissionCompleter = PermissionCompleter.INHERIT;
     }
 
     void setParent(NodeCommand parent) {
         this.parent = parent;
     }
 
-    /**
-     * Initializes the completed permission based on parent.
-     * It is called when the command is subscribed.
-     */
     public void completePermission() {
         Permission parentPermission = null;
         if (parent != null) {
@@ -62,10 +63,6 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         permission = permissionCompleter.complete(parentPermission, permissionPortion);
     }
 
-    /**
-     * Register the completed permission.
-     * If {@code null} does nothing.
-     */
     public void registerPermission(PluginManager pluginManager) {
         if (permission != null) {
             pluginManager.addPermission(permission);
@@ -122,35 +119,9 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         return helpline.toString();
     }
 
-
-    /**
-     * Subscribes the commands to Bukkit commands list.
-     * The commands must be registered in plugin.yml by its name.
-     */
-    public void subscribe() {
-        PluginCommand cmd = Bukkit.getPluginCommand(getName());
-        if (cmd == null) {
-            Uppercore.logger().severe("Command not found in plugin.yml: \"" + getName() + "\"");
-            return;
-        }
-        setDescription(cmd.getDescription());
-        cmd.setExecutor(this);
-        cmd.setTabCompleter(this);
-
-        // Registers permissions
-        completePermission();
-        registerPermission(Bukkit.getPluginManager());
-    }
-
-    /**
-     * Called when the command is invoked.
-     *
-     * @param sender    the sender
-     * @param arguments the arguments
-     */
     public boolean call(CommandSender sender, List<String> arguments) {
         // Here we check the permission
-        if (sender.hasPermission(permission)) {
+        if (permission != null && sender.hasPermission(permission)) {
             sender.sendMessage(ChatColor.RED + "You do not have enough permissions to run this command.");
             return false;
         }
@@ -158,7 +129,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    protected abstract boolean onCall(CommandSender sender, List<String> arguments);
+    protected abstract boolean onCall(CommandSender sender, List<String> args);
 
     /**
      * Called when the command may be tab-completed.
@@ -167,15 +138,4 @@ public abstract class Command implements CommandExecutor, TabCompleter {
      * @param arguments the arguments
      */
     public abstract List<String> suggest(CommandSender sender, List<String> arguments);
-
-    @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        call(sender, Arrays.asList(args));
-        return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String alias, String[] args) {
-        return suggest(sender, Arrays.asList(args));
-    }
 }

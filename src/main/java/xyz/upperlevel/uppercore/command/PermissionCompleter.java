@@ -14,12 +14,16 @@ public enum PermissionCompleter {
     INHERIT {
         @Override
         public Permission complete(Permission parent, Permission child) {
+            /*
+            Permissions cannot be null!
+
             if (child == null) {
                 return parent;
             }
             if (parent == null) {
                 return child;
             }
+            */
             StringJoiner path = new StringJoiner(".");
             path.add(parent.getName());
             path.add(child.getName());

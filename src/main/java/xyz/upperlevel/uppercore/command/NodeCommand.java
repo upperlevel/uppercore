@@ -2,21 +2,14 @@ package xyz.upperlevel.uppercore.command;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.StringUtil;
-import xyz.upperlevel.uppercore.command.function.*;
-import xyz.upperlevel.uppercore.util.TextUtil;
+import xyz.upperlevel.uppercore.command.functional.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static org.bukkit.ChatColor.*;
 
 public abstract class NodeCommand extends Command {
     private final Map<String, Command> commands = new HashMap<>();
@@ -38,7 +31,7 @@ public abstract class NodeCommand extends Command {
         }
     }
 
-    public void addCommand(List<Command> commands) {
+    public void addCommands(List<Command> commands) {
         commands.forEach(this::addCommand);
     }
 

@@ -1,10 +1,16 @@
-package xyz.upperlevel.uppercore.command.function.parameter;
+package xyz.upperlevel.uppercore.command.functional.parameter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ArgumentParserManager {
     private Map<Class<?>, ArgumentParser> parsers = new HashMap<>();
+
+    public ArgumentParserManager() {
+        for (ArgumentParser parser : FunctionalArgumentParser.load(new PrimitiveArgumentParsers())) {
+            addParser(parser);
+        }
+    }
 
     public void addParser(ArgumentParser parser) {
         for (Class<?> type : parser.getParsableTypes()) {

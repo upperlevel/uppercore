@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command.function.parameter;
+package xyz.upperlevel.uppercore.command.functional.parameter;
 
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;

@@ -3,3 +3,4 @@ version: final
 main: "xyz.upperlevel.uppercoretest.UppercoreTest"
 author: [Upperlevel]
 description: "A plugin used to test Uppercore."
+depend: [Uppercore]

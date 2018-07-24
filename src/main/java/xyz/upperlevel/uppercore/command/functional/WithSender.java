@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command.function;
+package xyz.upperlevel.uppercore.command.functional;
 
 import xyz.upperlevel.uppercore.command.SenderType;
 
