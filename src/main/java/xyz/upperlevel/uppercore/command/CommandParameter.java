@@ -1,18 +1,25 @@
 package xyz.upperlevel.uppercore.command;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
 public class CommandParameter {
     @Getter
-    private final Command parent;
+    private final Command command;
 
+    /**
+     * The name of the parameter, not always defined.
+     * The only way to know it is using @WithName annotation.
+     */
     @Getter
     @Setter
-    private String name = "par"; // Default parameter name
+    private String name;
 
     @Getter
     @Setter
@@ -22,35 +29,38 @@ public class CommandParameter {
     @Setter
     private Object defaultValue;
 
+    /**
+     * The permission portion for the parameter, could be null.
+     */
     @Getter
     @Setter
-    private Permission permissionPortion;
+    private Permission permissionPortion = null;
 
     @Getter
     @Setter
-    private PermissionCompleter permissionCompleter;
+    @NonNull
+    private PermissionCompleter permissionCompleter = PermissionCompleter.INHERIT;
 
+    /**
+     * The permission to use the parameter.
+     * If parameter's permission portion is null, then it'll be too and won't be checked.
+     */
     @Getter
     @Setter
-    private Permission permission;
+    private Permission permission = null;
 
     @Getter
     @Setter
     private SenderType senderType;
 
-    public CommandParameter(Command parent) {
-        this.parent = parent;
-
-        this.permissionPortion = new Permission(name, PermissionDefault.TRUE);
-        this.permissionCompleter = PermissionCompleter.INHERIT;
+    public CommandParameter(Command command) {
+        this.command = command;
     }
 
     public void completePermission() {
-        Permission parentPermission = null;
-        if (parent != null) {
-            parentPermission = parent.getPermission();
+        if (permissionPortion != null) {
+            permissionCompleter.complete(command.getPermission(), permissionPortion);
         }
-        permission = permissionCompleter.complete(parentPermission, permissionPortion);
     }
 
     public void registerPermission(PluginManager pluginManager) {
@@ -59,4 +69,7 @@ public class CommandParameter {
         }
     }
 
+    public boolean hasPermission(CommandSender player) {
+        return permission == null || player.hasPermission(permission);
+    }
 }

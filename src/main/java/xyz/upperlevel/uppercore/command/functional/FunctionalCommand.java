@@ -80,20 +80,20 @@ public class FunctionalCommand extends Command {
     }
 
     @Override
-    protected boolean onCall(CommandSender sender, List<String> arguments) {
+    protected boolean onCall(CommandSender sender, List<String> args) {
         List<Object> objects = new ArrayList<>();
         objects.add(sender); // The first parameter MUST be always the CommandSender
         int currArgIndex = 0;
         for (FunctionalParameter parameter : parameters) {
             ArgumentParser parser = parameter.getParser();
-            if (!sender.hasPermission(parameter.getPermission())) {
+            if (!parameter.hasPermission(sender)) {
                 if (parameter.isOptional()) { // if the parameter is optional we add its default value
                     objects.add(parameter.getDefaultValue());
                 } else { // no, the parameter is not optional we need to throw an error
-                    throw new IllegalStateException("You do not have enough permissions to use the parameter " + parameter.getName());
+                    throw new IllegalStateException("You do not have enough permissions to use the parameter: " + parameter);
                 }
             } else { // if the sender has enough permissions to execute this parameter
-                if (currArgIndex >= arguments.size()) { // if we already used all of our arguments
+                if (currArgIndex >= args.size()) { // if we already used all of our arguments
                     if (parameter.isOptional()) { // if the next parameter is optional
                         objects.add(parameter.getDefaultValue()); // We use its default value
                     } else {
@@ -103,10 +103,10 @@ public class FunctionalCommand extends Command {
                 } else { // if we have other arguments to use
                     int consumed = parser.getConsumedCount();
                     if (consumed < 0) {
-                        consumed = arguments.size() - currArgIndex;
+                        consumed = args.size() - currArgIndex;
                     }
                     try {
-                        objects.add(parser.parse(arguments.subList(currArgIndex, currArgIndex + consumed)));
+                        objects.add(parser.parse(args.subList(currArgIndex, currArgIndex + consumed)));
                     } catch (ArgumentParseException exception) {
                         throw new IllegalArgumentException("An argument mismatch its original type: ", exception);
                     }

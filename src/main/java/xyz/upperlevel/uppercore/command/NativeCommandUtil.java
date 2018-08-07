@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class CommandRegistry {
+public final class NativeCommandUtil {
     private static CommandMap commandMap;
 
-    private CommandRegistry() {
+    private NativeCommandUtil() {
     }
 
     private static CommandMap getCommandMap() {

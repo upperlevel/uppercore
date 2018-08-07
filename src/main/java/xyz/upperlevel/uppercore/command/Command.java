@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.command;
 
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,8 @@ public abstract class Command {
     @Getter
     NodeCommand parent;
 
+    // Descriptor
+
     @Getter
     private final String name;
 
@@ -30,41 +33,51 @@ public abstract class Command {
     private String description = "No description";
 
     @Getter
+    private SenderType senderType = SenderType.ALL; // non null
+
+    // Permission
+
+    /**
+     * The relative permission of this command (or absolute if PermissionCompleter.NONE).
+     * By default is the same as the name of the command. Cannot be null.
+     */
+    @Getter
     @Setter
+    @NonNull
     private Permission permissionPortion;
 
     @Getter
     @Setter
-    private PermissionCompleter permissionCompleter = PermissionCompleter.NONE;
+    @NonNull
+    private PermissionCompleter permissionCompleter = PermissionCompleter.INHERIT;
 
     @Getter
+    @Setter
+    @NonNull
     private Permission permission;
-
-    @Getter
-    private SenderType senderType = SenderType.ALL; // non null
 
     public Command(String name) {
         this.name = name.toLowerCase(Locale.ENGLISH);
-
-        // Default 'permissionPortion' corresponds to command name
-        this.permissionPortion = new Permission(this.name, PermissionDefault.NOT_OP);
-        this.permissionCompleter = PermissionCompleter.INHERIT;
+        permissionPortion = new Permission(this.name, PermissionDefault.TRUE);
     }
 
     void setParent(NodeCommand parent) {
         this.parent = parent;
     }
 
+    // Permission
+
     public void completePermission() {
-        Permission parentPermission = null;
         if (parent != null) {
-            parentPermission = parent.getPermission();
+            permission = permissionCompleter.complete(parent.getPermission(), permissionPortion);
+            return;
         }
-        permission = permissionCompleter.complete(parentPermission, permissionPortion);
+        permission = permissionPortion;
     }
 
     public void registerPermission(PluginManager pluginManager) {
         if (permission != null) {
+            Uppercore.logger().info("Registering command permission: " + permission.getName());
             pluginManager.addPermission(permission);
         }
     }
@@ -120,8 +133,7 @@ public abstract class Command {
     }
 
     public boolean call(CommandSender sender, List<String> arguments) {
-        // Here we check the permission
-        if (permission != null && sender.hasPermission(permission)) {
+        if (permission != null && !sender.hasPermission(permission)) {
             sender.sendMessage(ChatColor.RED + "You do not have enough permissions to run this command.");
             return false;
         }

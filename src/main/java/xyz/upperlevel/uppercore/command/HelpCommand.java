@@ -9,7 +9,6 @@ import java.util.List;
 public class HelpCommand extends Command {
     public HelpCommand() {
         super("help");
-
     }
 
     @Override
@@ -21,11 +20,13 @@ public class HelpCommand extends Command {
     protected boolean onCall(CommandSender sender, List<String> arguments) {
         NodeCommand parent = getParent();
         if (parent == null) {
-            sender.sendMessage(ChatColor.RED + "Help command without parent?");
+            sender.sendMessage(ChatColor.RED + "No parent command to read from.");
             return true;
-
         }
-        sender.sendMessage(ChatColor.GREEN + "help command for: " + parent.getName());
+        for (Command command : parent.getCommands()) {
+            String helpline = ChatColor.YELLOW + command.getName() + " " + (sender.hasPermission(command.getPermission()) ? ChatColor.GREEN : ChatColor.RED) + command.getPermission().getName();
+            sender.sendMessage(helpline);
+        }
         return true;
     }
 

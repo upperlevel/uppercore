@@ -19,12 +19,14 @@ public abstract class NodeCommand extends Command {
 
     public NodeCommand(String name) {
         super(name);
+        addCommand(new HelpCommand());
     }
 
     public void addCommand(Command command) {
         if (command.getParent() != null) {
             throw new IllegalArgumentException("The same instance of " + command.getClass().getSimpleName() + " is registered in more than one NodeCommand");
         }
+        command.setParent(this);
         commands.put(command.getName(), command);
         for (String alias : command.getAliases()) {
             commands.put(alias, command);
@@ -37,6 +39,10 @@ public abstract class NodeCommand extends Command {
 
     public Command getCommand(String name) {
         return commands.get(name.toLowerCase(Locale.ENGLISH));
+    }
+
+    public Collection<Command> getCommands() {
+        return commands.values();
     }
 
     @Override
@@ -68,17 +74,18 @@ public abstract class NodeCommand extends Command {
     }
 
     @Override
-    protected boolean onCall(CommandSender sender, List<String> arguments) {
-        if (arguments.isEmpty()) {
+    public boolean call(CommandSender sender, List<String> args) {
+        super.call(sender, args);
+        if (args.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "Not enough arguments. You must specify the command name.");
             return false;
         }
-        Command cmd = getCommand(arguments.get(0));
+        Command cmd = getCommand(args.get(0));
         if (cmd == null || !sender.hasPermission(cmd.getPermission())) {
-            sender.sendMessage(ChatColor.RED + "No command found for: " + arguments.get(0));
+            sender.sendMessage(ChatColor.RED + "No command found for: " + args.get(0));
             return false;
         }
-        cmd.call(sender, arguments.subList(1, arguments.size()));
+        cmd.call(sender, args.subList(1, args.size()));
         return true;
     }
 
@@ -106,87 +113,4 @@ public abstract class NodeCommand extends Command {
                     .collect(Collectors.toList());
         }
     }
-
-    /*
-    @WithPermission("help")
-    public class HelpCommand extends Command {
-
-        public HelpCommand() {
-            super("help");
-
-            setDescription("Gives you info about commands!");
-            addAliases(asList("?", "h"));
-        }
-
-        protected String getPath() {
-            List<String> path = new ArrayList<>();
-            Command command = this;
-            while (command != null) {
-                path.add(command.getName());
-                command = command.getParent();
-            }
-            StringJoiner joiner = new StringJoiner(" ", "/", "");
-            ListIterator<String> i = path.listIterator(path.size());
-            while (i.hasPrevious())
-                joiner.add(i.previous());
-            return joiner.toString();
-        }
-
-        @AsCommand
-        public void run(CommandSender sender, @WithName("page") @WithOptional(value = "1") int page) {
-            List<BaseComponent[]> entries = new ArrayList<>();
-            for (Command cmd : NodeCommand.this.getCommands()) {
-                if (cmd.canExecute(sender)) {
-                    entries.add(TextComponent.fromLegacyText(cmd.getHelpline(sender, true)));
-                }
-            }
-
-            int pages = TextUtil.getPages(1, entries.size(), 0);
-
-
-            if (page <= 0) {
-                sender.sendMessage(RED + "Hey, the max pages number is " + pages + "!");
-                return;
-            }
-
-            String path = getPath();
-            TextComponent header;
-            {
-                header = new TextComponent(GOLD + "Help for commands \"" + NodeCommand.this.getName() + "\" ");
-
-                TextComponent leftArrow = new TextComponent("[<]");
-                if (page <= 1) {
-                    leftArrow.setColor(ChatColor.RED);
-                } else {
-                    leftArrow.setColor(ChatColor.GREEN);
-                    leftArrow.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Previous page").create()));
-                    leftArrow.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, path + " " + (page - 1)));
-                }
-                header.addExtra(leftArrow);
-
-                TextComponent middle = new TextComponent(" " + page + "/" + pages + " ");
-                middle.setColor(ChatColor.GOLD);
-                header.addExtra(middle);
-
-                TextComponent rightArrow = new TextComponent("[>]");
-                if (page >= pages) {
-                    rightArrow.setColor(ChatColor.RED);
-                } else {
-                    rightArrow.setColor(ChatColor.GREEN);
-                    rightArrow.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Next page").create()));
-                    rightArrow.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, path + " " + (page + 1)));
-                }
-                header.addExtra(rightArrow);
-
-                TextComponent f = new TextComponent(":");
-                f.setColor(ChatColor.GOLD);
-                header.addExtra(f);
-            }
-
-            TextUtil.sendComponentMessages(
-                    sender,
-                    TextUtil.getComponentPage(singletonList(new BaseComponent[]{header}), entries, emptyList(), page - 1)
-            );
-        }
-    }*/
 }
