@@ -16,7 +16,7 @@ public final class NativeCommandUtil {
     private NativeCommandUtil() {
     }
 
-    private static CommandMap getCommandMap() {
+    public static CommandMap getCommandMap() {
         try {
             if (commandMap == null) {
                 Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
@@ -29,7 +29,7 @@ public final class NativeCommandUtil {
     }
 
     public static BukkitCommand wrap(Command command) {
-        return new BukkitCommand(command.getName(), command.getDescription(), command.getUsage(null), new ArrayList<>(command.getAliases())) {
+        return new BukkitCommand(command.getName(), command.getDescription(), command.getUsage(null, false), new ArrayList<>(command.getAliases())) {
             @Override
             public boolean execute(CommandSender sender, String commandLabel, String[] args) {
                 command.call(sender, Arrays.asList(args));
@@ -41,17 +41,5 @@ public final class NativeCommandUtil {
                 return command.suggest(sender, Arrays.asList(args));
             }
         };
-    }
-
-    public static boolean register(Command command) {
-        command.completePermission();
-        command.registerPermission(Bukkit.getPluginManager());
-
-        CommandMap map = getCommandMap();
-        if (map == null) {
-            return false;
-        }
-        map.register(command.getName(), wrap(command));
-        return true;
     }
 }

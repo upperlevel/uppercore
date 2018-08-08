@@ -37,7 +37,7 @@ public class FunctionalArgumentParser implements ArgumentParser {
     @Override
     public Object parse(List<String> args) throws ArgumentParseException {
         try {
-            return function.invoke(args);
+            return function.invoke(residence, args);
         } catch (IllegalAccessException ignored) {
             // impossible
             throw new IllegalStateException();

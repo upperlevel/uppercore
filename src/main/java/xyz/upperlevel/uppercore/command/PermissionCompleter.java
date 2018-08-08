@@ -17,10 +17,7 @@ public enum PermissionCompleter {
             StringJoiner path = new StringJoiner(".");
             path.add(parent.getName());
             path.add(child.getName());
-
-            Permission result = new Permission(path.toString(), child.getDescription(), child.getDefault());
-            result.addParent(parent, true);
-            return result;
+            return new Permission(path.toString(), child.getDescription(), child.getDefault());
         }
     };
 
@@ -29,4 +26,5 @@ public enum PermissionCompleter {
      * Expects that both parent and child permissions are not null.
      */
     public abstract Permission complete(Permission parent, Permission child);
+
 }

@@ -6,22 +6,20 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
-import org.bukkit.command.*;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.PluginManager;
-import xyz.upperlevel.uppercore.Uppercore;
+import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public abstract class Command {
     @Getter
     NodeCommand parent;
-
-    // Descriptor
 
     @Getter
     private final String name;
@@ -33,9 +31,9 @@ public abstract class Command {
     private String description = "No description";
 
     @Getter
+    @Setter
+    @NonNull
     private SenderType senderType = SenderType.ALL; // non null
-
-    // Permission
 
     /**
      * The relative permission of this command (or absolute if PermissionCompleter.NONE).
@@ -61,25 +59,26 @@ public abstract class Command {
         permissionPortion = new Permission(this.name, PermissionDefault.TRUE);
     }
 
-    void setParent(NodeCommand parent) {
+    protected void setParent(NodeCommand parent) {
         this.parent = parent;
     }
 
-    // Permission
-
-    public void completePermission() {
+    public void completePermission(Permission root) {
         if (parent != null) {
             permission = permissionCompleter.complete(parent.getPermission(), permissionPortion);
-            return;
+        } else {
+            permission = permissionCompleter.complete(root, permissionPortion);
         }
-        permission = permissionPortion;
     }
 
-    public void registerPermission(PluginManager pluginManager) {
+    public void registerPermission() {
         if (permission != null) {
-            Uppercore.logger().info("Registering command permission: " + permission.getName());
-            pluginManager.addPermission(permission);
+            Bukkit.getPluginManager().addPermission(permission);
         }
+    }
+
+    public boolean hasPermission(CommandSender sender) {
+        return permission == null || sender.hasPermission(permission);
     }
 
     public void addAlias(String alias) {
@@ -100,54 +99,67 @@ public abstract class Command {
     }
 
     /**
-     * Gets the usage based on the sender.
-     * The result may respect the following format:
-     * {@code "<arg1> <arg2> [optArg3=defVal]"}
-     * <br>
-     * <b>Note:</b> no command name!
+     * Gets the usage for this command.
+     * The usage must contain only command's parameters (without its name).
+     * Usage format should respect: {@code <arg1> <arg2> [optional=value]}.
+     * The colored variable changes the usage color based on the sender.
      */
-    public abstract String getUsage(CommandSender sender);
+    public abstract String getUsage(CommandSender sender, boolean colored);
 
     /**
-     * Gets the usage plus the command path based on the sender.
-     * An example of helpline would be:
-     * {@code "my foo command <arg1> <arg2> [optArg3=defVal]"}
+     * Gets the helpline for this command.
+     * The helpline is the path of the command (a chain of parents' commands) followed by command's name and usage.
+     * An example: {@code parent1 parent2 command <arg1> <arg2> [optional=value]}.
+     * The colored parameter changes the helpline color based on the sender.
      */
-    public String getHelpline(CommandSender sender) {
-        // Builds up the command path
-        StringBuilder helpline = new StringBuilder();
-        NodeCommand high = parent;
-        while (high != null) {
-            if (high.getParent() != null) {
-                helpline.insert(0, high.getName() + " ");
-            } else {
-                helpline.insert(0, high.getName());
-            }
-            high = high.getParent();
+    public String getHelpline(CommandSender sender, boolean colored) {
+        StringBuilder path = new StringBuilder();
+        NodeCommand higher = parent;
+        while (higher != null) {
+            path.insert(0, higher.getName() + " ");
+            higher = higher.getParent();
         }
-        // Appends the command usage in the end
-        helpline.append(name)
-                .append(" ")
-                .append(getUsage(sender));
-        return helpline.toString();
+        path.append(name);
+
+        String usage = getUsage(sender, colored);
+        if (usage.length() > 0) {
+            path.append(" ").append(usage);
+        }
+
+        if (colored) {
+            return path.insert(0, hasPermission(sender) ? ChatColor.GREEN : ChatColor.RED).toString();
+        }
+
+        return path.toString();
     }
 
-    public boolean call(CommandSender sender, List<String> arguments) {
-        if (permission != null && !sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.RED + "You do not have enough permissions to run this command.");
+    public boolean call(CommandSender sender, List<String> args) {
+        if (!hasPermission(sender)) {
+            sender.sendMessage("No permission: " + permission.getName()); // TODO
             return false;
         }
-        onCall(sender, arguments);
+        if (!senderType.match(sender)) {
+            sender.sendMessage("Sender mismatch! You may be a " + senderType.name() + "."); // TODO
+            return false;
+        }
+        onCall(sender, args);
         return true;
     }
 
     protected abstract boolean onCall(CommandSender sender, List<String> args);
 
-    /**
-     * Called when the command may be tab-completed.
-     *
-     * @param sender    the sender
-     * @param arguments the arguments
-     */
     public abstract List<String> suggest(CommandSender sender, List<String> arguments);
+
+    public boolean subscribe(Plugin owner) {
+        Permission root = new Permission(owner.getName().toLowerCase(Locale.ENGLISH));
+        completePermission(root);
+        registerPermission();
+
+        CommandMap map = NativeCommandUtil.getCommandMap();
+        if (map == null) {
+            return false;
+        }
+        map.register(name, NativeCommandUtil.wrap(this));
+        return true;
+    }
 }

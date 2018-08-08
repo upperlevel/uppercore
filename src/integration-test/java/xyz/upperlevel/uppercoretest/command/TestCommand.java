@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercoretest.command;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.PermissionCompleter;
 
@@ -13,11 +15,12 @@ public class TestCommand extends Command {
 
         setDescription("A command used to test");
 
-        setPermissionCompleter(PermissionCompleter.NONE);
+        setPermissionPortion(new Permission("simplecommand", PermissionDefault.OP));
+        setPermissionCompleter(PermissionCompleter.INHERIT);
     }
 
     @Override
-    public String getUsage(CommandSender sender) {
+    public String getUsage(CommandSender sender, boolean colored) {
         return "<arg1> <arg2> <arg3>";
     }
 

@@ -9,16 +9,9 @@ import java.util.List;
 
 public class TestFunctionalNodeCommand extends NodeCommand {
     public TestFunctionalNodeCommand() {
-        super("testfunctional");
-
-        // Register ALL functions annotated with @AsCommand in both classes
-        addCommands(FunctionalCommand.load(new TestFunctionalCommands(), new ArgumentParserManager()));
-        addCommands(FunctionalCommand.load(new TestFunctionalParameters(), new ArgumentParserManager()));
-    }
-
-    @Override
-    public String getUsage(CommandSender sender) {
-        return ""; // TODO
+        super("testfunc");
+        addCommand(new TestFunctionalCommands());
+        addCommand(new TestFunctionalParameters());
     }
 
     @Override

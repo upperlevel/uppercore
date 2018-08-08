@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.command;
 
-import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 public enum DefaultPermissionUser {
@@ -37,8 +36,4 @@ public enum DefaultPermissionUser {
     };
 
     public abstract PermissionDefault get(Command command);
-
-    public void apply(Command command, Permission perm) {
-        perm.setDefault(get(command));
-    }
 }

@@ -1,14 +1,18 @@
 package xyz.upperlevel.uppercoretest.command.functional;
 
 import org.bukkit.command.CommandSender;
+import xyz.upperlevel.uppercore.command.DefaultPermissionUser;
+import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.command.SenderType;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
 import xyz.upperlevel.uppercore.command.functional.WithPermission;
 import xyz.upperlevel.uppercore.command.functional.WithSender;
 
-public class TestFunctionalCommands {
+public class TestFunctionalCommands extends NodeCommand {
     public TestFunctionalCommands() {
+        super("cmd");
+        addCommands(FunctionalCommand.load(this));
     }
 
     /**
@@ -16,7 +20,7 @@ public class TestFunctionalCommands {
      */
     @AsCommand
     public void base(CommandSender sender) {
-        sender.sendMessage("Command called");
+        sender.sendMessage("Base command called.");
     }
 
     /**
@@ -26,7 +30,7 @@ public class TestFunctionalCommands {
     @AsCommand
     @WithSender(SenderType.CONSOLE)
     public void sender(CommandSender sender) {
-        sender.sendMessage("Command called");
+        sender.sendMessage("Command called, in fact the sender is: " + sender.getClass().getSimpleName() + ". Matches? " + SenderType.CONSOLE.match(sender) + ".");
     }
 
     /**
@@ -34,8 +38,8 @@ public class TestFunctionalCommands {
      * If the sender has not the given permission the command cannot be executed.
      */
     @AsCommand
-    @WithPermission
+    @WithPermission(value="permission", defaultUser = DefaultPermissionUser.OP)
     public void permission(CommandSender sender) {
-        sender.sendMessage("Command called");
+        sender.sendMessage("Command called.");
     }
 }

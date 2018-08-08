@@ -4,14 +4,14 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
-import xyz.upperlevel.uppercore.command.functional.*;
+import xyz.upperlevel.uppercore.command.functional.WithEveryPermission;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class NodeCommand extends Command {
+public class NodeCommand extends Command {
     private final Map<String, Command> commands = new HashMap<>();
 
     @Getter
@@ -26,11 +26,20 @@ public abstract class NodeCommand extends Command {
         if (command.getParent() != null) {
             throw new IllegalArgumentException("The same instance of " + command.getClass().getSimpleName() + " is registered in more than one NodeCommand");
         }
-        command.setParent(this);
-        commands.put(command.getName(), command);
-        for (String alias : command.getAliases()) {
-            commands.put(alias, command);
+
+        Set<String> keys = command.getAliases();
+        keys.add(command.getName());
+        for (String key : keys) {
+            if (commands.containsKey(key)) {
+                throw new IllegalArgumentException("Trying to register command's key '" + key + "' that was already registered node: " + getName());
+            }
         }
+
+        for (String key : keys) {
+            commands.put(key, command);
+        }
+
+        command.setParent(this);
     }
 
     public void addCommands(List<Command> commands) {
@@ -46,8 +55,8 @@ public abstract class NodeCommand extends Command {
     }
 
     @Override
-    public void completePermission() {
-        super.completePermission(); // completes the default permission
+    public void completePermission(Permission root) {
+        super.completePermission(root);
         if (getPermission() != null) {
             WithEveryPermission annotation = getClass().getAnnotation(WithEveryPermission.class);
             String path = getPermission().getName() + ".*";
@@ -60,17 +69,22 @@ public abstract class NodeCommand extends Command {
                 everyPermission.addParent(getParent().everyPermission, true);
             }
         }
-        for (Command command : commands.values()) { // completes all sub commands permissions
-            command.completePermission();
+        for (Command command : commands.values()) {
+            command.completePermission(root);
         }
     }
 
     @Override
-    public void registerPermission(PluginManager pluginManager) {
-        super.registerPermission(pluginManager);
+    public void registerPermission() {
+        super.registerPermission();
         for (Command command : commands.values()) { // registers all sub commands permission
-            command.registerPermission(pluginManager);
+            command.registerPermission();
         }
+    }
+
+    @Override
+    public String getUsage(CommandSender sender, boolean colored) {
+        return "<command>";
     }
 
     @Override
@@ -86,6 +100,11 @@ public abstract class NodeCommand extends Command {
             return false;
         }
         cmd.call(sender, args.subList(1, args.size()));
+        return true;
+    }
+
+    @Override
+    protected boolean onCall(CommandSender sender, List<String> args) {
         return true;
     }
 

@@ -3,20 +3,20 @@ package xyz.upperlevel.uppercore.command.functional;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParseException;
 import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParser;
 import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParserManager;
-import xyz.upperlevel.uppercore.command.functional.parameter.FunctionalParameter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
-
-import static xyz.upperlevel.uppercore.Uppercore.logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringJoiner;
 
 public class FunctionalCommand extends Command {
     @Getter
@@ -35,46 +35,67 @@ public class FunctionalCommand extends Command {
 
         AsCommand command = function.getAnnotation(AsCommand.class);
         if (command == null) {
-            throw new IllegalArgumentException("@FunctionalCommand not found above function: " + function.getName());
+            throw new IllegalArgumentException("@AsCommand not found above function: " + function.getName());
         }
         WithPermission permission = function.getAnnotation(WithPermission.class);
         if (permission != null) {
             setPermissionPortion(new Permission(permission.value(), permission.description(), permission.defaultUser().get(this)));
             setPermissionCompleter(permission.completer());
         }
+        WithSender sender = function.getAnnotation(WithSender.class);
+        if (sender != null) {
+            setSenderType(sender.value());
+        }
         this.parameters = new FunctionalParameter[function.getParameterCount() - 1];
         for (int i = 0; i < function.getParameterCount() - 1; i++) {
             Parameter parameter = function.getParameters()[i + 1];
             ArgumentParser parser = parserManager.getParser(parameter.getType());
             if (parser != null) {
-                this.parameters[i] = new FunctionalParameter(parameter, parser, this);
+                this.parameters[i] = new FunctionalParameter(this, parameter, parser);
             } else {
                 throw new IllegalArgumentException("No ArgumentParser found for parameter type: " + parameter.getType().getName());
             }
         }
     }
 
+    /* Permission */
+
     @Override
-    public void completePermission() {
-        super.completePermission();
+    public void completePermission(Permission root) {
+        super.completePermission(root);
         for (FunctionalParameter parameter : parameters) {
             parameter.completePermission();
         }
     }
 
     @Override
-    public void registerPermission(PluginManager pluginManager) {
-        super.registerPermission(pluginManager);
+    public void registerPermission() {
+        super.registerPermission();
         for (FunctionalParameter parameter : parameters) {
-            parameter.registerPermission(pluginManager);
+            parameter.registerPermission();
         }
     }
 
     @Override
-    public String getUsage(CommandSender sender) {
+    public boolean hasPermission(CommandSender sender) {
+        if (!super.hasPermission(sender)) {
+            return false;
+        }
+        for (FunctionalParameter parameter : parameters) {
+            if (!parameter.isOptional() && !parameter.hasPermission(sender)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /* Usage */
+
+    @Override
+    public String getUsage(CommandSender sender, boolean colored) {
         StringJoiner result = new StringJoiner(" ");
         for (FunctionalParameter parameter : parameters) {
-            result.add(parameter.getName());
+            result.add(parameter.getUsage(sender, colored));
         }
         return result.toString();
     }
@@ -94,11 +115,12 @@ public class FunctionalCommand extends Command {
                 }
             } else { // if the sender has enough permissions to execute this parameter
                 if (currArgIndex >= args.size()) { // if we already used all of our arguments
-                    if (parameter.isOptional()) { // if the next parameter is optional
+                    if (parameter.isOptional()) {
+                        // if the next parameter is optional
                         objects.add(parameter.getDefaultValue()); // We use its default value
                     } else {
                         // otherwise we throw an illegal arguments count exception
-                        throw new IllegalArgumentException("Not enough arguments typed to run this command!"); // TODO
+                        throw new IllegalArgumentException("Not enough arguments typed to run this command!");
                     }
                 } else { // if we have other arguments to use
                     int consumed = parser.getConsumedCount();
@@ -115,7 +137,7 @@ public class FunctionalCommand extends Command {
             }
         }
         try {
-            function.invoke(this, objects);
+            function.invoke(residence, objects.toArray());
         } catch (IllegalAccessException ignored) { // Should not be called
             throw new IllegalStateException("What the hell have you done to reach this exception?");
         } catch (InvocationTargetException e) {
@@ -146,13 +168,10 @@ public class FunctionalCommand extends Command {
         return Collections.emptyList();
     }
 
-    /**
-     * Loads a list of command from the class they are in.
-     *
-     * @param residence             the instance of the class from which it loads the command functions
-     * @param argumentParserManager the object that associates an argument parser to each parameter
-     * @return the list of commands loaded
-     */
+    public static List<Command> load(Object residence) {
+        return load(residence, new ArgumentParserManager());
+    }
+
     public static List<Command> load(Object residence, ArgumentParserManager argumentParserManager) {
         List<Command> result = new ArrayList<>();
         for (Method function : residence.getClass().getMethods()) {

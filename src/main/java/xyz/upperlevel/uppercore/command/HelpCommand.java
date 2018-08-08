@@ -12,20 +12,19 @@ public class HelpCommand extends Command {
     }
 
     @Override
-    public String getUsage(CommandSender sender) {
+    public String getUsage(CommandSender sender, boolean colored) {
         return "[page]";
     }
 
     @Override
     protected boolean onCall(CommandSender sender, List<String> arguments) {
-        NodeCommand parent = getParent();
+        NodeCommand command = getParent();
         if (parent == null) {
             sender.sendMessage(ChatColor.RED + "No parent command to read from.");
             return true;
         }
-        for (Command command : parent.getCommands()) {
-            String helpline = ChatColor.YELLOW + command.getName() + " " + (sender.hasPermission(command.getPermission()) ? ChatColor.GREEN : ChatColor.RED) + command.getPermission().getName();
-            sender.sendMessage(helpline);
+        for (Command sub : command.getCommands()) {
+            sender.sendMessage(sub.getHelpline(sender, true));
         }
         return true;
     }

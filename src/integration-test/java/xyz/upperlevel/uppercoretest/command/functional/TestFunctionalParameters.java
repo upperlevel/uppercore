@@ -1,16 +1,19 @@
 package xyz.upperlevel.uppercoretest.command.functional;
 
 import org.bukkit.command.CommandSender;
+import xyz.upperlevel.uppercore.command.DefaultPermissionUser;
+import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.command.SenderType;
-import xyz.upperlevel.uppercore.command.functional.AsCommand;
-import xyz.upperlevel.uppercore.command.functional.WithOptional;
-import xyz.upperlevel.uppercore.command.functional.WithPermission;
-import xyz.upperlevel.uppercore.command.functional.WithSender;
+import xyz.upperlevel.uppercore.command.functional.*;
 
 import java.util.Arrays;
 
-public class TestFunctionalParameters {
+import static xyz.upperlevel.uppercore.command.DefaultPermissionUser.OP;
+
+public class TestFunctionalParameters extends NodeCommand {
     public TestFunctionalParameters() {
+        super("par");
+        addCommands(FunctionalCommand.load(this));
     }
 
     @AsCommand
@@ -32,7 +35,7 @@ public class TestFunctionalParameters {
      */
     @AsCommand
     @WithPermission("permission")
-    public void permission(CommandSender sender, @WithPermission("arg") String arg) {
+    public void permission(CommandSender sender, @WithPermission(value = "arg", defaultUser = OP) String arg) {
         sender.sendMessage("Sender: " + sender.getName());
         sender.sendMessage("Arg: " + arg);
     }
