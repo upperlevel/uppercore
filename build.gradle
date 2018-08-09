@@ -53,6 +53,7 @@ repositories {
 }
 
 dependencies {
+    /* Lombok */
     compileOnly "org.projectlombok:lombok:1.16.20"
     testCompileOnly "org.projectlombok:lombok:1.16.20"
     integrationTestCompileOnly "org.projectlombok:lombok:1.16.20"
@@ -73,6 +74,7 @@ dependencies {
 
     compile "org.bstats:bstats-bukkit:1.1" // metrics
 
+    /* Db */
     compileOnly "org.mongodb:mongo-java-driver:3.5.0"
     compileOnly "com.rethinkdb:rethinkdb-driver:2.3.3"
     compileOnly "org.dizitart:nitrite:2.1.1"

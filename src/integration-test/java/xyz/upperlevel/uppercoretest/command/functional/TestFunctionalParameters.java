@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercoretest.command.functional;
 
 import org.bukkit.command.CommandSender;
-import xyz.upperlevel.uppercore.command.DefaultPermissionUser;
 import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.command.SenderType;
 import xyz.upperlevel.uppercore.command.functional.*;
@@ -17,16 +16,13 @@ public class TestFunctionalParameters extends NodeCommand {
     }
 
     @AsCommand
-    public void simple(CommandSender sender, String arg1) {
-        sender.sendMessage("Sender: " + sender.getName());
-        sender.sendMessage("Arg1: " + arg1);
+    public void simple(CommandSender sender, int arg1) {
+        sender.sendMessage("Your number: " + arg1 + ".");
     }
 
     @AsCommand
     public void array(CommandSender sender, String arg1, String[] arg2) {
-        sender.sendMessage("Sender: " + sender.getName());
-        sender.sendMessage("Arg1: " + arg1);
-        sender.sendMessage("Arg2: " + Arrays.toString(arg2));
+        sender.sendMessage("Your first arg was: " + arg1 + ". Your second string was: " + Arrays.toString(arg2) + ".");
     }
 
     /**
@@ -36,8 +32,7 @@ public class TestFunctionalParameters extends NodeCommand {
     @AsCommand
     @WithPermission("permission")
     public void permission(CommandSender sender, @WithPermission(value = "arg", defaultUser = OP) String arg) {
-        sender.sendMessage("Sender: " + sender.getName());
-        sender.sendMessage("Arg: " + arg);
+        sender.sendMessage("You may be OP since you successfully ran this command with arg: " + arg + ".");
     }
 
     /**
@@ -57,7 +52,7 @@ public class TestFunctionalParameters extends NodeCommand {
      * If the parameter is optional, if not given, will be set to null.
      */
     @AsCommand
-    public void optional(CommandSender sender, @WithOptional String arg) {
+    public void optional(CommandSender sender, @WithOptional int arg) {
         sender.sendMessage("Sender: " + sender.getName());
         sender.sendMessage("Arg: " + arg);
     }

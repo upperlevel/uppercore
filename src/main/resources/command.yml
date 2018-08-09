@@ -1,0 +1,38 @@
+# >>> ERROR MESSAGES:
+
+# %permission% - permission required
+no-permission: "&cYou don't have the permission to run this command."
+
+# %permission%      - permission required
+# %parameter%       - parameter name
+# %parameter_index% - index of the denied parameter
+no-permission-on-parameter: "&cYou don't have the permission to use the parameter: &d%parameter%&c."
+
+# %sender%       - type of sender required
+wrong-sender-type: "&cYou must run this command as a &d%sender%&c."
+
+# %usage% - usage for the command
+invalid-usage: "&cInvalid usage: %usage%"
+
+# %parameter%       - parameter name
+# %parameter_type%  - correct type for the parameter
+# %parameter_index% - index of the wrong type parameter
+# %wrong_argument%  - the wrong argument value
+invalid-argument-type: "&d%parameter%&c must be a &d%parameter_type%&c. Invalid value: '&d%wrong_argument%&c'."
+
+# >>> HELP COMMAND:
+
+commands-per-page: 9
+show-inaccessible-commands: true
+
+# %node_cmd%  - helped node command
+# %page%      - current page
+# %max_page%  - max page
+help-header: "&eHelp for command &6%node_cmd% &e[%page%/%max_page%]:"
+help-footer: []
+
+# %node_cmd%    - node command owning current
+# %cmd%         - name of the command
+# %cmd_usage%   - parameters for command
+# %cmd_desc%    - brief description for the command
+help-line: "&6%cmd% %cmd_usage%   &7%cmd_desc%"

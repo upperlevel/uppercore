@@ -6,20 +6,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
+import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
 import xyz.upperlevel.uppercore.command.functional.WithEveryPermission;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class NodeCommand extends Command {
-    private final Map<String, Command> commands = new HashMap<>();
+    private final List<Command> commands = new ArrayList<>();
+    private final Map<String, Command> commandsByName = new HashMap<>();
 
     @Getter
     private Permission everyPermission; // the * permission
 
     public NodeCommand(String name) {
         super(name);
-        addCommand(new HelpCommand());
+        FunctionalCommand.inject(this, new HelpCommand());
     }
 
     public void addCommand(Command command) {
@@ -30,13 +32,14 @@ public class NodeCommand extends Command {
         Set<String> keys = command.getAliases();
         keys.add(command.getName());
         for (String key : keys) {
-            if (commands.containsKey(key)) {
+            if (commandsByName.containsKey(key)) {
                 throw new IllegalArgumentException("Trying to register command's key '" + key + "' that was already registered node: " + getName());
             }
         }
 
+        commands.add(command);
         for (String key : keys) {
-            commands.put(key, command);
+            commandsByName.put(key, command);
         }
 
         command.setParent(this);
@@ -47,11 +50,11 @@ public class NodeCommand extends Command {
     }
 
     public Command getCommand(String name) {
-        return commands.get(name.toLowerCase(Locale.ENGLISH));
+        return commandsByName.get(name.toLowerCase(Locale.ENGLISH));
     }
 
-    public Collection<Command> getCommands() {
-        return commands.values();
+    public List<Command> getCommands() {
+        return Collections.unmodifiableList(commands);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class NodeCommand extends Command {
                 everyPermission.addParent(getParent().everyPermission, true);
             }
         }
-        for (Command command : commands.values()) {
+        for (Command command : commands) {
             command.completePermission(root);
         }
     }
@@ -77,7 +80,7 @@ public class NodeCommand extends Command {
     @Override
     public void registerPermission() {
         super.registerPermission();
-        for (Command command : commands.values()) { // registers all sub commands permission
+        for (Command command : commands) { // registers all sub commands permission
             command.registerPermission();
         }
     }
@@ -111,7 +114,7 @@ public class NodeCommand extends Command {
     @Override
     public List<String> suggest(CommandSender sender, List<String> arguments) {
         if (arguments.isEmpty()) { // if there is no argument we list all runnable commands
-            return commands.values()
+            return commands
                     .stream()
                     .filter(command -> sender.hasPermission(command.getPermission()))
                     .map(Command::getName)
@@ -124,7 +127,7 @@ public class NodeCommand extends Command {
             return Collections.emptyList();
         } else { // if there is just one argument we need to get the commands that starts with it
             String argument = arguments.get(0);
-            return commands.values()
+            return commands
                     .stream()
                     .filter(command -> sender.hasPermission(command.getPermission()))
                     .map(Command::getName)

@@ -11,6 +11,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.placeholder.message.Message;
 
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +59,11 @@ public abstract class Command {
     @NonNull
     private Permission permission;
 
+    /* Configuration */
+
+    private static Message noPermissionMessage;
+    private static Message wrongSenderTypeMessage;
+
     public Command(String name) {
         this.name = name.toLowerCase(Locale.ENGLISH);
         permissionPortion = new Permission(this.name, PermissionDefault.TRUE);
@@ -62,6 +72,8 @@ public abstract class Command {
     protected void setParent(NodeCommand parent) {
         this.parent = parent;
     }
+
+    /* Permission */
 
     public void completePermission(Permission root) {
         if (parent != null) {
@@ -80,6 +92,8 @@ public abstract class Command {
     public boolean hasPermission(CommandSender sender) {
         return permission == null || sender.hasPermission(permission);
     }
+
+    /* Descriptor */
 
     public void addAlias(String alias) {
         aliases.add(alias.toLowerCase(Locale.ENGLISH));
@@ -106,13 +120,7 @@ public abstract class Command {
      */
     public abstract String getUsage(CommandSender sender, boolean colored);
 
-    /**
-     * Gets the helpline for this command.
-     * The helpline is the path of the command (a chain of parents' commands) followed by command's name and usage.
-     * An example: {@code parent1 parent2 command <arg1> <arg2> [optional=value]}.
-     * The colored parameter changes the helpline color based on the sender.
-     */
-    public String getHelpline(CommandSender sender, boolean colored) {
+    public String getPath() {
         StringBuilder path = new StringBuilder();
         NodeCommand higher = parent;
         while (higher != null) {
@@ -120,26 +128,38 @@ public abstract class Command {
             higher = higher.getParent();
         }
         path.append(name);
+        return path.toString();
+    }
 
+    /**
+     * Gets the helpline for this command.
+     * The helpline is the path of the command (a chain of parents' commands) followed by command's name and usage.
+     * An example: {@code parent1 parent2 command <arg1> <arg2> [optional=value]}.
+     * The colored parameter changes the helpline color based on the sender.
+     */
+    public String getHelpline(CommandSender sender, boolean colored) {
+        String path = getPath();
         String usage = getUsage(sender, colored);
         if (usage.length() > 0) {
-            path.append(" ").append(usage);
+            path += " " + usage;
         }
-
         if (colored) {
-            return path.insert(0, hasPermission(sender) ? ChatColor.GREEN : ChatColor.RED).toString();
+            path = (hasPermission(sender) ? ChatColor.GREEN : ChatColor.RED) + path;
         }
-
-        return path.toString();
+        return path;
     }
 
     public boolean call(CommandSender sender, List<String> args) {
         if (!hasPermission(sender)) {
-            sender.sendMessage("No permission: " + permission.getName()); // TODO
+            noPermissionMessage.send(sender, PlaceholderRegistry.create()
+                    .set("permission", permission.getName())
+            );
             return false;
         }
         if (!senderType.match(sender)) {
-            sender.sendMessage("Sender mismatch! You may be a " + senderType.name() + "."); // TODO
+            wrongSenderTypeMessage.send(sender, PlaceholderRegistry.create()
+                    .set("sender", senderType.name().toLowerCase(Locale.ENGLISH))
+            );
             return false;
         }
         onCall(sender, args);
@@ -161,5 +181,10 @@ public abstract class Command {
         }
         map.register(name, NativeCommandUtil.wrap(this));
         return true;
+    }
+
+    public static void configure(Config cfg) {
+        noPermissionMessage = cfg.getMessage("no-permission");
+        wrongSenderTypeMessage = cfg.getMessage("wrong-sender-type");
     }
 }

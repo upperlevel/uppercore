@@ -1,32 +1,50 @@
 package xyz.upperlevel.uppercore.command.functional;
 
 import lombok.Getter;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.Command;
+import xyz.upperlevel.uppercore.command.CommandContext;
+import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParseException;
 import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParser;
 import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParserManager;
+import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.placeholder.message.Message;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class FunctionalCommand extends Command {
+    /**
+     * The object that holds the command function.
+     */
     @Getter
-    private Object residence; // where the command function is at
+    private Object residence;
 
     @Getter
     private Method function;
 
+    /**
+     * First parameter can be a CommandSender or a CommandContext.
+     */
+    @Getter
+    private Parameter firstParameter;
+
     @Getter
     private FunctionalParameter[] parameters;
+
+    /* Configuration */
+
+    private static Message noPermissionOnParameterMessage;
+    private static Message invalidUsageMessage;
+    private static Message invalidArgumentTypeMessage;
 
     public FunctionalCommand(String name, Object residence, Method function, ArgumentParserManager parserManager) {
         super(name);
@@ -46,6 +64,10 @@ public class FunctionalCommand extends Command {
         if (sender != null) {
             setSenderType(sender.value());
         }
+        if (function.getParameterCount() == 0) {
+            throw new IllegalArgumentException("'" + function.getName() + "' command function has 0 parameters. A command function should have at least one.");
+        }
+        firstParameter = function.getParameters()[0];
         this.parameters = new FunctionalParameter[function.getParameterCount() - 1];
         for (int i = 0; i < function.getParameterCount() - 1; i++) {
             Parameter parameter = function.getParameters()[i + 1];
@@ -53,7 +75,7 @@ public class FunctionalCommand extends Command {
             if (parser != null) {
                 this.parameters[i] = new FunctionalParameter(this, parameter, parser);
             } else {
-                throw new IllegalArgumentException("No ArgumentParser found for parameter type: " + parameter.getType().getName());
+                throw new IllegalArgumentException("'" + function.getName() + "' command function unparsable type: " + parameter.getType().getName());
             }
         }
     }
@@ -103,34 +125,58 @@ public class FunctionalCommand extends Command {
     @Override
     protected boolean onCall(CommandSender sender, List<String> args) {
         List<Object> objects = new ArrayList<>();
-        objects.add(sender); // The first parameter MUST be always the CommandSender
+
+        // As first parameters are supported CommandSender or CommandContext
+        if (firstParameter.getType() == CommandSender.class) {
+            objects.add(sender);
+        } else if (firstParameter.getType() == CommandContext.class) {
+            objects.add(new CommandContext(sender, this));
+        } else {
+            throw new IllegalArgumentException("'" + function.getName() + "' command function has a wrong first parameter type.");
+        }
+
         int currArgIndex = 0;
-        for (FunctionalParameter parameter : parameters) {
+        for (int i = 0; i < parameters.length; i++) {
+            FunctionalParameter parameter = parameters[i];
             ArgumentParser parser = parameter.getParser();
             if (!parameter.hasPermission(sender)) {
                 if (parameter.isOptional()) { // if the parameter is optional we add its default value
                     objects.add(parameter.getDefaultValue());
                 } else { // no, the parameter is not optional we need to throw an error
-                    throw new IllegalStateException("You do not have enough permissions to use the parameter: " + parameter);
+                    noPermissionOnParameterMessage.send(sender, PlaceholderRegistry.create()
+                            .set("permission", parameter.getPermission().getName())
+                            .set("parameter", parameter.getName())
+                            .set("parameter_index", i)
+                    );
+                    return false;
                 }
             } else { // if the sender has enough permissions to execute this parameter
                 if (currArgIndex >= args.size()) { // if we already used all of our arguments
                     if (parameter.isOptional()) {
-                        // if the next parameter is optional
-                        objects.add(parameter.getDefaultValue()); // We use its default value
+                        // if the parameter is optional
+                        objects.add(parameter.getDefaultValue()); // we can use its default value
                     } else {
-                        // otherwise we throw an illegal arguments count exception
-                        throw new IllegalArgumentException("Not enough arguments typed to run this command!");
+                        // otherwise we throw an illegal arguments count exception (or invalid usage)
+                        invalidUsageMessage.send(sender, PlaceholderRegistry.create()
+                                .set("usage", getHelpline(sender, false))
+                        );
+                        return false;
                     }
-                } else { // if we have other arguments to use
+                } else { // otherwise, if we have other arguments to use
                     int consumed = parser.getConsumedCount();
                     if (consumed < 0) {
                         consumed = args.size() - currArgIndex;
                     }
                     try {
                         objects.add(parser.parse(args.subList(currArgIndex, currArgIndex + consumed)));
-                    } catch (ArgumentParseException exception) {
-                        throw new IllegalArgumentException("An argument mismatch its original type: ", exception);
+                    } catch (ArgumentParseException e) {
+                        invalidArgumentTypeMessage.send(sender, PlaceholderRegistry.create()
+                                .set("parameter", parameter.getName())
+                                .set("parameter_type", parameter.getOriginal().getType().getSimpleName().toLowerCase(Locale.ENGLISH))
+                                .set("parameter_index", i)
+                                .set("wrong_argument", StringUtils.join(e.getArguments(), " "))
+                        );
+                        return false;
                     }
                     currArgIndex += consumed;
                 }
@@ -186,5 +232,15 @@ public class FunctionalCommand extends Command {
             }
         }
         return result;
+    }
+
+    public static void inject(NodeCommand node, Object residence) {
+        node.addCommands(load(residence));
+    }
+
+    public static void configure(Config cfg) {
+        noPermissionOnParameterMessage = cfg.getMessage("no-permission-on-parameter");
+        invalidUsageMessage = cfg.getMessage("invalid-usage");
+        invalidArgumentTypeMessage = cfg.getMessage("invalid-argument-type");
     }
 }

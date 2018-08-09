@@ -26,5 +26,4 @@ public enum PermissionCompleter {
      * Expects that both parent and child permissions are not null.
      */
     public abstract Permission complete(Permission parent, Permission child);
-
 }
