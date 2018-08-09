@@ -7,11 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.PluginManager;
 import xyz.upperlevel.uppercore.command.PermissionCompleter;
 import xyz.upperlevel.uppercore.command.SenderType;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParseException;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParser;
+import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
+import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
 
 import java.lang.reflect.Parameter;
 import java.util.Arrays;

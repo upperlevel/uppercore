@@ -2,8 +2,6 @@ package xyz.upperlevel.uppercoretest.command.functional;
 
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.command.NodeCommand;
-import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParserManager;
 
 import java.util.List;
 

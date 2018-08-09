@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command.functional.parameter;
+package xyz.upperlevel.uppercore.command.functional.parser;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

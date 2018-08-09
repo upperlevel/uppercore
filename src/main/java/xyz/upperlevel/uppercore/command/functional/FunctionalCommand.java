@@ -4,15 +4,13 @@ import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.CommandContext;
 import xyz.upperlevel.uppercore.command.NodeCommand;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParseException;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParser;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParserManager;
+import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
+import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
+import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParserManager;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.ConfigUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
 

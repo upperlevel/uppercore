@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.command;
 
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
+import xyz.upperlevel.uppercore.command.functional.WithName;
 import xyz.upperlevel.uppercore.command.functional.WithOptional;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
@@ -19,7 +20,7 @@ public class HelpCommand {
     private static Message lineMessage;
 
     @AsCommand
-    public void help(CommandContext context, @WithOptional("1") int page) {
+    public void help(CommandContext context, @WithName("page") @WithOptional("1") int page) {
         CommandSender sender = context.sender();
         NodeCommand parent = context.command().getParent();
         if (parent == null) {

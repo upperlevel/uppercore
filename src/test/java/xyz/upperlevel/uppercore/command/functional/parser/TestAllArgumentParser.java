@@ -1,9 +1,5 @@
 package xyz.upperlevel.uppercore.command.functional.parser;
 
-import org.junit.Test;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParseException;
-import xyz.upperlevel.uppercore.command.functional.parameter.ArgumentParserManager;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

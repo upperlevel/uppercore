@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command.functional.parameter;
+package xyz.upperlevel.uppercore.command.functional.parser;
 
 import java.util.List;
 

@@ -1,8 +1,7 @@
-package xyz.upperlevel.uppercore.command.functional.parameter;
+package xyz.upperlevel.uppercore.command.functional.parser;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
