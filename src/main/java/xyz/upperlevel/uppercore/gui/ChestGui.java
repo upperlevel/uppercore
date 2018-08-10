@@ -9,6 +9,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.itemstack.ItemResolver;
@@ -103,8 +105,9 @@ public class ChestGui implements Gui {
                 size = GuiSize.min(size);
             }
             icons = new ConfigIcon[size];
-        } else
+        } else {
             throw new InvalidConfigException("Both 'type' and 'size' are empty!");
+        }
         updateInterval = config.getInt("update-interval", -1);
         title = config.getMessageStrRequired("title");
         Collection<Map<String, Object>> iconsData = (Collection<Map<String, Object>>) config.getCollection("icons");
@@ -112,6 +115,36 @@ public class ChestGui implements Gui {
             for (Map<String, Object> data : iconsData) {
                 ConfigIcon item = ConfigIcon.deserialize(plugin, Config.wrap(data));
                 icons[(int) data.get("slot")] = item;
+            }
+        }
+    }
+
+    @ConfigConstructor
+    public ChestGui(
+            @ConfigProperty("type") Optional<InventoryType> type,
+            @ConfigProperty("size") Optional<GuiSize> size,
+            @ConfigProperty("update-interval") Optional<Integer> updateInteval,
+            @ConfigProperty("title") PlaceholderValue<String> title,
+            @ConfigProperty(value = "icons", optional = true) List<ConfigIcon> icons
+    ) {
+        if (type.isPresent()) {
+            this.type = type.get();
+            this.icons = new ConfigIcon[this.type.getDefaultSize()];
+        } else if (size.isPresent()) {
+            this.size = size.get().size();
+            this.icons = new ConfigIcon[this.size];
+        } else {
+            throw new InvalidConfigException("Both 'type' and 'size' are empty!");
+        }
+        updateInterval = updateInteval.orElse(-1);
+        this.title = title;
+        if (icons != null) {
+            for (ConfigIcon icon : icons) {
+                if (icon.getSlot() != -1) {
+                    this.icons[icon.getSlot()] = icon;
+                } else {
+                    addIcon(icon);
+                }
             }
         }
     }

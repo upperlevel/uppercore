@@ -59,13 +59,14 @@ dependencies {
     integrationTestCompileOnly "org.projectlombok:lombok:1.16.20"
 
     testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.+"
 
     compileOnly "org.spigotmc:spigot-api:" + mcVersion
-    testCompileOnly "org.spigotmc:spigot-api:" + mcVersion
+    testCompile "org.spigotmc:spigot-api:" + mcVersion
     integrationTestCompileOnly "org.spigotmc:spigot-api:" + mcVersion
 
     compileOnly "org.bukkit:bukkit:" + mcVersion
-    testCompileOnly "org.bukkit:bukkit:" + mcVersion
+    testCompile "org.bukkit:bukkit:" + mcVersion
     integrationTestCompileOnly "org.spigotmc:spigot-api:" + mcVersion
 
     compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3" // anvil-gui
@@ -77,7 +78,7 @@ dependencies {
     /* Db */
     compileOnly "org.mongodb:mongo-java-driver:3.5.0"
     compileOnly "com.rethinkdb:rethinkdb-driver:2.3.3"
-    compileOnly "org.dizitart:nitrite:2.1.1"
+    compileOnly "org.dizitart:nitrite:3.0.2"
 }
 
 shadowJar {
@@ -96,7 +97,7 @@ checkstyle {
             'baseDir': rootDir,
     ]
     toolVersion = '7.3'
-    //ignoreFailures = true
+    ignoreFailures = true
 }
 */
 

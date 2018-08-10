@@ -41,6 +41,10 @@ public interface PlaceholderValue<T> {
         return true;
     }
 
+    default <N> PlaceholderValue<N> map(Function<T, N> mapper) {
+        return (p, l) -> mapper.apply(resolve(p, l));
+    }
+
 
     String toString();
 
@@ -135,6 +139,11 @@ public interface PlaceholderValue<T> {
         @Override
         public boolean hasPlaceholders() {
             return false;
+        }
+
+        @Override
+        public <N> FalsePlaceholderValue<N> map(Function<T, N> mapper) {
+            return new FalsePlaceholderValue<>(mapper.apply(value));
         }
     }
 

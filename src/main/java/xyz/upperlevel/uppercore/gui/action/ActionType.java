@@ -23,6 +23,9 @@ public abstract class ActionType<T extends Action> {
     }
 
     @Getter
+    private final Class<T> handleClass;
+
+    @Getter
     private final String type;
 
     public abstract T load(Plugin plugin, Object config);
@@ -101,5 +104,9 @@ public abstract class ActionType<T extends Action> {
         return s.stream()
                 .map((Function<Action, Map<String, Object>>) ActionType::serialize)
                 .collect(Collectors.toList());
+    }
+
+    public static ActionType<?> getActionType(String type) {
+        return types.get(type);
     }
 }

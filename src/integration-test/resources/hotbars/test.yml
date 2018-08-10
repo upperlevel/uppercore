@@ -1,0 +1,12 @@
+icons:
+- slot: 8
+  item:
+    type: bed
+    name: '&c&lSay lool'
+    lore:
+    - '&7Right-click to sat lol!'
+  click:
+    actions:
+    - type: command
+      command: say lool
+      executor: player

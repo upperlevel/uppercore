@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.gui.link;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.gui.link.impl.CommandLink;
 import xyz.upperlevel.uppercore.gui.link.impl.ConsoleCommandLink;
 

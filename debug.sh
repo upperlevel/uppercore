@@ -15,6 +15,7 @@ then
 fi
 
 echo "Copying plugins..."
+mkdir tmp/plugins
 cp build/libs/Uppercore.jar tmp/plugins/Uppercore.jar
 cp build/libs/UppercoreTest-1.3.jar tmp/plugins/UppercoreTest.jar
 

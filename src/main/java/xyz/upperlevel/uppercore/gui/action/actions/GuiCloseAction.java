@@ -2,6 +2,9 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 
@@ -10,10 +13,12 @@ import java.util.Map;
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 public class GuiCloseAction extends Action<GuiCloseAction> {
-
     public static final GuiCloseActionType TYPE = new GuiCloseActionType();
 
-    public GuiCloseAction(Plugin plugin) {
+    @ConfigConstructor
+    public GuiCloseAction(
+            @CurrentPlugin Plugin plugin
+    ) {
         super(plugin, TYPE);
     }
 
@@ -25,7 +30,7 @@ public class GuiCloseAction extends Action<GuiCloseAction> {
     public static class GuiCloseActionType extends BaseActionType<GuiCloseAction> {
 
         public GuiCloseActionType() {
-            super("close-gui");
+            super(GuiCloseAction.class, "close-gui");
             setParameters();
         }
 

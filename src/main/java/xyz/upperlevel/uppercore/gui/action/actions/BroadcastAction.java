@@ -5,33 +5,43 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.nms.impl.MessageNms;
 import xyz.upperlevel.uppercore.nms.impl.entity.PlayerNms;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Map;
 import java.util.function.Predicate;
 
 import static xyz.upperlevel.uppercore.util.TextUtil.translateCustom;
 
-@Getter
 public class BroadcastAction extends Action<BroadcastAction> {
-
     public static final BroadcastActionType TYPE = new BroadcastActionType();
 
+    @Getter
     private final PlaceholderValue<String> message;
+    @Getter
     private final String permission;
+    @Getter
     private final boolean raw;
 
-    public BroadcastAction(Plugin plugin, PlaceholderValue<String> message, String permission, boolean raw) {
+    @ConfigConstructor(inlineable = true)
+    private BroadcastAction(
+            @CurrentPlugin Plugin plugin,
+            @ConfigProperty("message") PlaceholderValue<String> message,
+            @ConfigProperty(value = "permission", optional = true) String permission,
+            @ConfigProperty(value = "raw", optional = true) Boolean raw
+    ) {
         super(plugin, TYPE);
         this.message = message;
         this.permission = permission;
-        this.raw = raw;
+        this.raw = raw != null ? raw : false;
     }
 
     @Override
@@ -71,7 +81,7 @@ public class BroadcastAction extends Action<BroadcastAction> {
     public static class BroadcastActionType extends BaseActionType<BroadcastAction> {
 
         public BroadcastActionType() {
-            super("broadcast");
+            super(BroadcastAction.class, "broadcast");
             setParameters(
                     Parameter.of("message", Parser.strValue(), true),
                     Parameter.of("permission", Parser.strValue(), false),

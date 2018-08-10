@@ -1,14 +1,33 @@
 package xyz.upperlevel.uppercore.gui.action;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.PolymorphicSelector;
 import xyz.upperlevel.uppercore.gui.link.Link;
+import xyz.upperlevel.uppercore.registry.Registry;
 
-@RequiredArgsConstructor
 public abstract class Action<T extends Action<T>> implements Link {
     @Getter
     private final Plugin plugin;
     @Getter
     private final ActionType<T> type;
+
+    @Getter
+    @Setter
+    private Registry<?> registry;
+
+    public Action(Plugin plugin, ActionType<T> type) {
+        this.plugin = plugin;
+        this.type = type;
+        this.registry = Uppercore.registry().get(plugin);
+    }
+
+    @PolymorphicSelector
+    private static Class<? extends Action> selectAction(@ConfigProperty("type") String rawType) {
+        ActionType<?> type = ActionType.getActionType(rawType);
+        return type != null ? type.getHandleClass() : null;
+    }
 }

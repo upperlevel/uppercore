@@ -4,12 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.action.Action;
@@ -21,10 +24,7 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
 import xyz.upperlevel.uppercore.sound.PlaySound;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -38,6 +38,9 @@ public class ConfigIcon {
     @Getter
     @Setter
     private int updateInterval; // 0 or < 0 are considered null
+    @Getter
+    @Setter
+    private int slot;
 
     public ConfigIcon() {
     }
@@ -58,6 +61,20 @@ public class ConfigIcon {
     public ConfigIcon(ItemResolver display, Link link) {
         this.display = display;
         this.link = link;
+    }
+
+
+    @ConfigConstructor
+    public ConfigIcon(
+            @ConfigProperty("update-interval") Optional<Integer> updateInterval,
+            @ConfigProperty("item") Optional<CustomItem> item,
+            @ConfigProperty("click") Optional<IconClick> click,
+            @ConfigProperty("slot") Optional<Integer> slot
+    ) {
+        this.updateInterval = updateInterval.orElse(0);
+        this.display = item.orElse(null);
+        this.link = click.orElse(null);
+        this.slot = slot.orElse(-1);
     }
 
     public void setDisplay(ItemStack display) {
@@ -164,6 +181,25 @@ public class ConfigIcon {
         private IconClick() {
         }
 
+        @ConfigConstructor
+        public IconClick(
+                @ConfigProperty(value = "permission", optional = true) String permission,
+                @ConfigProperty("no-permission-message") Optional<Message> noPermissionMessage,
+                @ConfigProperty("no-permission-sound") Optional<PlaySound> noPermissionSound,
+                @ConfigProperty("cost") Optional<PlaceholderValue<Double>> cost,// TODO: do not use double for money
+                @ConfigProperty("no-money-error") Optional<Message> noMoneyError,
+                @ConfigProperty("no-money-sound") Optional<PlaySound> noMoneySound,
+                @ConfigProperty("actions") Optional<List<Action>> actions
+        ) {
+            this.permission = permission;
+            this.noPermissionError = noPermissionMessage.orElseGet(() -> Message.fromText("You don't have permission!"));
+            this.noPermissionSound = noPermissionSound.orElse(null);
+            this.cost = cost.orElseGet(() -> PlaceholderValue.fake(0.0));
+            this.noMoneyError = noMoneyError.orElseGet(() -> Message.fromText("You don't have enough money"));
+            this.noMoneySound = noMoneySound.orElse(null);
+            this.actions = actions.orElse(Collections.emptyList());
+        }
+
         public boolean checkPermission(Player player) {
             if (permission != null && !player.hasPermission(permission)) {
                 noPermissionError.send(player);
@@ -194,6 +230,26 @@ public class ConfigIcon {
             return true;
         }
 
+        @Override
+        public void run(Player player) {
+            if (checkPermission(player) && pay(player)) {
+                for (Action action : actions)
+                    action.run(player);
+            }
+        }
+
+        @Override
+        public String toString() {
+            StringJoiner joiner = new StringJoiner(", ");
+            joiner.add("permission: " + permission);
+            joiner.add("noPermissionError: " + noPermissionError);
+            joiner.add("noPermissionSound: " + noPermissionSound);
+            joiner.add("cost: " + cost);
+            joiner.add("noMoneyError: " + noMoneyError);
+            joiner.add("noMoneySound: " + noMoneySound);
+            return '{' + joiner.toString() + '}';
+        }
+
         @SuppressWarnings("unchecked")
         public static IconClick deserialize(Plugin plugin, Config config) {
             IconClick res = new IconClick();
@@ -213,26 +269,6 @@ public class ConfigIcon {
                         .map(obj -> ActionType.deserialize(plugin, obj))
                         .collect(Collectors.toList());
             return res;
-        }
-
-        @Override
-        public void run(Player player) {
-            if (checkPermission(player) && pay(player)) {
-                for (Action action : actions)
-                    action.run(player);
-            }
-        }
-
-        @Override
-        public String toString() {
-            StringJoiner joiner = new StringJoiner(", ");
-            joiner.add("permission: " + permission);
-            joiner.add("noPermissionError: " + noPermissionError);
-            joiner.add("noPermissionSound: " + noPermissionSound);
-            joiner.add("cost: " + cost);
-            joiner.add("noMoneyError: " + noMoneyError);
-            joiner.add("noMoneySound: " + noMoneySound);
-            return '{' + joiner.toString() + '}';
         }
     }
 }

@@ -59,13 +59,16 @@ public final class ConfigUtil {
                 } catch (IllegalArgumentException e) {
                     color = null;
                 }
-            } else
+            } else {
                 color = COLOR_BY_NAME.get(s.toUpperCase());
-            if (color == null)
-                throw new InvalidConfigException("Invalid color \"" + s + "\", use \"R;G;B\", \"#RRGGBB\" or color name!");
+            }
+            if (color == null) {
+                throw new InvalidConfigException("Invalid color \"" + s + "\", use \"R;G;B\", \"#RRGGBB\" or color value!");
+            }
             else return color;
-        } else
+        } else {
             return Color.fromRGB(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+        }
     }
 
     public static FireworkEffect.Type parseFireworkEffectType(String s) {

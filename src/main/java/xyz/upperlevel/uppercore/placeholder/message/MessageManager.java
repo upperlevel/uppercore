@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Maps.immutableEntry;
 
+// TODO implement new config and such
 public class MessageManager {
     @Getter
     private final String path;

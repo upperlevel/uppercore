@@ -1,0 +1,18 @@
+title: 'Test Gui'
+size: 54
+icons:
+- slot: 4
+  item:
+    type: dirt
+    name: 'Hello World'
+  click:
+    actions:
+    - type: broadcast
+      message: "Hello World!"
+- slot: 48
+  item:
+    type: 'arrow'
+    name: '&aGo Back'
+  click:
+    actions:
+    - 'gui-back'

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
+// TODO: REMOVE
 @Getter
 public class InvalidConfigException extends RuntimeException {
     private final String configError;

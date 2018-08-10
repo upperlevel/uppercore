@@ -7,6 +7,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,19 @@ public class Position implements ConfigurationSerializable {
         this.z = z;
         this.yaw = yaw;
         this.pitch = pitch;
+    }
+
+    public Position(double x, double y, double z) {
+        this(x, y, z, 0f, 0f);
+    }
+
+    @ConfigConstructor(inlineable = true)
+    protected Position(@ConfigProperty("x") double x,
+                       @ConfigProperty("y") double y,
+                       @ConfigProperty("z") double z,
+                       @ConfigProperty(value = "yaw", optional = true) Float yaw,
+                       @ConfigProperty(value = "pitch", optional = true) Float pitch) {
+        this(x, y, z, yaw != null ? yaw : 0.0f, pitch != null ? pitch : 0.0f);
     }
 
     public Position(Location location) {

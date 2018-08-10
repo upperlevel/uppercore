@@ -6,6 +6,9 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -15,13 +18,16 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import java.util.Map;
 
 public class VaultGiveAction extends Action<VaultGiveAction> {
-
     public static final VaultGiveActionType TYPE = new VaultGiveActionType();
 
     @Getter
     private final PlaceholderValue<Double> value;
 
-    public VaultGiveAction(Plugin plugin, PlaceholderValue<Double> value) {
+    @ConfigConstructor(inlineable = true)
+    public VaultGiveAction(
+            @CurrentPlugin Plugin plugin,
+            @ConfigProperty("value") PlaceholderValue<Double> value
+    ) {
         super(plugin, TYPE);
         this.value = value;
     }
@@ -40,7 +46,7 @@ public class VaultGiveAction extends Action<VaultGiveAction> {
     public static class VaultGiveActionType extends BaseActionType<VaultGiveAction> {
 
         public VaultGiveActionType() {
-            super("vault-give");
+            super(VaultGiveAction.class, "vault-give");
             setParameters(
                     Parameter.of("value", Parser.strValue(), true)//TODO: better Placeholder support
             );

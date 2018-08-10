@@ -2,7 +2,10 @@ package xyz.upperlevel.uppercore.gui;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.experimental.Accessors;
+
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true)
@@ -18,5 +21,14 @@ public enum GuiSize {
      */
     public static int min(int needed) {
         return (int) (Math.ceil(needed / 9.0) * 9);
+    }
+
+    public static GuiSize lookup(int size) {
+        for (GuiSize value: values()) {
+            if (value.size == size) {
+                return value;
+            }
+        }
+        throw new NoSuchElementException();
     }
 }

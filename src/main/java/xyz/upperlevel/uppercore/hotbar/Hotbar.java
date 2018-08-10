@@ -6,16 +6,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.gui.ChestGui;
 import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.gui.link.Link;
+import xyz.upperlevel.uppercore.registry.RegistryLoader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.beans.ConstructorProperties;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Hotbar {
+    public static final RegistryLoader<Hotbar> CONFIG_LOADER = RegistryLoader.fromClass(Hotbar.class);
+
     @Getter
     private ConfigIcon[] icons = new ConfigIcon[9];
     @Getter
@@ -32,10 +36,22 @@ public class Hotbar {
             for (Config section : config.getConfigList("icons")) {
                 ConfigIcon icon = ConfigIcon.deserialize(plugin, section);
                 int slot = section.getInt("slot", -1);
-                if (slot == -1)
+                if (slot == -1) {
                     noSlotIcons.add(icon);
-                else
+                } else {
                     icons[slot] = icon;
+                }
+            }
+        }
+    }
+
+    @ConfigConstructor
+    public Hotbar(@ConfigProperty("icons") List<ConfigIcon> confIcons) {
+        for (ConfigIcon icon : confIcons) {
+            if (icon.getSlot() != -1) {
+                icons[icon.getSlot()] = icon;
+            } else {
+                noSlotIcons.add(icon);
             }
         }
     }

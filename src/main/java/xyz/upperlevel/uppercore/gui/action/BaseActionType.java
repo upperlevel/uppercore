@@ -13,12 +13,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class BaseActionType<T extends Action> extends ActionType<T> {
-
     private Map<String, Parameter> parameters;
     private int requiredArgs = -1;
 
-    public BaseActionType(String type) {
-        super(type);
+    public BaseActionType(Class<T> handleClass, String type) {
+        super(handleClass, type);
     }
 
     @Override

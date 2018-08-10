@@ -5,6 +5,9 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -21,10 +24,15 @@ public class CommandAction extends Action<CommandAction> {
     private final PlaceholderValue<String> command;
     private final Executor executor;
 
-    public CommandAction(Plugin plugin, PlaceholderValue<String> command, Executor executor) {
+    @ConfigConstructor
+    public CommandAction(
+            @CurrentPlugin Plugin plugin,
+            @ConfigProperty("command") PlaceholderValue<String> command,
+            @ConfigProperty(value = "executor", optional = true) Executor executor
+    ) {
         super(plugin, TYPE);
         this.command = command;
-        this.executor = executor;
+        this.executor = executor != null ? executor : Executor.PLAYER;
     }
 
     @Override
@@ -36,7 +44,7 @@ public class CommandAction extends Action<CommandAction> {
     public static class CommandActionType extends BaseActionType<CommandAction> {
 
         public CommandActionType() {
-            super("command");
+            super(CommandAction.class, "command");
             setParameters(
                     Parameter.of("command", Parser.strValue(), true),
                     Parameter.of("executor", Parser.enumValue(Executor.class), Executor.PLAYER, false)

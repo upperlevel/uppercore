@@ -209,22 +209,28 @@ public class GuiManager implements Listener {
      */
     public void onClick(InventoryClickEvent event) {
         HumanEntity h = event.getWhoClicked();
-        if (!(h instanceof Player))
+        if (!(h instanceof Player)) {
+            // Sorry we don't work with aliens
             return;
+        }
         LinkedList<Gui> g = histories.get(h);
-        if (g != null && !g.isEmpty()) {
-            Gui gui = g.peek();
-            GuiClickEvent e = new GuiClickEvent(event, (Player) h, gui);
-            Bukkit.getPluginManager().callEvent(e);
-            if (e.isCancelled())
-                return;
+        if (g == null || g.isEmpty()) {
+            // No gui history, pass event
+            return;
+        }
+        Gui gui = g.peek();
+        GuiClickEvent e = new GuiClickEvent(event, (Player) h, gui);
+        Bukkit.getPluginManager().callEvent(e);
+        if (e.isCancelled()) {
+            return;
+        }
 
-            //Event cancelled BEFORE the method call to permit the un-cancelling
-            event.setCancelled(true);
-            gui.onClick(event);
-            //Creative idiots could copy the links
-            if (event.isShiftClick() && event.getWhoClicked().getGameMode() == GameMode.CREATIVE)
-                ((Player) event.getWhoClicked()).updateInventory();
+        // Event cancelled BEFORE the method call to permit the un-cancelling
+        event.setCancelled(true);
+        gui.onClick(event);
+        // Creative players could copy the links (and without an update it would always work)
+        if (event.isShiftClick() && event.getWhoClicked().getGameMode() == GameMode.CREATIVE) {
+            ((Player) event.getWhoClicked()).updateInventory();
         }
     }
 
@@ -280,8 +286,9 @@ public class GuiManager implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        // Todo: if (e.getClickedInventory() == e.getInventory())
+        if (e.getClickedInventory() == e.getInventory()) {
             onClick(e);
+        }
         if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
             if (getHistory((Player) e.getWhoClicked()) != null)
                 e.setCancelled(true);

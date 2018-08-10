@@ -4,10 +4,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.link.Link;
+import xyz.upperlevel.uppercore.registry.RegistryLoader;
 
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
 public interface Gui extends Link {
+    RegistryLoader<ChestGui> CONFIG_LOADER = RegistryLoader.fromClass(ChestGui.class);
 
     /**
      * Called when a player clicks on the inventory

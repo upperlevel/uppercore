@@ -5,6 +5,9 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -14,48 +17,46 @@ import javax.script.ScriptException;
 import java.util.Map;
 import java.util.logging.Level;
 
-import static xyz.upperlevel.uppercore.Uppercore.scripts;
 
-
-// TODO
 public class ScriptAction extends Action<ScriptAction> {
-
     public static final ScriptActionType TYPE = new ScriptActionType();
 
     @Getter
-    private final String id;
+    private final String path;
+    @Getter
     private Script script;
 
-    public ScriptAction(Plugin plugin, String id) {
+    @ConfigConstructor(inlineable = true)
+    public ScriptAction(
+            @CurrentPlugin Plugin plugin,
+            @ConfigProperty("id") String path
+    ) {
         super(plugin, TYPE);
-        this.id = id;
+        this.path = path;
     }
 
     @Override
     public void run(Player player) {
-        /*
         if (script == null) {
-            ScriptId scriptId = scripts().get(id);
-            if (scriptId == null) {
-                Uppercore.logger().severe("Cannot find script \"" + id + "\"");
-                script = Script.EMPTY;
+            Script script = (Script) getRegistry().find(path);
+            if (script == null) {
+                Uppercore.logger().severe("Cannot find script \"" + path + "\"");
+                this.script = Script.EMPTY;
                 return;
-            } else
-                script = scriptId.get();
+            }
+            this.script = script;
         }
-        if (script == Script.EMPTY) return;
         try {
             script.execute(player);
         } catch (ScriptException e) {
-            Uppercore.logger().log(Level.SEVERE, "Error while executing script \"" + id + "\"", e);
+            Uppercore.logger().log(Level.SEVERE, "Error while executing script \"" + path + "\"", e);
         }
-        */
     }
 
 
     public static class ScriptActionType extends BaseActionType<ScriptAction> {
         public ScriptActionType() {
-            super("script");
+            super(ScriptAction.class, "script");
             setParameters(
                     Parameter.of("id", Parser.strValue(), true)
             );
@@ -72,7 +73,7 @@ public class ScriptAction extends Action<ScriptAction> {
         @Override
         public Map<String, Object> read(ScriptAction action) {
             return ImmutableMap.of(
-                    "id", action.id
+                    "id", action.path
             );
         }
     }

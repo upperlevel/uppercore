@@ -7,6 +7,8 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
@@ -33,10 +35,13 @@ public class PlaySound {
     private PlaceholderValue<Float> volume;
     private PlaceholderValue<Float> pitch;
 
-    public PlaySound(PlaceholderValue<Sound> sound, PlaceholderValue<Float> volume, PlaceholderValue<Float> pitch) {
+    @ConfigConstructor(inlineable = true)
+    public PlaySound(@ConfigProperty("sound")                   PlaceholderValue<Sound> sound,
+                     @ConfigProperty(value = "volume", optional = true) PlaceholderValue<Float> volume,
+                     @ConfigProperty(value = "pitch", optional = true)  PlaceholderValue<Float> pitch) {
         this.sound = sound;
-        this.volume = volume;
-        this.pitch = pitch;
+        this.volume = volume != null ? volume : PlaceholderValue.fake(1.0f);
+        this.pitch = pitch != null ? pitch : PlaceholderValue.fake(1.0f);
     }
 
     public PlaySound(Config config) {

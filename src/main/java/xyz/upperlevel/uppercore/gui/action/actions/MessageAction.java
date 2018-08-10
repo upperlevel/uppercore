@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -15,33 +18,39 @@ import java.util.Map;
 
 import static xyz.upperlevel.uppercore.util.TextUtil.translateCustom;
 
-@Getter
 public class MessageAction extends Action<MessageAction> {
-
     public static final MessageActionType TYPE = new MessageActionType();
 
+    @Getter
     private final PlaceholderValue<String> message;
+    @Getter
     private final boolean raw;
 
-    public MessageAction(Plugin plugin, PlaceholderValue<String> message, boolean raw) {
+    @ConfigConstructor
+    public MessageAction(
+            @CurrentPlugin Plugin plugin,
+            @ConfigProperty("message") PlaceholderValue<String> message,
+            @ConfigProperty(value = "raw", optional = true) Boolean raw
+    ) {
         super(plugin, TYPE);
         this.message = message;
-        this.raw = raw;
+        this.raw = raw != null ? raw : false;
     }
 
     @Override
     public void run(Player player) {
-        if (!raw)
+        if (!raw) {
             player.sendMessage(translateCustom(message.resolve(player)));
-        else
+        } else {
             MessageNms.sendJson(player, message.resolve(player));
+        }
     }
 
 
     public static class MessageActionType extends BaseActionType<MessageAction> {
 
         public MessageActionType() {
-            super("message");
+            super(MessageAction.class, "message");
             setParameters(
                     Parameter.of("message", Parser.strValue(), true),
                     Parameter.of("raw", Parser.boolValue(), false, false)

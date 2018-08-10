@@ -26,7 +26,7 @@ public class NitriteDb extends Storage {
 
     @Override
     public String[] getDownloadLinks() {
-        return new String[]{"https://oss.sonatype.org/content/repositories/releases/org/dizitart/nitrite/2.1.1/nitrite-2.1.1.jar"};
+        return new String[]{"https://oss.sonatype.org/content/repositories/releases/org/dizitart/nitrite/3.0.2/nitrite-3.0.2.jar"};
     }
 
     @Override
