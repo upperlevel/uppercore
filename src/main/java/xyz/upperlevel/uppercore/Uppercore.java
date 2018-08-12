@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigUtil;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
-import xyz.upperlevel.uppercore.database.StorageManager;
+import xyz.upperlevel.uppercore.storage.StorageManager;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;

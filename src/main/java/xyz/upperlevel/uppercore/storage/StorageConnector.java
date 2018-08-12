@@ -1,7 +1,10 @@
-package xyz.upperlevel.uppercore.database;
+package xyz.upperlevel.uppercore.storage;
 
 import lombok.Getter;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.util.ExternalJarUtil;
 
 import java.io.File;
@@ -12,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-public abstract class Storage {
+public abstract class StorageConnector {
     public static final File DRIVERS_FOLDER = new File(Uppercore.get().getDataFolder(), "db_drivers");
 
     static {
@@ -34,12 +37,12 @@ public abstract class Storage {
     @Getter
     private final String name;
 
-    public Storage(String name) {
+    public StorageConnector(String name) {
         this.name = name;
     }
 
     /**
-     * Can this {@link Storage} be used?
+     * Can this {@link StorageConnector} be used?
      */
     public abstract boolean isSupported();
 
@@ -96,23 +99,32 @@ public abstract class Storage {
         return true;
     }
 
-    /**
-     * Connects to the storage.
-     * Before connecting checks if the storage is supported.
-     *
-     * @param address  the address
-     * @param port     the port
-     * @param database the database
-     * @param username the username
-     * @param password the password
-     * @return a {@link Database} where is possible to write and read.
-     */
-    public Database connect(String address, int port, String database, String username, String password) {
-        if (!isSupported()) {
-            throw new StorageNotSupportedException(this);
+    public Storage setupAndConnect(Config access) {
+        if (!download()) {
+            throw new IllegalStateException("Storage '" + name + "' not supported");
         }
-        return onConnect(address, port, database, username, password);
+        return connect(access);
     }
 
-    protected abstract Database onConnect(String address, int port, String database, String username, String password);
+    public abstract Storage connect(Config access);
+
+    public static Storage read(Config config) {
+        Config access = config.getConfigRequired("storage");
+        String type = access.getStringRequired("type");
+        StorageConnector storage = Uppercore.storages().get(type);
+        if (storage == null) {
+            throw new IllegalArgumentException("No storage found for: " + type);
+        } else {
+            return storage.setupAndConnect(access);
+        }
+    }
+
+    public static Storage read(Plugin plugin) {
+        plugin.saveResource("storage.yml", false);
+        File file = new File(plugin.getDataFolder(), "storage.yml");
+        if (!file.exists()) {
+            throw new IllegalArgumentException("'storage.yml' file not found for: " + plugin.getName());
+        }
+        return read(Config.wrap(YamlConfiguration.loadConfiguration(file)));
+    }
 }
