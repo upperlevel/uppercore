@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercoretest.command.functional;
 
 import org.bukkit.command.CommandSender;
-import xyz.upperlevel.uppercore.command.DefaultPermissionUser;
+import xyz.upperlevel.uppercore.command.PermissionUser;
 import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.command.SenderType;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
@@ -12,7 +12,7 @@ import xyz.upperlevel.uppercore.command.functional.WithSender;
 public class TestFunctionalCommands extends NodeCommand {
     public TestFunctionalCommands() {
         super("cmd");
-        addCommands(FunctionalCommand.load(this));
+        append(FunctionalCommand.load(this));
     }
 
     /**
@@ -38,7 +38,7 @@ public class TestFunctionalCommands extends NodeCommand {
      * If the sender has not the given permission the command cannot be executed.
      */
     @AsCommand
-    @WithPermission(value="permission", defaultUser = DefaultPermissionUser.OP)
+    @WithPermission(value="permission", user = PermissionUser.OP)
     public void permission(CommandSender sender) {
         sender.sendMessage("Command called.");
     }

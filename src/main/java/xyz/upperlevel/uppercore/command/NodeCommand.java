@@ -2,12 +2,11 @@ package xyz.upperlevel.uppercore.command;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
-import xyz.upperlevel.uppercore.command.functional.WithEveryPermission;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,15 +15,74 @@ public class NodeCommand extends Command {
     private final List<Command> commands = new ArrayList<>();
     private final Map<String, Command> commandsByName = new HashMap<>();
 
+    private Permission everyPermissionRaw;
+
     @Getter
-    private Permission everyPermission; // the * permission
+    private Permission everyPermission;
 
     public NodeCommand(String name) {
         super(name);
+
+        everyPermission("*", PermissionUser.AVAILABLE);
+
         FunctionalCommand.inject(this, new HelpCommand());
     }
 
-    public void addCommand(Command command) {
+    // --------------------------------------------------------------------------------- Descriptor
+
+    public NodeCommand description(String description) {
+        setDescription(description);
+        return this;
+    }
+
+    public NodeCommand aliases(Set<String> aliases) {
+        setAliases(aliases);
+        return this;
+    }
+
+    public NodeCommand aliases(String... aliases) {
+        setAliases(new HashSet<>(Arrays.asList(aliases)));
+        return this;
+    }
+
+    // --------------------------------------------------------------------------------- Permission
+
+    public NodeCommand permission(PermissionUser defaultUser) {
+        setPermissionPortion(new Permission(getName(), defaultUser.get()));
+        return this;
+    }
+
+    public NodeCommand permission(String description, PermissionUser defaultUser) {
+        setPermissionPortion(new Permission(getName(), description, defaultUser.get()));
+        return this;
+    }
+
+    public NodeCommand permission(String name, String description, PermissionUser defaultUser) {
+        setPermissionPortion(new Permission(name, description, defaultUser.get()));
+        return this;
+    }
+
+    public NodeCommand permission(String name, String description, PermissionUser defaultUser, PermissionCompleter permissionCompleter) {
+        setPermissionPortion(new Permission(name, description, defaultUser.get()));
+        setPermissionCompleter(permissionCompleter);
+        return this;
+    }
+
+    // --------------------------------------------------------------------------------- Every Permission (*)
+
+    public NodeCommand everyPermission(PermissionUser defaultUser) {
+        everyPermissionRaw = new Permission("*", defaultUser.get());
+        return this;
+    }
+
+    public NodeCommand everyPermission(String description, PermissionUser defaultUser) {
+        everyPermissionRaw = new Permission("*", description, defaultUser.get());
+        return this;
+    }
+
+    // --------------------------------------------------------------------------------- Commands
+
+    public void append(Command command) {
         if (command.getParent() != null) {
             throw new IllegalArgumentException("The same instance of " + command.getClass().getSimpleName() + " is registered in more than one NodeCommand");
         }
@@ -45,35 +103,33 @@ public class NodeCommand extends Command {
         command.setParent(this);
     }
 
-    public void addCommands(List<Command> commands) {
-        commands.forEach(this::addCommand);
+    public void append(List<Command> commands) {
+        commands.forEach(this::append);
     }
 
-    public Command getCommand(String name) {
-        return commandsByName.get(name.toLowerCase(Locale.ENGLISH));
+    public void append(Command... commands) {
+        append(Arrays.asList(commands));
     }
 
     public List<Command> getCommands() {
         return Collections.unmodifiableList(commands);
     }
 
+    private Command getCommand(String name) {
+        return commandsByName.get(name.toLowerCase(Locale.ENGLISH));
+    }
+
     @Override
     public void completePermission(Permission root) {
         super.completePermission(root);
-        if (getPermission() != null) {
-            WithEveryPermission annotation = getClass().getAnnotation(WithEveryPermission.class);
-            String path = getPermission().getName() + ".*";
-            if (annotation != null) {
-                everyPermission = new Permission(path, annotation.description(), annotation.defaultUser().get(this));
-            } else {
-                everyPermission = new Permission(path, DefaultPermissionUser.INHERIT.get(this));
-            }
-            if (getParent() != null) {
-                everyPermission.addParent(getParent().everyPermission, true);
-            }
-        }
+        // complete sub commands' permissions
         for (Command command : commands) {
             command.completePermission(root);
+        }
+        // foreach of the sub commands assign the parent to * permission just created
+        everyPermission = PermissionCompleter.INHERIT.complete(getPermission(), everyPermissionRaw);
+        for (Command command : commands) {
+            command.getPermission().addParent(everyPermission, true);
         }
     }
 
@@ -83,6 +139,7 @@ public class NodeCommand extends Command {
         for (Command command : commands) { // registers all sub commands permission
             command.registerPermission();
         }
+        Bukkit.getPluginManager().addPermission(everyPermission); // and * permission
     }
 
     @Override

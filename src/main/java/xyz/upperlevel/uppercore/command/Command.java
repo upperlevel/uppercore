@@ -6,14 +6,10 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.ConfigUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
 
@@ -29,6 +25,7 @@ public abstract class Command {
     @Getter
     private final String name;
 
+    @Setter
     private Set<String> aliases = new HashSet<>();
 
     @Getter
@@ -120,7 +117,7 @@ public abstract class Command {
      */
     public abstract String getUsage(CommandSender sender, boolean colored);
 
-    public String getPath() {
+    public String getFullName() {
         StringBuilder path = new StringBuilder();
         NodeCommand higher = parent;
         while (higher != null) {
@@ -138,15 +135,15 @@ public abstract class Command {
      * The colored parameter changes the helpline color based on the sender.
      */
     public String getHelpline(CommandSender sender, boolean colored) {
-        String path = getPath();
+        String fullName = getFullName();
         String usage = getUsage(sender, colored);
         if (usage.length() > 0) {
-            path += " " + usage;
+            fullName += " " + usage;
         }
         if (colored) {
-            path = (hasPermission(sender) ? ChatColor.GREEN : ChatColor.RED) + path;
+            fullName = (hasPermission(sender) ? ChatColor.GREEN : ChatColor.RED) + fullName;
         }
-        return path;
+        return fullName;
     }
 
     public boolean call(CommandSender sender, List<String> args) {
@@ -169,20 +166,6 @@ public abstract class Command {
     protected abstract boolean onCall(CommandSender sender, List<String> args);
 
     public abstract List<String> suggest(CommandSender sender, List<String> arguments);
-
-    public boolean subscribe(Plugin owner) {
-        Permission root = new Permission(owner.getName().toLowerCase(Locale.ENGLISH));
-        completePermission(root);
-        registerPermission();
-
-        CommandMap map = NativeCommandUtil.getCommandMap();
-        if (map == null) {
-            return false;
-        }
-        map.register(name, NativeCommandUtil.wrap(this));
-        return true;
-    }
-
     public static void configure(Config cfg) {
         noPermissionMessage = cfg.getMessage("no-permission");
         wrongSenderTypeMessage = cfg.getMessage("wrong-sender-type");

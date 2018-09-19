@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
@@ -53,34 +54,54 @@ public final class Flatfile {
 
         @Override
         public Database database(String name) {
-            File folder = new File("plugins", name + File.separator + "db");
-            folder.mkdirs();
-            return new DatabaseImpl(folder);
+            return new DatabaseImpl(name);
         }
     }
 
     /* --------------------------------------------------------------------------------- Database */
     public static class DatabaseImpl implements Database {
+        private final String name;
         private final File folder;
 
-        public DatabaseImpl(File folder) {
-            this.folder = folder;
+        public DatabaseImpl(String name) {
+            this.name = name;
+            this.folder =  new File("plugins", name + File.separator + "db");
+        }
+
+        @Override
+        public boolean create() {
+            return folder.mkdirs();
+        }
+
+        @Override
+        public boolean drop() {
+            return folder.delete();
         }
 
         @Override
         public Table table(String name) {
-            File sub = new File(folder, name);
-            sub.mkdirs();
-            return new TableImpl(sub);
+            return new TableImpl(folder, name);
         }
     }
 
     /* --------------------------------------------------------------------------------- Table */
     public static class TableImpl implements Table {
+        private final String name;
         private final File folder;
 
-        public TableImpl(File folder) {
-            this.folder = folder;
+        public TableImpl(File dbFolder, String name) {
+            this.name = name;
+            this.folder =  new File(dbFolder, name);
+        }
+
+        @Override
+        public boolean create() {
+            return folder.mkdirs();
+        }
+
+        @Override
+        public boolean drop() {
+            return folder.delete();
         }
 
         @Override
@@ -106,9 +127,41 @@ public final class Flatfile {
         }
 
         @Override
+        public boolean insert(Map<String, Object> data, boolean replace) {
+            if (replace) {
+                file.delete();
+            }
+            if (file.exists()) {
+                return false;
+            } else {
+                try (FileWriter writer = new FileWriter(file)) {
+                    file.createNewFile();
+                    writer.write(new JSONObject(data).toJSONString());
+                    writer.flush();
+                } catch (IOException e) {
+                    throw new IllegalStateException("Can't write to file: " + file, e);
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean update(Map<String, Object> data) {
+            Map<String, Object> newData = getData();
+            newData.putAll(data);
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(new JSONObject(newData).toJSONString());
+                writer.flush();
+                return true;
+            } catch (IOException e) {
+                throw new IllegalStateException("Can't write to file: " + file.getPath(), e);
+            }
+        }
+
+        @Override
         public Object get(String parameter) {
             String prev = null;
-            Object tree = getAll();
+            Object tree = getData();
             for (String step : parameter.split("\\.")) {
                 if (tree instanceof Map) {
                     tree = ((Map<String, Object>) tree).get(step);
@@ -121,7 +174,7 @@ public final class Flatfile {
         }
 
         @Override
-        public Map<String, Object> getAll() {
+        public Map<String, Object> getData() {
             JSONParser parser = new JSONParser();
             try {
                 return (Map<String, Object>) parser.parse(new FileReader(file));
@@ -131,18 +184,8 @@ public final class Flatfile {
         }
 
         @Override
-        public void update(Map<String, Object> data) {
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write(new JSONObject(data).toJSONString());
-                writer.flush();
-            } catch (IOException exception) {
-                throw new IllegalStateException("Cannot write to: " + file.getPath(), exception);
-            }
-        }
-
-        @Override
-        public void drop() {
-            file.delete();
+        public boolean drop() {
+            return file.delete();
         }
     }
 }

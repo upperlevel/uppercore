@@ -15,9 +15,10 @@ then
 fi
 
 echo "Copying plugins..."
+rm -rd tmp/plugins
 mkdir tmp/plugins
 cp build/libs/Uppercore.jar tmp/plugins/Uppercore.jar
-cp build/libs/UppercoreTest-1.3.jar tmp/plugins/UppercoreTest.jar
+cp build/libs/UppercoreTest-2.0.jar tmp/plugins/UppercoreTest.jar
 
 cd tmp
 echo "Starting..."

@@ -1,9 +1,6 @@
 package xyz.upperlevel.uppercore.storage.impl;
 
-import org.dizitart.no2.Document;
-import org.dizitart.no2.Nitrite;
-import org.dizitart.no2.NitriteCollection;
-import org.dizitart.no2.UpdateOptions;
+import org.dizitart.no2.*;
 import org.dizitart.no2.filters.Filters;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
@@ -64,41 +61,73 @@ public final class NitriteDb {
 
         @Override
         public Database database(String name) {
-            File folder = new File("storage");
-            folder.mkdir();
-
-            return new DatabaseImpl(Nitrite.builder()
-                    .compressed()
-                    .filePath("storage/" + name + ".db")
-                    .openOrCreate());
+            return new DatabaseImpl(name);
         }
     }
 
     /* --------------------------------------------------------------------------------- Database */
     public static class DatabaseImpl implements Database {
-        private final Nitrite db;
+        private final String name;
+        private final File file;
 
-        public DatabaseImpl(Nitrite db) {
-            this.db = db;
+        private Nitrite db;
+
+        public DatabaseImpl(String name) {
+            this.name = name;
+            this.file = new File("storage/" + name + ".db");
+        }
+
+        private Nitrite ensureOpened() {
+            if (db == null) {
+                db = Nitrite.builder().compressed().filePath("storage/" + name + ".db").openOrCreate();
+            }
+            return db;
+        }
+
+        @Override
+        public boolean create() {
+            File folder = new File("storage");
+            folder.mkdirs();
+
+            ensureOpened();
+            return true;
+        }
+
+        @Override
+        public boolean drop() {
+            ensureOpened();
+            return file.delete();
         }
 
         @Override
         public Table table(String name) {
+            ensureOpened();
             return new TableImpl(db.getCollection(name));
         }
     }
 
     /* --------------------------------------------------------------------------------- Table */
     public static class TableImpl implements Table {
-        private final NitriteCollection collection;
+        private final NitriteCollection coll;
 
-        public TableImpl(NitriteCollection collection) {
-            this.collection = collection;
+        public TableImpl(NitriteCollection coll) {
+            this.coll = coll;
+        }
+
+        @Override
+        public boolean create() {
+            return true;
+        }
+
+        @Override
+        public boolean drop() {
+            coll.drop();
+            return true;
         }
 
         @Override
         public Element element(String id) {
-            return new ElementImpl(collection, id);
+            return new ElementImpl(coll, id);
         }
     }
 
@@ -108,12 +137,31 @@ public final class NitriteDb {
     // a custom value (like in MongoDb) so, to identify elements, we use just "id".
 
     public static class ElementImpl implements Element {
-        private final NitriteCollection collection;
+        private final NitriteCollection coll;
         private final String id;
 
-        public ElementImpl(NitriteCollection collection, String id) {
-            this.collection = collection;
+        public ElementImpl(NitriteCollection coll, String id) {
+            this.coll = coll;
             this.id = id;
+        }
+
+        @Override
+        public boolean insert(Map<String, Object> data, boolean replace) {
+            Document newData = new Document(data);
+            newData.put("id", id);
+            if (replace) {
+                WriteResult res = coll.update(Filters.eq("id", id), newData, UpdateOptions.updateOptions(true));
+                return res.getAffectedCount() > 0;
+            } else {
+                WriteResult res = coll.insert(newData);
+                return res.getAffectedCount() > 0;
+            }
+        }
+
+        @Override
+        public boolean update(Map<String, Object> data) {
+            WriteResult res = coll.update(Filters.eq("id", id), new Document(data));
+            return res.getAffectedCount() > 0;
         }
 
         @Override
@@ -129,22 +177,18 @@ public final class NitriteDb {
             if (tmp != null) {
                 tmp.put(path[i], 1);
             }
-            return collection.find(Filters.eq("id", id)).project(projection).firstOrDefault();
+            return coll.find(Filters.eq("id", id)).project(projection).firstOrDefault();
         }
 
         @Override
-        public Map<String, Object> getAll() {
-            return collection.find(Filters.eq("id", id)).firstOrDefault();
+        public Map<String, Object> getData() {
+            return coll.find(Filters.eq("id", id)).firstOrDefault();
         }
 
         @Override
-        public void update(Map<String, Object> data) {
-            collection.update(Filters.eq("id", id), new Document(data).put("id", id), UpdateOptions.updateOptions(true));
-        }
-
-        @Override
-        public void drop() {
-            collection.remove(Filters.eq("id", id));
+        public boolean drop() {
+            WriteResult res = coll.remove(Filters.eq("id", id));
+            return res.getAffectedCount() > 0;
         }
     }
 }

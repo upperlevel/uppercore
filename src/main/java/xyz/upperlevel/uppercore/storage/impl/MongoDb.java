@@ -5,7 +5,10 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
@@ -84,44 +87,87 @@ public final class MongoDb {
 
     /* --------------------------------------------------------------------------------- Database */
     public static class DatabaseImpl implements Database {
-        private final MongoDatabase database;
+        private final MongoDatabase db;
 
-        public DatabaseImpl(MongoDatabase database) {
-            this.database = database;
+        public DatabaseImpl(MongoDatabase db) {
+            this.db = db;
+        }
+
+        @Override
+        public boolean create() {
+            throw new UnsupportedOperationException("MongoDB drivers are unable to create databases.");
+        }
+
+        @Override
+        public boolean drop() {
+            db.drop();
+            return true;
         }
 
         @Override
         public Table table(String name) {
-            return new TableImpl(database.getCollection(name));
+            return new TableImpl(db.getCollection(name));
         }
     }
 
     /* --------------------------------------------------------------------------------- Table */
     public static class TableImpl implements Table {
-        private final MongoCollection<org.bson.Document> collection;
+        private final MongoCollection<org.bson.Document> coll;
 
-        public TableImpl(MongoCollection<org.bson.Document> collection) {
-            this.collection = collection;
+        public TableImpl(MongoCollection<Document> coll) {
+            this.coll = coll;
+        }
+
+        @Override
+        public boolean create() {
+            // On MongoDB db.getCollection() does the job
+            return true;
+        }
+
+        @Override
+        public boolean drop() {
+            coll.drop();
+            return false;
         }
 
         @Override
         public Element element(String id) {
-            try {
-                collection.insertOne(new Document("_id", id));
-            } catch (Exception ignored) {
-            }
             return new ElementImpl(this, id);
         }
     }
 
     /* --------------------------------------------------------------------------------- Document */
     public static class ElementImpl implements Element {
-        private final MongoCollection<Document> collection;
+        private final MongoCollection<Document> coll;
         private final String id;
 
         public ElementImpl(TableImpl table, String id) {
-            this.collection = table.collection;
+            this.coll = table.coll;
             this.id = id;
+        }
+
+        @Override
+        public boolean insert(Map<String, Object> data, boolean replace) {
+            Document newData = new Document(data);
+            newData.put("_id", id);
+            if (replace) {
+                UpdateResult res = coll.replaceOne(new Document("_id", id), newData, new ReplaceOptions().upsert(true));
+                return res.getModifiedCount() > 0;
+            } else {
+                try {
+                    coll.insertOne(newData);
+                    return true;
+                } catch (Exception e) {
+                    // Thrown if element already inserted
+                    return false;
+                }
+            }
+        }
+
+        @Override
+        public boolean update(Map<String, Object> data) {
+            UpdateResult res = coll.updateOne(new Document("_id", id), new Document(data));
+            return res.getModifiedCount() > 0;
         }
 
         @Override
@@ -137,24 +183,18 @@ public final class MongoDb {
             if (tmp != null) {
                 tmp.put(path[i], 1);
             }
-            return collection.find(new Document("_id", id)).projection(projection).first();
+            return coll.find(new Document("_id", id)).projection(projection).first();
         }
 
         @Override
-        public Map<String, Object> getAll() {
-            return collection.find(new Document("_id", id)).first();
+        public Map<String, Object> getData() {
+            return coll.find(new Document("_id", id)).first();
         }
 
         @Override
-        public void update(Map<String, Object> data) {
-            Document toReplace = new Document(data);
-            toReplace.put("_id", id);
-            collection.replaceOne(new Document("_id", id), toReplace, new UpdateOptions().upsert(true));
-        }
-
-        @Override
-        public void drop() {
-            collection.deleteOne(new Document("_id", id));
+        public boolean drop() {
+            DeleteResult res = coll.deleteOne(new Document("_id", id));
+            return res.getDeletedCount() > 0;
         }
     }
 }

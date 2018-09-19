@@ -1,6 +1,6 @@
 package xyz.upperlevel.uppercore.command.functional;
 
-import xyz.upperlevel.uppercore.command.DefaultPermissionUser;
+import xyz.upperlevel.uppercore.command.PermissionUser;
 import xyz.upperlevel.uppercore.command.PermissionCompleter;
 
 import java.lang.annotation.ElementType;
@@ -15,7 +15,7 @@ public @interface WithPermission {
 
     String description() default "";
 
-    DefaultPermissionUser defaultUser() default DefaultPermissionUser.INHERIT;
+    PermissionUser user() default PermissionUser.OP;
 
     PermissionCompleter completer() default PermissionCompleter.INHERIT;
 }

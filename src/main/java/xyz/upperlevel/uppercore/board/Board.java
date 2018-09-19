@@ -1,51 +1,35 @@
 package xyz.upperlevel.uppercore.board;
 
 import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface Board {
-    /**
-     * Gets the title of the board based on the player.
-     *
-     * @param holder the player
-     * @return the title
-     */
-    String getTitle(Player holder);
+    String getTitle(Player player, PlaceholderRegistry placeholderRegistry);
 
-    /**
-     * Gets the lines of the board based on the player.
-     *
-     * @param holder the player
-     * @return the lines
-     */
-    List<String> getLines(Player holder);
+    List<String> getLines(Player player, PlaceholderRegistry placeholderRegistry);
 
-    /**
-     * Shows the board to the player.
-     *
-     * @param player the player
-     */
-    default BoardView create(Player player) {
-        return new View(player, this);
-    }
+    int getAutoUpdateInterval();
 
-    class View extends BoardView {
-        private final Board board;
+    static Board simple(String title, List<String> lines) {
+        return new Board() {
+            @Override
+            public String getTitle(Player player, PlaceholderRegistry placeholderRegistry) {
+                return title;
+            }
 
-        public View(Player player, Board board) {
-            super(player);
-            this.board = board;
-        }
+            @Override
+            public List<String> getLines(Player player, PlaceholderRegistry placeholderRegistry) {
+                return lines;
+            }
 
-        @Override
-        public String getTitle() {
-            return board.getTitle(getHolder());
-        }
-
-        @Override
-        public List<String> getLines() {
-            return board.getLines(getHolder());
-        }
+            @Override
+            public int getAutoUpdateInterval() {
+                return -1;
+            }
+        };
     }
 }

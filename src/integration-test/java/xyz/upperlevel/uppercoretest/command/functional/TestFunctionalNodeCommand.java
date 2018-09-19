@@ -8,8 +8,8 @@ import java.util.List;
 public class TestFunctionalNodeCommand extends NodeCommand {
     public TestFunctionalNodeCommand() {
         super("testfunc");
-        addCommand(new TestFunctionalCommands());
-        addCommand(new TestFunctionalParameters());
+        append(new TestFunctionalCommands());
+        append(new TestFunctionalParameters());
     }
 
     @Override

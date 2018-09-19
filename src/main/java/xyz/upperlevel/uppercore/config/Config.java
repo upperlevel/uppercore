@@ -600,6 +600,25 @@ public interface Config {
         return res;
     }
 
+    // Map List
+
+    default List<Map<String, Object>> getMapList(String key, List<Map<String, Object>> def) {
+        List<Map<String, Object>> res = getList(key);
+        return res == null ? def : res;
+    }
+
+    default List<Map<String, Object>> getMapList(String key) {
+        return getMapList(key, null);
+    }
+
+    default List<Map<String, Object>> getMapListRequired(String key) {
+        List<Map<String, Object>> res = getMapList(key, null);
+        if (res == null) {
+            throw new RequiredPropertyNotFoundException(key);
+        }
+        return res;
+    }
+
     // Config List
 
     default List<Config> getConfigList(String key, List<Config> def) {

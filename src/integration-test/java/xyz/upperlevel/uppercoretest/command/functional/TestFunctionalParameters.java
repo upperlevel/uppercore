@@ -7,12 +7,12 @@ import xyz.upperlevel.uppercore.command.functional.*;
 
 import java.util.Arrays;
 
-import static xyz.upperlevel.uppercore.command.DefaultPermissionUser.OP;
+import static xyz.upperlevel.uppercore.command.PermissionUser.OP;
 
 public class TestFunctionalParameters extends NodeCommand {
     public TestFunctionalParameters() {
         super("par");
-        addCommands(FunctionalCommand.load(this));
+        append(FunctionalCommand.load(this));
     }
 
     @AsCommand
@@ -31,7 +31,7 @@ public class TestFunctionalParameters extends NodeCommand {
      */
     @AsCommand
     @WithPermission("permission")
-    public void permission(CommandSender sender, @WithPermission(value = "arg", defaultUser = OP) String arg) {
+    public void permission(CommandSender sender, @WithPermission(value = "arg", user = OP) String arg) {
         sender.sendMessage("You may be OP since you successfully ran this command with arg: " + arg + ".");
     }
 

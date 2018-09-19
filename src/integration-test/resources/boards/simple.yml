@@ -1,0 +1,10 @@
+title: "&a&lConfig Simple Board"
+lines:
+  - ""
+  - "Your name:"
+  - "&e%player_name%"
+  - ""
+  - "Player world:"
+  - "&e%player_world%"
+  - ""
+update-interval: 100 # 5 seconds

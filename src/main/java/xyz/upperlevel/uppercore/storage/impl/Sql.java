@@ -11,13 +11,15 @@ import xyz.upperlevel.uppercore.storage.Table;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public final class Sql {
     private Sql() {
     }
 
-    /* --------------------------------------------------------------------------------- Connection */
+    /* --------------------------------------------------------------------------------- Storage */
     public static class StorageImpl implements Storage {
         private final java.sql.Connection sql;
 
@@ -27,13 +29,6 @@ public final class Sql {
 
         @Override
         public Database database(String name) {
-            try {
-                // Can't use ? as schema name
-                PreparedStatement statement = sql.prepareStatement("CREATE SCHEMA IF NOT EXISTS `" + name + "`");
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new IllegalStateException("Can't create database (schema): " + name, e);
-            }
             return new DatabaseImpl(sql, name);
         }
     }
@@ -49,22 +44,29 @@ public final class Sql {
         }
 
         @Override
-        public Table table(String name) {
+        public boolean create() {
             try {
-                // Focus database
-                PreparedStatement statement = sql.prepareStatement("USE `" + this.name + "`");
+                PreparedStatement statement = sql.prepareStatement("CREATE DATABASE `" + name + "`");
                 statement.executeUpdate();
-
-                // Create table
-                statement = sql.prepareStatement("CREATE TABLE `" + name + "` (`id` VARCHAR(256), `data` JSON)");
-                statement.executeUpdate();
-
-                // Add primary key
-                statement = sql.prepareStatement("ALTER TABLE `" + name + "` ADD PRIMARY KEY(`id`)");
-                statement.executeUpdate();
+                return true;
             } catch (SQLException e) {
-                // Table already created? Primary key already added? That's fine
+                return false;
             }
+        }
+
+        @Override
+        public boolean drop() {
+            try {
+                PreparedStatement statement = sql.prepareStatement("DROP DATABASE `" + name + "`");
+                statement.executeUpdate();
+                return true;
+            } catch (SQLException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public Table table(String name) {
             return new TableImpl(this, name);
         }
     }
@@ -81,15 +83,40 @@ public final class Sql {
             this.name = name;
         }
 
+        private String getPath() {
+            return "`" + database.name + "`.`" + name + "`";
+        }
+
+        @Override
+        public boolean create() {
+            try {
+                PreparedStatement statement = sql.prepareStatement("USE `" + database.name + "`");
+                statement.executeUpdate();
+
+                statement = sql.prepareStatement("CREATE TABLE `" + name + "` (`id` VARCHAR(256), `data` JSON)");
+                statement.executeUpdate();
+
+                statement = sql.prepareStatement("ALTER TABLE " + getPath() + " ADD PRIMARY KEY(`id`)");
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean drop() {
+            try {
+                PreparedStatement statement = sql.prepareStatement("DROP TABLE " + getPath());
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                return false;
+            }
+            return true;
+        }
+
         @Override
         public Element element(String id) {
-            try {
-                PreparedStatement statement = sql.prepareStatement("INSERT INTO `" + database.name + "`.`" + name + "` VALUES (?, '{}')");
-                statement.setString(1, id);
-                statement.executeUpdate();
-            } catch (SQLException ignored) {
-                // Error if already inserted, which is fine
-            }
             return new ElementImpl(this, id);
         }
     }
@@ -104,6 +131,52 @@ public final class Sql {
             this.sql = table.sql;
             this.table = table;
             this.id = id;
+        }
+
+        @Override
+        public boolean insert(Map<String, Object> data, boolean replace) {
+            try {
+                String query = "INSERT INTO " + table.getPath() + " (`id`, `data`) VALUES (?, '{}')";
+                if (replace) {
+                    query += "ON DUPLICATE KEY UPDATE `data`=?";
+                }
+                PreparedStatement statement = sql.prepareStatement(query);
+                statement.setString(1, id);
+                if (replace) {
+                    statement.setString(2, new JSONObject(data).toJSONString());
+                }
+                statement.executeUpdate();
+                return true;
+            } catch (SQLException e) {
+                if (replace) {
+                    throw new IllegalStateException(e);
+                }
+                return false;
+            }
+        }
+
+        @Override
+        public boolean update(Map<String, Object> data) {
+            try {
+                PreparedStatement statement = sql.prepareStatement("UPDATE `" + table.database.name + "`.`" + table.name + "` SET `data`=?");
+                statement.setString(1, new JSONObject(data).toJSONString());
+                statement.executeUpdate();
+                return true;
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        @Override
+        public boolean drop() {
+            try {
+                PreparedStatement statement = sql.prepareStatement("DELETE FROM `" + table.database.name + "`.`" + table.name + "` WHERE `id`=?");
+                statement.setString(1, id);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -127,7 +200,7 @@ public final class Sql {
 
         @SuppressWarnings("unchecked")
         @Override
-        public Map<String, Object> getAll() {
+        public Map<String, Object> getData() {
             try {
                 PreparedStatement statement = sql.prepareStatement("SELECT `data` FROM `" + table.database.name + "`.`" + table.name + "`");
                 ResultSet result = statement.executeQuery();
@@ -139,28 +212,6 @@ public final class Sql {
                 throw new IllegalStateException("Can't get all the element: " + id, e);
             } catch (ParseException e) {
                 throw new IllegalStateException("Read invalid JSON from element: " + id, e);
-            }
-        }
-
-        @Override
-        public void update(Map<String, Object> data) {
-            try {
-                PreparedStatement statement = sql.prepareStatement("UPDATE `" + table.database.name + "`.`" + table.name + "` SET `data`=?");
-                statement.setString(1, new JSONObject(data).toJSONString());
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new IllegalStateException("Can't insert element into table: " + table.name, e);
-            }
-        }
-
-        @Override
-        public void drop() {
-            try {
-                PreparedStatement statement = sql.prepareStatement("DELETE FROM `" + table.database.name + "`.`" + table.name + "` WHERE `id`=?");
-                statement.setString(1, id);
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new IllegalStateException("Can't drop element: " + id);
             }
         }
     }

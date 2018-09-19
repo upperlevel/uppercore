@@ -1,8 +1,11 @@
 package xyz.upperlevel.uppercore.storage;
 
+import java.util.List;
+
 public interface Table {
-    /**
-     * Gets the element by id. If not present creates it.
-     */
+    boolean create();
+
+    boolean drop();
+
     Element element(String id);
 }

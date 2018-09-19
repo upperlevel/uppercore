@@ -1,20 +1,24 @@
 package xyz.upperlevel.uppercore.board;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 // TODO Optimized empty line initialization
-public abstract class BoardView {
+public class BoardViewer {
     public static final int MAX_LINES = 15;
     public static final int MAX_TITLE_CHARS = 32;
     public static final int MAX_PREFIX_CHARS = 16;
@@ -22,12 +26,27 @@ public abstract class BoardView {
     public static final int MAX_SUFFIX_CHARS = 16;
 
     @Getter
-    private final Player holder;
+    private final Player player;
+
+    @Getter
+    private Board board; // can be null
+
+    @Getter
+    @Setter
+    private PlaceholderRegistry placeholderRegistry;
 
     private Scoreboard scoreboard;
     private Objective objective;
     private final Line[] lines = new Line[MAX_LINES];
     private Set<String> entries = new HashSet<>();
+
+    private BukkitRunnable updater;
+
+    private BoardViewer(Player player) {
+        this.player = player;
+
+        createScoreboard();
+    }
 
     private void createScoreboard() {
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -39,51 +58,50 @@ public abstract class BoardView {
         }
     }
 
-    public BoardView(Player holder) {
-        this.holder = holder;
-
-        createScoreboard();
-        update();
-
-        // Firstly open the board
-        ensureOpened();
-    }
-
-    public abstract String getTitle();
-
-    public abstract List<String> getLines();
-
-    public void ensureOpened() {
-        holder.setScoreboard(scoreboard);
-    }
-
-    /**
-     * Update just the board title.
-     */
-    public void updateTitle() {
-        objective.setDisplayName(getTitle());
-    }
-
-    /**
-     * Update just the board lines.
-     */
-    public void updateLines() {
-        List<String> lines = getLines();
-        int pos = 0;
-        for (; pos < lines.size() && pos < MAX_LINES; pos++) {
-            this.lines[pos].update(lines.get(pos), lines.size() - pos);
+    public void setBoard(Board board, PlaceholderRegistry placeholderRegistry) {
+        this.placeholderRegistry = placeholderRegistry;
+        if (updater != null) {
+            updater.cancel();
+            updater = null;
         }
-        for (; pos < MAX_LINES; pos++) {
-            this.lines[pos].clear();
+        if (board == null) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+        } else {
+            update(placeholderRegistry);
+            player.setScoreboard(scoreboard);
+            updater = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    update(BoardViewer.this.placeholderRegistry);
+                }
+            };
+            updater.runTaskTimer(Uppercore.get(), 0, board.getAutoUpdateInterval());
+        }
+        this.board = board;
+    }
+
+    public void update(PlaceholderRegistry placeholderRegistry) {
+        if (board != null) {
+            objective.setDisplayName(board.getTitle(player, placeholderRegistry));
+        }
+        if (board != null) {
+            List<String> lines = board.getLines(player, placeholderRegistry);
+            int pos = 0;
+            for (; pos < lines.size() && pos < MAX_LINES; pos++) {
+                this.lines[pos].update(lines.get(pos), lines.size() - pos);
+            }
+            for (; pos < MAX_LINES; pos++) {
+                this.lines[pos].clear();
+            }
         }
     }
 
-    /**
-     * Updates both title and lines.
-     */
-    public void update() {
-        updateTitle();
-        updateLines();
+    public void close() {
+        setBoard(null, null);
+    }
+
+    static BoardViewer create(Player player) {
+        return new BoardViewer(player);
     }
 
     private class Line {

@@ -14,6 +14,7 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -53,15 +54,16 @@ public class FunctionalCommand extends Command {
         if (command == null) {
             throw new IllegalArgumentException("@AsCommand not found above function: " + function.getName());
         }
+        setDescription(command.description());
+        setAliases(new HashSet<>(Arrays.asList(command.aliases())));
+        setSenderType(command.sender());
+
         WithPermission permission = function.getAnnotation(WithPermission.class);
         if (permission != null) {
-            setPermissionPortion(new Permission(permission.value(), permission.description(), permission.defaultUser().get(this)));
+            setPermissionPortion(new Permission(permission.value(), permission.description(), permission.user().get()));
             setPermissionCompleter(permission.completer());
         }
-        WithSender sender = function.getAnnotation(WithSender.class);
-        if (sender != null) {
-            setSenderType(sender.value());
-        }
+
         if (function.getParameterCount() == 0) {
             throw new IllegalArgumentException("'" + function.getName() + "' command function has 0 parameters. A command function should have at least one.");
         }
@@ -218,8 +220,20 @@ public class FunctionalCommand extends Command {
 
     public static List<Command> load(Object residence, ArgumentParserManager argumentParserManager) {
         List<Command> result = new ArrayList<>();
-        for (Method function : residence.getClass().getMethods()) {
-            AsCommand annotation = function.getAnnotation(AsCommand.class);
+
+        for (Class<?> inner : residence.getClass().getDeclaredClasses()) {
+            if (Command.class.isAssignableFrom(inner)) {
+                try {
+                    Constructor<?> ctr = inner.getDeclaredConstructor();
+                    ctr.setAccessible(true);
+                    result.add((Command) ctr.newInstance());
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        for (Method function : residence.getClass().getDeclaredMethods()) {
+            AsCommand annotation = function.getDeclaredAnnotation(AsCommand.class);
             if (annotation != null) { // if it is a command function
                 result.add(new FunctionalCommand(
                         function.getName(), // todo at the moment the command name is the name of the function
@@ -233,7 +247,7 @@ public class FunctionalCommand extends Command {
     }
 
     public static void inject(NodeCommand node, Object residence) {
-        node.addCommands(load(residence));
+        node.append(load(residence));
     }
 
     public static void configure(Config cfg) {

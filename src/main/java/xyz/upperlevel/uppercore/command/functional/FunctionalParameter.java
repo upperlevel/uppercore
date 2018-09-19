@@ -99,7 +99,7 @@ public class FunctionalParameter {
 
         WithPermission permission = parameter.getAnnotation(WithPermission.class);
         if (permission != null) {
-            this.permissionPortion = new Permission(permission.value(), permission.description(), permission.defaultUser().get(command));
+            this.permissionPortion = new Permission(permission.value(), permission.description(), permission.user().get());
             this.permissionCompleter = permission.completer();
         }
     }

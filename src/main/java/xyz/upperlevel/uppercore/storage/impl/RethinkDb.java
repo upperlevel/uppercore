@@ -3,6 +3,8 @@ package xyz.upperlevel.uppercore.storage.impl;
 import com.rethinkdb.gen.ast.Db;
 import com.rethinkdb.gen.ast.Get;
 import com.rethinkdb.gen.ast.ReqlExpr;
+import com.rethinkdb.model.MapObject;
+import com.rethinkdb.net.Connection;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
 
@@ -52,103 +54,147 @@ public final class RethinkDb {
             if (access.has("username")) {
                 builder.user(access.getString("username"), access.getString("password", ""));
             }
-            return new ConnectionImpl(builder.connect());
+            return new StorageImpl(builder.connect());
         }
     }
 
     /* --------------------------------------------------------------------------------- Connection */
-    public static class ConnectionImpl implements Storage {
-        private final com.rethinkdb.net.Connection connection;
+    public static class StorageImpl implements Storage {
+        private final Connection conn;
 
-        public ConnectionImpl(com.rethinkdb.net.Connection connection) {
-            this.connection = connection;
+        public StorageImpl(com.rethinkdb.net.Connection conn) {
+            this.conn = conn;
         }
 
         @Override
         public Database database(String name) {
-            try {
-                r.dbCreate(name).run(connection);
-            } catch (Exception ignored) {
-            }
-            return new DatabaseImpl(connection, r.db(name));
+            return new DatabaseImpl(conn, name);
         }
     }
 
     /* --------------------------------------------------------------------------------- Database */
     public static class DatabaseImpl implements Database {
-        private final com.rethinkdb.net.Connection connection;
-        private final Db db;
+        private final Connection conn;
+        private final String name;
 
-        public DatabaseImpl(com.rethinkdb.net.Connection connection, Db db) {
-            this.connection = connection;
-            this.db = db;
+        public DatabaseImpl(Connection conn, String name) {
+            this.conn = conn;
+            this.name = name;
         }
 
         @Override
-        public Table table(String id) {
+        public boolean create() {
             try {
-                db.tableCreate(id).run(connection);
-            } catch (Exception ignored) {
+                MapObject res = r.dbCreate(name).run(conn);
+                return ((int) res.get("dbs_created")) > 0;
+            } catch (Exception e) {
+                return false;
             }
-            return new TableImpl(connection, db.table(id));
+        }
+
+        @Override
+        public boolean drop() {
+            try {
+                MapObject res = r.dbDrop(name).run(conn);
+                return ((Number) res.get("dbs_dropped")).intValue() > 0;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        @Override
+        public Table table(String name) {
+            return new TableImpl(conn, r.db(this.name), name);
         }
     }
 
     /* --------------------------------------------------------------------------------- Table */
     public static class TableImpl implements Table {
-        private final com.rethinkdb.net.Connection connection;
-        private final com.rethinkdb.gen.ast.Table table;
+        private final Connection conn;
+        private final Db db;
+        private final String name;
 
-        public TableImpl(com.rethinkdb.net.Connection connection, com.rethinkdb.gen.ast.Table table) {
-            this.connection = connection;
-            this.table = table;
+        public TableImpl(Connection conn, Db db, String name) {
+            this.conn = conn;
+            this.db = db;
+            this.name = name;
+        }
+
+        @Override
+        public boolean create() {
+            try {
+                MapObject res = db.tableCreate(name).run(conn);
+                return ((Number) res.get("tables_created")).intValue() > 0;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean drop() {
+            try {
+                MapObject res = db.tableDrop(name).run(conn);
+                return ((Number) res.get("tables_dropped")).intValue() > 0;
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         @Override
         public Element element(String id) {
-            try {
-                table.insert(r.hashMap("id", id)).run(connection);
-            } catch (Exception ignored) {
-            }
-            return new ElementImpl(connection, id, table.get(id));
+            com.rethinkdb.gen.ast.Table table = db.table(name);
+            return new ElementImpl(conn, table, table.get(id));
         }
     }
 
     /* --------------------------------------------------------------------------------- Element */
     public static class ElementImpl implements Element {
-        private final com.rethinkdb.net.Connection connection;
-        private final String id;
-        private final Get document;
+        private final Connection conn;
+        private final com.rethinkdb.gen.ast.Table table;
+        private final Get doc;
 
-        public ElementImpl(com.rethinkdb.net.Connection connection, String id, Get document) {
-            this.connection = connection;
-            this.id = id;
-            this.document = document;
+        public ElementImpl(Connection conn, com.rethinkdb.gen.ast.Table table, Get doc) {
+            this.conn = conn;
+            this.table = table;
+            this.doc = doc;
+        }
+
+        @Override
+        public boolean insert(Map<String, Object> data, boolean replace) {
+            if (replace) {
+                MapObject res = table.insert(data).run(conn);
+                return ((Number) res.get("inserted")).intValue() > 0;
+            } else {
+                data.remove("id");
+                MapObject res = doc.replace(data).run(conn);
+                return ((Number) res.get("replaced")).intValue() > 0;
+            }
+        }
+
+        @Override
+        public boolean update(Map<String, Object> data) {
+            MapObject res = doc.update(data).run(conn);
+            return ((Number) res.get("replaced")).intValue() > 0;
         }
 
         @Override
         public Object get(String parameter) {
-            ReqlExpr field = document;
+            ReqlExpr field = doc;
             for (String step : parameter.split("\\.")) {
                 field = field.getField(step);
             }
-            return field.run(connection);
+            return field.run(conn);
         }
 
         @Override
-        public Map<String, Object> getAll() {
-            return document.run(connection);
+        public Map<String, Object> getData() {
+            return doc.run(conn);
         }
 
         @Override
-        public void update(Map<String, Object> data) {
-            data.put("id", id);
-            document.replace(data).run(connection);
-        }
-
-        @Override
-        public void drop() {
-            document.delete().run(connection);
+        public boolean drop() {
+            MapObject res = doc.delete().run(conn);
+            return ((Number) res.get("deleted")).intValue() > 0;
         }
 
     }

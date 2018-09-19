@@ -8,9 +8,6 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
 
-import java.util.Collections;
-import java.util.List;
-
 public class HelpCommand {
     /* Configuration */
     private static int commandsPerPage;
@@ -29,14 +26,14 @@ public class HelpCommand {
         int commandsSize = parent.getCommands().size();
         int maxPages = (int) Math.ceil(((double) commandsSize) / (double) commandsPerPage);
         PlaceholderRegistry frame = PlaceholderRegistry.create()
-                .set("node_cmd", parent.getPath())
+                .set("node_cmd", parent.getFullName())
                 .set("page", page)
                 .set("max_page", maxPages);
         headerMessage.send(sender, frame);
         for (int i = (page - 1) * commandsPerPage; i < Math.min(commandsSize, page * commandsPerPage); i++) {
             Command cmd = parent.getCommands().get(i);
             lineMessage.send(sender, PlaceholderRegistry.create()
-                    .set("node_cmd", cmd.getPath())
+                    .set("node_cmd", cmd.getFullName())
                     .set("cmd", cmd.getName())
                     .set("cmd_usage", cmd.getUsage(sender, false))
                     .set("cmd_desc", cmd.getDescription()));

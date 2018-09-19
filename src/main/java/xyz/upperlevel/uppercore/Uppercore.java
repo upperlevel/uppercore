@@ -38,7 +38,6 @@ public class Uppercore extends JavaPlugin {
     private HotbarManager hotbars;
     private ScriptManager scripts;
     private StorageManager storages;
-    private MessageManager messages;
     private DownloadableUpdateChecker updater;
     private ConfigParserRegistry parsers = ConfigParserRegistry.createStandard();
 
@@ -118,10 +117,6 @@ public class Uppercore extends JavaPlugin {
 
     public static ScriptManager scripts() {
         return instance.scripts;
-    }
-
-    public static MessageManager messages() {
-        return instance.messages;
     }
 
     public static StorageManager storages() {
