@@ -184,4 +184,9 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
                 color.orElse(null)
         );
     }
+
+    @ConfigConstructor
+    public static Config config(Node raw) {
+        return new TrackingConfig(raw);
+    }
 }

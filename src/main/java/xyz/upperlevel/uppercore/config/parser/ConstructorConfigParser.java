@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.config.parser;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.nodes.*;
@@ -8,6 +9,7 @@ import xyz.upperlevel.uppercore.config.*;
 import xyz.upperlevel.uppercore.config.exceptions.*;
 import xyz.upperlevel.uppercore.util.Pair;
 
+import javax.sound.midi.Track;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Predicate;
@@ -19,7 +21,7 @@ import static xyz.upperlevel.uppercore.util.GenericUtil.extractClassFromType;
 public class ConstructorConfigParser<T> extends ConfigParser<T> {
     private ObjectConstructor<T> targetConstructor;
     @Getter
-    private final boolean raw;
+    private final ConstructorType type;
     private final boolean passPlugin;
     @Getter
     private final boolean inlineable;
@@ -50,13 +52,19 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         }
 
         if (parameters.length == 1 && parameters[0].getType() == Node.class) {
-            // Raw constructor (special case)
+            // Raw node constructor (special case)
             // The constructor will manually parse the node
-            raw = true;
+            type = ConstructorType.RAW_NODE;
+            nodesByName = null;
+            positionalArguments = null;
+        } else if (parameters.length == 1 && parameters[0].getType() == Config.class) {
+            // Raw config constructor (special case)
+            // The constructor will manually parse the data from the Config instance
+            type = ConstructorType.RAW_CONFIG;
             nodesByName = null;
             positionalArguments = null;
         } else {
-            raw = false;
+            type = ConstructorType.NORMAL;
             nodesByName = new HashMap<>();
 
             positionalArguments = new ArrayList<>(parameters.length);
@@ -73,21 +81,34 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         }
     }
 
+    public boolean isSpecial() {
+        return type != ConstructorType.NORMAL;
+    }
+
+    protected T parseSpecial(Plugin plugin, Node root) {
+        Object param;
+        switch (type) {
+            case RAW_NODE: param = root; break;
+            case RAW_CONFIG: param = new TrackingConfig(root); break;
+            default: throw new IllegalStateException();
+        }
+        Object[] args;
+        if (passPlugin) {
+            args = new Object[]{plugin, param};
+        } else {
+            args = new Object[]{param};
+        }
+        try {
+            return targetConstructor.construct(args);
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not instantiate " + getHandleClass().getName(), e);
+        }
+    }
+
     @Override
     public T parse(Plugin plugin, Node root) {
-        if (raw) {
-            Object[] args;
-            if (passPlugin) {
-                args = new Object[]{plugin, root};
-            } else {
-                args = new Object[]{root};
-            }
-
-            try {
-                return targetConstructor.construct(args);
-            } catch (Exception e) {
-                throw new IllegalStateException("Could not instantiate " + getHandleClass().getName(), e);
-            }
+        if (isSpecial()) {
+            return parseSpecial(plugin, root);
         }
         resetEntries();
         if (root.getNodeId() != NodeId.mapping) {
@@ -193,8 +214,12 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
     }
 
     public boolean isUsingArgument(String name) {
-        if (isRaw()) {
+        if (type != ConstructorType.NORMAL) {
             // Well, we can't know
+            // If the constructor manages the build by itself we can't control
+            // which parameter it uses, that can give us strange behaviours
+            // in which the library ignores a parameter
+            // That is one of the main reasons that the raw types aren't encouraged
             return false;
         }
         return nodesByName.keySet().contains(name);
@@ -350,5 +375,11 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
 
     public interface Parser {
         Object parse(Plugin plugin, Node root);
+    }
+
+    public enum ConstructorType {
+        NORMAL,     // A normal constructor
+        RAW_NODE,   // A constructor that accepts a raw node
+        RAW_CONFIG, // A constructor that accepts a Config instance
     }
 }

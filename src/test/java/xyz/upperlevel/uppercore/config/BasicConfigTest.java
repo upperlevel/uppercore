@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.Plugin;
 import org.junit.Test;
@@ -17,7 +18,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class BasicConfigTest {
-    public static final ConfigParserRegistry registry = ConfigParserRegistry.createStandard();
+    public static final ConfigParserRegistry registry = ConfigParserRegistry.getStandard();
     private static final Plugin plugin = null;
 
     public static class ConfigLoaderExample {
@@ -28,7 +29,6 @@ public class BasicConfigTest {
                                    @ConfigProperty("type")    Material type,
                                    @ConfigProperty("center") Position center,
                                    @ConfigProperty("center2") Position center2) {
-
             assertEquals("Stringa", str);
             assertEquals(129, count);
             assertEquals(ImmutableList.of(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES), flags);

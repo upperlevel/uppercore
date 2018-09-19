@@ -35,7 +35,7 @@ public class PolymorphicClassParser<T> extends ConfigParser<T> {
             // so we must do it manually
             parser = getDirectParser();
         }
-        if (parser instanceof ConstructorConfigParser && !((ConstructorConfigParser<T>) parser).isRaw()) {
+        if (parser instanceof ConstructorConfigParser && !((ConstructorConfigParser<T>) parser).isSpecial()) {
             // The property name is already used if the selector has used it
             Predicate<String> isPropertyUsedByPolymorphicSelector = classSelector::isUsingArgument;
             // If the selector has already used it then it's normal that the real constructor doesn't have it anymore

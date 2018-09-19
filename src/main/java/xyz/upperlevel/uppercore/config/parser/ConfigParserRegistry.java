@@ -24,6 +24,7 @@ import static xyz.upperlevel.uppercore.util.GenericUtil.getGenericChildren;
 
 public class ConfigParserRegistry {
     private static final SafeConstructor.ConstructYamlTimestamp TIMESTAMP_CONSTRUCTOR = new SafeConstructor.ConstructYamlTimestamp();
+    private static final ConfigParserRegistry standard = createStandard();
     private Map<Class<?>, ParserFactory> parsersByClass = new HashMap<>();
 
     public <T> void register(Class<T> clazz, ParserFactory factory) {
@@ -278,5 +279,9 @@ public class ConfigParserRegistry {
         ConfigParserRegistry registry = new ConfigParserRegistry();
         registry.registerStandard();// Setup standard types
         return registry;
+    }
+
+    public static ConfigParserRegistry getStandard() {
+        return standard;
     }
 }

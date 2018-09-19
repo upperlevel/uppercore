@@ -17,7 +17,7 @@ import java.io.StringReader;
 import static org.junit.Assert.assertEquals;
 
 public class BukkitTypesConfigTest {
-    public static final ConfigParserRegistry registry = ConfigParserRegistry.createStandard();
+    public static final ConfigParserRegistry registry = ConfigParserRegistry.getStandard();
     private static final Plugin plugin = null;
 
     public static class ConfigLoaderExample {
