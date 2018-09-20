@@ -12,8 +12,7 @@ public final class ExternalJarUtil {
     private static final MethodHandle addPath;
 
     static {//void addURL(URL var1)
-
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        ClassLoader classLoader = ExternalJarUtil.class.getClassLoader();
         try {
             Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
             method.setAccessible(true);
