@@ -102,9 +102,9 @@ public class PlaySound {
         } else if(o instanceof String) {
             return new PlaySound(PlaceholderValue.soundValue((String) o), fake(1.0f), fake(1.0f));
         } else if(o instanceof Map) {
-            return new PlaySound(Config.wrap((Map<String, Object>) o));
+            return new PlaySound(Config.from((Map<String, Object>) o));
         } else if(o instanceof ConfigurationSection) {
-            return new PlaySound(Config.wrap((ConfigurationSection)o));
+            return new PlaySound(Config.from((ConfigurationSection)o));
         } else {
             throw new InvalidConfigException("Expected: Sound or map, found: " + o.getClass().getSimpleName() + " (" + o + ")");
         }

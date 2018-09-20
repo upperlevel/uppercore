@@ -28,9 +28,9 @@ public class TrackingConfig extends Config {
         this.root = (MappingNode) root;
     }
 
-    private Node getRaw(String key) {
+    private Node getRaw(@NonNull String key) {
         for (NodeTuple node : root.getValue()) {
-            if (node.getKeyNode().getTag() != Tag.STR) continue;
+            if (node.getKeyNode().getNodeId() != NodeId.scalar) continue;
             String nodeKey = ((ScalarNode)node.getKeyNode()).getValue();
             if (key.equals(nodeKey)) return node.getValueNode();
         }
@@ -40,6 +40,7 @@ public class TrackingConfig extends Config {
     @Override
     public Object get(String key) {
         Node node = getRaw(key);
+        if (node == null) return null;
         constructor.setComposer(new FakeComposer(node));
         return constructor.getData();
     }

@@ -81,14 +81,17 @@ public final class ConfigUtil {
         }
     }
 
+    @Deprecated
     public static FileConfiguration loadConfig(Plugin plugin, String fileName) {
         return loadConfig(plugin.getDataFolder(), fileName);
     }
 
+    @Deprecated
     public static FileConfiguration loadConfig(File folder, String filename) {
         return loadConfig(new File(folder, filename));
     }
 
+    @Deprecated
     public static FileConfiguration loadConfig(File file) {
         if (!file.exists())
             throw new InvalidConfigException("Cannot read file '" + file + "': no file found");
@@ -107,30 +110,37 @@ public final class ConfigUtil {
         return config;
     }
 
+    @Deprecated
     public static Map<String, Object> loadMap(Plugin plugin, String fileName) {
         return loadConfig(plugin, fileName).getValues(false);
     }
 
+    @Deprecated
     public static Map<String, Config> loadConfigMap(Plugin plugin, String fileName, String itemName) {
         return loadConfigMap(plugin, fileName, (key, obj) -> plugin.getLogger().severe("Cannot parse " + itemName + " " + key + ": expected map (found: " + obj.getClass().getSimpleName() + ")"));
     }
 
+    @Deprecated
     public static Map<String, Config> loadConfigMap(Plugin plugin, String fileName, BiConsumer<String, Object> cannotParseAsConfig) {
         return loadConfigMap(loadConfig(plugin, fileName), cannotParseAsConfig);
     }
 
+    @Deprecated
     public static Map<String, Config> loadConfigMap(ConfigurationSection config, Plugin plugin, String itemName) {
         return loadConfigMap(config, (key, obj) -> plugin.getLogger().severe("Cannot parse " + itemName + " " + key + ": expected map (found: " + obj.getClass().getSimpleName() + ")"));
     }
 
+    @Deprecated
     public static Map<String, Config> loadConfigMap(ConfigurationSection config, BiConsumer<String, Object> cannotParseAsConfig) {
         return loadConfigMap(config.getValues(false), cannotParseAsConfig);
     }
 
+    @Deprecated
     public static Map<String, Config> loadConfigMap(Map<String, Object> config, Plugin plugin, String itemName) {
         return loadConfigMap(config, (key, obj) -> plugin.getLogger().severe("Cannot parse " + itemName + " " + key + ": expected map (found: " + obj.getClass().getSimpleName() + ")"));
     }
 
+    @Deprecated
     public static Map<String, Config> loadConfigMap(Map<String, Object> config, BiConsumer<String, Object> cannotParseAsConfig) {
         return config
                 .entrySet()
@@ -138,9 +148,9 @@ public final class ConfigUtil {
                 .map(e -> {
                     Object o = e.getValue();
                     if (o instanceof Map)
-                        return Maps.immutableEntry(e.getKey(), Config.wrap((Map) o));
+                        return Maps.immutableEntry(e.getKey(), Config.from((Map) o));
                     else if (o instanceof ConfigurationSection)
-                        return Maps.immutableEntry(e.getKey(), Config.wrap((ConfigurationSection) o));
+                        return Maps.immutableEntry(e.getKey(), Config.from((ConfigurationSection) o));
                     else {
                         cannotParseAsConfig.accept(e.getKey(), o);
                         return null;

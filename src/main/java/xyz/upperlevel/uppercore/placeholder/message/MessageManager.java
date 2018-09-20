@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.placeholder.message;
 
 import lombok.Getter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
@@ -78,7 +77,7 @@ public class MessageManager {
     public static MessageManager load(File file) {
         if (!file.exists())
             throw new IllegalArgumentException("Cannot find file " + file);
-        return new MessageManager(Config.wrap(YamlConfiguration.loadConfiguration(file)));
+        return new MessageManager(Config.fromYaml(file));
     }
 
     public static MessageManager load(Plugin plugin, String fileName) {

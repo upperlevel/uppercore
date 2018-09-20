@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.board;
 
 import lombok.Getter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
@@ -54,6 +53,6 @@ public class SimpleConfigBoard implements Board {
     }
 
     public static SimpleConfigBoard create(File file) {
-        return SimpleConfigBoard.create(Config.wrap(YamlConfiguration.loadConfiguration(file)));
+        return SimpleConfigBoard.create(Config.fromYaml(file));
     }
 }

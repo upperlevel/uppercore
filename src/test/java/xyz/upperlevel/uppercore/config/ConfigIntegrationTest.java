@@ -39,7 +39,7 @@ public class ConfigIntegrationTest {
 
     @Test
     public void basicTest() {
-        Config.wrap(ImmutableMap.of(
+        Config.from(ImmutableMap.of(
                 "insta", ImmutableMap.of(
                         "bool", true,
                         "name", "aname",

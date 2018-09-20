@@ -91,7 +91,7 @@ public class Position implements ConfigurationSerializable {
     }
 
     public static Position deserialize(Map<String, Object> data) {
-        Config cfg = Config.wrap(data);
+        Config cfg = Config.from(data);
         Position r = new Position();
         r.x = cfg.getDouble("x");
         r.y = cfg.getDouble("y");

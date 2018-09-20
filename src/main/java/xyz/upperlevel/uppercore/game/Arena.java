@@ -129,7 +129,7 @@ public class Arena {
     }
 
     public void deserialize(Map<String, Object> data) {
-        Config cfg = Config.wrap(data);
+        Config cfg = Config.from(data);
         name = cfg.getString("name", id);
         for (Config signCfg : cfg.getConfigList("signs", new ArrayList<>())) {
             Block sign = LocUtil.deserialize(signCfg).getBlock();

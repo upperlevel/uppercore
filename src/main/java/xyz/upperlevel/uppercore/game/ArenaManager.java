@@ -85,7 +85,7 @@ public class ArenaManager implements Listener {
     public static ArenaManager load(Plugin plugin, List<Map<String, Object>> arenas, ArenaFactory arenaFactory) {
         ArenaManager arenaManager = new ArenaManager(plugin);
         for (Map<String, Object> arena : arenas) {
-            Config cfg = Config.wrap(arena);
+            Config cfg = Config.from(arena);
             arenaManager.register(arenaFactory.load(cfg.getStringRequired("id"), arena));
         }
         return arenaManager;

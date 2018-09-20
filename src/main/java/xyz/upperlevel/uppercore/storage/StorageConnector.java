@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.storage;
 
 import lombok.Getter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
@@ -125,6 +124,6 @@ public abstract class StorageConnector {
         if (!file.exists()) {
             throw new IllegalArgumentException("'storage.yml' file not found for: " + plugin.getName());
         }
-        return read(Config.wrap(YamlConfiguration.loadConfiguration(file)));
+        return read(Config.fromYaml(file));
     }
 }

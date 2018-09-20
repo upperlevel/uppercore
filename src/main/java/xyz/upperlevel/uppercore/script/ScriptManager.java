@@ -3,10 +3,11 @@ package xyz.upperlevel.uppercore.script;
 import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -17,7 +18,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ScriptManager {
 
@@ -88,10 +88,10 @@ public class ScriptManager {
     public void reloadConfig(File configFile) {
         extensionsToEngineName = new HashMap<>();
 
-        FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        ConfigurationSection section = config.getConfigurationSection("engines");
-        for (Map.Entry<String, Object> obj : section.getValues(false).entrySet())
-            extensionsToEngineName.put(obj.getKey(), obj.getValue().toString());
+        ScriptConfig config = Config.fromYaml(configFile).get((Plugin)null, ScriptConfig.class);
+        for (Map.Entry<String, String> obj : config.engines.entrySet()) {
+            extensionsToEngineName.put(obj.getKey(), obj.getValue());
+        }
     }
 
     public void setupMetrics(Metrics metrics) {
@@ -118,5 +118,14 @@ public class ScriptManager {
         return engine.getClass().getSimpleName()
                 .replaceFirst("ScriptEngine", "")
                 .toLowerCase(Locale.ENGLISH);
+    }
+
+    public static class ScriptConfig {
+        public Map<String, String> engines;
+
+        @ConfigConstructor
+        public ScriptConfig(@ConfigProperty("engines") Map<String, String> engines) {
+            this.engines = engines;
+        }
     }
 }

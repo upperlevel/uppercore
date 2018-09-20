@@ -9,6 +9,7 @@ import org.yaml.snakeyaml.representer.Representer;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigValueException;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
+import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
@@ -17,6 +18,7 @@ import xyz.upperlevel.uppercore.sound.CompatibleSound;
 import xyz.upperlevel.uppercore.sound.PlaySound;
 import xyz.upperlevel.uppercore.util.LocUtil;
 
+import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -589,9 +591,9 @@ public abstract class Config {
         if (raw == null) {
             return def;
         } else if (raw instanceof Map) {
-            return Config.wrap((Map<String, Object>) raw);
+            return Config.from((Map<String, Object>) raw);
         } else if (raw instanceof ConfigurationSection) {
-            return Config.wrap((ConfigurationSection) raw);
+            return Config.from((ConfigurationSection) raw);
         } else {
             throw new InvalidConfigValueException(key, raw, "Map");
         }
@@ -634,7 +636,7 @@ public abstract class Config {
         Collection<Map<String, Object>> raw = getCollection(key);
         if (raw == null) return def;
         return raw.stream()
-                .map(Config::wrap)
+                .map(Config::from)
                 .collect(Collectors.toList());
     }
 
@@ -777,7 +779,9 @@ public abstract class Config {
                 .parse(plugin, getYamlNode());
     }
 
-    public static Config wrap(Map<String, Object> map) {
+    // Helper functions and Config builders
+
+    public static Config from(Map<String, Object> map) {
         return new Config() {
             @Override
             public Object get(String key) {
@@ -791,7 +795,7 @@ public abstract class Config {
         };
     }
 
-    public static Config wrap(ConfigurationSection section) {
+    public static Config from(ConfigurationSection section) {
         return new Config() {
             @Override
             public Object get(String key) {
@@ -803,5 +807,21 @@ public abstract class Config {
                 return yamlRepresenter.represent(section);
             }
         };
+    }
+
+    public static TrackingConfig from(Node node) {
+        return new TrackingConfig(node);
+    }
+
+    public static TrackingConfig fromYaml(Reader reader) {
+        return from(ConfigParser.defaultYaml.compose(reader));
+    }
+
+    public static TrackingConfig fromYaml(File in) {
+        try {
+            return fromYaml(new FileReader(in));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read yaml " + in.getName(), e);
+        }
     }
 }

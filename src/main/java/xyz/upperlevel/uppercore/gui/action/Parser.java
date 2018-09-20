@@ -181,7 +181,7 @@ public interface Parser<T> {
                 if (object instanceof ItemStack)
                     return new CustomItem((ItemStack) object);
                 else if (object instanceof Map)
-                    return CustomItem.deserialize(Config.wrap((Map<String, Object>) object));
+                    return CustomItem.deserialize(Config.from((Map<String, Object>) object));
                 else
                     throw new IllegalArgumentException("Cannot parse " + object + " as Item");
             }

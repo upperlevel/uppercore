@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.Plugin;
 import org.junit.Test;
@@ -18,17 +17,18 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class BasicConfigTest {
-    public static final ConfigParserRegistry registry = ConfigParserRegistry.getStandard();
     private static final Plugin plugin = null;
 
     public static class ConfigLoaderExample {
         @ConfigConstructor
-        public ConfigLoaderExample(@ConfigProperty("str")     String str,
-                                   @ConfigProperty("count")   int count,
-                                   @ConfigProperty("enum") List<ItemFlag> flags,
-                                   @ConfigProperty("type")    Material type,
-                                   @ConfigProperty("center") Position center,
-                                   @ConfigProperty("center2") Position center2) {
+        public ConfigLoaderExample(
+                @ConfigProperty("str") String str,
+                @ConfigProperty("count") int count,
+                @ConfigProperty("enum") List<ItemFlag> flags,
+                @ConfigProperty("type") Material type,
+                @ConfigProperty("center") Position center,
+                @ConfigProperty("center2") Position center2
+        ) {
             assertEquals("Stringa", str);
             assertEquals(129, count);
             assertEquals(ImmutableList.of(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES), flags);
@@ -40,21 +40,20 @@ public class BasicConfigTest {
 
     @Test
     public void basicTest() {
-        registry.getFor(ConfigLoaderExample.class)
-                .parse(
-                        plugin,
-                        new StringReader(
-                                "str: Stringa\n" +
-                                        "count: 129\n" +
-                                        "enum: [hide enchants, hide attributes]\n" +
-                                        "type: 55\n" +
-                                        "center: [15.0, 30.0, 60.0]\n" +
-                                        "center2:\n" +
-                                        "  x: 1.0\n" +
-                                        "  y: 2.0\n" +
-                                        "  z: 3.0\n"
-                        )
-                );
+        // This is a shortcut for the second method shown below
+        // it might be slightly slower if you need to parse more objects of the same type
+        // but the difference could never be noticeable
+        Config.fromYaml(new StringReader(
+                "str: Stringa\n" +
+                        "count: 129\n" +
+                        "enum: [hide enchants, hide attributes]\n" +
+                        "type: 55\n" +
+                        "center: [15.0, 30.0, 60.0]\n" +
+                        "center2:\n" +
+                        "  x: 1.0\n" +
+                        "  y: 2.0\n" +
+                        "  z: 3.0\n"
+        )).get(plugin, ConfigLoaderExample.class);
     }
 
     public static class PolymorphicFather {
@@ -69,11 +68,14 @@ public class BasicConfigTest {
         }
 
         @PolymorphicSelector
-        private static Class<? extends PolymorphicFather> selectChild (@ConfigProperty("type") String type) {
+        private static Class<? extends PolymorphicFather> selectChild(@ConfigProperty("type") String type) {
             switch (type) {
-                case "dog": return Dog.class;
-                case "cat": return Cat.class;
-                default:    return PolymorphicFather.class;
+                case "dog":
+                    return Dog.class;
+                case "cat":
+                    return Cat.class;
+                default:
+                    return PolymorphicFather.class;
             }
         }
 
@@ -102,8 +104,11 @@ public class BasicConfigTest {
 
     @Test
     public void testPolymorphic() {
-        ConfigParser<PolymorphicFather> parser = registry.getFor(PolymorphicFather.class);
+        // This is the more explicit way to parse the config
+        // First you query the parser
+        ConfigParser<PolymorphicFather> parser = ConfigParserRegistry.getStandard().getFor(PolymorphicFather.class);
 
+        // And then you parse
         PolymorphicFather dog = parser.parse(
                 plugin,
                 new StringReader(
@@ -112,7 +117,7 @@ public class BasicConfigTest {
                 )
         );
         assertEquals(PolymorphicFather.Dog.class, dog.getClass());
-        assertEquals(Color.BLUE, ((PolymorphicFather.Dog)dog).getFurColor());
+        assertEquals(Color.BLUE, ((PolymorphicFather.Dog) dog).getFurColor());
 
         PolymorphicFather cat = parser.parse(
                 plugin,
@@ -122,7 +127,7 @@ public class BasicConfigTest {
                 )
         );
         assertEquals(PolymorphicFather.Cat.class, cat.getClass());
-        assertEquals("meoow", ((PolymorphicFather.Cat)cat).getMeowMessage());
+        assertEquals("meoow", ((PolymorphicFather.Cat) cat).getMeowMessage());
 
         PolymorphicFather horse = parser.parse(
                 plugin,

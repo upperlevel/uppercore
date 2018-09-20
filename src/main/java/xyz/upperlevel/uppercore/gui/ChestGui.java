@@ -113,7 +113,7 @@ public class ChestGui implements Gui {
         Collection<Map<String, Object>> iconsData = (Collection<Map<String, Object>>) config.getCollection("icons");
         if (iconsData != null) {
             for (Map<String, Object> data : iconsData) {
-                ConfigIcon item = ConfigIcon.deserialize(plugin, Config.wrap(data));
+                ConfigIcon item = ConfigIcon.deserialize(plugin, Config.from(data));
                 icons[(int) data.get("slot")] = item;
             }
         }

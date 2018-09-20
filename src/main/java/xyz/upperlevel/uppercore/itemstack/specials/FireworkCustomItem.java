@@ -31,7 +31,7 @@ public class FireworkCustomItem extends CustomItem {
         super(material, config, placeholders);
         effects = ((Collection<Map<String, Object>>) config.getCollection("effects", Collections.emptyList()))
                 .stream()
-                .map(c -> FireworkChargeCustomItem.parse(Config.wrap(c)))
+                .map(c -> FireworkChargeCustomItem.parse(Config.from(c)))
                 .collect(Collectors.toList());
         String rawPower = config.getString("power");
         power = rawPower == null ? null : PlaceholderUtil.parseInt(rawPower);

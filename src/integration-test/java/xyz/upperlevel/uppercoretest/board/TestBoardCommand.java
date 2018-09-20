@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercoretest.board;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.board.Board;
 import xyz.upperlevel.uppercore.board.BoardManager;
@@ -68,13 +67,13 @@ public class TestBoardCommand extends NodeCommand {
                 new DynamicBoardExample();
 
         CONFIG_SIMPLE_BOARD =
-                SimpleConfigBoard.create(Config.wrap(YamlConfiguration.loadConfiguration(new InputStreamReader(
+                SimpleConfigBoard.create(Config.fromYaml(new InputStreamReader(
                         TestBoardCommand.class.getResourceAsStream("/boards/simple.yml"))
-                )));
+                ));
 
         CONFIG_COMPLEX_BOARD = new ComplexConfigBoardExample(
-                Config.wrap(YamlConfiguration.loadConfiguration(new InputStreamReader(
+                Config.fromYaml(new InputStreamReader(
                         TestBoardCommand.class.getResourceAsStream("/boards/complex.yml"))
-                )));
+                ));
     }
 }

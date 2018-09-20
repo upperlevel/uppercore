@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -125,7 +124,7 @@ public class Game implements Listener {
     public static Game load(Plugin plugin, ArenaFactory arenaFactory) {
         File storageFile = new File(plugin.getDataFolder(), "game_data.yml");
         if (storageFile.exists()) {
-            Config config = Config.wrap(YamlConfiguration.loadConfiguration(storageFile));
+            Config config = Config.fromYaml(storageFile);
             ArenaManager arenaManager = ArenaManager.load(plugin, config.getMapList("arenas"), arenaFactory);
             return new Game(
                     plugin,

@@ -14,7 +14,6 @@ import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.placeholder.message.MessageManager;
 import xyz.upperlevel.uppercore.registry.RegistryRoot;
 import xyz.upperlevel.uppercore.script.ScriptManager;
 import xyz.upperlevel.uppercore.update.DownloadableUpdateChecker;
@@ -58,7 +57,7 @@ public class Uppercore extends JavaPlugin {
 
             /* Command configuration */
             saveResource("command.yml", false);
-            Config cfg = Config.wrap(ConfigUtil.loadConfig(Uppercore.get(), "command.yml"));
+            Config cfg = Config.fromYaml(new File(Uppercore.get().getDataFolder(), "command.yml"));
             Command.configure(cfg);
             HelpCommand.configure(cfg);
             FunctionalCommand.configure(cfg);

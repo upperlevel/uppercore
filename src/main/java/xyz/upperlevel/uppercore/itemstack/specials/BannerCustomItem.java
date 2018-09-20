@@ -31,7 +31,7 @@ public class BannerCustomItem extends CustomItem {
         patterns = new ArrayList<>();
         if (rawPatterns != null) {
             for (Map<String, Object> p : rawPatterns) {
-                Config sub = Config.wrap(p);
+                Config sub = Config.from(p);
                 DyeColor color = sub.getDyeRequired("color");
                 PatternType type = PatternType.getByIdentifier(sub.getStringRequired("pattern"));
                 if (type == null) {
