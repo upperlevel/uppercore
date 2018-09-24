@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 public class WrongNodeTypeConfigException extends ConfigException {
     public WrongNodeTypeConfigException(Node node, NodeId... expected) {
-        super(node, "Wrong type: found " + node.getNodeId() + ", expected: " + Arrays.stream(expected).map(NodeId::name).collect(Collectors.joining(", ")));
+        super("Wrong type: found " + node.getNodeId() + ", expected: " + Arrays.stream(expected).map(NodeId::name).collect(Collectors.joining(", ")), node);
     }
 
     public WrongNodeTypeConfigException(Node node, Tag... expected) {
-        super(node, "Wrong type: found " + node.getTag() + ", expected: " + Arrays.stream(expected).map(Tag::getValue).collect(Collectors.joining(", ")));
+        super("Wrong type: found " + node.getTag() + ", expected: " + Arrays.stream(expected).map(Tag::getValue).collect(Collectors.joining(", ")), node);
     }
 }

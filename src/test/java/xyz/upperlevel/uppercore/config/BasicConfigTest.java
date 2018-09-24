@@ -53,7 +53,7 @@ public class BasicConfigTest {
                         "  x: 1.0\n" +
                         "  y: 2.0\n" +
                         "  z: 3.0\n"
-        )).get(plugin, ConfigLoaderExample.class);
+        )).get(ConfigLoaderExample.class, plugin);
     }
 
     public static class PolymorphicFather {

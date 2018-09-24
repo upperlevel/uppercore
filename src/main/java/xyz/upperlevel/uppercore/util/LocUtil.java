@@ -26,7 +26,7 @@ public final class LocUtil {
 
     public static Location deserialize(Config section) {
         return new Location(
-                Bukkit.getWorld(section.getString("world")),
+                Bukkit.getWorld(section.getString("world")),// TODO: check World not found exception and write it in the Javadoc
                 section.getDouble("x"),
                 section.getDouble("y"),
                 section.getDouble("z"),

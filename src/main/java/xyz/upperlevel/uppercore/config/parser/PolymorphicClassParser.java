@@ -22,9 +22,11 @@ public class PolymorphicClassParser<T> extends ConfigParser<T> {
     @Override
     public T parse(Plugin plugin, Node root) {
         Class<?> selectedClass;
+
         selectedClass = classSelector.parse(plugin, root);
+
         if (selectedClass == null) {
-            throw new ConfigException(root, "Cannot determine subclass");
+            throw new ConfigException("Cannot determine subclass of " + getHandleClass().getSimpleName(), root);
         }
         ConfigParser<T> parser;
         if (selectedClass != getHandleClass()) {

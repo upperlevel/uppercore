@@ -4,6 +4,10 @@ import org.yaml.snakeyaml.nodes.Node;
 
 public class DuplicatePropertyConfigException extends ConfigException {
     public DuplicatePropertyConfigException(Node node, Node duplicate, String name) {
-        super(node, "Duplicate property '" + name + "', (" + duplicate.getStartMark() + " -> " + duplicate.getEndMark() + ")");
+        super(
+                "Property ", duplicate.getStartMark(),
+                "has been already declared", node.getStartMark(),
+                "Consider removing one", null
+        );
     }
 }

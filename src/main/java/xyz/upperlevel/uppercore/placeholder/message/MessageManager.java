@@ -3,20 +3,13 @@ package xyz.upperlevel.uppercore.placeholder.message;
 import lombok.Getter;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
-import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.util.CollectionUtil;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Maps.immutableEntry;
 
-// TODO implement new config and such
 public class MessageManager {
     @Getter
     private final String path;
@@ -33,26 +26,11 @@ public class MessageManager {
     }
 
     public Message get(String path) {
-        Object raw = config.get(path);
-        if (raw == null)
-            throw new IllegalMessageConfigException(this.path, path);
-        if (raw instanceof Collection) {
-            return new Message(
-                    ((Collection<?>) raw)
-                            .stream()
-                            .map(o -> PlaceholderValue.stringValue(o.toString()))
-                            .collect(Collectors.toList()));
-        } else return new Message(Collections.singletonList(PlaceholderValue.stringValue(raw.toString())));
+        return config.get(path, Message.class, null);
     }
 
     public MessageManager getSection(String path) {
-        try {
-            return new MessageManager(getPath(path), config.getConfigRequired(path));
-        } catch (RequiredPropertyNotFoundException exception) {
-            throw new IllegalMessageConfigException(getPath(path));
-        } catch (InvalidConfigException e) {
-            throw new IllegalMessageConfigException(getPath(path), e);
-        }
+        return new MessageManager(getPath(path), config.getConfigRequired(path));
     }
 
     private String getPath(String other) {
@@ -75,15 +53,17 @@ public class MessageManager {
     }
 
     public static MessageManager load(File file) {
-        if (!file.exists())
+        if (!file.exists()) {
             throw new IllegalArgumentException("Cannot find file " + file);
+        }
         return new MessageManager(Config.fromYaml(file));
     }
 
     public static MessageManager load(Plugin plugin, String fileName) {
         File file = new File(plugin.getDataFolder(), fileName);
-        if (!file.exists())
+        if (!file.exists()) {
             plugin.saveResource(fileName, false);
+        }
         return load(file);
     }
 

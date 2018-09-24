@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.config;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -7,6 +8,10 @@ import org.bukkit.configuration.file.YamlConstructor;
 import org.yaml.snakeyaml.composer.Composer;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.nodes.*;
+import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
+import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundConfigException;
+import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,6 +73,48 @@ public class TrackingConfig extends Config {
         return seq.getValue().stream()
                 .map(TrackingConfig::new)
                 .collect(Collectors.toList());
+    }
+
+    // Error tracking
+
+    private Node checkNodeParam(String key) {
+        Node node = getRaw(key);
+        if (node == null) throw new IllegalArgumentException("Cannot find key '" + key + "' in config");
+        return node;
+    }
+
+    @Override
+    protected void checkPropertyNotNull(String key, Object prop) {
+        if (prop != null) return;
+        throw new RequiredPropertyNotFoundConfigException(getYamlNode(), ImmutableList.of(key));
+    }
+
+    @Override
+    protected RuntimeException adjustParsingException(String key, InvalidConfigException e) {
+        return new ConfigException(
+                e.getMessage(),
+                checkNodeParam(key).getStartMark()
+        );
+    }
+
+    @Override
+    protected RuntimeException invalidValueTypeException(String key, String expectedType) {
+        Node raw = checkNodeParam(key);
+        String type;
+        if (raw.getNodeId() == NodeId.scalar) {
+            type = ((ScalarNode)raw).getValue();
+        } else {
+            type = raw.getNodeId().name();
+        }
+        throw new WrongValueConfigException(raw, type, expectedType);
+    }
+
+    @Override
+    protected RuntimeException invalidConfigException(String key, String cause) {
+        throw new ConfigException(
+                cause,
+                checkNodeParam(key).getStartMark()
+        );
     }
 
     protected static class FakeComposer extends Composer {

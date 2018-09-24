@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.PolymorphicSelector;
+import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.registry.Registry;
 
@@ -28,6 +29,9 @@ public abstract class Action<T extends Action<T>> implements Link {
     @PolymorphicSelector
     private static Class<? extends Action> selectAction(@ConfigProperty("type") String rawType) {
         ActionType<?> type = ActionType.getActionType(rawType);
-        return type != null ? type.getHandleClass() : null;
+        if (type == null) {
+            throw new InvalidConfigException("Cannot find action " + rawType);
+        }
+        return type.getHandleClass();
     }
 }

@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.config.parser;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.nodes.*;
@@ -9,7 +8,6 @@ import xyz.upperlevel.uppercore.config.*;
 import xyz.upperlevel.uppercore.config.exceptions.*;
 import xyz.upperlevel.uppercore.util.Pair;
 
-import javax.sound.midi.Track;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Predicate;
@@ -101,7 +99,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         try {
             return targetConstructor.construct(args);
         } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate " + getHandleClass().getName(), e);
+            throw new ConfigException(null, null, e.getMessage(), root.getStartMark(), null, e);
         }
     }
 
@@ -144,7 +142,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         if (!uninitializedProperties.isEmpty()) {
             throw new RequiredPropertyNotFoundConfigException(root, uninitializedProperties.stream().map(p -> p.name).collect(Collectors.toList()));
         }
-        return constructObject(plugin);
+        return constructObject(plugin, root);
     }
 
     protected T parseInline(Plugin plugin, Node root) {
@@ -152,7 +150,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
 
         if (root.getNodeId() == NodeId.scalar) {
             if (positionalArguments.size() > 1) {
-                throw new ConfigException(root, getHandleClass().getSimpleName() + " does not take only one argument");
+                throw new ConfigException(getHandleClass().getSimpleName() + " does not take only one argument", root);
             }
             // Single argument properties can be constructed even without an explicit list
             if (!positionalArguments.isEmpty()) {
@@ -162,7 +160,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
             SequenceNode node = ((SequenceNode) root);
             int argsLen = node.getValue().size();
             if (argsLen > positionalArguments.size()) {
-                throw new ConfigException(root, "Too many arguments (max: " + positionalArguments.size() + ")");
+                throw new ConfigException("Too many arguments (max: " + positionalArguments.size() + ")", root);
             }
             for (int i = 0; i < argsLen; i++) {
                 positionalArguments.get(i).parse(plugin, node.getValue().get(i));
@@ -170,10 +168,10 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         } else {
             throw new WrongNodeTypeConfigException(root, NodeId.scalar, NodeId.sequence);
         }
-        return constructObject(plugin);
+        return constructObject(plugin, root);
     }
 
-    protected T constructObject(Plugin plugin) {
+    protected T constructObject(Plugin plugin, Node root) {
         int size = positionalArguments.size();
 
         if (passPlugin) {
@@ -193,8 +191,10 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         }
         try {
             return targetConstructor.construct(args);
+        } catch (InvocationTargetException e) {
+            throw new ConfigException(null, null, e.getCause().getMessage(), root.getStartMark(), null, e.getCause());
         } catch (Exception e) {
-            throw new IllegalStateException("Could not instantiate " + getHandleClass().getName(), e);
+            throw new ConfigException(null, null, e.getMessage(), root.getStartMark(), null, e);
         }
     }
 

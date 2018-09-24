@@ -237,8 +237,7 @@ public class Message {
     }
 
     public static Message fromConfig(Object obj) {
-        if(obj == null)
-            return null;
+        if(obj == null) return null;
         if(obj instanceof Collection) {
             return new Message(
                     ((Collection<?>) obj).stream()

@@ -6,6 +6,6 @@ import java.util.List;
 
 public class RequiredPropertyNotFoundConfigException extends ConfigException {
     public RequiredPropertyNotFoundConfigException(Node node, List<String> propertyNames) {
-        super(node, "Cannot find required properties: '" + String.join("', '", propertyNames) + "'");
+        super("Cannot find required properties: '" + String.join("', '", propertyNames) + "'", node);
     }
 }

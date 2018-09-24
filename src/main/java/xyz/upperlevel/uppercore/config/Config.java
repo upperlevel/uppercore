@@ -12,13 +12,18 @@ import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundExcept
 import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
-import xyz.upperlevel.uppercore.placeholder.*;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
 import xyz.upperlevel.uppercore.sound.PlaySound;
 import xyz.upperlevel.uppercore.util.LocUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,9 +47,7 @@ public abstract class Config {
 
     public Object getRequired(String key) {
         final Object res = get(key);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -56,14 +59,12 @@ public abstract class Config {
 
     public DyeColor getDye(String key, DyeColor def) {
         String raw = getString(key);
-        if (raw == null)
-            return def;
+        if (raw == null) return def;
         else {
             try {
                 return ConfigUtil.parseDye(raw);
             } catch (InvalidConfigException e) {
-                e.addLocation("in property \"" + key + "\"");
-                throw e;
+                throw adjustParsingException(key, e);
             }
         }
     }
@@ -74,40 +75,35 @@ public abstract class Config {
 
     public DyeColor getDyeRequired(String key) {
         DyeColor color = getDye(key, null);
-        if (color == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, color);
         return color;
     }
 
     // String
 
-    public String getString(String key) {
+    public String getString(String key, String def) {
         Object raw = get(key);
-        return raw == null ? null : raw.toString();
+        return raw == null ? def : raw.toString();
     }
 
-    public String getString(String key, String def) {
-        final String res = getString(key);
-        return res != null ? res : def;
+    public String getString(String key) {
+        return getString(key, null);
     }
 
     public String getStringRequired(String key) {
         String str = getString(key);
-        if (str == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, str);
         return str;
     }
 
     // String List
 
     public List<String> getStringList(String key) {
-        List<String> res = null;
+        List<String> res;
         try {
             res = (List<String>) get(key);
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "List");
+            throw invalidValueTypeException(key, "List");
         }
         return res;
     }
@@ -119,9 +115,7 @@ public abstract class Config {
 
     public List<String> getStringListRequired(String key) {
         List<String> res = getStringList(key);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -138,9 +132,7 @@ public abstract class Config {
 
     public <T> List<T> getListRequired(String key) {
         List<T> res = getList(key);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -191,8 +183,7 @@ public abstract class Config {
 
     public List<PlaceholderValue<String>> getMessageStrList(String key) {
         List<String> tmp = getStringList(key);
-        if (tmp == null)
-            return null;
+        if (tmp == null) return null;
         return tmp.stream()
                 .map(PlaceholderUtil::process)
                 .collect(Collectors.toList());
@@ -205,20 +196,18 @@ public abstract class Config {
 
     public List<PlaceholderValue<String>> getMessageStrListRequired(String key) {
         List<PlaceholderValue<String>> res = getMessageStrList(key);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
     // Int
 
     public Integer getInt(String key) {
-        Number res = null;
+        Number res;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Number");
+            throw invalidValueTypeException(key, "Number");
         }
         return res == null ? null : res.intValue();
     }
@@ -230,24 +219,22 @@ public abstract class Config {
 
     public int getIntRequired(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
         try {
             return ((Number) get(key)).intValue();
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, raw, "Number");
+            throw invalidValueTypeException(key, "Number");
         }
     }
 
     // Short
 
     public Short getShort(String key) {
-        Number res = null;
+        Number res;
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Number");
+            throw invalidValueTypeException(key, "Number");
         }
         return res == null ? null : res.shortValue();
     }
@@ -259,13 +246,11 @@ public abstract class Config {
 
     public short getShortRequired(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
         try {
-            return ((Number) get(key)).shortValue();
+            return ((Number) raw).shortValue();
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, raw, "Number");
+            throw invalidValueTypeException(key, "Number");
         }
     }
 
@@ -276,7 +261,7 @@ public abstract class Config {
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Number");
+            throw invalidValueTypeException(key, "Number");
         }
         return res == null ? null : res.byteValue();
     }
@@ -288,13 +273,11 @@ public abstract class Config {
 
     public byte getByteRequired(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
         try {
             return ((Number) get(key)).byteValue();
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, raw, "Number");
+            throw invalidValueTypeException(key, "Number");
         }
     }
 
@@ -305,7 +288,7 @@ public abstract class Config {
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Number");
+            throw invalidValueTypeException(key, "Number");
         }
         return res == null ? null : res.longValue();
     }
@@ -317,13 +300,11 @@ public abstract class Config {
 
     public long getLongRequired(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
         try {
             return ((Number) get(key)).longValue();
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, raw, "Number");
+            throw invalidValueTypeException(key, "Number");
         }
     }
 
@@ -331,9 +312,8 @@ public abstract class Config {
 
     public Boolean getBool(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            return null;
-        }
+        if (raw == null) return null;
+
         if (raw instanceof Boolean) {
             return (Boolean) raw;
         } else if (raw instanceof String) {
@@ -348,7 +328,7 @@ public abstract class Config {
         } else if (raw instanceof Number) {
             return ((Number) raw).intValue() == 1;
         }
-        throw new InvalidConfigValueException(key, raw, "Boolean");
+        throw invalidValueTypeException(key, "Boolean");
     }
 
     public boolean getBool(String key, boolean def) {
@@ -358,9 +338,7 @@ public abstract class Config {
 
     public boolean getBoolRequired(String key) {
         Boolean raw = getBool(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
         return raw;
     }
 
@@ -371,7 +349,7 @@ public abstract class Config {
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Number");
+            throw invalidValueTypeException(key, "Number");
         }
         return res == null ? null : res.floatValue();
     }
@@ -383,13 +361,11 @@ public abstract class Config {
 
     public float getFloatRequired(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
         try {
             return ((Number) get(key)).floatValue();
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, raw, "Number");
+            throw invalidValueTypeException(key, "Number");
         }
     }
 
@@ -400,7 +376,7 @@ public abstract class Config {
         try {
             res = ((Number) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Number");
+            throw invalidValueTypeException(key, "Number");
         }
         return res == null ? null : res.doubleValue();
     }
@@ -412,13 +388,12 @@ public abstract class Config {
 
     public double getDoubleRequired(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
+
         try {
             return ((Number) get(key)).doubleValue();
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, raw, "Number");
+            throw invalidValueTypeException(key, "Number");
         }
     }
 
@@ -431,7 +406,7 @@ public abstract class Config {
         try {
             return Enum.valueOf(clazz, raw);
         } catch (IllegalArgumentException e) {
-            throw new InvalidConfigException("Cannot find \"" + clazz.getSimpleName().toLowerCase() + "\" \"" + raw + "\"");
+            throw invalidConfigException(key, "Cannot find \"" + clazz.getSimpleName().toLowerCase() + "\" \"" + raw + "\"");
         }
     }
 
@@ -442,9 +417,7 @@ public abstract class Config {
 
     public <T extends Enum<T>> T getEnumRequired(String key, Class<T> clazz) {
         T res = getEnum(key, clazz);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -458,8 +431,7 @@ public abstract class Config {
             try {
                 return ConfigUtil.parseColor(raw);
             } catch (InvalidConfigException e) {
-                e.addLocation("in property \"" + key + "\"");
-                throw e;
+                throw adjustParsingException(key, e);
             }
         }
     }
@@ -470,9 +442,7 @@ public abstract class Config {
 
     public Color getColorRequired(String key) {
         Color color = getColor(key, null);
-        if (color == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, color);
         return color;
     }
 
@@ -485,7 +455,7 @@ public abstract class Config {
         } else {
             Sound res = CompatibleSound.get(raw);
             if (res == null) {
-                throw new InvalidConfigException("Cannot find sound \"" + raw + "\", is it supported?");
+                throw invalidConfigException(key, "Cannot find sound \"" + raw + "\", is it supported?");
             } else {
                 return res;
             }
@@ -498,9 +468,7 @@ public abstract class Config {
 
     public Sound getSoundRequired(String key) {
         Sound sound = getSound(key, null);
-        if (sound == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, sound);
         return sound;
     }
 
@@ -517,7 +485,11 @@ public abstract class Config {
 
     public PlaySound getBukkitSoundRequired(String key) {
         Object raw = getRequired(key);
-        return PlaySound.fromConfig(raw);
+        try {
+            return PlaySound.fromConfig(raw);
+        } catch (InvalidConfigException e) {
+            throw adjustParsingException(key, e);
+        }
     }
 
     // Material
@@ -533,10 +505,10 @@ public abstract class Config {
             } else if (raw instanceof String) {
                 res = Material.getMaterial(((String) raw).replace(' ', '_').toUpperCase());
             } else {
-                throw new InvalidConfigValueException(key, raw, "String|Number");
+                throw invalidValueTypeException(key, "String|Number");
             }
             if (res == null) {
-                throw new InvalidConfigException("Cannot find material \"" + raw + "\"");
+                throw invalidConfigException(key, "Cannot find material \"" + raw + "\"");
             } else {
                 return res;
             }
@@ -549,9 +521,7 @@ public abstract class Config {
 
     public Material getMaterialRequired(String key) {
         Material mat = getMaterial(key, null);
-        if (mat == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, mat);
         return mat;
     }
 
@@ -567,7 +537,7 @@ public abstract class Config {
         } else if (raw instanceof ConfigurationSection) {
             return ((ConfigurationSection) raw).getValues(false);
         } else {
-            throw new InvalidConfigValueException(key, raw, "Map");
+            throw invalidValueTypeException(key, "Map");
         }
     }
 
@@ -578,9 +548,7 @@ public abstract class Config {
 
     public Map<String, Object> getMapRequired(String key) {
         Map<String, Object> res = getMap(key);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -595,7 +563,7 @@ public abstract class Config {
         } else if (raw instanceof ConfigurationSection) {
             return Config.from((ConfigurationSection) raw);
         } else {
-            throw new InvalidConfigValueException(key, raw, "Map");
+            throw invalidValueTypeException(key, "Map");
         }
     }
 
@@ -605,9 +573,7 @@ public abstract class Config {
 
     public Config getConfigRequired(String key) {
         Config res = getConfig(key, null);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -624,9 +590,7 @@ public abstract class Config {
 
     public List<Map<String, Object>> getMapListRequired(String key) {
         List<Map<String, Object>> res = getMapList(key, null);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -646,9 +610,7 @@ public abstract class Config {
 
     public List<Config> getConfigListRequired(String key) {
         List<Config> res = getConfigList(key, null);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -659,7 +621,7 @@ public abstract class Config {
         try {
             return ((Collection) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Collection");
+            throw invalidValueTypeException(key, "Collection");
         }
     }
 
@@ -670,23 +632,24 @@ public abstract class Config {
 
     public Collection getCollectionRequired(String key) {
         Object raw = get(key);
-        if (raw == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, raw);
         try {
             return ((Collection) get(key));
         } catch (ClassCastException e) {
-            throw new InvalidConfigValueException(key, get(key), "Collection");
+            throw invalidValueTypeException(key, "Collection");
         }
     }
 
     // Location
 
     public Location getLocation(String key, Location def) {
+        Config config = getConfig(key);
+        if (config == null) return def;
+
         try {
-            return LocUtil.deserialize(getConfig(key));
-        } catch (Exception e) {
-            return def;
+            return LocUtil.deserialize(config);
+        } catch (InvalidConfigException e) {
+            throw adjustParsingException(key, e);
         }
     }
 
@@ -696,9 +659,7 @@ public abstract class Config {
 
     public Location getLocationRequired(String key) {
         Location l = getLocation(key);
-        if (l == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, l);
         return l;
     }
 
@@ -707,13 +668,15 @@ public abstract class Config {
     public List<Location> getLocationList(String key, List<Location> def) {
         List<Config> configs = getConfigList(key);
         List<Location> res = new ArrayList<>();
-        if (configs == null)
-            return def;
+
+        if (configs == null) return def;
+
         try {
-            for (Config cfg : configs)
+            for (Config cfg : configs) {
                 res.add(LocUtil.deserialize(cfg));
-        } catch (Exception e) {
-            return def;
+            }
+        } catch (InvalidConfigException e) {
+            throw adjustParsingException(key, e);
         }
         return res;
     }
@@ -724,9 +687,7 @@ public abstract class Config {
 
     public List<Location> getLocationListRequired(String key) {
         List<Location> res = getLocationList(key);
-        if (res == null) {
-            throw new RequiredPropertyNotFoundException(key);
-        }
+        checkPropertyNotNull(key, res);
         return res;
     }
 
@@ -734,13 +695,12 @@ public abstract class Config {
 
     public CustomItem getCustomItem(String key, Function<Config, CustomItem> deserializer) {
         Config sub = getConfig(key);
-        if (sub == null)
-            return null;
+        if (sub == null) return null;
+
         try {
             return deserializer.apply(sub);
         } catch (InvalidConfigException e) {
-            e.addLocation("in item " + key);
-            throw e;
+            throw adjustParsingException(key, e);
         }
     }
 
@@ -759,24 +719,54 @@ public abstract class Config {
 
     public CustomItem getCustomItemRequired(String key) {
         CustomItem res = getCustomItem(key);
-        if (res == null)
-            throw new RequiredPropertyNotFoundException(key);
+        checkPropertyNotNull(key, res);
         return res;
     }
 
     public CustomItem getCustomItemRequired(String key, PlaceholderRegistry local) {
         CustomItem res = getCustomItem(key, local);
-        if (res == null)
-            throw new RequiredPropertyNotFoundException(key);
+        checkPropertyNotNull(key, res);
         return res;
     }
 
     // ConfigParser way
 
-    public <T> T get(Plugin plugin, Class<T> clazz) {
+    public <T> T get(Class<T> clazz, Plugin plugin) {
         return ConfigParserRegistry.getStandard()
                 .getFor(clazz)
                 .parse(plugin, getYamlNode());
+    }
+
+    public <T> T get(String key, Class<T> clazz, Plugin plugin) {
+        Config c = getConfig(key);
+        if (c == null) return null;
+        return c.get(clazz, plugin);
+    }
+
+    public <T> T getRequired(String key, Class<T> clazz, Plugin plugin) {
+        T res = get(key, clazz, plugin);
+        checkPropertyNotNull(key, res);
+        return res;
+    }
+
+    // Exception throwers
+
+    protected void checkPropertyNotNull(String key, Object prop) {
+        if (prop != null) return;
+        throw new RequiredPropertyNotFoundException(key);
+    }
+
+    protected RuntimeException adjustParsingException(String key, InvalidConfigException e) {
+        e.addLocation("in " + key);
+        return e;
+    }
+
+    protected RuntimeException invalidValueTypeException(String key, String expectedType) {
+        throw new InvalidConfigValueException(key, get(key), expectedType);
+    }
+
+    protected RuntimeException invalidConfigException(String key, String error) {
+        throw new InvalidConfigException(key, error);
     }
 
     // Helper functions and Config builders
