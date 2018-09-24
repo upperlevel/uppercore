@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.game;
+package xyz.upperlevel.uppercore.arena;
 
 import lombok.Getter;
 import lombok.NonNull;

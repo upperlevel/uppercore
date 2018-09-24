@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.game;
+package xyz.upperlevel.uppercore.arena;
 
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -9,6 +9,10 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.arena.events.ArenaAddSignEvent;
+import xyz.upperlevel.uppercore.arena.events.ArenaCreateEvent;
+import xyz.upperlevel.uppercore.arena.events.ArenaDestroyEvent;
+import xyz.upperlevel.uppercore.arena.events.ArenaRemoveSignEvent;
 import xyz.upperlevel.uppercore.config.Config;
 
 import java.util.*;
@@ -28,7 +32,7 @@ public class ArenaManager implements Listener {
     public boolean register(@NonNull Arena arena) {
         if (!arenasById.containsKey(arena.getId())) {
             arenasById.put(arena.getId(), arena);
-            Bukkit.getPluginManager().callEvent(new ArenaEvent.Create(arena));
+            Bukkit.getPluginManager().callEvent(new ArenaCreateEvent(arena));
             return true;
         }
         return false;
@@ -37,7 +41,7 @@ public class ArenaManager implements Listener {
     public boolean unregister(String id) {
         Arena arena = arenasById.remove(id);
         if (arena != null) {
-            Bukkit.getPluginManager().callEvent(new ArenaEvent.Destroy(arena));
+            Bukkit.getPluginManager().callEvent(new ArenaDestroyEvent(arena));
             return true;
         }
         return false;
@@ -56,7 +60,7 @@ public class ArenaManager implements Listener {
     }
 
     @EventHandler
-    protected void onAddSign(ArenaEvent.AddSign e) {
+    protected void onAddSign(ArenaAddSignEvent e) {
         arenasBySign.put(e.getBlock(), e.getArena());
     }
 
@@ -70,7 +74,7 @@ public class ArenaManager implements Listener {
     }
 
     @EventHandler
-    protected void onRemoveSign(ArenaEvent.RemoveSign e) {
+    protected void onRemoveSign(ArenaRemoveSignEvent e) {
         arenasBySign.remove(e.getBlock(), e.getArena());
     }
 
