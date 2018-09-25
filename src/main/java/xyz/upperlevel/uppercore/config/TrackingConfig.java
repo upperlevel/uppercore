@@ -16,6 +16,7 @@ import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkNodeId;
 import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkTag;
 
 public class TrackingConfig extends Config {
@@ -33,13 +34,31 @@ public class TrackingConfig extends Config {
         this.root = (MappingNode) root;
     }
 
-    private Node getRaw(@NonNull String key) {
+    private Node getRawDirect(MappingNode root, String key) {
         for (NodeTuple node : root.getValue()) {
             if (node.getKeyNode().getNodeId() != NodeId.scalar) continue;
             String nodeKey = ((ScalarNode)node.getKeyNode()).getValue();
             if (key.equals(nodeKey)) return node.getValueNode();
         }
         return null;
+    }
+
+    private Node getRaw(@NonNull String key) {
+        // Map Unfolding check
+        MappingNode curr = root;// Current root (may change with map unfolding)
+        int off = 0;
+        int i;
+        while ((i = key.indexOf('.', off)) >= 0) {
+            // If we have a map unfolding (ex: "parent.child")
+            // Take the various parents and navigate from root down to the real key
+            String name = key.substring(off, i);
+            Node r = getRawDirect(curr, name);
+            if (r == null) return null;
+            checkNodeId(r, NodeId.mapping);
+            curr = (MappingNode) r;
+            off = i + 1;
+        }
+        return getRawDirect(curr, key.substring(off));
     }
 
     @Override

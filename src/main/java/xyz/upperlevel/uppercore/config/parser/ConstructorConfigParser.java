@@ -27,6 +27,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
     private final Map<String, Property> nodesByName;
     @Getter
     private final List<Property> positionalArguments;
+    private final Set<String> unfoldingNodes = new HashSet<>();
 
     @Getter
     @Setter
@@ -71,12 +72,43 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
             for (Parameter parameter : parameters) {
                 Property property = new Property(parameter, registry);
                 positionalArguments.add(property);
+
+                if (unfoldingNodes.contains(property.name)) {
+                    throw onUsedPropertyUnfolding(property.name);
+                }
+
+                addUnfoldNodes(property.name);
+
                 if (nodesByName.put(property.name, property) != null) {
                     // The constructor class may be different (think about an external constructor)
-                    throw new IllegalArgumentException("Found duplicate config value in " + parameter.getDeclaringExecutable().getDeclaringClass().getName());
+                    throw new IllegalArgumentException(
+                            "Found duplicate config value in " +
+                            parameter.getDeclaringExecutable().getDeclaringClass().getName() +
+                            ", name: '" + property.name + "'"
+                    );
                 }
             }
         }
+    }
+
+    public void addUnfoldNodes(String pname) {
+        int li = pname.length();
+        while (true) {
+            li = pname.lastIndexOf('.', li - 1);
+            if (li < 0) break;
+            String subn = pname.substring(0, li);
+
+            if (nodesByName.containsKey(subn)) {
+                throw onUsedPropertyUnfolding(subn);
+            }
+            if (!unfoldingNodes.add(subn)) return;
+        }
+    }
+
+    protected RuntimeException onUsedPropertyUnfolding(String name) {
+        return new IllegalArgumentException(
+                "Unfolding already used property in class " + getHandleClass().getName() + ", name: '" + name + "'"
+        );
     }
 
     public boolean isSpecial() {
@@ -103,6 +135,34 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         }
     }
 
+    public void mapUnfold(Plugin plugin, String prefix, MappingNode node) {
+        if (node.getValue().isEmpty()) return;
+        for (NodeTuple t : node.getValue()) {
+            fill(plugin, prefix, t.getKeyNode(), t.getValueNode());
+        }
+    }
+
+    public void fill(Plugin plugin, String prefix, Node key, Node value) {
+        String name = prefix + extractName(key);
+
+        if (unfoldingNodes.contains(name)) {
+            checkNodeId(value, NodeId.mapping);
+            mapUnfold(plugin, prefix + name + ".", (MappingNode) value);
+            return;
+        }
+
+        Property entry = nodesByName.get(name);
+        if (entry == null) {
+            if (ignoreUnmatchedProperties.test(name)) return;
+
+            throw new PropertyNotFoundParsingException(key, name, getHandleClass());
+        }
+        if (entry.parsed != null) {
+            throw new DuplicatePropertyConfigException(key, entry.source, name);
+        }
+        entry.parse(plugin, key, value);
+    }
+
     @Override
     public T parse(Plugin plugin, Node root) {
         if (isSpecial()) {
@@ -117,23 +177,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         }
         MappingNode rootMap = (MappingNode) root;
         for (NodeTuple tuple : rootMap.getValue()) {
-            String name = extractName(tuple.getKeyNode());
-            Property entry = nodesByName.get(name);
-            if (entry == null) {
-                if (ignoreUnmatchedProperties.test(name)) {
-                    continue;
-                }
-                throw new PropertyNotFoundParsingException(tuple.getKeyNode(), name, getHandleClass());
-            }
-            if (entry.parsed != null) {
-                NodeTuple duplicate = rootMap.getValue().stream()
-                        .filter(n -> n != tuple && extractName(n.getKeyNode()).equals(name))
-                        .findAny()
-                        .get();
-                throw new DuplicatePropertyConfigException(tuple.getKeyNode(), duplicate.getKeyNode(), name);
-            }
-            Node value = tuple.getValueNode();
-            entry.parse(plugin, value);
+            fill(plugin, "", tuple.getKeyNode(), tuple.getValueNode());
         }
         // Check for required but uninitialized properties
         List<Property> uninitializedProperties = nodesByName.values().stream()
@@ -154,7 +198,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
             }
             // Single argument properties can be constructed even without an explicit list
             if (!positionalArguments.isEmpty()) {
-                positionalArguments.get(0).parse(plugin, root);
+                positionalArguments.get(0).parse(plugin, null, root);
             }
         } else if (root.getNodeId() == NodeId.sequence) {
             SequenceNode node = ((SequenceNode) root);
@@ -163,7 +207,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
                 throw new ConfigException("Too many arguments (max: " + positionalArguments.size() + ")", root);
             }
             for (int i = 0; i < argsLen; i++) {
-                positionalArguments.get(i).parse(plugin, node.getValue().get(i));
+                positionalArguments.get(i).parse(plugin, null, node.getValue().get(i));
             }
         } else {
             throw new WrongNodeTypeConfigException(root, NodeId.scalar, NodeId.sequence);
@@ -206,7 +250,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
     }
 
     protected void resetEntries() {
-        nodesByName.values().forEach((Property n) -> n.parsed = null);
+        nodesByName.values().forEach(Property::reset);
     }
 
     public void setIgnoreAllUnmatchedProperties(boolean ignoreAll) {
@@ -319,6 +363,8 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         public boolean required;
         public Parser parser;
         public Object def = null;
+
+        public Node source;
         public Object parsed;
 
         public Property(Parameter parameter, ConfigParserRegistry registry) {
@@ -360,12 +406,18 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
             }
         }
 
-        public void parse(Plugin plugin, Node node) {
-            parsed = parser.parse(plugin, node);
+        public void parse(Plugin plugin, Node key, Node value) {
+            source = key;
+            parsed = parser.parse(plugin, value);
         }
 
         public Object getOrDef() {
             return parsed == null ? def : parsed;
+        }
+
+        public void reset() {
+            source = null;
+            parsed = null;
         }
     }
 

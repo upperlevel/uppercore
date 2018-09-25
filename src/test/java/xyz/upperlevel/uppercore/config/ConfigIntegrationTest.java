@@ -94,4 +94,14 @@ public class ConfigIntegrationTest {
                 "f: 6\n"
         )).getRequired("c");
     }
+
+    @Test
+    public void oldConfigMapUnfoldingTest() {
+        Config c = Config.fromYaml(new StringReader(
+                "a:\n" +
+                "  b:\n" +
+                "    c: d\n"
+        ));
+        assertEquals("d", c.getStringRequired("a.b.c"));
+    }
 }
