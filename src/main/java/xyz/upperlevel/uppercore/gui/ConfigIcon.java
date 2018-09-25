@@ -97,12 +97,16 @@ public class ConfigIcon {
     public static ConfigIcon deserialize(Plugin plugin, Config config) {
         ConfigIcon result = new ConfigIcon();
         try {
-            if (config.has("update-interval"))
-                result.updateInterval = config.getInt("update-interval", -1);
-            if (config.has("item"))
+            result.updateInterval = config.getInt("update-interval", 0);
+
+            if (config.has("item")) {
                 result.display = CustomItem.deserialize(config.getConfigRequired("item"));
-            if (config.has("click"))
+            }
+            if (config.has("click")) {
                 result.link = IconClick.deserialize(plugin, config.getConfig("click"));
+            }
+
+            result.slot = config.getInt("slot", -1);
             return result;
         } catch (InvalidConfigException e) {
             e.addLocation("in gui display");

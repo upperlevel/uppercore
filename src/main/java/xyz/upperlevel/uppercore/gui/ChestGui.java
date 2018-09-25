@@ -197,6 +197,11 @@ public class ChestGui implements Gui {
     }
 
     public boolean addIcon(ConfigIcon icon) {
+        if (icon.getSlot() >= 0) {
+            icons[icon.getSlot()] = icon;
+            return true;
+        }
+
         int i = firstEmpty();
         if (i >= 0) {
             icons[i] = icon;
