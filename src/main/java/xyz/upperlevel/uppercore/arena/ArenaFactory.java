@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.game;
+package xyz.upperlevel.uppercore.arena;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

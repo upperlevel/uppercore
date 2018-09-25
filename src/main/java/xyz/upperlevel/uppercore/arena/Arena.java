@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.game;
+package xyz.upperlevel.uppercore.arena;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,8 +7,14 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.arena.events.ArenaAddSignEvent;
+import xyz.upperlevel.uppercore.arena.events.ArenaJoinEvent;
+import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent;
+import xyz.upperlevel.uppercore.arena.events.ArenaRemoveSignEvent;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.util.LocUtil;
+import xyz.upperlevel.uppercore.util.PlayerData;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,17 +32,26 @@ public class Arena {
     private Location lobby;
 
     private final Set<Block> signs = new HashSet<>();
+
     private final Set<Player> players = new HashSet<>();
+    private final Map<Player, PlayerData> playersData = new HashMap<>(); // holds player data before join
 
     @Getter
-    private Phase currentPhase;
+    private final PhaseManager phaseManager;
 
     @Getter
-    private boolean playing;
+    private final PlaceholderRegistry placeholderRegistry;
 
     public Arena(String id) {
         this.id = id.toLowerCase(Locale.ENGLISH);
         this.name = this.id;
+
+        placeholderRegistry = PlaceholderRegistry.create()
+                .set("arena_id", id)
+                .set("arena_name", name)
+                .set("arena_players", players::size);
+
+        phaseManager = new PhaseManager();
     }
 
     public boolean isReady() {
@@ -49,7 +64,7 @@ public class Arena {
         }
         signs.add(block);
         updateSign((Sign) block.getState());
-        Bukkit.getPluginManager().callEvent(new ArenaEvent.AddSign(this, block, (Sign) block.getState()));
+        Bukkit.getPluginManager().callEvent(new ArenaAddSignEvent(this, block));
     }
 
     public void updateSign(Sign sign) {
@@ -61,7 +76,7 @@ public class Arena {
     public boolean removeSign(Block block) {
         if (signs.remove(block)) {
             block.breakNaturally(null);
-            Bukkit.getPluginManager().callEvent(new ArenaEvent.RemoveSign(this, block, (Sign) block.getState()));
+            Bukkit.getPluginManager().callEvent(new ArenaRemoveSignEvent(this, block));
             return true;
         }
         return false;
@@ -75,46 +90,44 @@ public class Arena {
         if (!isReady()) {
             throw new IllegalStateException("Arena not ready to be started: " + id);
         }
-        playing = true;
+        // This method should be overridden and should be set the first Phase
+    }
+
+    public boolean isPlaying() {
+        return phaseManager.getPhase() != null;
     }
 
     public void stop() {
-        setPhase(null);
-        playing = false;
-    }
-
-    public void setPhase(Phase phase) {
-        Phase old = currentPhase;
-        if (old != null) {
-            old.onDisable(phase);
-        }
-        currentPhase = phase;
-        if (phase != null) {
-            phase.onEnable(old);
-        }
+        phaseManager.setPhase(null);
     }
 
     public boolean join(Player player) {
-        if (!playing) {
+        if (!isPlaying()) {
             throw new IllegalStateException("Trying to add a player while arena isn't ready.");
         }
         if (!players.add(player)) {
             return false;
         }
-        Bukkit.getPluginManager().callEvent(new ArenaEvent.PlayerJoin(this, player));
+        Bukkit.getPluginManager().callEvent(new ArenaJoinEvent(this, player));
+        playersData.put(player, PlayerData.extract(player));
         player.teleport(lobby);
         return true;
     }
 
     public boolean quit(Player player) {
-        if (!playing) {
+        if (!isPlaying()) {
             throw new IllegalStateException("Trying to remove a player while arena isn't ready.");
         }
-        if (players.remove(player)) {
-            Bukkit.getPluginManager().callEvent(new ArenaEvent.PlayerQuit(this, player));
-            return true;
+        if (!players.remove(player)) {
+            return false;
         }
-        return false;
+        playersData.remove(player).apply(player);
+        Bukkit.getPluginManager().callEvent(new ArenaQuitEvent(this, player)); // non cancelable
+        return true;
+    }
+
+    public boolean hasPlayer(Player player) {
+        return players.contains(player);
     }
 
     public Set<Player> getPlayers() {

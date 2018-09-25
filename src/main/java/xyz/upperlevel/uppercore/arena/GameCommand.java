@@ -1,7 +1,6 @@
-package xyz.upperlevel.uppercore.game;
+package xyz.upperlevel.uppercore.arena;
 
 import lombok.Getter;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.CommandContext;
 import xyz.upperlevel.uppercore.command.NodeCommand;
@@ -9,7 +8,6 @@ import xyz.upperlevel.uppercore.command.PermissionUser;
 import xyz.upperlevel.uppercore.command.SenderType;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.command.functional.WithPermission;
-import xyz.upperlevel.uppercore.command.functional.WithSender;
 
 import static org.bukkit.ChatColor.GREEN;
 
