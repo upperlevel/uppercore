@@ -9,6 +9,7 @@ import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -103,5 +104,28 @@ public class ConfigIntegrationTest {
                 "    c: d\n"
         ));
         assertEquals("d", c.getStringRequired("a.b.c"));
+    }
+
+    @Test
+    public void ConfigAsConfigMapTest() {
+        Config c = Config.fromYaml(new StringReader(
+                "a:\n" +
+                        "  name: 'hello'\n" +
+                        "  level: 9001\n" +
+                        "b:\n" +
+                        "  memes: true\n" +
+                        "c:\n" +
+                        " some: 'pair'\n"
+        ));
+        Map<String, Config> m = c.asConfigMap();
+        Config ac = m.get("a");
+        assertEquals("hello", ac.getStringRequired("name"));
+        assertEquals(9001, ac.getIntRequired("level"));
+
+        Config bc = m.get("b");
+        assertTrue(bc.getBoolRequired("memes"));
+
+        Config cc = m.get("c");
+        assertEquals("pair", cc.getStringRequired("some"));
     }
 }

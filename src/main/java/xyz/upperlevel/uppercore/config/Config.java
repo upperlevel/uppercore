@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 
@@ -37,6 +38,8 @@ public abstract class Config {
     public abstract Object get(String key);
 
     public abstract Node getYamlNode();
+
+    public abstract Stream<String> keys();
 
     // Object
 
@@ -749,6 +752,12 @@ public abstract class Config {
         return res;
     }
 
+    // Config map
+
+    public Map<String, Config> asConfigMap() {
+        return keys().collect(Collectors.toMap(k -> k, this::getConfig));
+    }
+
     // Exception throwers
 
     protected void checkPropertyNotNull(String key, Object prop) {
@@ -782,6 +791,11 @@ public abstract class Config {
             public Node getYamlNode() {
                 return yamlRepresenter.represent(map);
             }
+
+            @Override
+            public Stream<String> keys() {
+                return map.keySet().stream();
+            }
         };
     }
 
@@ -795,6 +809,11 @@ public abstract class Config {
             @Override
             public Node getYamlNode() {
                 return yamlRepresenter.represent(section);
+            }
+
+            @Override
+            public Stream<String> keys() {
+                return section.getKeys(false).stream();
             }
         };
     }

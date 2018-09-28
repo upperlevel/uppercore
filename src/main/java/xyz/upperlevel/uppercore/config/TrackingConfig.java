@@ -15,6 +15,7 @@ import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkNodeId;
 import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkTag;
@@ -72,6 +73,13 @@ public class TrackingConfig extends Config {
     @Override
     public Node getYamlNode() {
         return root;
+    }
+
+    @Override
+    public Stream<String> keys() {
+        return root.getValue().stream()
+                .filter(t -> t.getKeyNode().getNodeId() == NodeId.scalar)
+                .map(t -> ((ScalarNode)t.getKeyNode()).getValue());
     }
 
     @Override
