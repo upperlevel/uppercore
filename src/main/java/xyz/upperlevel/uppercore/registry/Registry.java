@@ -94,7 +94,7 @@ public class Registry<T> {
         }
     }
 
-    public void register(@NonNull String name, @NonNull T object) {
+    public T register(@NonNull String name, @NonNull T object) {
         if (isFolder()) throw new IllegalStateException("Cannot register object in a folder registry (" + getPath() + ")");
         name = name.toLowerCase();
         Child entry = new Child(true, object);
@@ -102,17 +102,18 @@ public class Registry<T> {
         if (conflict) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already present");
         }
+        return object;
     }
 
-    public void register(String id, Reader in, RegistryLoader<? extends T> loader) {
+    public T register(String id, Reader in, RegistryLoader<? extends T> loader) {
         T object = loader.load(this, id, in);
-        register(id, object);
+        return register(id, object);
     }
 
-    public void registerFile(File file, RegistryLoader<? extends T> loader) {
+    public T registerFile(File file, RegistryLoader<? extends T> loader) {
         String id = FileUtil.getName(file).toLowerCase();
         try {
-            register(id, new FileReader(file), loader);
+            return register(id, new FileReader(file), loader);
         } catch (InvalidConfigException e) {
             e.addLocation("in file " + file.getPath());
             e.addLocation("from registry " + getPath());
