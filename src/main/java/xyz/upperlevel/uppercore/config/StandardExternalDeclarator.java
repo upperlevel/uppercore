@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
-import static xyz.upperlevel.uppercore.config.ConfigUtil.parseDye;
 import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkTag;
 
 public class StandardExternalDeclarator implements ConfigExternalDeclarator {
