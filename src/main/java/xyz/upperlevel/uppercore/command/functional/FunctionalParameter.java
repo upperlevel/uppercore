@@ -94,6 +94,8 @@ public class FunctionalParameter {
                 } catch (ArgumentParseException e) {
                     throw new IllegalArgumentException("Optional's default value must be parsable to the parameter type. Invalid '" + Arrays.toString(optional.value()) + "' for type: " + original.getType().getSimpleName(), e);
                 }
+            } else if (parameter.getType().isPrimitive()) {
+                throw new IllegalArgumentException("Optional value cannot be primitive (unless given a default value)");
             }
         }
 

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AsCommand {
-    String description() default "None";
+    String description() default "";
 
     String[] aliases() default {};
 

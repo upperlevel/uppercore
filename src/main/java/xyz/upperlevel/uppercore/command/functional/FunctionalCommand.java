@@ -54,7 +54,9 @@ public class FunctionalCommand extends Command {
         if (command == null) {
             throw new IllegalArgumentException("@AsCommand not found above function: " + function.getName());
         }
-        setDescription(command.description());
+        if (!command.description().isEmpty()) {
+            setDescription(command.description());
+        }
         setAliases(new HashSet<>(Arrays.asList(command.aliases())));
         setSenderType(command.sender());
 
@@ -196,7 +198,7 @@ public class FunctionalCommand extends Command {
     public List<String> suggest(CommandSender sender, List<String> arguments) {
         int start = 0;
         for (FunctionalParameter parameter : parameters) {
-            if (!sender.hasPermission(parameter.getPermission())) { // if the sender has not enough permissions for this parameter
+            if (!parameter.hasPermission(sender)) {// if the sender has not enough permissions for this parameter
                 return Collections.emptyList(); // we does not suggest nothing to him
             }
             ArgumentParser solver = parameter.getParser();

@@ -52,7 +52,7 @@ public class TestFunctionalParameters extends NodeCommand {
      * If the parameter is optional, if not given, will be set to null.
      */
     @AsCommand
-    public void optional(CommandSender sender, @WithOptional int arg) {
+    public void optional(CommandSender sender, @WithOptional("-1") int arg) {
         sender.sendMessage("Sender: " + sender.getName());
         sender.sendMessage("Arg: " + arg);
     }
