@@ -134,7 +134,7 @@ public abstract class UpdateChecker {
     }
 
     public boolean needsRefresh() {
-        return lastState == null || lastState == VersionState.NO_UPDATE;
+        return lastState == null || lastState == VersionState.NO_UPDATE || lastState == VersionState.ERROR;
     }
 
     public void onUpdateFound() {

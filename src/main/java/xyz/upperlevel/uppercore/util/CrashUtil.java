@@ -10,24 +10,35 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 
 public final class CrashUtil {
-    public static final String CRASH_DIR = "crash" + File.separator;
+    public static final String CRASH_DIR = "crash/";
     public static final DateFormat CRASH_FORMAT = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss_z");
 
     public static void saveCrash(Plugin plugin, Throwable t) {
-        try(FileWriter writer = createCrashFile(plugin)) {
-            if (writer != null)
-                t.printStackTrace(new PrintWriter(writer));
-            else
-                plugin.getLogger().severe("CANNOT SAVE CRASH LOG!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        plugin.getLogger().severe("--- A severe error caused Uppercore to crash ---");
+        File target = saveCrashToFile(plugin, t);
+        if (target == null) return;
         plugin.getLogger().severe(t.getMessage());
+        plugin.getLogger().severe("Full report written in this file: " + target.getName());
     }
 
-    public static FileWriter createCrashFile(Plugin plugin) {
+    public static File saveCrashToFile(Plugin plugin, Throwable exc) {
+        File file = createCrashFile(plugin);
+        if (file == null) {
+            plugin.getLogger().log(Level.SEVERE, "Cannot print log to file, writing on console", exc);
+            return null;
+        }
+        try (FileWriter writer = new FileWriter(file)) {
+            exc.printStackTrace(new PrintWriter(writer));
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error while writing crash log", e);
+        }
+        return file;
+    }
+
+    public static File createCrashFile(Plugin plugin) {
         String date = CRASH_FORMAT.format(new Date());
         File file = findEmpty(plugin.getDataFolder(), CRASH_DIR + date, ".txt");
         if(file == null) {
@@ -41,12 +52,7 @@ public final class CrashUtil {
             plugin.getLogger().severe("CANNOT CREATE LOG FILE, CHECK PERMISSION IN '" + plugin.getDataFolder() + File.separator + CRASH_DIR + "'");
             return null;
         }
-        try {
-            return new FileWriter(file, false);
-        } catch (IOException e) {
-            plugin.getLogger().severe("CANNOT OPEN LOG FILE, CHECK PERMISSION IN '" + plugin.getDataFolder() + File.separator + CRASH_DIR + "'");
-            return null;
-        }
+        return file;
     }
 
     private static File findEmpty(File dir, String path, String ext) {
