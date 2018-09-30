@@ -257,4 +257,17 @@ public class BasicConfigTest {
                 )
         ), res);
     }
+
+    @Test
+    public void pairTest() {
+        Config cfg = Config.fromYaml(new StringReader(
+                "a: [1, 2]\n" +
+                "c:\n" +
+                "  a: b\n"
+        ));
+        Type t1 = typeOf(Pair.class, int.class, int.class);
+        Type t2 = typeOf(Pair.class, String.class, String.class);
+        assertEquals(Pair.of(1, 2), cfg.getRequired("a", t1, null));
+        assertEquals(Pair.of("a", "b"), cfg.getRequired("c", t2, null));
+    }
 }

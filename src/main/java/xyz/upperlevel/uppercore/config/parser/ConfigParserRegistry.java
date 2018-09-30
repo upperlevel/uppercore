@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.config.StandardExternalDeclarator;
 import xyz.upperlevel.uppercore.config.exceptions.UnparsableConfigType;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.util.Pair;
 
 import java.lang.reflect.*;
 import java.math.BigDecimal;
@@ -226,6 +227,7 @@ public class ConfigParserRegistry {
             }
         });
         register(UUID.class, UUID::fromString, Tag.STR);
+        register(Pair.class, (Type t) -> new PairConfigParser(t, getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1))));
 
         // In physics they have the wave-particle duality
         // In java we have the primitive-class duality -_-

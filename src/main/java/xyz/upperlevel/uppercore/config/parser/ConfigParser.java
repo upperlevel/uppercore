@@ -17,8 +17,8 @@ public abstract class ConfigParser {
 
     private final Type handleType;
 
-    public ConfigParser(Type handleClass) {
-        this.handleType = handleClass;
+    public ConfigParser(Type handleType) {
+        this.handleType = handleType;
     }
 
     public abstract Object parse(Plugin plugin, Node root);
@@ -52,7 +52,7 @@ public abstract class ConfigParser {
     }
 
     public static void checkNodeId(Node node, Collection<NodeId> expectedIds) {
-        if (expectedIds.contains(node.getNodeId())) {
+        if (!expectedIds.contains(node.getNodeId())) {
             throw new WrongNodeTypeConfigException(node, expectedIds.toArray(new NodeId[0]));
         }
     }
