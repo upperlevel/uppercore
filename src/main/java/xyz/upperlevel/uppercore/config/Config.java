@@ -793,7 +793,7 @@ public abstract class Config {
         throw new InvalidConfigValueException(key, get(key), expectedType);
     }
 
-    protected RuntimeException invalidConfigException(String key, String error) {
+    public RuntimeException invalidConfigException(String key, String error) {
         throw new InvalidConfigException(key, error);
     }
 

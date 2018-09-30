@@ -137,7 +137,7 @@ public class TrackingConfig extends Config {
     }
 
     @Override
-    protected RuntimeException invalidConfigException(String key, String cause) {
+    public RuntimeException invalidConfigException(String key, String cause) {
         throw new ConfigException(
                 cause,
                 checkNodeParam(key).getStartMark()
