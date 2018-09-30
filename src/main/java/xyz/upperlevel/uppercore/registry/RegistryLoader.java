@@ -12,7 +12,7 @@ public interface RegistryLoader<T> {
     T load (Registry parent, String id, Reader in);
 
     static <T> RegistryLoader<T> fromClass(Class<T> clazz) {
-        ConfigParser<T> parser = Uppercore.parsers().getFor(clazz);
-        return (parent, id, in) -> parser.parse(parent.getPlugin(), in);
+        ConfigParser parser = Uppercore.parsers().getFor(clazz);
+        return (parent, id, in) -> (T)parser.parse(parent.getPlugin(), in);
     }
 }

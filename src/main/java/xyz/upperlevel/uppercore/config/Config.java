@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +41,10 @@ public abstract class Config {
     public abstract Node getYamlNode();
 
     public abstract Stream<String> keys();
+
+    public Node getNode(String key) {
+        return yamlRepresenter.represent(get(key));
+    }
 
     // Object
 
@@ -734,22 +739,36 @@ public abstract class Config {
 
     // ConfigParser way
 
-    public <T> T get(Class<T> clazz, Plugin plugin) {
+    public <T> T get(Class<T> type, Plugin plugin) {
+        return (T) get((Type) type, plugin);
+    }
+
+    public Object get(Type type, Plugin plugin) {
         return ConfigParserRegistry.getStandard()
-                .getFor(clazz)
+                .getFor(type)
                 .parse(plugin, getYamlNode());
     }
 
-    public <T> T get(String key, Class<T> clazz, Plugin plugin) {
-        Config c = getConfig(key);
-        if (c == null) return null;
-        return c.get(clazz, plugin);
+    public <T> T get(String key, Type type, Plugin plugin) {
+        Node node = getNode(key);
+        if (node == null) return null;
+        return (T) ConfigParserRegistry.getStandard()
+                .getFor(type)
+                .parse(plugin, node);
     }
 
-    public <T> T getRequired(String key, Class<T> clazz, Plugin plugin) {
-        T res = get(key, clazz, plugin);
+    public <T> T get(String key, Class<T> type, Plugin plugin) {
+        return (T) get(key, (Type) type, plugin);
+    }
+
+    public Object getRequired(String key, Type type, Plugin plugin) {
+        Object res = get(key, type, plugin);
         checkPropertyNotNull(key, res);
         return res;
+    }
+
+    public <T> T getRequired(String key, Class<T> type, Plugin plugin) {
+        return (T) get(key, (Type) type, plugin);
     }
 
     // Config map

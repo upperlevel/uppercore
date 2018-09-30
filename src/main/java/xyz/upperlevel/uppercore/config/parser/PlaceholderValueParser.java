@@ -7,7 +7,7 @@ import org.yaml.snakeyaml.nodes.ScalarNode;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-public class PlaceholderValueParser extends ConfigParser<PlaceholderValue> {
+public class PlaceholderValueParser extends ConfigParser {
     private final ConfigParser valueParser;
 
     public PlaceholderValueParser(ConfigParser valueParser) {

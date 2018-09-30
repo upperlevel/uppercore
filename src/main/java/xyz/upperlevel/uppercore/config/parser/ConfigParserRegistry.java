@@ -9,7 +9,7 @@ import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigExternalDeclarator;
 import xyz.upperlevel.uppercore.config.PolymorphicSelector;
 import xyz.upperlevel.uppercore.config.StandardExternalDeclarator;
-import xyz.upperlevel.uppercore.config.exceptions.UnparsableConfigClass;
+import xyz.upperlevel.uppercore.config.exceptions.UnparsableConfigType;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -27,16 +27,16 @@ public class ConfigParserRegistry {
     private static final ConfigParserRegistry standard = createStandard();
     private Map<Class<?>, ParserFactory> parsersByClass = new HashMap<>();
 
-    public <T> void register(Class<T> clazz, ParserFactory factory) {
+    public void register(Class<?> clazz, ParserFactory factory) {
         parsersByClass.put(clazz, factory);
     }
 
-    public <T> void register(Class<T> clazz, ConfigParser<T> parser) {
-        parsersByClass.put(clazz, t -> parser);
+    public void register(Class<?> type, ConfigParser parser) {
+        parsersByClass.put(type, t -> parser);
     }
 
     public <T> void register(Class<T> clazz, Function<Node, T> parser) {
-        parsersByClass.put(clazz,t -> new ConfigParser<T>(clazz) {
+        parsersByClass.put(clazz,t -> new ConfigParser(clazz) {
             @Override
             public T parse(Plugin plugin, Node root) {
                 return parser.apply(root);
@@ -45,7 +45,7 @@ public class ConfigParserRegistry {
     }
 
     public <T> void register(Class<T> clazz, Function<String, T> parser, Tag... expectedTags) {
-        parsersByClass.put(clazz, t -> new ConfigParser<T>(clazz) {
+        parsersByClass.put(clazz, t -> new ConfigParser(clazz) {
             @Override
             public T parse(Plugin plugin, Node root) {
                 checkTag(root, Arrays.asList(expectedTags));
@@ -58,7 +58,7 @@ public class ConfigParserRegistry {
         ConstructorConfigParser.loadFromDeclarator(declarator, this);
     }
 
-    public <T> ConfigParser<T> setupPolyphormicClassParser(Class<T> clazz) {
+    public ConfigParser setupPolymorphicClassParser(Class<?> clazz) {
         Method selector = null;
         for (Method method : clazz.getDeclaredMethods()) {
             if (!method.isAnnotationPresent(PolymorphicSelector.class)) {
@@ -92,12 +92,12 @@ public class ConfigParserRegistry {
          * (yeah it's a hacky way to do it but it should work)
          */
         // noinspection unchecked
-        ConstructorConfigParser<Class<? extends T>> classSelector = new ConstructorConfigParser(
+        ConstructorConfigParser<Class<?>> classSelector = new ConstructorConfigParser(
                 Class.class, this, selector.getParameters(), args -> finalSelector.invoke(null, args), true);
 
         classSelector.setIgnoreAllUnmatchedProperties(true);
 
-        return new PolymorphicClassParser<>(clazz, classSelector, this);
+        return new PolymorphicClassParser(clazz, classSelector, this);
     }
 
     public <T> ConstructorConfigParser<T> setupConstructorParser(Class<T> clazz) {
@@ -122,51 +122,45 @@ public class ConfigParserRegistry {
         return new ConstructorConfigParser<>(clazz, this, parameters, refinedConstructor, inlineable);
     }
 
-    public <T> ConfigParser<T> setupClassParser(Class<T> clazz) {
+    public ConfigParser setupClassParser(Class<?> clazz) {
         if (clazz.isEnum()) {
             @SuppressWarnings("unchecked")
-            ConfigParser<T> parser = new EnumConfigParser(clazz);
+            ConfigParser parser = new EnumConfigParser(clazz);
             return parser;
         }
-        ConfigParser<T> res = setupPolyphormicClassParser(clazz);
+        ConfigParser res = setupPolymorphicClassParser(clazz);
         if (res == null) {
             res = setupConstructorParser(clazz);
         }
         return res;
     }
 
-    public <T> ConfigParser<T> getFor(Class<T> clazz, Type type) {
+    private boolean isArray(Type type) {
+        return (type instanceof Class && ((Class) type).isArray()) || (type instanceof GenericArrayType);
+    }
+
+    public ConfigParser getFor(Type type) {
         // Arrays have their own parsing method
-        if (clazz.isArray()) {
+        if (isArray(type)) {
             // I hate arrays
-            return new ArrayParser<>(clazz, type, this);
+            return new ArrayParser(type, this);
         }
         // Check in the known classes (something akin to a cache)
-        ParserFactory factory = parsersByClass.get(clazz);
+        ParserFactory factory = parsersByClass.get(extractClassFromType(type));
         if (factory != null) {
             // Class already known, return it
-            @SuppressWarnings("unchecked")
-            ConfigParser<T> parser = factory.create(type);
-            return parser;
+            return factory.create(type);
         }
         // Try to create a parser for the class in runtime
-        ConfigParser<T> classParser = setupClassParser(clazz);
+        ConfigParser classParser = (type instanceof Class) ? setupClassParser((Class)type) : null;
+
         if (classParser == null) {
             // Cannot parse class
-            throw new UnparsableConfigClass(clazz);
+            throw new UnparsableConfigType(type);
         }
         // Register in the known types cache
-        parsersByClass.put(clazz, t -> classParser);
+        parsersByClass.put(extractClassFromType(type), t -> classParser);
         return classParser;
-    }
-
-    public <T> ConfigParser<T> getFor(Class<T> clazz) {
-        return getFor(clazz, clazz);
-    }
-
-    public ConfigParser getForGeneric(Type type) {
-        Class<?> valClass = extractClassFromType(type);
-        return getFor(valClass, type);
     }
 
     public void registerStandard() {
@@ -186,7 +180,7 @@ public class ConfigParserRegistry {
         register(Float.class, Float::parseFloat, Tag.INT, Tag.FLOAT);
         register(Double.class, Double::parseDouble, Tag.INT, Tag.FLOAT);
         register(BigDecimal.class, BigDecimal::new, Tag.INT, Tag.FLOAT);
-        register(Boolean.class, new ConfigParser<Boolean>(Boolean.class) {
+        register(Boolean.class, new ConfigParser(Boolean.class) {
             @Override
             public Boolean parse(Plugin plugin, Node root) {
                 checkTag(root, Tag.BOOL);
@@ -205,7 +199,7 @@ public class ConfigParserRegistry {
             }
         });
         register(String.class, Function.identity(), Tag.STR);
-        register(Character.class, new ConfigParser<Character>(Character.class) {
+        register(Character.class, new ConfigParser(Character.class) {
             @Override
             public Character parse(Plugin plugin, Node root) {
                 checkTag(root, Tag.STR);
@@ -216,14 +210,14 @@ public class ConfigParserRegistry {
                 return s.charAt(0);
             }
         });
-        register(Date.class, new ConfigParser<Date>(Date.class) {
+        register(Date.class, new ConfigParser(Date.class) {
             @Override
             public Date parse(Plugin plugin, Node root) {
                 checkTag(root, Tag.TIMESTAMP);
                 return (Date) TIMESTAMP_CONSTRUCTOR.construct(root);
             }
         });
-        register(Calendar.class, new ConfigParser<Calendar>(Calendar.class) {
+        register(Calendar.class, new ConfigParser(Calendar.class) {
             @Override
             public Calendar parse(Plugin plugin, Node root) {
                 checkTag(root, Tag.TIMESTAMP);
@@ -248,23 +242,23 @@ public class ConfigParserRegistry {
 
     @SuppressWarnings("unchecked")
     public void registerCollections() {
-        register(Set.class, (Type t) -> new CollectionParser<>(Set.class, HashSet::new, getForGeneric(getGenericChildren(t, 0)), Tag.SET));
-        register(List.class, (Type t) -> new CollectionParser<>(List.class, ArrayList::new, getForGeneric(getGenericChildren(t, 0)), Tag.SEQ));
+        register(Set.class, (Type t) -> new CollectionParser<>(Set.class, HashSet::new, getFor(getGenericChildren(t, 0)), Tag.SET));
+        register(List.class, (Type t) -> new CollectionParser<>(List.class, ArrayList::new, getFor(getGenericChildren(t, 0)), Tag.SEQ));
         register(EnumSet.class, (Type t) -> {
             Type childrenType = getGenericChildren(t, 0);
             Class childrenClass = extractClassFromType(childrenType);
-            return new CollectionParser<>(EnumSet.class, () -> EnumSet.noneOf(childrenClass), getFor(childrenClass, childrenType), Tag.SEQ);
+            return new CollectionParser<>(EnumSet.class, () -> EnumSet.noneOf(childrenClass), getFor(childrenType), Tag.SEQ);
         });
         // TODO: comment
-        register(Map.class, (Type t) -> new MapParser<>(Map.class, HashMap::new, getForGeneric(getGenericChildren(t, 0)), getForGeneric(getGenericChildren(t, 1))));
+        register(Map.class, (Type t) -> new MapParser<>(Map.class, HashMap::new, getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1))));
         register(EnumMap.class, (Type t) -> {
             Class keyClass = extractClassFromType(getGenericChildren(t, 0));
-            return new MapParser<>(EnumMap.class, () -> new EnumMap(keyClass), getForGeneric(getGenericChildren(t, 0)), getForGeneric(getGenericChildren(t, 1)));
+            return new MapParser<>(EnumMap.class, () -> new EnumMap(keyClass), getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1)));
         });
     }
 
     public void registerPlaceholders() {
-        register(PlaceholderValue.class, (Type t) -> new PlaceholderValueParser(getForGeneric(getGenericChildren(t))));
+        register(PlaceholderValue.class, (Type t) -> new PlaceholderValueParser(getFor(getGenericChildren(t))));
     }
 
     public interface ParserFactory {

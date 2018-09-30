@@ -16,10 +16,12 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparingInt;
 import static xyz.upperlevel.uppercore.util.GenericUtil.extractClassFromType;
 
-public class ConstructorConfigParser<T> extends ConfigParser<T> {
+public class ConstructorConfigParser<T> extends ConfigParser {
     private ObjectConstructor<T> targetConstructor;
     @Getter
     private final ConstructorType type;
+    @Getter
+    private final Class<T> declaredClass;
     private final boolean passPlugin;
     @Getter
     private final boolean inlineable;
@@ -35,6 +37,8 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
 
     public ConstructorConfigParser(Class<T> declaredClass, ConfigParserRegistry registry, Parameter[] parameters, ObjectConstructor<T> constructor, boolean inlineable) {
         super(declaredClass);
+        this.declaredClass = declaredClass;
+
         this.inlineable = inlineable;
         targetConstructor = constructor;
 
@@ -107,7 +111,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
 
     protected RuntimeException onUsedPropertyUnfolding(String name) {
         return new IllegalArgumentException(
-                "Unfolding already used property in class " + getHandleClass().getName() + ", name: '" + name + "'"
+                "Unfolding already used property in class " + declaredClass.getName() + ", name: '" + name + "'"
         );
     }
 
@@ -155,7 +159,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
         if (entry == null) {
             if (ignoreUnmatchedProperties.test(name)) return;
 
-            throw new PropertyNotFoundParsingException(key, name, getHandleClass());
+            throw new PropertyNotFoundParsingException(key, name, declaredClass);
         }
         if (entry.parsed != null) {
             throw new DuplicatePropertyConfigException(key, entry.source, name);
@@ -194,7 +198,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
 
         if (root.getNodeId() == NodeId.scalar) {
             if (positionalArguments.size() > 1) {
-                throw new ConfigException(getHandleClass().getSimpleName() + " does not take only one argument", root);
+                throw new ConfigException(declaredClass.getSimpleName() + " does not take only one argument", root);
             }
             // Single argument properties can be constructed even without an explicit list
             if (!positionalArguments.isEmpty()) {
@@ -353,7 +357,7 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
             ConfigConstructor annotation = method.getAnnotation(ConfigConstructor.class);
 
             ConstructorConfigParser<?> parser = createDeclarator(declarator, method, annotation, registry);
-            registry.register(parser.getHandleClass(), (ConfigParser) parser);
+            registry.register((Class)parser.getHandleClass(), parser);
             loaded++;
         }
     }
@@ -399,10 +403,10 @@ public class ConstructorConfigParser<T> extends ConfigParser<T> {
                 required = false;
                 def = Optional.empty();
                 Type optType = ((ParameterizedType) parameter.getParameterizedType()).getActualTypeArguments()[0];
-                ConfigParser nonOptionalParser = registry.getFor(extractClassFromType(optType), optType);
+                ConfigParser nonOptionalParser = registry.getFor(optType);
                 parser = (plugin, node) -> Optional.of(nonOptionalParser.parse(plugin, node));
             } else {
-                parser = registry.getFor(parameter.getType(), parameter.getParameterizedType())::parse;
+                parser = registry.getFor(parameter.getParameterizedType())::parse;
             }
         }
 

@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.config;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableTable;
 import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -12,13 +14,18 @@ import org.junit.rules.ExpectedException;
 import xyz.upperlevel.uppercore.config.exceptions.PropertyNotFoundParsingException;
 import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
+import xyz.upperlevel.uppercore.util.Pair;
 import xyz.upperlevel.uppercore.util.Position;
+import xyz.upperlevel.uppercore.util.TypeUtil;
 
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static xyz.upperlevel.uppercore.util.TypeUtil.typeOf;
 
 public class BasicConfigTest {
     private static final Plugin plugin = null;
@@ -112,10 +119,10 @@ public class BasicConfigTest {
     public void testPolymorphic() {
         // This is the more explicit way to parse the config
         // First you query the parser
-        ConfigParser<PolymorphicFather> parser = ConfigParserRegistry.getStandard().getFor(PolymorphicFather.class);
+        ConfigParser parser = ConfigParserRegistry.getStandard().getFor(PolymorphicFather.class);
 
         // And then you parse
-        PolymorphicFather dog = parser.parse(
+        PolymorphicFather dog = (PolymorphicFather) parser.parse(
                 plugin,
                 new StringReader(
                         "type: dog\n" +
@@ -125,7 +132,7 @@ public class BasicConfigTest {
         assertEquals(PolymorphicFather.Dog.class, dog.getClass());
         assertEquals(Color.BLUE, ((PolymorphicFather.Dog) dog).getFurColor());
 
-        PolymorphicFather cat = parser.parse(
+        PolymorphicFather cat = (PolymorphicFather) parser.parse(
                 plugin,
                 new StringReader(
                         "type: cat\n" +
@@ -135,7 +142,7 @@ public class BasicConfigTest {
         assertEquals(PolymorphicFather.Cat.class, cat.getClass());
         assertEquals("meoow", ((PolymorphicFather.Cat) cat).getMeowMessage());
 
-        PolymorphicFather horse = parser.parse(
+        PolymorphicFather horse = (PolymorphicFather) parser.parse(
                 plugin,
                 new StringReader(
                         "type: horse\n"
@@ -219,5 +226,35 @@ public class BasicConfigTest {
         exc.expect(IllegalArgumentException.class);
         exc.expectMessage(containsString("Unfolding already used property"));
         ConfigParserRegistry.getStandard().getFor(IncorrectUnfoldingTest.class);
+    }
+
+    @Test
+    public void genericTypeTest() {
+        // List<Map<String, Integer>>
+        Type type = typeOf(List.class, typeOf(Map.class, String.class, Integer.class));
+        Config cfg = Config.fromYaml(new StringReader(
+                "c:\n" +
+                        "- a: 1\n" +
+                        "  b: 2\n" +
+                        "  c: 3\n" +
+                        "- d: 4\n" +
+                        "  e: 5\n" +
+                        "- f: 6\n"
+        ));
+        List<Map<String, Integer>> res = cfg.get("c", type, null);
+        assertEquals(ImmutableList.of(
+                ImmutableMap.of(
+                        "a", 1,
+                        "b", 2,
+                        "c", 3
+                ),
+                ImmutableMap.of(
+                        "d", 4,
+                        "e", 5
+                ),
+                ImmutableMap.of(
+                        "f", 6
+                )
+        ), res);
     }
 }

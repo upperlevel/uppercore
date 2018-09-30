@@ -9,25 +9,26 @@ import org.yaml.snakeyaml.nodes.Tag;
 import xyz.upperlevel.uppercore.config.exceptions.WrongNodeTypeConfigException;
 
 import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.Collection;
 
-public abstract class ConfigParser<T> {
+public abstract class ConfigParser {
     public static Yaml defaultYaml = new Yaml();
 
-    private final Class<T> handleClass;
+    private final Type handleType;
 
-    public ConfigParser(Class<T> handleClass) {
-        this.handleClass = handleClass;
+    public ConfigParser(Type handleClass) {
+        this.handleType = handleClass;
     }
 
-    public abstract T parse(Plugin plugin, Node root);
+    public abstract Object parse(Plugin plugin, Node root);
 
-    public T parse(Plugin plugin, Reader reader) {
+    public Object parse(Plugin plugin, Reader reader) {
         return parse(plugin, defaultYaml.compose(reader));
     }
 
-    public Class<T> getHandleClass() {
-        return handleClass;
+    public Type getHandleClass() {
+        return handleType;
     }
 
     // ---------------- Helper methods ----------------

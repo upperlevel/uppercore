@@ -9,7 +9,7 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class MapParser<T extends Map> extends ConfigParser<T> {
+public class MapParser<T extends Map> extends ConfigParser {
     private final Supplier<Map> mapSupplier;
     private final ConfigParser keyParser, valueParser;
 

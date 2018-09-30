@@ -10,45 +10,50 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class ArrayParser<T> extends ConfigParser<T> {
+public class ArrayParser extends ConfigParser {
     private final ArraySetter arraySetter;
-    private final Class<?> arrayClass;
-    private final ConfigParser<?> handleParser;
+    private final Type baseType;
+    private final Class<?> componentClass;
+    private final ConfigParser handleParser;
 
-    public ArrayParser(Class<T> handleClass, Type handleType, ConfigParserRegistry registry) {
-        super(handleClass);
+    public ArrayParser(Type handleType, ConfigParserRegistry registry) {
+        super(handleType);
         this.arraySetter = selectSetter();
-        this.arrayClass = getHandleClass().getComponentType();
+        this.baseType = extractBaseType(handleType);
+        this.componentClass = extractComponentClass(baseType);
+        this.handleParser = registry.getFor(baseType);
+    }
 
-        Type arrayType;
-        if (handleType instanceof GenericArrayType) {
-            // Generics on array found (ex. List<Integer>[])
-            GenericArrayType type = (GenericArrayType) handleType;// Null if there are no arguments in array
-            arrayType = type.getGenericComponentType();
-        } else {
-            arrayType = arrayClass;
-        }
-        this.handleParser = registry.getFor(arrayClass, arrayType);
+    public static Class<?> extractComponentClass(Type t) {
+        if (t instanceof Class) return (Class<?>) t;
+        if (t instanceof GenericArrayType) return extractComponentClass(((GenericArrayType) t).getGenericComponentType());
+        throw new IllegalStateException("Uknown array type " + t);
+    }
+
+    private static Type extractBaseType(Type type) {
+        if (type instanceof Class) return ((Class) type).getComponentType();
+        if (type instanceof GenericArrayType) return ((GenericArrayType) type).getGenericComponentType();
+        throw new IllegalStateException("Unknown array type: " + type);
     }
 
     @Override
-    public T parse(Plugin plugin, Node root) {
+    public Object parse(Plugin plugin, Node root) {
         checkTag(root, Tag.SEQ);
 
 
         SequenceNode node = (SequenceNode) root;
         int length = node.getValue().size();
-        Object array = Array.newInstance(arrayClass, length);
+        Object array = Array.newInstance(componentClass, length);
         List<Node> entries = node.getValue();
         for (int i = 0; i < length; i++) {
             arraySetter.set(array, i, handleParser.parse(plugin, entries.get(i)));
         }
 
-        return (T) array;
+        return array;
     }
 
     private ArraySetter selectSetter() {
-        Class<?> type = arrayClass;
+        Type type = baseType;
         if (type == Byte.TYPE) {
             return (arr, i, o) -> Array.setByte(arr, i, (Byte) o);
         } else if (type == Short.TYPE) {

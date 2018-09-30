@@ -44,7 +44,7 @@ public class TrackingConfig extends Config {
         return null;
     }
 
-    private Node getRaw(@NonNull String key) {
+    public Node getNode(@NonNull String key) {
         // Map Unfolding check
         MappingNode curr = root;// Current root (may change with map unfolding)
         int off = 0;
@@ -64,7 +64,7 @@ public class TrackingConfig extends Config {
 
     @Override
     public Object get(String key) {
-        Node node = getRaw(key);
+        Node node = getNode(key);
         if (node == null) return null;
         constructor.setComposer(new FakeComposer(node));
         return constructor.getData();
@@ -84,14 +84,14 @@ public class TrackingConfig extends Config {
 
     @Override
     public Config getConfig(String key, Config def) {
-        Node node = getRaw(key);
+        Node node = getNode(key);
         if (node == null) return def;
         return new TrackingConfig(node);
     }
 
     @Override
     public List<Config> getConfigList(String key, List<Config> def) {
-        Node node = getRaw(key);
+        Node node = getNode(key);
         if (node == null) return def;
 
         checkTag(node, Tag.SEQ);
@@ -105,7 +105,7 @@ public class TrackingConfig extends Config {
     // Error tracking
 
     private Node checkNodeParam(String key) {
-        Node node = getRaw(key);
+        Node node = getNode(key);
         if (node == null) throw new IllegalArgumentException("Cannot find key '" + key + "' in config");
         return node;
     }

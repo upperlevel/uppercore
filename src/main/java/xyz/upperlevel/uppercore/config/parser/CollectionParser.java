@@ -8,7 +8,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class CollectionParser<T extends Collection> extends ConfigParser<T> {
+public class CollectionParser<T extends Collection> extends ConfigParser {
     private final Supplier<T> collectionSupplier;
     private final ConfigParser parser;
     private final Tag expectedTag;
