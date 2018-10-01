@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.storage.impl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
 
@@ -12,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
 @Deprecated
@@ -42,6 +44,9 @@ public final class Flatfile {
 
         @Override
         public Storage connect(Config access) {
+            Logger l = Uppercore.logger();
+            l.warning("Flatfile storage is deprecated and it might be removed on future versions");
+            l.warning("Please use 'nitritedb' as it's a better storage");
             // No auth
             return new StorageImpl();
         }
