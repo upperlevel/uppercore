@@ -17,8 +17,10 @@ import java.util.Map;
 
 import static xyz.upperlevel.uppercore.placeholder.PlaceholderValue.fake;
 
-@Getter
-@Setter
+/**
+ * A class that contains the sound type with it's volume and it's pitch,
+ * everything is in the {@link PlaceholderValue} form and it's readable by config.
+ */
 public class PlaySound {
     public static PlaySound SILENT = new PlaySound(null, null, null) {
         @Override
@@ -30,9 +32,16 @@ public class PlaySound {
         }
     };
 
-
+    @Getter
+    @Setter
     private PlaceholderValue<Sound> sound;
+
+    @Getter
+    @Setter
     private PlaceholderValue<Float> volume;
+
+    @Getter
+    @Setter
     private PlaceholderValue<Float> pitch;
 
     @ConfigConstructor(inlineable = true)

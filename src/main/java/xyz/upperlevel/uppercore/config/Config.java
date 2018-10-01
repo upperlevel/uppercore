@@ -480,18 +480,18 @@ public abstract class Config {
         return sound;
     }
 
-    // Bukkit Sound
+    // Play Sound
 
-    public PlaySound getBukkitSound(String key, PlaySound def) {
+    public PlaySound getPlaySound(String key, PlaySound def) {
         Object raw = get(key);
         return raw != null ? PlaySound.fromConfig(raw) : def;
     }
 
-    public PlaySound getBukkitSound(String key) {
-        return getBukkitSound(key, null);
+    public PlaySound getPlaySound(String key) {
+        return getPlaySound(key, null);
     }
 
-    public PlaySound getBukkitSoundRequired(String key) {
+    public PlaySound getPlaySoundRequired(String key) {
         Object raw = getRequired(key);
         try {
             return PlaySound.fromConfig(raw);
