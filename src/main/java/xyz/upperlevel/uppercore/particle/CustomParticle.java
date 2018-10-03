@@ -1,28 +1,37 @@
 package xyz.upperlevel.uppercore.particle;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
-@Data
-public abstract class Particle {
+import java.util.List;
+
+public abstract class CustomParticle {
+    @Getter
     private final ParticleType type;
 
+    @Getter
+    @Setter
     protected float offsetX, offsetY, offsetZ;
+    @Getter
+    @Setter
     protected float speed;
+    @Getter
+    @Setter
     protected int amount;
 
-    public Particle(ParticleType type) {
+    public CustomParticle(ParticleType type) {
         this.type = type;
 
         setOffset(0f,0f,0f);
         setSpeed(0f);
-        setAmount(0);
+        setAmount(1);
     }
 
-    public Particle(ParticleType type, Config data) {
+    public CustomParticle(ParticleType type, Config data) {
         this.type = type;
         setOffset(
                 data.getFloat("offset.x", 0f),
@@ -47,10 +56,10 @@ public abstract class Particle {
         this.amount = amount <= 0 ? 0 : amount;
     }
 
-    public abstract void display(Location location, Iterable<Player> phase);
+    public abstract void display(Location location, List<Player> phase);
 
 
-    public static Particle deserialize(Config data) {
+    public static CustomParticle deserialize(Config data) {
         String raw = data.getStringRequired("type");
         ParticleType type = ParticleType.get(raw);
         if(type == null)

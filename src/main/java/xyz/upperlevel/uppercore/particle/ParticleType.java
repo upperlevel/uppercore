@@ -11,30 +11,30 @@ public enum ParticleType {
 
     SIMPLE {
         @Override
-        public Particle create() {
+        public CustomParticle create() {
             return new SimpleParticle();
         }
 
         @Override
-        public Particle create(Config data) {
+        public CustomParticle create(Config data) {
             return new SimpleParticle(data);
         }
     },
     BLOCK_DUST {
         @Override
-        public Particle create() {
+        public CustomParticle create() {
             return new BlockDustParticle();
         }
 
         @Override
-        public Particle create(Config data) {
+        public CustomParticle create(Config data) {
             return new BlockDustParticle(data);
         }
     };
 
-    public abstract Particle create();
+    public abstract CustomParticle create();
 
-    public abstract Particle create(Config data);
+    public abstract CustomParticle create(Config data);
 
     private static final Map<String, ParticleType> BY_NAME = new HashMap<>();
 

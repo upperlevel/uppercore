@@ -4,60 +4,52 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.uppercore.particle.ParticleColor;
-import xyz.upperlevel.uppercore.particle.ParticleType;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.particle.CustomParticle;
+import xyz.upperlevel.uppercore.particle.ParticleType;
+import xyz.upperlevel.uppercore.particle.ParticleUtil;
 
-import static xyz.upperlevel.uppercore.particle.ParticleEffect.REDSTONE;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A simple coloured particle.
  *
  * It is constructed by colouring a redstone particle.
  */
-public class SimpleParticle extends EffectParticle {
+public class SimpleParticle extends CustomParticle {
 
     /**
      * Color of the particle.
      * @return the particle color
      */
     @Getter
-    private ParticleColor color;
+    @Setter
+    private Color color;
 
     public SimpleParticle() {
-        super(ParticleType.SIMPLE, REDSTONE);
+        super(ParticleType.SIMPLE);
 
         setColor(Color.WHITE);
     }
 
     public SimpleParticle(Config data) {
-        super(ParticleType.SIMPLE, data, REDSTONE);
+        super(ParticleType.SIMPLE, data);
         setColor(data.getColor("color", Color.WHITE));
     }
 
-    /**
-     * Changes the color of the particle.
-     * @param color the new particle color
-     */
-    public void setColor(Color color) {
-        this.color = ParticleColor.of(color);
-    }
-
-    /**
-     * Changes the color of the particle.
-     * @param color the new particle color
-     */
-    public void setColor(ParticleColor color) {
-        this.color = color;
-    }
-
     @Override
-    public void display(Location loc, Iterable<Player> players) {
-        REDSTONE.display(
-                color,
-                loc,
-                players
-        );
+    public void display(Location loc, List<Player> players) {
+        ParticleUtil.builder()
+                .type(Particle.REDSTONE)
+                .center(loc)
+                .offset(offsetX, offsetY, offsetZ)
+                .amount(getAmount())
+                .speed(getSpeed())
+                .color(getColor())
+                .display(players);
     }
 }

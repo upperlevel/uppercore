@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore;
 
+import de.slikey.effectlib.EffectManager;
 import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,6 +38,7 @@ public class Uppercore extends JavaPlugin {
     private HotbarManager hotbars;
     private ScriptManager scripts;
     private StorageManager storages;
+    private EffectManager effects;
     private DownloadableUpdateChecker updater;
     private ConfigParserRegistry parsers = ConfigParserRegistry.createStandard();
 
@@ -67,6 +69,7 @@ public class Uppercore extends JavaPlugin {
             hotbars = new HotbarManager();
             scripts = new ScriptManager();
             storages = new StorageManager();
+            effects = new EffectManager(this);
 
             // ScriptManager setup
             File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
@@ -120,6 +123,10 @@ public class Uppercore extends JavaPlugin {
 
     public static StorageManager storages() {
         return instance.storages;
+    }
+
+    public static EffectManager effects() {
+        return instance.effects;
     }
 
     public static ConfigParserRegistry parsers() {

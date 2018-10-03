@@ -14,6 +14,7 @@ import xyz.upperlevel.uppercoretest.command.TestCommand;
 import xyz.upperlevel.uppercoretest.command.functional.TestFunctionalNodeCommand;
 import xyz.upperlevel.uppercoretest.gui.GuiCommand;
 import xyz.upperlevel.uppercoretest.gui.HotbarCommand;
+import xyz.upperlevel.uppercoretest.particle.ParticleCommand;
 
 import java.util.logging.Logger;
 
@@ -45,6 +46,7 @@ public class UppercoreTest extends JavaPlugin {
         commandRegistry.register(new TestFunctionalNodeCommand());
         commandRegistry.register(new GuiCommand(root.registerChild("gui", Gui.class)));
         commandRegistry.register(new HotbarCommand(root.registerChild("hotbar", Hotbar.class)));
+        commandRegistry.register(new ParticleCommand());
         commandRegistry.printMarkdown();
         getLogger().info("Commands registered. Markdown printed.");
 
