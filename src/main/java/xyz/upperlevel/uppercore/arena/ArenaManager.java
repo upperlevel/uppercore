@@ -4,6 +4,7 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -49,6 +50,15 @@ public class ArenaManager implements Listener {
 
     public Arena getArena(String id) {
         return arenasById.get(id);
+    }
+
+    public Arena getArena(Player player) {
+        for (Arena arena : arenasById.values()) {
+            if (arena.hasPlayer(player)) {
+                return arena;
+            }
+        }
+        return null;
     }
 
     public Arena getArenaBySign(Block block) {

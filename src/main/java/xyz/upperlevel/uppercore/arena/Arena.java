@@ -13,6 +13,8 @@ import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent;
 import xyz.upperlevel.uppercore.arena.events.ArenaRemoveSignEvent;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.placeholder.message.Message;
 import xyz.upperlevel.uppercore.util.LocUtil;
 import xyz.upperlevel.uppercore.util.PlayerData;
 
@@ -132,6 +134,14 @@ public class Arena {
 
     public Set<Player> getPlayers() {
         return Collections.unmodifiableSet(players);
+    }
+
+    public void broadcast(String message) {
+        players.forEach(p -> p.sendMessage(message));
+    }
+
+    public void broadcast(Message message) {
+        players.forEach(message::send);
     }
 
     public Map<String, Object> serialize() {

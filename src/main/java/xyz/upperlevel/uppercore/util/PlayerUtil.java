@@ -9,8 +9,12 @@ import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.uppercore.nms.impl.entity.BoundingBoxNms;
 import xyz.upperlevel.uppercore.nms.impl.entity.EntityNms;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static xyz.upperlevel.uppercore.nms.NmsVersion.MINOR;
 import static xyz.upperlevel.uppercore.nms.NmsVersion.RELEASE;
@@ -37,21 +41,21 @@ public final class PlayerUtil {
         player.playSound(player.getLocation(), sound, 0f, 100f);
     }
 
-    public static void forEveryPlayerAround(Player viewer, Location loc, double radius, Consumer<Player> callback) {
-        if(USE_NEW_PLAYER_FINDER)
-            forEveryPlayerAroundNew(viewer, loc, radius, callback);
-        else
-            forEveryPlayerAroundManual(viewer, loc, radius, callback);
+    public static Collection<Entity> getEntitiesAround(Location loc, double radius) {
+        if (USE_NEW_PLAYER_FINDER) {
+            return getEntitiesAroundNew(loc, radius);
+        } else {
+            return getEntitiesAroundOld(loc, radius);
+        }
     }
 
-    private static void forEveryPlayerAroundNew(Player viewer, Location loc, double radius, Consumer<Player> callback) {
-        Collection<Entity> entities = loc.getWorld().getNearbyEntities(loc, radius, radius, radius);
-        for (Entity e : entities)
-            if (viewer != e && e instanceof Player)
-                callback.accept((Player) e);
+    private static Collection<Entity> getEntitiesAroundNew(Location loc, double radius) {
+        return loc.getWorld().getNearbyEntities(loc, radius, radius, radius);
     }
 
-    private static void forEveryPlayerAroundManual(Player viewer, Location loc, double radius, Consumer<Player> callback) {
+    private static Collection<Entity> getEntitiesAroundOld(Location loc, double radius) {
+        List<Entity> r = new ArrayList<>();
+
         World world = loc.getWorld();
         double minX = loc.getX() - radius;
         double minY = loc.getY() - radius;
@@ -70,15 +74,23 @@ public final class PlayerUtil {
         for (int chX = chMinX; chX <= chMaxX; chX++) {
             for (int chZ = chMinZ; chZ <= chMaxZ; chZ++) {
                 if (world.isChunkLoaded(chX, chZ)) {
-                    for (Entity t : world.getChunkAt(chX, chZ).getEntities()) {
-                        if (t instanceof Player && viewer != t) {
-                            if (BoundingBoxNms.intersect(bb, EntityNms.getBoundingBox(t))) {
-                                callback.accept((Player) t);
-                            }
+                    for (Entity e : world.getChunkAt(chX, chZ).getEntities()) {
+                        if (BoundingBoxNms.intersect(bb, EntityNms.getBoundingBox(e))) {
+                            r.add(e);
                         }
                     }
                 }
             }
         }
+
+        return r;
+    }
+
+    public static Collection<Player> getPlayersAround(Location loc, double radius) {
+        return getEntitiesAround(loc, radius)
+                .stream()
+                .filter(e -> e instanceof Player)
+                .map(e -> (Player) e)
+                .collect(Collectors.toList());
     }
 }
