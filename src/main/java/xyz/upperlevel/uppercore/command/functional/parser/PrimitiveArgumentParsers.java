@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.command.functional.parser;
 
 import org.apache.commons.lang.StringUtils;
+import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
+import xyz.upperlevel.uppercore.command.functional.parser.AsArgumentParser;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,10 +21,14 @@ public final class PrimitiveArgumentParsers {
         switch (value) {
             case "false":
             case "f":
+            case "no":
+            case "n":
             case "0":
                 return false;
             case "true":
             case "t":
+            case "yes":
+            case "y":
             case "1":
                 return true;
             default:
@@ -53,6 +59,19 @@ public final class PrimitiveArgumentParsers {
             return Double.parseDouble(arguments.get(0));
         } catch (NumberFormatException exception) {
             throw new ArgumentParseException(double.class, Collections.singletonList(arguments.get(0)));
+        }
+    }
+
+    // Byte
+    @AsArgumentParser(
+            parsableTypes = {Byte.class, byte.class},
+            consumeCount = 1
+    )
+    public Byte parseByte(List<String> arguments) throws ArgumentParseException {
+        try {
+            return Byte.parseByte(arguments.get(0));
+        } catch (NumberFormatException exception) {
+            throw new ArgumentParseException(byte.class, Collections.singletonList(arguments.get(0)));
         }
     }
 

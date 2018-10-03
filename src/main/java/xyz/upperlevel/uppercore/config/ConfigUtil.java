@@ -20,7 +20,7 @@ import static java.lang.Integer.parseInt;
 import static xyz.upperlevel.uppercore.util.CollectionUtil.toMap;
 
 public final class ConfigUtil {
-    private static final Map<String, Color> COLOR_BY_NAME = new HashMap<>(ImmutableMap.<String, Color>builder()
+    public static final Map<String, Color> COLOR_BY_NAME = new HashMap<>(ImmutableMap.<String, Color>builder()
             .put("WHITE", Color.WHITE)
             .put("SILVER", Color.SILVER)
             .put("GRAY", Color.GRAY)
