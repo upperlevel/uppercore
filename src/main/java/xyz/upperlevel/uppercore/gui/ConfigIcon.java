@@ -259,11 +259,11 @@ public class ConfigIcon {
             IconClick res = new IconClick();
             res.permission = (String) config.get("permission");
             res.noPermissionError = config.getMessage("no-permission-message", "You don't have permission!");
-            res.noPermissionSound = config.getBukkitSound("no-permission-sound");
+            res.noPermissionSound = config.getPlaySound("no-permission-sound");
 
             res.cost = PlaceholderValue.doubleValue(config.getString("cost", "0"));
             res.noMoneyError = config.getMessage("no-money-error", "You don't have enough money");
-            res.noMoneySound = config.getBukkitSound("no-money-sound");
+            res.noMoneySound = config.getPlaySound("no-money-sound");
 
             List<Object> actions = (List<Object>) config.get("actions");
             if (actions == null)
