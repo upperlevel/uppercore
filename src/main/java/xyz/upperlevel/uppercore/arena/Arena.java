@@ -1,5 +1,7 @@
 package xyz.upperlevel.uppercore.arena;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -13,15 +15,18 @@ import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent;
 import xyz.upperlevel.uppercore.arena.events.ArenaRemoveSignEvent;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
 import xyz.upperlevel.uppercore.util.LocUtil;
 import xyz.upperlevel.uppercore.util.PlayerData;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Arena {
+    public static Pattern ARENA_NAME_VALIDATOR = Pattern.compile("^[a-zA-Z_]+[0-9]*");
+    private static long JOIN_LEAVE_COOLDOWN = 1000;
+
     @Getter
     private final String id;
 
@@ -36,7 +41,7 @@ public class Arena {
     private final Set<Block> signs = new HashSet<>();
 
     private final Set<Player> players = new HashSet<>();
-    private final Map<Player, PlayerData> playersData = new HashMap<>(); // holds player data before join
+    private final Map<Player, PlayerMeta> playersData = new HashMap<>();
 
     @Getter
     private final PhaseManager phaseManager;
@@ -111,7 +116,7 @@ public class Arena {
             return false;
         }
         Bukkit.getPluginManager().callEvent(new ArenaJoinEvent(this, player));
-        playersData.put(player, PlayerData.extract(player));
+        playersData.put(player, new PlayerMeta(System.currentTimeMillis(), PlayerData.extract(player)));
         player.teleport(lobby);
         return true;
     }
@@ -123,13 +128,19 @@ public class Arena {
         if (!players.remove(player)) {
             return false;
         }
-        playersData.remove(player).apply(player);
+        playersData.remove(player).preJoinData.apply(player);
         Bukkit.getPluginManager().callEvent(new ArenaQuitEvent(this, player)); // non cancelable
         return true;
     }
 
     public boolean hasPlayer(Player player) {
         return players.contains(player);
+    }
+
+    public boolean isJoinLeaveCooldownActive(Player player) {
+        PlayerMeta data = playersData.get(player);
+        if (data == null) return false;
+        return data.joinTime + JOIN_LEAVE_COOLDOWN < System.currentTimeMillis();
     }
 
     public Set<Player> getPlayers() {
@@ -163,6 +174,17 @@ public class Arena {
     }
 
     public static boolean isValidName(String name) {
-        return name.matches("^[a-zA-Z_]+[0-9]*");
+        return ARENA_NAME_VALIDATOR.matcher(name).matches();
+    }
+
+    public static void configure(Config cfg) {
+        JOIN_LEAVE_COOLDOWN = cfg.getLongRequired("join-leave-cooldown");
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class PlayerMeta {
+        long joinTime;// Used in cooldown calculations
+        PlayerData preJoinData;// Before-join data (inventory, exp and everything)
     }
 }

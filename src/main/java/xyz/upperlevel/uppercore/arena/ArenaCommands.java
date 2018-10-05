@@ -6,6 +6,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONObject;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.CommandContext;
 import xyz.upperlevel.uppercore.command.PermissionUser;
 import xyz.upperlevel.uppercore.command.SenderType;
@@ -214,13 +215,27 @@ public class ArenaCommands {
             user = PermissionUser.OP
     )
     protected void join(CommandContext context, String arenaId) {
+        // TODO: message translations
         Arena arena = arenaManager.getArena(arenaId);
         if (arena == null) {
             context.send(RED + "Arena not found: " + LIGHT_PURPLE + arenaId + RED + ".");
             return;
         }
-        arena.join((Player) context.sender());
-        context.send("Arena '" + arena.getId() + "' joined.");
+
+        Player player = (Player) context.sender();
+
+        // Join/Leave cooldown active, don't do anything
+        if (arena.isJoinLeaveCooldownActive(player)) {
+            Uppercore.logger().fine("[Game] Join-Leave cooldown prevented player from quitting arena");
+            return;
+        }
+
+        if (arena.join((Player) context.sender())) {
+            // Player joined
+            context.send(GREEN + "Arena '" + arena.getId() + "' joined.");
+        } else {
+            context.send(RED + "You are already in arena '" + arena.getId() + "'!");
+        }
     }
 
     @AsCommand(

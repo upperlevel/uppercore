@@ -4,6 +4,8 @@ import de.slikey.effectlib.EffectManager;
 import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.upperlevel.uppercore.arena.Arena;
+import xyz.upperlevel.uppercore.arena.ArenaCommands;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.HelpCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
@@ -57,12 +59,17 @@ public class Uppercore extends JavaPlugin {
             PlaceholderUtil.tryHook();
             EconomyManager.enable();
 
-            /* Command configuration */
+            // Command configuration
             saveResource("command.yml", false);
             Config cfg = Config.fromYaml(new File(Uppercore.get().getDataFolder(), "command.yml"));
             Command.configure(cfg);
             HelpCommand.configure(cfg);
             FunctionalCommand.configure(cfg);
+
+            // Game configuration
+            saveResource("game.yml", false);
+            cfg = Config.fromYaml(new File(Uppercore.get().getDataFolder(), "game.yml"));
+            Arena.configure(cfg);
 
             // Managers
             guis = new GuiManager();
