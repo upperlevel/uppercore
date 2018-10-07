@@ -253,6 +253,7 @@ public class ConfigParserRegistry {
         });
         // TODO: comment
         register(Map.class, (Type t) -> new MapParser<>(Map.class, HashMap::new, getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1))));
+        register(NavigableMap.class, (Type t) -> new MapParser<>(NavigableMap.class, TreeMap::new, getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1))));
         register(EnumMap.class, (Type t) -> {
             Class keyClass = extractClassFromType(getGenericChildren(t, 0));
             return new MapParser<>(EnumMap.class, () -> new EnumMap(keyClass), getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1)));
