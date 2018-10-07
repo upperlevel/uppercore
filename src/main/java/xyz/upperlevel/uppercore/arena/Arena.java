@@ -23,6 +23,18 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * An arena manages the physical Arena, and everything related to the logical side of it (signs, players, states, ecc.).
+ * A player can have multiple arenas, managed by {@link ArenaManager}.
+ * They can be joined either trough signs or trough the join command.
+ *
+ * Note: There is a bug where the player entering the arena causes bukkit to load the arena chunks,
+ * the lag caused by this launches (in some bukkit-internal unknown way) another click action, that might make
+ * the player leave the arena if he's holding the leave item. Because of this a cooldown between a player's join
+ * and leave has been implemented so that if the player tries to leave just after the join the operation won't succeed.
+ * This behaviour isn't enforced by the {@link Arena#quit(Player)} code himself but by the leave command so that other
+ * programs can choose whether to respect this behaviour or not.
+ */
 public class Arena {
     public static Pattern ARENA_NAME_VALIDATOR = Pattern.compile("^[a-zA-Z_]+[0-9]*");
     private static long JOIN_LEAVE_COOLDOWN = 1000;

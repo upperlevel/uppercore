@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * This class contains everything game-related, it listens for signs, join-events.
+ * It manages the ArenaManager and the hub.
+ */
 public class Game implements Listener {
     @Getter
     private final String name;
@@ -85,11 +89,10 @@ public class Game implements Listener {
 
     @EventHandler
     protected void onPlayerJoin(PlayerJoinEvent e) {
-        if (hub != null) {
-            e.getPlayer().teleport(hub);
-        }
         if (defaultArena != null) {
             defaultArena.join(e.getPlayer());
+        } else if (hub != null) {
+            e.getPlayer().teleport(hub);
         }
     }
 
