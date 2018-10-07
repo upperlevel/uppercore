@@ -1,7 +1,5 @@
 package xyz.upperlevel.uppercore.particle;
 
-import com.google.common.collect.ImmutableList;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bukkit.Color;
@@ -11,7 +9,6 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 

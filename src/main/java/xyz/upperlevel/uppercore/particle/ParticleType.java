@@ -1,5 +1,7 @@
 package xyz.upperlevel.uppercore.particle;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import xyz.upperlevel.uppercore.particle.impl.BlockDustParticle;
 import xyz.upperlevel.uppercore.particle.impl.SimpleParticle;
 import xyz.upperlevel.uppercore.config.Config;
@@ -7,36 +9,27 @@ import xyz.upperlevel.uppercore.config.Config;
 import java.util.HashMap;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public enum ParticleType {
-
-    SIMPLE {
+    SIMPLE(SimpleParticle.class) {
         @Override
         public CustomParticle create() {
             return new SimpleParticle();
         }
-
-        @Override
-        public CustomParticle create(Config data) {
-            return new SimpleParticle(data);
-        }
     },
-    BLOCK_DUST {
+    BLOCK_DUST(BlockDustParticle.class) {
         @Override
         public CustomParticle create() {
             return new BlockDustParticle();
         }
-
-        @Override
-        public CustomParticle create(Config data) {
-            return new BlockDustParticle(data);
-        }
     };
 
-    public abstract CustomParticle create();
-
-    public abstract CustomParticle create(Config data);
-
     private static final Map<String, ParticleType> BY_NAME = new HashMap<>();
+
+    @Getter
+    private final Class<? extends CustomParticle> clazz;
+
+    public abstract CustomParticle create();
 
     static {
         for (ParticleType value : values())

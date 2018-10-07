@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
+import xyz.upperlevel.uppercore.config.PolymorphicSelector;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import java.util.List;
@@ -58,19 +60,12 @@ public abstract class CustomParticle {
 
     public abstract void display(Location location, List<Player> phase);
 
-
-    public static CustomParticle deserialize(Config data) {
-        String raw = data.getStringRequired("type");
+    @PolymorphicSelector
+    private static Class<? extends CustomParticle> selectChild(@ConfigProperty("type") String raw) {
         ParticleType type = ParticleType.get(raw);
-        if(type == null)
+        if(type == null) {
             throw new InvalidConfigException("Cannot find particle type \"" + raw + "\"");
-        try {
-            return type.create(data);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidConfigException("Cannot load particle \"" + type + "\": ");
-        } catch (InvalidConfigException e) {
-            e.addLocation("in particle");
-            throw e;
         }
+        return type.getClazz();
     }
 }

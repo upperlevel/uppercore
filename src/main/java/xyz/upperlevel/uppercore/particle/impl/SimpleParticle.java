@@ -8,6 +8,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.particle.CustomParticle;
 import xyz.upperlevel.uppercore.particle.ParticleType;
 import xyz.upperlevel.uppercore.particle.ParticleUtil;
@@ -36,6 +37,7 @@ public class SimpleParticle extends CustomParticle {
         setColor(Color.WHITE);
     }
 
+    @ConfigConstructor
     public SimpleParticle(Config data) {
         super(ParticleType.SIMPLE, data);
         setColor(data.getColor("color", Color.WHITE));

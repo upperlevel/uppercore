@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.particle.CustomParticle;
 import xyz.upperlevel.uppercore.particle.ParticleType;
@@ -44,6 +45,7 @@ public class BlockDustParticle extends CustomParticle {
         setBlockData((byte) 0);
     }
 
+    @ConfigConstructor
     public BlockDustParticle(Config data) {
         super(ParticleType.BLOCK_DUST, data);
         Config block = data.getConfigRequired("block");
