@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 public class OfficialPlaceholderManager extends BasePlaceholderManager {
@@ -19,7 +20,13 @@ public class OfficialPlaceholderManager extends BasePlaceholderManager {
     private final OfficialPlaceholderRegistry registry = new OfficialPlaceholderRegistry();
 
     public OfficialPlaceholderManager() {
-        this.placeholders = PlaceholderAPI.getPlaceholders();
+        try {
+            Field field = PlaceholderAPI.class.getDeclaredField("placeholders");
+            field.setAccessible(true);
+            placeholders = (Map<String, PlaceholderHook>) field.get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException("Uncompatible PlaceholderAPI exception");
+        }
     }
 
     @Override
