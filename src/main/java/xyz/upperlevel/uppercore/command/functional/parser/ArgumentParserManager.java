@@ -4,34 +4,50 @@ import xyz.upperlevel.uppercore.command.functional.parser.def.*;
 
 import java.util.*;
 
-public class ArgumentParserManager {
-    public static List<ArgumentParser> defParsers = new ArrayList<>(Arrays.asList(
-            new ColorArgumentParser(),
-            new EnchantmentArgumentParser(),
-            new MaterialArgumentParser(),
-            new SoundArgumentParser(),
-            new VectorArgumentParser()
-    ));
-
-    private Map<Class<?>, ArgumentParser> parsers = new HashMap<>();
+public final class ArgumentParserManager {
+    private static Map<Class<?>, ArgumentParser> parsers = new HashMap<>();
 
     static {
-        defParsers.addAll(FunctionalArgumentParser.load(new PrimitiveArgumentParsers()));
+        init();
     }
 
-    public ArgumentParserManager() {
-        for (ArgumentParser parser : defParsers) {
-            addParser(parser);
-        }
+    /**
+     * Registers some default argument parsers.
+     */
+    public static void init() {
+        register(FunctionalArgumentParser.load(new PrimitiveArgumentParsers()));
+        register(Arrays.asList(
+                new ColorArgumentParser(),
+                new EnchantmentArgumentParser(),
+                new MaterialArgumentParser(),
+                new SoundArgumentParser(),
+                new VectorArgumentParser()
+        ));
     }
 
-    public void addParser(ArgumentParser parser) {
+    /**
+     * Registers a new argument parser.
+     */
+    public static void register(ArgumentParser parser) {
         for (Class<?> type : parser.getParsableTypes()) {
             parsers.put(type, parser);
         }
     }
 
-    public ArgumentParser getParser(Class<?> type) {
+    /**
+     * Registers a list of argument parsers.
+     */
+    public static void register(List<ArgumentParser> parsers) {
+        parsers.forEach(ArgumentParserManager::register);
+    }
+
+    /**
+     * Gets a registered argument parsers able to parse the given type.
+     */
+    public static ArgumentParser get(Class<?> type) {
         return parsers.get(type);
+    }
+
+    private ArgumentParserManager() {
     }
 }

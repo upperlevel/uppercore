@@ -45,7 +45,7 @@ public class FunctionalCommand extends Command {
     private static Message invalidUsageMessage;
     private static Message invalidArgumentTypeMessage;
 
-    public FunctionalCommand(String name, Object residence, Method function, ArgumentParserManager parserManager) {
+    public FunctionalCommand(String name, Object residence, Method function) {
         super(name);
         this.residence = residence;
         this.function = function;
@@ -73,7 +73,7 @@ public class FunctionalCommand extends Command {
         this.parameters = new FunctionalParameter[function.getParameterCount() - 1];
         for (int i = 0; i < function.getParameterCount() - 1; i++) {
             Parameter parameter = function.getParameters()[i + 1];
-            ArgumentParser parser = parserManager.getParser(parameter.getType());
+            ArgumentParser parser = ArgumentParserManager.get(parameter.getType());
             if (parser != null) {
                 this.parameters[i] = new FunctionalParameter(this, parameter, parser);
             } else {
@@ -217,10 +217,6 @@ public class FunctionalCommand extends Command {
     }
 
     public static List<Command> load(Object residence) {
-        return load(residence, new ArgumentParserManager());
-    }
-
-    public static List<Command> load(Object residence, ArgumentParserManager argumentParserManager) {
         List<Command> result = new ArrayList<>();
 
         for (Class<?> inner : residence.getClass().getDeclaredClasses()) {
@@ -240,8 +236,7 @@ public class FunctionalCommand extends Command {
                 result.add(new FunctionalCommand(
                         function.getName(), // todo at the moment the command name is the name of the function
                         residence,
-                        function,
-                        argumentParserManager // we need also this to load function parameters
+                        function // we need also this to load function parameters
                 ));
             }
         }

@@ -1,10 +1,14 @@
 package xyz.upperlevel.uppercore.command.functional.parser;
 
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TestAllArgumentParser {
+
+    @Test
     public void primitiveParsing() {
         Map<String, Class<?>> data = new HashMap<>();
         data.put("my_string", String.class);
@@ -14,10 +18,9 @@ public class TestAllArgumentParser {
         data.put("true", boolean.class);
 
         Map<String, Object> result = new HashMap<>();
-        ArgumentParserManager parser = new ArgumentParserManager();
         for (Map.Entry<String, Class<?>> entry : data.entrySet()) {
             try {
-                Object parsed = parser.getParser(entry.getValue()).parse(Collections.singletonList(entry.getKey()));
+                Object parsed = ArgumentParserManager.get(entry.getValue()).parse(Collections.singletonList(entry.getKey()));
                 result.put(entry.getKey(), parsed);
             } catch (ArgumentParseException e) {
                 throw new IllegalStateException(e);
