@@ -11,7 +11,9 @@ import xyz.upperlevel.uppercore.storage.*;
 import java.util.Map;
 
 import static com.rethinkdb.RethinkDB.r;
-import static com.rethinkdb.net.Connection.*;
+import static com.rethinkdb.net.Connection.Builder;
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.KEEP_OLD;
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.REPLACE;
 
 public final class RethinkDb {
     private RethinkDb() {
@@ -39,7 +41,7 @@ public final class RethinkDb {
 
         @Override
         public String[] getDownloadLinks() {
-            return new String[]{
+            return new String[] {
                     "https://oss.sonatype.org/content/repositories/releases/com/rethinkdb/rethinkdb-driver/2.3.3/rethinkdb-driver-2.3.3.jar",
                     "https://oss.sonatype.org/content/repositories/releases/org/slf4j/slf4j-api/1.7.12/slf4j-api-1.7.12.jar",
                     "https://oss.sonatype.org/content/repositories/releases/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar"
@@ -160,14 +162,16 @@ public final class RethinkDb {
         }
 
         @Override
-        public boolean insert(Map<String, Object> data, boolean replace) {
-            if (replace) {
-                MapObject res = table.insert(data).run(conn);
-                return ((Number) res.get("inserted")).intValue() > 0;
-            } else {
+        public boolean insert(Map<String, Object> data, DuplicatePolicy duplicatePolicy) {
+            if (duplicatePolicy == REPLACE) {
                 data.remove("id");
                 MapObject res = doc.replace(data).run(conn);
                 return ((Number) res.get("replaced")).intValue() > 0;
+            } else if (duplicatePolicy == KEEP_OLD) {
+                MapObject res = table.insert(data).run(conn);
+                return ((Number) res.get("inserted")).intValue() > 0;
+            } else {
+                throw new IllegalStateException();
             }
         }
 

@@ -6,7 +6,6 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -14,8 +13,10 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.KEEP_OLD;
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.REPLACE;
 
 public final class MongoDb {
     private MongoDb() {
@@ -43,7 +44,7 @@ public final class MongoDb {
 
         @Override
         public String[] getDownloadLinks() {
-            return new String[]{
+            return new String[] {
                     "https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/3.8.0/mongo-java-driver-3.8.0.jar"
             };
         }
@@ -147,13 +148,13 @@ public final class MongoDb {
         }
 
         @Override
-        public boolean insert(Map<String, Object> data, boolean replace) {
+        public boolean insert(Map<String, Object> data, DuplicatePolicy duplicatePolicy) {
             Document newData = new Document(data);
             newData.put("_id", id);
-            if (replace) {
+            if (duplicatePolicy == REPLACE) {
                 UpdateResult res = coll.replaceOne(new Document("_id", id), newData, new ReplaceOptions().upsert(true));
                 return res.getModifiedCount() > 0;
-            } else {
+            } else if (duplicatePolicy == KEEP_OLD){
                 try {
                     coll.insertOne(newData);
                     return true;
@@ -161,6 +162,8 @@ public final class MongoDb {
                     // Thrown if element already inserted
                     return false;
                 }
+            } else  {
+                throw new IllegalStateException();
             }
         }
 

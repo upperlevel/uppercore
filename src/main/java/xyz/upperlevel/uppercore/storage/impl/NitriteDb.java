@@ -6,8 +6,10 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.KEEP_OLD;
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.REPLACE;
 
 public final class NitriteDb {
     private NitriteDb() {
@@ -35,7 +37,7 @@ public final class NitriteDb {
 
         @Override
         public String[] getDownloadLinks() {
-            return new String[]{
+            return new String[] {
                     "https://oss.sonatype.org/content/repositories/releases/org/dizitart/nitrite/3.0.2/nitrite-3.0.2.jar",
                     "https://oss.sonatype.org/content/repositories/releases/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar",
                     "https://oss.sonatype.org/content/repositories/releases/com/h2database/h2-mvstore/1.4.196/h2-mvstore-1.4.196.jar",
@@ -146,15 +148,17 @@ public final class NitriteDb {
         }
 
         @Override
-        public boolean insert(Map<String, Object> data, boolean replace) {
+        public boolean insert(Map<String, Object> data, DuplicatePolicy policy) {
             Document newData = new Document(data);
             newData.put("id", id);
-            if (replace) {
+            if (policy == REPLACE) {
                 WriteResult res = coll.update(Filters.eq("id", id), newData, UpdateOptions.updateOptions(true));
                 return res.getAffectedCount() > 0;
-            } else {
+            } else if (policy == KEEP_OLD) {
                 WriteResult res = coll.insert(newData);
                 return res.getAffectedCount() > 0;
+            } else {
+                throw new IllegalStateException();
             }
         }
 

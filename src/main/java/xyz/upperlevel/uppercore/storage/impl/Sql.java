@@ -3,16 +3,11 @@ package xyz.upperlevel.uppercore.storage.impl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import xyz.upperlevel.uppercore.storage.Database;
-import xyz.upperlevel.uppercore.storage.Element;
-import xyz.upperlevel.uppercore.storage.Storage;
-import xyz.upperlevel.uppercore.storage.Table;
+import xyz.upperlevel.uppercore.storage.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public final class Sql {
@@ -134,21 +129,23 @@ public final class Sql {
         }
 
         @Override
-        public boolean insert(Map<String, Object> data, boolean replace) {
+        public boolean insert(Map<String, Object> data, DuplicatePolicy duplicatePolicy) {
             try {
                 String query = "INSERT INTO " + table.getPath() + " (`id`, `data`) VALUES (?, '{}')";
-                if (replace) {
+                if (duplicatePolicy == DuplicatePolicy.REPLACE) {
                     query += "ON DUPLICATE KEY UPDATE `data`=?";
                 }
                 PreparedStatement statement = sql.prepareStatement(query);
                 statement.setString(1, id);
-                if (replace) {
+                if (duplicatePolicy == DuplicatePolicy.REPLACE) {
                     statement.setString(2, new JSONObject(data).toJSONString());
                 }
                 statement.executeUpdate();
                 return true;
             } catch (SQLException e) {
-                if (replace) {
+                // We should get an exception only when an element was already
+                // present in the db and we weren't replacing it
+                if (duplicatePolicy == DuplicatePolicy.REPLACE) {
                     throw new IllegalStateException(e);
                 }
                 return false;

@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -132,23 +131,18 @@ public final class Flatfile {
         }
 
         @Override
-        public boolean insert(Map<String, Object> data, boolean replace) {
-            if (replace) {
-                file.delete();
-            }
-            if (file.exists()) {
+        public boolean insert(Map<String, Object> data, DuplicatePolicy duplicatePolicy) {
+            if (duplicatePolicy == DuplicatePolicy.KEEP_OLD && file.exists()) {
                 return false;
-            } else {
-                try (FileWriter writer = new FileWriter(file)) {
-                    file.createNewFile();
-                    writer.write(new JSONObject(data).toJSONString());
-                    writer.flush();
-                } catch (IOException e) {
-                    throw new IllegalStateException("Can't write to file: " + file, e);
-                }
+            }
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(new JSONObject(data).toJSONString());
+                writer.flush();
+            } catch (IOException e) {
+                throw new IllegalStateException("Can't write to file: " + file, e);
             }
             return true;
-        }
+        }{}
 
         @Override
         public boolean update(Map<String, Object> data) {
