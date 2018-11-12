@@ -6,6 +6,8 @@ import org.bukkit.event.HandlerList;
 import xyz.upperlevel.uppercore.arena.Arena;
 
 public class ArenaEvent extends Event {
+    private static final HandlerList handlers = new HandlerList();
+
     @Getter
     private final Arena arena;
 
@@ -15,6 +17,10 @@ public class ArenaEvent extends Event {
 
     @Override
     public HandlerList getHandlers() {
-        return null;
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 }
