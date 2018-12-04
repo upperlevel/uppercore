@@ -15,7 +15,7 @@ import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.PolymorphicSelector;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
-import xyz.upperlevel.uppercore.itemstack.specials.*;
+import xyz.upperlevel.uppercore.itemstack.meta.*;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
@@ -27,10 +27,10 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CustomItem implements ItemResolver {
-    private static Map<Material, Class<? extends CustomItem>> customDeserializers = new HashMap<>();
+public class UItem implements ItemResolver {
+    private static Map<Material, Class<? extends UItem>> customDeserializers = new HashMap<>();
 
-    public static final CustomItem AIR = new CustomItem(new ItemStack(Material.AIR));
+    public static final UItem AIR = new UItem(new ItemStack(Material.AIR));
 
     private Material type;
     private PlaceholderValue<Short> data;
@@ -49,7 +49,7 @@ public class CustomItem implements ItemResolver {
         registerDefCustomDeserializers();
     }
 
-    public CustomItem(CustomItem item) {
+    public UItem(UItem item) {
         this.type = item.type;
         this.data = item.data;
         this.amount = item.amount;
@@ -60,7 +60,7 @@ public class CustomItem implements ItemResolver {
         this.placeholders = item.placeholders;
     }
 
-    public CustomItem(Material type, Config config, PlaceholderRegistry placeholders) {
+    public UItem(Material type, Config config, PlaceholderRegistry placeholders) {
         this.type = type;
         this.placeholders = placeholders;
         data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
@@ -96,7 +96,7 @@ public class CustomItem implements ItemResolver {
     }
 
     @ConfigConstructor
-    public CustomItem(
+    public UItem(
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,
@@ -116,7 +116,7 @@ public class CustomItem implements ItemResolver {
         }
     }
 
-    public CustomItem(ItemStack item) {
+    public UItem(ItemStack item) {
         type = item.getType();
         data = PlaceholderValue.shortValue(String.valueOf(item.getData().getData()));
         amount = PlaceholderValue.intValue(String.valueOf(item.getAmount()));
@@ -174,23 +174,23 @@ public class CustomItem implements ItemResolver {
         joiner.add("enchantments: " + enchantments);
     }
 
-    public CustomItem copy() {
-        return new CustomItem(this);
+    public UItem copy() {
+        return new UItem(this);
     }
 
     public static void registerDefCustomDeserializers() {
-        registerCustomDeserializer(BannerCustomItem.class, Material.BANNER);
-        registerCustomDeserializer(SkullCustomItem.class, Material.SKULL_ITEM);
-        registerCustomDeserializer(LeatherArmorCustomItem.class, Material.LEATHER_BOOTS, Material.LEATHER_CHESTPLATE, Material.LEATHER_HELMET, Material.LEATHER_LEGGINGS);
-        registerCustomDeserializer(MapCustomItem.class, Material.MAP);
-        registerCustomDeserializer(PotionCustomItem.class, Material.POTION, mat("LINGERING_POTION"), mat("SPLASH_POTION"), mat("Material.TIPPED_ARROW"));
-        registerCustomDeserializer(SpawnEggCustomItem.class, Material.MONSTER_EGG);
-        registerCustomDeserializer(EnchantedBookCustomItem.class, Material.ENCHANTED_BOOK);
-        registerCustomDeserializer(FireworkCustomItem.class, Material.FIREWORK);
-        registerCustomDeserializer(FireworkChargeCustomItem.class, Material.FIREWORK_CHARGE);
+        registerCustomDeserializer(UBannerMeta.class, Material.BANNER);
+        registerCustomDeserializer(USkullMeta.class, Material.SKULL_ITEM);
+        registerCustomDeserializer(ULeatherArmorMeta.class, Material.LEATHER_BOOTS, Material.LEATHER_CHESTPLATE, Material.LEATHER_HELMET, Material.LEATHER_LEGGINGS);
+        registerCustomDeserializer(UMapMeta.class, Material.MAP);
+        registerCustomDeserializer(UPotionMeta.class, Material.POTION, mat("LINGERING_POTION"), mat("SPLASH_POTION"), mat("Material.TIPPED_ARROW"));
+        registerCustomDeserializer(USpawnEggMeta.class, Material.MONSTER_EGG);
+        registerCustomDeserializer(UEnchantmentStorageMeta.class, Material.ENCHANTED_BOOK);
+        registerCustomDeserializer(UFireworkMeta.class, Material.FIREWORK);
+        registerCustomDeserializer(UFireworkEffectMeta.class, Material.FIREWORK_CHARGE);
     }
 
-    public static void registerCustomDeserializer(Class<? extends CustomItem> des, Material... aliases) {
+    public static void registerCustomDeserializer(Class<? extends UItem> des, Material... aliases) {
         for (Material m : aliases) {
             if (m != null) {
                 customDeserializers.put(m, des);
@@ -203,13 +203,13 @@ public class CustomItem implements ItemResolver {
     }
 
     @SuppressWarnings("unchecked")
-    public static CustomItem deserialize(Config config, PlaceholderRegistry placeholders) {
+    public static UItem deserialize(Config config, PlaceholderRegistry placeholders) {
         Material mat = config.getMaterialRequired("type");
 
-        Class<?> deserializer = customDeserializers.getOrDefault(mat, CustomItem.class);
+        Class<?> deserializer = customDeserializers.getOrDefault(mat, UItem.class);
 
         try {
-            return (CustomItem) deserializer
+            return (UItem) deserializer
                     .getConstructor(Material.class, Config.class, PlaceholderRegistry.class)
                     .newInstance(mat, config, placeholders);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -217,12 +217,12 @@ public class CustomItem implements ItemResolver {
         }
     }
 
-    public static CustomItem deserialize(Config config) {
+    public static UItem deserialize(Config config) {
         return deserialize(config, PlaceholderRegistry.def());
     }
 
     @PolymorphicSelector
     private static Class<?> selectChild(@ConfigProperty("type") Material type) {
-        return customDeserializers.getOrDefault(type, CustomItem.class);
+        return customDeserializers.getOrDefault(type, UItem.class);
     }
 }

@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.gui.action;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
 
@@ -173,21 +173,21 @@ public interface Parser<T> {
         };
     }
 
-    static Parser<CustomItem> itemValue() {
-        return new Parser<CustomItem>() {
+    static Parser<UItem> itemValue() {
+        return new Parser<UItem>() {
             @Override
             @SuppressWarnings("unchecked")
-            public CustomItem load(Plugin plugin, Object object) {
+            public UItem load(Plugin plugin, Object object) {
                 if (object instanceof ItemStack)
-                    return new CustomItem((ItemStack) object);
+                    return new UItem((ItemStack) object);
                 else if (object instanceof Map)
-                    return CustomItem.deserialize(Config.from((Map<String, Object>) object));
+                    return UItem.deserialize(Config.from((Map<String, Object>) object));
                 else
                     throw new IllegalArgumentException("Cannot parse " + object + " as Item");
             }
 
             @Override
-            public Object save(CustomItem customItem) {
+            public Object save(UItem customItem) {
                 throw new UnsupportedOperationException();
             }
         };
