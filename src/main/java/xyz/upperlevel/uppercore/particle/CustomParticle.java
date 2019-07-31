@@ -19,10 +19,8 @@ public abstract class CustomParticle {
     @Setter
     protected float offsetX, offsetY, offsetZ;
     @Getter
-    @Setter
     protected float speed;
     @Getter
-    @Setter
     protected int amount;
 
     public CustomParticle(ParticleType type) {

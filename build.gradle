@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.*
 plugins {
     id "java"
     id "maven"
-    id "com.github.johnrengelman.shadow" version "2.0.2"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
     // id "checkstyle"
 }
 
@@ -57,9 +57,14 @@ repositories {
 
 dependencies {
     /* Lombok */
-    compileOnly "org.projectlombok:lombok:1.18.2"
-    testCompileOnly "org.projectlombok:lombok:1.18.2"
-    integrationTestCompileOnly "org.projectlombok:lombok:1.18.2"
+    compileOnly "org.projectlombok:lombok:1.18.8"
+    annotationProcessor "org.projectlombok:lombok:1.18.8"
+
+    testCompileOnly "org.projectlombok:lombok:1.18.8"
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.8"
+
+    integrationTestCompileOnly "org.projectlombok:lombok:1.18.8"
+    integrationTestAnnotationProcessor "org.projectlombok:lombok:1.18.8"
 
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.+"
