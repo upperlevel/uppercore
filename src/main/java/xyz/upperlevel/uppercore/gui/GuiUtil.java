@@ -1,9 +1,6 @@
 package xyz.upperlevel.uppercore.gui;
 
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.TreeSpecies;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,22 +24,7 @@ public final class GuiUtil {
 
     @SuppressWarnings("deprecation")
     public static ItemStack stainedClay(DyeColor color, String name, String... lores) {
-        return setNameAndLores(new ItemStack(Material.STAINED_CLAY, 1, color.getWoolData()), name, lores);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static ItemStack stainedGlassPane(DyeColor color, String name, String... lores) {
-        return setNameAndLores(new ItemStack(Material.STAINED_GLASS_PANE, 1, color.getWoolData()), name, lores);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static ItemStack stainedGlass(DyeColor color, String name, String... lores) {
-        return setNameAndLores(new ItemStack(Material.STAINED_GLASS, 1, color.getWoolData()), name, lores);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static ItemStack wood(TreeSpecies type, String name, String... lores) {
-        return setNameAndLores(new ItemStack(Material.WOOD, 1, type.getData()), name, lores);
+        return setNameAndLores(new ItemStack(Material.GLASS_PANE, 1, color.getWoolData()), name, lores);
     }
 
     public static ItemStack itemStack(Material display, String name, String... lores) {
@@ -66,7 +48,7 @@ public final class GuiUtil {
     }
 
     public static ItemStack head(String playerName, String displayName, String... lore) {
-        ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setOwner(playerName);
         meta.setDisplayName(displayName);

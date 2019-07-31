@@ -286,7 +286,7 @@ public class GuiManager implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() == e.getInventory()) {
+        if (e.getInventory() == e.getInventory()) {
             onClick(e);
         }
         if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {

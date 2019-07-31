@@ -58,7 +58,7 @@ public abstract class ConfigParser {
     }
 
     public static ScalarNode replaceValue(ScalarNode original, String newValue) {
-        return new ScalarNode(original.getTag(), original.isResolved(), newValue, original.getStartMark(),
+        return new ScalarNode(original.getTag(), true, newValue, original.getStartMark(),
                 original.getEndMark(), original.getStyle());
     }
 }
