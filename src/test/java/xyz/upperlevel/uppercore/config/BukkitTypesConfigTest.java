@@ -97,7 +97,7 @@ public class BukkitTypesConfigTest {
                                         "color3: red\n" +
                                         //"sound: entity rabbit attack\n" +
                                         "mat1: lapis block\n" +
-                                        "mat2: 352 # Bone\n" +
+                                        "mat2: bone\n" +
                                         //"loc: [main, 10, 12, 13]\n" +
                                         //"ench1: 5\n" +
                                         //"ench2: thorns\n" +

@@ -45,7 +45,7 @@ public class BasicConfigTest {
             assertEquals("Stringa", str);
             assertEquals(129, count);
             assertEquals(ImmutableList.of(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES), flags);
-            assertEquals(Material.getMaterial(55), type);
+            assertEquals(Material.REDSTONE_WIRE, type);
             assertEquals(new Position(15, 30, 60), center);
             assertEquals(new Position(1, 2, 3), center2);
         }
@@ -60,7 +60,7 @@ public class BasicConfigTest {
                 "str: Stringa\n" +
                         "count: 129\n" +
                         "enum: [hide enchants, hide attributes]\n" +
-                        "type: 55\n" +
+                        "type: redstone wire\n" +
                         "center: [15.0, 30.0, 60.0]\n" +
                         "center2:\n" +
                         "  x: 1.0\n" +
@@ -165,7 +165,7 @@ public class BasicConfigTest {
             assertEquals("Stringa", str);
             assertEquals(129, count);
             assertEquals(ImmutableList.of(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES), flags);
-            assertEquals(Material.getMaterial(55), type);
+            assertEquals(Material.REDSTONE_WIRE, type);
             assertEquals(new Position(15, 30, 60), center);
             assertEquals(new Position(1, 2, 3), center2);
         }
@@ -178,7 +178,7 @@ public class BasicConfigTest {
                         "  test1: Stringa\n" +
                         "  testb: 129\n" +
                         "enum: [hide enchants, hide attributes]\n" +
-                        "type: 55\n" +
+                        "type: redstone wire\n" +
                         "unf:\n" +
                         "  c: [15.0, 30.0, 60.0]\n" +
                         "  d:\n" +
