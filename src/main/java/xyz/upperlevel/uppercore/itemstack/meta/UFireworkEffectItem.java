@@ -12,8 +12,7 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.ConfigUtil;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.Collection;
@@ -25,16 +24,11 @@ import java.util.stream.Collectors;
 import static xyz.upperlevel.uppercore.config.ConfigUtil.parseFireworkEffectType;
 
 
-public class FireworkChargeCustomItem extends CustomItem {
+public class UFireworkEffectItem extends UItem {
     private FireworkEffect effect;
 
-    public FireworkChargeCustomItem(Material material, Config config, PlaceholderRegistry placeholders) {
-        super(material, config, placeholders);
-        effect = parse(config.getConfigRequired("effect"));
-    }
-
     @ConfigConstructor
-    public FireworkChargeCustomItem(
+    public UFireworkEffectItem(
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,

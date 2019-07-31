@@ -7,31 +7,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.List;
 import java.util.Map;
 
-public class MapCustomItem extends CustomItem {
-
+public class UMapItem extends UItem {
     private boolean scaling;
     private PlaceholderValue<String> displayLocName;
     private PlaceholderValue<Color> displayMapColor;
 
-    public MapCustomItem(Material material, Config config, PlaceholderRegistry placeholders) {
-        super(material, config, placeholders);
-        scaling = config.getBool("scaling", false);
-        displayLocName = PlaceholderValue.stringValue(config.getString("location-value"));
-        displayMapColor = PlaceholderValue.colorValue(config.getString("map-color"));
-    }
-
     @ConfigConstructor
-    public MapCustomItem(
+    public UMapItem(
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,

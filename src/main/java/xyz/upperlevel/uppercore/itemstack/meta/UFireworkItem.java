@@ -7,38 +7,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-public class FireworkCustomItem extends CustomItem {
-
+public class UFireworkItem extends UItem {
     private List<FireworkEffect> effects;
     private PlaceholderValue<Integer> power;
 
-    @SuppressWarnings("unchecked")
-    public FireworkCustomItem(Material material, Config config, PlaceholderRegistry placeholders) {
-        super(material, config, placeholders);
-        effects = ((Collection<Map<String, Object>>) config.getCollection("effects", Collections.emptyList()))
-                .stream()
-                .map(c -> FireworkChargeCustomItem.parse(Config.from(c)))
-                .collect(Collectors.toList());
-        String rawPower = config.getString("power");
-        power = rawPower == null ? null : PlaceholderUtil.parseInt(rawPower);
-    }
-
     @ConfigConstructor
-    public FireworkCustomItem(
+    public UFireworkItem(
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,

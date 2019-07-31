@@ -11,16 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
-import org.bukkit.material.Banner;
-import org.bukkit.material.MaterialData;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.PolymorphicSelector;
-import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
-import xyz.upperlevel.uppercore.itemstack.specials.*;
+import xyz.upperlevel.uppercore.itemstack.meta.*;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.lang.reflect.InvocationTargetException;
@@ -30,25 +26,26 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CustomItem implements ItemResolver {
+public class UItem implements ItemResolver {
     /**
      * Based on the ItemMeta's class, gets the correct CustomItem implementation.
      */
-    private static final Map<Class<? extends ItemMeta>, Class<? extends CustomItem>> deserializers = new HashMap<>();
+    private static final Map<Class<? extends ItemMeta>, Class<? extends UItem>> deserializers = new HashMap<>();
 
     static {
-        deserializers.put(BannerMeta.class, BannerCustomItem.class);
-        deserializers.put(EnchantmentStorageMeta.class, EnchantedBookCustomItem.class);
-        deserializers.put(FireworkEffectMeta.class, FireworkChargeCustomItem.class);
-        deserializers.put(FireworkMeta.class, FireworkCustomItem.class);
-        deserializers.put(LeatherArmorMeta.class, LeatherArmorCustomItem.class);
-        deserializers.put(MapMeta.class, MapCustomItem.class);
-        deserializers.put(PotionMeta.class, PotionCustomItem.class);
-        deserializers.put(SkullMeta.class, SkullCustomItem.class);
-        deserializers.put(SpawnEggMeta.class, SpawnEggCustomItem.class);
+        deserializers.put(BannerMeta.class, UBannerItem.class);
+        deserializers.put(EnchantmentStorageMeta.class, UEnchantmentStorageItem.class);
+        deserializers.put(FireworkEffectMeta.class, UFireworkEffectItem.class);
+        deserializers.put(FireworkMeta.class, UFireworkItem.class);
+        deserializers.put(LeatherArmorMeta.class, ULeatherArmorItem.class);
+        deserializers.put(MapMeta.class, UMapItem.class);
+        deserializers.put(PotionMeta.class, UPotionItem.class);
+        deserializers.put(SkullMeta.class, USkullItem.class);
+        deserializers.put(KnowledgeBookMeta.class, UKnowledgeBookItem.class);
+        deserializers.put(TropicalFishBucketMeta.class, UTropicalFishBucketItem.class);
     }
 
-    public static final CustomItem AIR = new CustomItem(new ItemStack(Material.AIR));
+    public static final UItem AIR = new UItem(new ItemStack(Material.AIR));
 
     private Material type;
     private PlaceholderValue<Short> data;
@@ -63,7 +60,7 @@ public class CustomItem implements ItemResolver {
     //Local placeholders
     private PlaceholderRegistry placeholders;
 
-    public CustomItem(CustomItem item) {
+    public UItem(UItem item) {
         this.type = item.type;
         this.data = item.data;
         this.amount = item.amount;
@@ -74,44 +71,8 @@ public class CustomItem implements ItemResolver {
         this.placeholders = item.placeholders;
     }
 
-    @SuppressWarnings("unchecked")
-    public CustomItem(Material type, Config config, PlaceholderRegistry placeholders) {
-        this.type = type;
-        this.placeholders = placeholders;
-        data = PlaceholderValue.shortValue(config.getString("data", "0"));//TODO: better api
-        amount = PlaceholderUtil.parseInt(config.getString("amount", "1"));
-
-        String rawName = config.getString("name");
-        displayName = rawName == null ? null : PlaceholderValue.stringValue(ChatColor.RESET.toString() + rawName);
-        if (config.has("lore")) {
-            lore = ((Collection<String>) config.getCollection("lore"))
-                    .stream()
-                    .map(message -> PlaceholderUtil.process(ChatColor.RESET.toString() + message))
-                    .collect(Collectors.toList());
-        } else lore = Collections.emptyList();
-        if (config.has("flags")) {
-            flags = ((Collection<String>) config.getCollection("flags"))
-                    .stream()
-                    .map(s -> s.replace(' ', '_').toUpperCase(Locale.ENGLISH))
-                    .map(ItemFlag::valueOf)
-                    .collect(Collectors.toList());
-        } else
-            flags = Collections.emptyList();
-
-        if (config.has("enchantments")) {
-            Map<String, Object> stEnch = config.getMap("enchantments");
-            for(Map.Entry<String, Object> e : stEnch.entrySet()) {
-                Enchantment ench = Enchantment.getByName(e.getKey().replace(' ', '_').toUpperCase(Locale.ENGLISH));
-                if (ench == null)
-                    throw new InvalidConfigException("Cannot find enchantment: " + e.getKey());
-                else
-                    enchantments.put(ench, PlaceholderValue.intValue(e.getValue().toString()));
-            }
-        }
-    }
-
     @ConfigConstructor
-    public CustomItem(
+    public UItem(
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,
@@ -131,7 +92,7 @@ public class CustomItem implements ItemResolver {
         }
     }
 
-    public CustomItem(ItemStack item) {
+    public UItem(ItemStack item) {
         type = item.getType();
         data = PlaceholderValue.shortValue(String.valueOf(item.getData().getData()));
         amount = PlaceholderValue.intValue(String.valueOf(item.getAmount()));
@@ -189,8 +150,8 @@ public class CustomItem implements ItemResolver {
         joiner.add("enchantments: " + enchantments);
     }
 
-    public CustomItem copy() {
-        return new CustomItem(this);
+    public UItem copy() {
+        return new UItem(this);
     }
 
     /*
@@ -206,11 +167,11 @@ public class CustomItem implements ItemResolver {
         return Material.getMaterial(material);
     }
 
-    public static CustomItem deserialize(Config config, PlaceholderRegistry placeholders) {
+    public static UItem deserialize(Config config, PlaceholderRegistry placeholders) {
         Material type = config.getMaterialRequired("type");
 
         Class<? extends ItemMeta> meta = Bukkit.getItemFactory().getItemMeta(type).getClass();
-        Class<? extends CustomItem> deserializer = deserializers.getOrDefault(meta, CustomItem.class);
+        Class<? extends UItem> deserializer = deserializers.getOrDefault(meta, UItem.class);
 
         try {
             return deserializer
@@ -221,13 +182,13 @@ public class CustomItem implements ItemResolver {
         }
     }
 
-    public static CustomItem deserialize(Config config) {
+    public static UItem deserialize(Config config) {
         return deserialize(config, PlaceholderRegistry.def());
     }
 
     @PolymorphicSelector
     private static Class<?> selectChild(@ConfigProperty("type") Material type) {
         Class<? extends ItemMeta> target = Bukkit.getItemFactory().getItemMeta(type).getClass();
-        return deserializers.getOrDefault(target, CustomItem.class);
+        return deserializers.getOrDefault(target, UItem.class);
     }
 }

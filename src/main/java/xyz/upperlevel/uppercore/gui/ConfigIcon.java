@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +17,7 @@ import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.ActionType;
 import xyz.upperlevel.uppercore.gui.link.Link;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
@@ -46,11 +45,11 @@ public class ConfigIcon {
     }
 
     public ConfigIcon(ItemStack display) {
-        this.display = new CustomItem(display);
+        this.display = new UItem(display);
     }
 
     public ConfigIcon(ItemStack display, Link link) {
-        this.display = new CustomItem(display);
+        this.display = new UItem(display);
         this.link = link;
     }
 
@@ -67,7 +66,7 @@ public class ConfigIcon {
     @ConfigConstructor
     public ConfigIcon(
             @ConfigProperty("update-interval") Optional<Integer> updateInterval,
-            @ConfigProperty("item") Optional<CustomItem> item,
+            @ConfigProperty("item") Optional<UItem> item,
             @ConfigProperty("click") Optional<IconClick> click,
             @ConfigProperty("slot") Optional<Integer> slot
     ) {
@@ -78,7 +77,7 @@ public class ConfigIcon {
     }
 
     public void setDisplay(ItemStack display) {
-        this.display = new CustomItem(display);
+        this.display = new UItem(display);
     }
 
     public void setDisplay(ItemResolver display) {
@@ -100,7 +99,7 @@ public class ConfigIcon {
             result.updateInterval = config.getInt("update-interval", 0);
 
             if (config.has("item")) {
-                result.display = CustomItem.deserialize(config.getConfigRequired("item"));
+                result.display = UItem.deserialize(config.getConfigRequired("item"));
             }
             if (config.has("click")) {
                 result.link = IconClick.deserialize(plugin, config.getConfig("click"));

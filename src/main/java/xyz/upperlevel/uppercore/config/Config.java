@@ -12,7 +12,7 @@ import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigValueException;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundException;
 import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
@@ -706,7 +706,7 @@ public abstract class Config {
 
     // Custom Item
 
-    public CustomItem getCustomItem(String key, Function<Config, CustomItem> deserializer) {
+    public UItem getCustomItem(String key, Function<Config, UItem> deserializer) {
         Config sub = getConfig(key);
         if (sub == null) return null;
 
@@ -717,27 +717,27 @@ public abstract class Config {
         }
     }
 
-    public CustomItem getCustomItem(String key) {
-        return getCustomItem(key, CustomItem::deserialize);
+    public UItem getCustomItem(String key) {
+        return getCustomItem(key, UItem::deserialize);
     }
 
-    public CustomItem getCustomItem(String key, PlaceholderRegistry local) {
-        return getCustomItem(key, config -> CustomItem.deserialize(config, local));
+    public UItem getCustomItem(String key, PlaceholderRegistry local) {
+        return getCustomItem(key, config -> UItem.deserialize(config, local));
     }
 
-    public CustomItem getCustomItem(String key, CustomItem def) {
-        CustomItem res = getCustomItem(key);
+    public UItem getCustomItem(String key, UItem def) {
+        UItem res = getCustomItem(key);
         return res != null ? res : def;
     }
 
-    public CustomItem getCustomItemRequired(String key) {
-        CustomItem res = getCustomItem(key);
+    public UItem getCustomItemRequired(String key) {
+        UItem res = getCustomItem(key);
         checkPropertyNotNull(key, res);
         return res;
     }
 
-    public CustomItem getCustomItemRequired(String key, PlaceholderRegistry local) {
-        CustomItem res = getCustomItem(key, local);
+    public UItem getCustomItemRequired(String key, PlaceholderRegistry local) {
+        UItem res = getCustomItem(key, local);
         checkPropertyNotNull(key, res);
         return res;
     }

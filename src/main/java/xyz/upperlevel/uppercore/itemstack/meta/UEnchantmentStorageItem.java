@@ -1,33 +1,26 @@
 package xyz.upperlevel.uppercore.itemstack.specials;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class LeatherArmorCustomItem extends CustomItem {
-    private PlaceholderValue<Color> color;
-
-    public LeatherArmorCustomItem(Material material, Config config, PlaceholderRegistry placeholders) {
-        super(material, config, placeholders);
-        this.color = PlaceholderValue.colorValue(config.getString("color"));
-    }
+public class UEnchantmentStorageItem extends UItem {
+    private Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments;
 
     @ConfigConstructor
-    public LeatherArmorCustomItem(
+    public UEnchantmentStorageItem(
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,
@@ -35,18 +28,18 @@ public class LeatherArmorCustomItem extends CustomItem {
             @ConfigProperty(value = "lore", optional = true) List<PlaceholderValue<String>> lore,
             @ConfigProperty(value = "flags", optional = true) List<ItemFlag> flags,
             @ConfigProperty(value = "enchantments", optional = true) Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-            @ConfigProperty(value = "color", optional = true) PlaceholderValue<Color> color
+            @ConfigProperty(value = "stored-enchantments", optional = true) Map<Enchantment, PlaceholderValue<Integer>> storedEnchantments
     ) {
         super(type, data, amount, rawName, lore, flags, enchantments);
-        this.color = color;
+        this.storedEnchantments = storedEnchantments != null ? storedEnchantments : Collections.emptyMap();
     }
 
     @Override
     public void processMeta(Player player, ItemMeta m) {
         super.processMeta(player, m);
-        LeatherArmorMeta meta = (LeatherArmorMeta) m;
-        if (color != null) {
-            meta.setColor(color.resolve(player));
+        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) m;
+        for (Map.Entry<Enchantment, PlaceholderValue<Integer>> ench : storedEnchantments.entrySet()) {
+            meta.addStoredEnchant(ench.getKey(), ench.getValue().resolve(player), true);
         }
     }
 }

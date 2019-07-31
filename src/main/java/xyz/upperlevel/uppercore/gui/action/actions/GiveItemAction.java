@@ -10,7 +10,7 @@ import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 
 import java.util.Map;
 
@@ -18,12 +18,12 @@ public class GiveItemAction extends Action<GiveItemAction> {
     public static final GiveItemActionType TYPE = new GiveItemActionType();
 
     @Getter
-    private CustomItem item;
+    private UItem item;
 
     @ConfigConstructor(inlineable = true)
     public GiveItemAction(
             @CurrentPlugin Plugin plugin,
-            @ConfigProperty("item") CustomItem item
+            @ConfigProperty("item") UItem item
     ) {
         super(plugin, TYPE);
         this.item = item;
@@ -48,7 +48,7 @@ public class GiveItemAction extends Action<GiveItemAction> {
         public GiveItemAction create(Plugin plugin, Map<String, Object> pars) {
             return new GiveItemAction(
                     plugin,
-                    (CustomItem) pars.get("item")
+                    (UItem) pars.get("item")
             );
         }
 

@@ -10,38 +10,21 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.itemstack.CustomItem;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class PotionCustomItem extends CustomItem {
+public class UPotionItem extends UItem {
     private PotionType type;
     private PlaceholderValue<Color> customColor;
     private List<PotionEffect> customEffects;
 
-    public PotionCustomItem(Material material, Config config, PlaceholderRegistry placeholders) {
-        super(material, config, placeholders);
-        type = config.getEnum("potion-type", PotionType.class);
-        customColor = PlaceholderValue.colorValue(config.getString("color"));
-        customEffects = new ArrayList<>();
-        Collection<Map<String, Object>> rawEffects = (Collection<Map<String, Object>>) config.getCollection("effects");
-        if(rawEffects != null) {
-            for (Map<String, Object> e : rawEffects) {
-                customEffects.add(new PotionEffect(e));
-            }
-        }
-    }
-
     @ConfigConstructor
-    public PotionCustomItem(
+    public UPotionItem(
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,
