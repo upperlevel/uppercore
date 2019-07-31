@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlRepresenter;
 import org.bukkit.plugin.Plugin;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
@@ -44,6 +45,10 @@ public abstract class Config {
 
     public Node getNode(String key) {
         return yamlRepresenter.represent(get(key));
+    }
+
+    static {
+        yamlRepresenter.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
     }
 
     // Object
