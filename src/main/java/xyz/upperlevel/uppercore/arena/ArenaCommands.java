@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.arena;
 
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
@@ -134,7 +135,7 @@ public class ArenaCommands {
             context.send(RED + "Arena not found: " + LIGHT_PURPLE + arenaId + RED + ".");
             return;
         }
-        Block block = ((Player) context.sender()).getTargetBlock((HashSet<Byte>) null, 100);
+        Block block = ((Player) context.sender()).getTargetBlock( null, 100);
         if (block == null || !(block.getState() instanceof Sign)) {
             context.send(RED + "Point a sign block, the current one is not a sign!");
             return;
@@ -157,7 +158,7 @@ public class ArenaCommands {
             context.send(RED + "Arena not found: " + LIGHT_PURPLE + arenaId + RED + ".");
             return;
         }
-        Block block = ((Player) context.sender()).getTargetBlock((HashSet<Byte>) null, 100);
+        Block block = ((Player) context.sender()).getTargetBlock(null, 100);
         if (block == null || !(block.getState() instanceof Sign)) {
             context.send(RED + "Point a sign block, the current one is not a sign!");
             return;
