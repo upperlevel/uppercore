@@ -41,7 +41,7 @@ public class BlockDustParticle extends CustomParticle {
     public BlockDustParticle() {
         super(ParticleType.BLOCK_DUST);
 
-        setBlockType(Material.WOOL);
+        setBlockType(Material.WHITE_WOOL);
         setBlockData((byte) 0);
     }
 
@@ -62,7 +62,7 @@ public class BlockDustParticle extends CustomParticle {
      * @param blockType the displayed block's type
      */
     public void setBlockType(Material blockType) {
-        this.blockType = blockType == null ? Material.WOOL : blockType;
+        this.blockType = blockType == null ? Material.WHITE_WOOL : blockType;
     }
 
     @Override
