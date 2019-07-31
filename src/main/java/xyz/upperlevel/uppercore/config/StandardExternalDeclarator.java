@@ -10,6 +10,7 @@ import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
+import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 import xyz.upperlevel.uppercore.gui.GuiSize;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
@@ -51,7 +52,7 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
         ScalarNode node = (ScalarNode) rawNode;
         Material res;
         if (node.getTag() == Tag.INT) {
-            res = Material.getMaterial(Integer.parseInt(node.getValue()));
+            throw new ConfigException("Cannot find Material by int, find the correct name here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html", rawNode.getStartMark());
         } else {// node.getTag() == Tag.STR
             res = Material.getMaterial(node.getValue().replace(' ', '_').toUpperCase());
         }
@@ -79,11 +80,10 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
     private Enchantment parseEnchantment(Node rawNode) {
         checkTag(rawNode, Arrays.asList(Tag.STR, Tag.INT));
         ScalarNode node = (ScalarNode) rawNode;
-        Enchantment res;
-        if (node.getTag() == Tag.INT) {
-            res = Enchantment.getById(Integer.parseInt(node.getValue()));
-        } else {// node.getTag() == Tag.STR
-            res = Enchantment.getByName(node.getValue().replace(' ', '_').toUpperCase());
+        Enchantment res = null;
+        if (node.getTag() == Tag.STR) {
+            NamespacedKey key = parseConfigNamespacedKey(node.getValue().replace(' ', '_').toUpperCase(), node);
+            res = Enchantment.getByKey(key);
         }
         if (res == null) {
             throw new WrongValueConfigException(node, node.getValue(), "Enchantment");
@@ -172,20 +172,37 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
             @ConfigProperty("amplifier") int amplifier,
             @ConfigProperty("ambient") Optional<Boolean> ambient,
             @ConfigProperty("has-particles") Optional<Boolean> hasParticles,
-            @ConfigProperty("color") Optional<Color> color
+            @ConfigProperty("icon") Optional<Boolean> color
     ) {
+        boolean particlesEnabled = hasParticles.orElse(true);
         return new PotionEffect(
                 effect,
                 duration,
                 amplifier,
                 ambient.orElse(false),
-                hasParticles.orElse(true),
-                color.orElse(null)
+                particlesEnabled,
+                color.orElse(particlesEnabled)
         );
     }
 
     @ConfigConstructor
     public static Config config(Node raw) {
         return new TrackingConfig(raw);
+    }
+
+    public static NamespacedKey parseConfigNamespacedKey(String val, Node node) {
+        try {
+            return parseNamespacedKey(val);
+        } catch (IllegalArgumentException e) {
+            throw new ConfigException(e.getMessage(), node.getStartMark());
+        }
+    }
+
+    public static NamespacedKey parseNamespacedKey(String raw) {
+        int sepIndex = raw.indexOf(':');
+        if (sepIndex == -1) {
+            return NamespacedKey.minecraft(raw);
+        }
+        return new NamespacedKey(raw.substring(0, sepIndex), raw.substring(sepIndex + 1));
     }
 }

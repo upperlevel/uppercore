@@ -509,11 +509,11 @@ public abstract class Config {
         } else {
             Material res;
             if (raw instanceof Number) {
-                res = Material.getMaterial(((Number) raw).intValue());
+                throw invalidConfigException(key, "Cannot use ID to get material, visit https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for names");
             } else if (raw instanceof String) {
                 res = Material.getMaterial(((String) raw).replace(' ', '_').toUpperCase());
             } else {
-                throw invalidValueTypeException(key, "String|Number");
+                throw invalidValueTypeException(key, "String");
             }
             if (res == null) {
                 throw invalidConfigException(key, "Cannot find material \"" + raw + "\"");
