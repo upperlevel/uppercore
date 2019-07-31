@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.itemstack.specials;
+package xyz.upperlevel.uppercore.itemstack.meta;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -6,12 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.itemstack.UItem;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
 import java.util.*;

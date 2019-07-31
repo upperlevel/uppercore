@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.itemstack.specials;
+package xyz.upperlevel.uppercore.itemstack.meta;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
