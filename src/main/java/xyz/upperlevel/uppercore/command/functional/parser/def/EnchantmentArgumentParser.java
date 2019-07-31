@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.command.functional.parser.def;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
 
@@ -27,21 +29,13 @@ public class EnchantmentArgumentParser implements ArgumentParser {
     public Object parse(List<String> args) throws ArgumentParseException {
         String ench = args.get(0);
 
-        Enchantment res = null;
+        Enchantment result = Enchantment.getByKey(NamespacedKey.minecraft(ench.toLowerCase(Locale.ENGLISH)));
 
-        try {
-            res = Enchantment.getByKey(Integer.parseInt(ench));
-        } catch (NumberFormatException ignored) {}
-
-        if (res == null) {
-            res = Enchantment.getByName(ench.toUpperCase(Locale.ENGLISH));
-        }
-
-        if (res == null) {
+        if (result == null) {
             throw new ArgumentParseException(Enchantment.class, Collections.singletonList(ench));
         }
 
-        return res;
+        return result;
     }
 
     @Override

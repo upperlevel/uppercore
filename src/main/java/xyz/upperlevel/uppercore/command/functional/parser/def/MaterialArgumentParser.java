@@ -27,16 +27,11 @@ public class MaterialArgumentParser implements ArgumentParser {
 
     @Override
     public Object parse(List<String> args) throws ArgumentParseException {
-        Material mat = null;
-        try {
-            mat = Material.getMaterial(Integer.parseInt(args.get(0)));
-        } catch (NumberFormatException ignored) {}
+        Material result = Material.getMaterial(args.get(0).toUpperCase());
 
-        if (mat == null) {
-            mat = Material.getMaterial(args.get(0).toUpperCase());
+        if (result != null) {
+            return result;
         }
-
-        if (mat != null) return mat;
 
         throw new ArgumentParseException(Material.class, Collections.singletonList(args.get(0)));
     }
