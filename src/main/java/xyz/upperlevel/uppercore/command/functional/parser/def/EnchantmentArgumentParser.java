@@ -30,7 +30,7 @@ public class EnchantmentArgumentParser implements ArgumentParser {
         Enchantment res = null;
 
         try {
-            res = Enchantment.getById(Integer.parseInt(ench));
+            res = Enchantment.getByKey(Integer.parseInt(ench));
         } catch (NumberFormatException ignored) {}
 
         if (res == null) {

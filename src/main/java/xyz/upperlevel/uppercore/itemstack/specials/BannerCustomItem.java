@@ -20,13 +20,11 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import java.util.*;
 
 public class BannerCustomItem extends CustomItem {
-    private DyeColor baseColor;
     private List<Pattern> patterns;
 
     @SuppressWarnings("unchecked")
     public BannerCustomItem(Material material, Config config, PlaceholderRegistry placeholders) {
         super(material, config, placeholders);
-        this.baseColor = config.getDye("baseColor");
         Collection<Map<String, Object>> rawPatterns = (Collection<Map<String, Object>>) config.getCollection("patterns");
         patterns = new ArrayList<>();
         if (rawPatterns != null) {
@@ -52,11 +50,9 @@ public class BannerCustomItem extends CustomItem {
             @ConfigProperty(value = "lore", optional = true) List<PlaceholderValue<String>> lore,
             @ConfigProperty(value = "flags", optional = true) List<ItemFlag> flags,
             @ConfigProperty(value = "enchantments", optional = true) Map<Enchantment, PlaceholderValue<Integer>> enchantments,
-            @ConfigProperty(value = "baseColor", optional = true) DyeColor baseColor,
             @ConfigProperty(value = "patterns", optional = true) List<Pattern> patters
     ) {
         super(type, data, amount, rawName, lore, flags, enchantments);
-        this.baseColor = baseColor;
         this.patterns = patters != null ? patters : Collections.emptyList();
     }
 
@@ -64,7 +60,6 @@ public class BannerCustomItem extends CustomItem {
     public void processMeta(Player player, ItemMeta m) {
         super.processMeta(player, m);
         BannerMeta meta = (BannerMeta) m;
-        meta.setBaseColor(baseColor);
         meta.setPatterns(patterns);
     }
 }

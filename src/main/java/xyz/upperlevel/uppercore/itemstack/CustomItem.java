@@ -3,13 +3,16 @@ package xyz.upperlevel.uppercore.itemstack;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.*;
+import org.bukkit.material.Banner;
+import org.bukkit.material.MaterialData;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
@@ -28,7 +31,22 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 public class CustomItem implements ItemResolver {
-    private static Map<Material, Class<? extends CustomItem>> customDeserializers = new HashMap<>();
+    /**
+     * Based on the ItemMeta's class, gets the correct CustomItem implementation.
+     */
+    private static final Map<Class<? extends ItemMeta>, Class<? extends CustomItem>> deserializers = new HashMap<>();
+
+    static {
+        deserializers.put(BannerMeta.class, BannerCustomItem.class);
+        deserializers.put(EnchantmentStorageMeta.class, EnchantedBookCustomItem.class);
+        deserializers.put(FireworkEffectMeta.class, FireworkChargeCustomItem.class);
+        deserializers.put(FireworkMeta.class, FireworkCustomItem.class);
+        deserializers.put(LeatherArmorMeta.class, LeatherArmorCustomItem.class);
+        deserializers.put(MapMeta.class, MapCustomItem.class);
+        deserializers.put(PotionMeta.class, PotionCustomItem.class);
+        deserializers.put(SkullMeta.class, SkullCustomItem.class);
+        deserializers.put(SpawnEggMeta.class, SpawnEggCustomItem.class);
+    }
 
     public static final CustomItem AIR = new CustomItem(new ItemStack(Material.AIR));
 
@@ -45,10 +63,6 @@ public class CustomItem implements ItemResolver {
     //Local placeholders
     private PlaceholderRegistry placeholders;
 
-    static {
-        registerDefCustomDeserializers();
-    }
-
     public CustomItem(CustomItem item) {
         this.type = item.type;
         this.data = item.data;
@@ -60,6 +74,7 @@ public class CustomItem implements ItemResolver {
         this.placeholders = item.placeholders;
     }
 
+    @SuppressWarnings("unchecked")
     public CustomItem(Material type, Config config, PlaceholderRegistry placeholders) {
         this.type = type;
         this.placeholders = placeholders;
@@ -178,40 +193,29 @@ public class CustomItem implements ItemResolver {
         return new CustomItem(this);
     }
 
-    public static void registerDefCustomDeserializers() {
-        registerCustomDeserializer(BannerCustomItem.class, Material.BANNER);
-        registerCustomDeserializer(SkullCustomItem.class, Material.SKULL_ITEM);
-        registerCustomDeserializer(LeatherArmorCustomItem.class, Material.LEATHER_BOOTS, Material.LEATHER_CHESTPLATE, Material.LEATHER_HELMET, Material.LEATHER_LEGGINGS);
-        registerCustomDeserializer(MapCustomItem.class, Material.MAP);
-        registerCustomDeserializer(PotionCustomItem.class, Material.POTION, mat("LINGERING_POTION"), mat("SPLASH_POTION"), mat("Material.TIPPED_ARROW"));
-        registerCustomDeserializer(SpawnEggCustomItem.class, Material.MONSTER_EGG);
-        registerCustomDeserializer(EnchantedBookCustomItem.class, Material.ENCHANTED_BOOK);
-        registerCustomDeserializer(FireworkCustomItem.class, Material.FIREWORK);
-        registerCustomDeserializer(FireworkChargeCustomItem.class, Material.FIREWORK_CHARGE);
-    }
-
-    public static void registerCustomDeserializer(Class<? extends CustomItem> des, Material... aliases) {
+    /*
+    public static void registerCustomDeserializer(Class<? extends CustomItem> deserializer, Material... aliases) {
         for (Material m : aliases) {
             if (m != null) {
-                customDeserializers.put(m, des);
+                deserializers.put(m, deserializer);
             }
         }
-    }
+    }*/
 
     private static Material mat(String material) {
         return Material.getMaterial(material);
     }
 
-    @SuppressWarnings("unchecked")
     public static CustomItem deserialize(Config config, PlaceholderRegistry placeholders) {
-        Material mat = config.getMaterialRequired("type");
+        Material type = config.getMaterialRequired("type");
 
-        Class<?> deserializer = customDeserializers.getOrDefault(mat, CustomItem.class);
+        Class<? extends ItemMeta> meta = Bukkit.getItemFactory().getItemMeta(type).getClass();
+        Class<? extends CustomItem> deserializer = deserializers.getOrDefault(meta, CustomItem.class);
 
         try {
-            return (CustomItem) deserializer
+            return deserializer
                     .getConstructor(Material.class, Config.class, PlaceholderRegistry.class)
-                    .newInstance(mat, config, placeholders);
+                    .newInstance(type, config, placeholders);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -223,6 +227,7 @@ public class CustomItem implements ItemResolver {
 
     @PolymorphicSelector
     private static Class<?> selectChild(@ConfigProperty("type") Material type) {
-        return customDeserializers.getOrDefault(type, CustomItem.class);
+        Class<? extends ItemMeta> target = Bukkit.getItemFactory().getItemMeta(type).getClass();
+        return deserializers.getOrDefault(target, CustomItem.class);
     }
 }
