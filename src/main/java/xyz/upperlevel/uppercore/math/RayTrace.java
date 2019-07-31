@@ -96,7 +96,7 @@ public class RayTrace {
     //debug / effects
     public void highlight(World world, double blocksAway, double accuracy) {
         for (Vector position : traverse(blocksAway, accuracy)) {
-            world.playEffect(position.toLocation(world), Effect.COLOURED_DUST, 0);
+            world.playEffect(position.toLocation(world), Effect.SMOKE, 0);
         }
     }
 
