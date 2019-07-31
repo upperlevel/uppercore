@@ -32,7 +32,7 @@ public class PolymorphicClassParser extends ConfigParser {
         }
         ConfigParser parser;
         if (selectedClass != getHandleClass()) {
-            // noinspection unchecked
+            // noinspection
             parser = registry.getFor(selectedClass);
         } else {
             // Doing a normal lookup won't be enough as it would return the polymorphic selector (this)

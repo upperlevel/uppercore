@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 
-@SuppressWarnings({"unchecked", "deprecation"}) // -_-
+@SuppressWarnings({"unchecked"}) // -_-
 public abstract class Config {
     private static Representer yamlRepresenter = new YamlRepresenter();
 

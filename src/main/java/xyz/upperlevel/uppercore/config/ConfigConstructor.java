@@ -14,5 +14,12 @@ import java.lang.annotation.Target;
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigConstructor {
+    /**
+     * When true the object will be parsed even when in an array form,
+     * this is desirable for objects as vectors as they are mostly written as [x, y, z] instead of a map.
+     * This could also be used when a constructor has only one type as argument, then it would not need an
+     * array to be constructed.
+     * @return
+     */
     boolean inlineable() default false;
 }

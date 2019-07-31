@@ -115,6 +115,11 @@ public class ConstructorConfigParser<T> extends ConfigParser {
         );
     }
 
+    /**
+     * A ConstructorConfigParser is regular when it is defined with parameters, not with a catch-everything config
+     * object nor with a raw yaml Node, in the last two cases it is named as "special".
+     * @return true only if the node is "special"
+     */
     public boolean isSpecial() {
         return type != ConstructorType.NORMAL;
     }

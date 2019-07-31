@@ -88,6 +88,7 @@ public class BasicConfigTest {
                 case "cat":
                     return Cat.class;
                 default:
+                    // Fallback
                     return PolymorphicFather.class;
             }
         }
@@ -215,7 +216,7 @@ public class BasicConfigTest {
                 @ConfigProperty("unfold.testb") int count,
                 @ConfigProperty("unfold") Config unf
         ) {
-            // Explaination: "unfold" catches everything so we can't get anything inside of it
+            // Explanation: "unfold" catches everything so we can't get anything inside of it
             // it would mess with property checking (and it would be a pretty useless feature)
             // If you think otherwise please open an issue in the Github page
         }

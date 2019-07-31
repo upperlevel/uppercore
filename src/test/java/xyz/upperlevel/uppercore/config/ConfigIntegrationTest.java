@@ -107,7 +107,7 @@ public class ConfigIntegrationTest {
     }
 
     @Test
-    public void ConfigAsConfigMapTest() {
+    public void configAsConfigMapTest() {
         Config c = Config.fromYaml(new StringReader(
                 "a:\n" +
                         "  name: 'hello'\n" +
