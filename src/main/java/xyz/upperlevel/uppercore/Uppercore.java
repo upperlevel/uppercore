@@ -85,7 +85,8 @@ public class Uppercore extends JavaPlugin {
             scripts.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
 
             // Metrics custom data setup
-            scripts.setupMetrics(metrics);
+            // TODO: custom data
+            // TODO: check what plugins use uppercore?
         } catch (Throwable t) {
             CrashUtil.saveCrash(this, t);
             setEnabled(false);

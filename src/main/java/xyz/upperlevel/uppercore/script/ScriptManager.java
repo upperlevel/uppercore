@@ -94,26 +94,6 @@ public class ScriptManager {
         }
     }
 
-    public void setupMetrics(Metrics metrics) {
-        metrics.addCustomChart(new Metrics.AdvancedPie("script_engines_used") {
-
-            @Override
-            public HashMap<String, Integer> getValues(HashMap<String, Integer> map) {
-                /* Todo:
-                Map<String, Long> counts = get()
-                        .stream()
-                        .collect(
-                                Collectors.groupingBy((ScriptId s) -> getEngineName(s.get().getEngine()),
-                                        Collectors.counting())
-                        );
-                for (Map.Entry<String, Long> e : counts.entrySet())
-                    map.put(e.getKey(), Math.toIntExact(e.getValue()));
-                    */
-                return map;
-            }
-        });
-    }
-
     public static String getEngineName(ScriptEngine engine) {
         return engine.getClass().getSimpleName()
                 .replaceFirst("ScriptEngine", "")
