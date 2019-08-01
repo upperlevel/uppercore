@@ -4,12 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.command.Command;
+import xyz.upperlevel.uppercore.command.NodeCommand;
+import xyz.upperlevel.uppercore.command.PermissionCompleter;
+import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.update.method.ReplaceUpdateMethod;
 import xyz.upperlevel.uppercore.update.method.UpdateMethod;
 import xyz.upperlevel.uppercore.update.notifier.DefaultDownloadNotifier;
@@ -19,16 +24,17 @@ import xyz.upperlevel.uppercore.update.notifier.DownloadSession;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
-// TODO
 public abstract class DownloadableUpdateChecker extends UpdateChecker {
-/*
+
     @Getter
     @Setter
     private UpdateCommand command;
-*/
+
     @Getter
     @Setter
     private DownloadNotifier.Constructor downloadNotifierConstructor = DefaultDownloadNotifier::new;
@@ -42,10 +48,9 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
     }
 
 
-    /*
     protected UpdateCommand buildCommand() {
         return new UpdateCommand();
-    }*/
+    }
 
     @Override
     protected BaseComponent[] buildMessage() {
@@ -56,7 +61,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
                 .bold(true)
                 .append("(Click ")
                 .append("HERE")
-         //       .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.getUsage()))
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.getUsage(null, true)))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Update " + getPlugin().getDescription().getName()).create()))
                 .append(" to update)")
                 .create();
@@ -64,7 +69,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
 
     @Override
     protected void notifyConsole() {
-      //  getLogger().info("[Updater] Update found, use the " + command.getUsage() + " command for an automatic update");
+        getLogger().info("[Updater] Update found, use the " + command.getUsage(Bukkit.getConsoleSender(), false) + " command for an automatic update");
         getLogger().info("[Updater] or update manually " + getSpigotUrl());
     }
 
@@ -80,7 +85,6 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
             download = null;
         }
         if(download == null) {
-            /*
             sender.spigot().sendMessage(
                     new ComponentBuilder("Cannot get download link! please download the update manually")
                             .color(ChatColor.RED)
@@ -90,7 +94,6 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
                             .event(new ClickEvent(ClickEvent.Action.OPEN_URL, getSpigotUrl().toString()))
                             .create()
             );
-            */
             return;
         }
         File pluginFile = createUpdateFile();
@@ -139,20 +142,16 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         }
     }
 
-    /* Todo
+
     public class UpdateCommand extends Command {
         public UpdateCommand() {
             super("update");
             setDescription("Updates the plugin");
-        }
+            setMessage(buildMessage());
 
-        @AsCommand
-        public void run(CommandSender sender) {
-            if(getLastState() == VersionState.UPDATE_AVAILABLE || (needsRefresh() && check() == VersionState.UPDATE_AVAILABLE)) {
-                update(sender);
-            } else {
-                sender.sendMessage(ChatColor.RED + "Update not found, nothing to update (state: " + getLastState() + ")");
-            }
+            setPermissionCompleter(PermissionCompleter.NONE);
+            setPermissionPortion(DownloadableUpdateChecker.this.getPermission());
+            setPermission(DownloadableUpdateChecker.this.getPermission());
         }
 
         @Override
@@ -162,19 +161,23 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         }
 
         @Override
-        public void registerPermission(PluginManager manager) {
-            //Already registered
+        public String getUsage(CommandSender sender, boolean colored) {
+            return "";
         }
 
         @Override
-        public void calcPermissions() {
-            Permission perm = DownloadableUpdateChecker.this.getPermission();
-            if(perm != null) {
-                setPermission(perm);
-                if (getParent() != null)
-                    perm.addParent(getParent().getAnyPerm(), true);
+        protected boolean onCall(CommandSender sender, List<String> args) {
+            if(getLastState() == VersionState.UPDATE_AVAILABLE || (needsRefresh() && check() == VersionState.UPDATE_AVAILABLE)) {
+                update(sender);
+            } else {
+                sender.sendMessage(ChatColor.RED + "Update not found, nothing to update (state: " + getLastState() + ")");
             }
+            return true;
+        }
+
+        @Override
+        public List<String> suggest(CommandSender sender, List<String> arguments) {
+            return Collections.emptyList(); // No parameters = no suggestions
         }
     }
-    */
 }
