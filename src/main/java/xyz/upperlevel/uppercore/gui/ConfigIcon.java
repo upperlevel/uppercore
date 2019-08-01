@@ -189,7 +189,7 @@ public class ConfigIcon {
                 @ConfigProperty(value = "permission", optional = true) String permission,
                 @ConfigProperty("no-permission-message") Optional<Message> noPermissionMessage,
                 @ConfigProperty("no-permission-sound") Optional<PlaySound> noPermissionSound,
-                @ConfigProperty("cost") Optional<PlaceholderValue<Double>> cost,// TODO: do not use double for money
+                @ConfigProperty("cost") Optional<PlaceholderValue<Double>> cost,
                 @ConfigProperty("no-money-error") Optional<Message> noMoneyError,
                 @ConfigProperty("no-money-sound") Optional<PlaySound> noMoneySound,
                 @ConfigProperty("actions") Optional<List<Action>> actions

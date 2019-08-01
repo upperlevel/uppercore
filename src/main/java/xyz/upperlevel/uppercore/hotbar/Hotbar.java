@@ -17,6 +17,8 @@ import java.beans.ConstructorProperties;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
+
 public class Hotbar {
     public static final RegistryLoader<Hotbar> CONFIG_LOADER = RegistryLoader.fromClass(Hotbar.class);
 
@@ -212,13 +214,11 @@ public class Hotbar {
     }
 
     public boolean give(Player player) {
-        // TODO: hotbars().view(player).addHotbar(this);
-        return false;
+        return hotbars().view(player).addHotbar(this);
     }
 
     public boolean remove(Player player) {
-        // TODO: return hotbars().view(player).removeHotbar(this);
-        return false;
+        return hotbars().view(player).removeHotbar(this);
     }
 
     /**
