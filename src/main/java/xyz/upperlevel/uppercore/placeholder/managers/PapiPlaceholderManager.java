@@ -13,13 +13,16 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class OfficialPlaceholderManager extends BasePlaceholderManager {
+/**
+ * PlaceholderManager that hooks into PlaceholderAPI (Papi) and works with it.
+ */
+public class PapiPlaceholderManager extends BasePlaceholderManager {
 
     private final Map<String, PlaceholderHook> placeholders;
     @Getter
-    private final OfficialPlaceholderRegistry registry = new OfficialPlaceholderRegistry();
+    private final PapiPlaceholderRegistry registry = new PapiPlaceholderRegistry();
 
-    public OfficialPlaceholderManager() {
+    public PapiPlaceholderManager() {
         try {
             Field field = PlaceholderAPI.class.getDeclaredField("placeholders");
             field.setAccessible(true);
@@ -76,7 +79,7 @@ public class OfficialPlaceholderManager extends BasePlaceholderManager {
         }
     }
 
-    private class OfficialPlaceholderRegistry implements PlaceholderRegistry<OfficialPlaceholderRegistry> {
+    private class PapiPlaceholderRegistry implements PlaceholderRegistry<PapiPlaceholderRegistry> {
         public PlaceholderRegistry getParent() {
             return null;
         }
@@ -95,8 +98,8 @@ public class OfficialPlaceholderManager extends BasePlaceholderManager {
             return hook == null ? null : new PlaceholderHookWrapper(key, hook);
         }
 
-        public OfficialPlaceholderRegistry set(Placeholder placeholder) {
-            throw new UnsupportedOperationException("Use PlaceholderUtil.register o PlacholderManager#register instead!");
+        public PapiPlaceholderRegistry set(Placeholder placeholder) {
+            throw new UnsupportedOperationException("Use PlaceholderUtil.register or PlaceholderManager#register instead!");
         }
 
         public boolean has(String id) {

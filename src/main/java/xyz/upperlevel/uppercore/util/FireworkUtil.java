@@ -14,7 +14,7 @@ public final class FireworkUtil {
         meta.addEffect(effect);
         firework.setFireworkMeta(meta);
         Bukkit.getScheduler().runTaskLater(
-                Uppercore.get(),
+                Uppercore.plugin(),
                 firework::detonate,
                 1
         );

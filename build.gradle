@@ -42,9 +42,6 @@ repositories {
         url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" // bukkit
     }
     maven {
-        url "http://repo.extendedclip.com/content/repositories/placeholderapi/"
-    }
-    maven {
         url "http://nexus.hc.to/content/repositories/pub_releases" // vault
     }
     maven {
@@ -116,6 +113,27 @@ task buildTest(type: Jar) {
     baseName = "UppercoreTest"
 }
 
-processResources {
-    filter(ReplaceTokens, tokens: ["project.version": project.property("version")])
+// This part of the config is needed to filter the class UppercoreInfo.java, replacing the needed properties
+
+task generateUppercoreInfo(type: Copy) {
+    println(buildDir)
+    from ("${projectDir}/src/main/java/xyz/upperlevel/uppercore") {
+        include "UppercoreInfo.java"
+
+        filter { line -> line.replaceAll('@project.version@', (String)project.property("version")) }
+    }
+    into "$buildDir/generated/sources/custom"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs ("${projectDir}/src/main/java", "${buildDir}/generated/sources/custom")
+            exclude("xyz/upperlevel/uppercore/UppercoreInfo.java")
+        }
+    }
+}
+
+compileJava {
+    dependsOn generateUppercoreInfo
 }

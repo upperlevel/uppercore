@@ -24,7 +24,7 @@ public class HotbarManager implements Listener {
 
     public HotbarManager() {
         Bukkit.getOnlinePlayers().forEach(this::initialize);
-        Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
+        Bukkit.getPluginManager().registerEvents(this, Uppercore.plugin());
     }
 
     private void initialize(Player player) {

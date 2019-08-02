@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 public class UpperResourceZipMethod extends ZipUpdateMethod {
     public static final String CORE_FILENAME = "UpperCore.jar";
-    private final Path pluginsDir = Uppercore.get().getDataFolder().getParentFile().toPath();
+    private final Path pluginsDir = Uppercore.plugin().getDataFolder().getParentFile().toPath();
     private final String pluginName;
     private final boolean hasCore;
     private boolean insideRes = false;

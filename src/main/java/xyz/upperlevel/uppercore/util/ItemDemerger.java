@@ -13,7 +13,7 @@ public class ItemDemerger implements Listener{
     private static int nextId = 0;
 
     static {
-        Bukkit.getPluginManager().registerEvents(new EventListener(), Uppercore.get());
+        Bukkit.getPluginManager().registerEvents(new EventListener(), Uppercore.plugin());
     }
 
     

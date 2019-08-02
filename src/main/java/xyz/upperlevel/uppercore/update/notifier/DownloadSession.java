@@ -51,10 +51,10 @@ public class DownloadSession {
 
     public void startAsync(Runnable syncCallback) {
         Bukkit.getScheduler().runTaskAsynchronously(
-                Uppercore.get(),
+                Uppercore.plugin(),
                 () -> {
                     sync();
-                    Bukkit.getScheduler().runTask(Uppercore.get(), syncCallback);
+                    Bukkit.getScheduler().runTask(Uppercore.plugin(), syncCallback);
                 }
         );
     }

@@ -1,5 +1,7 @@
 package xyz.upperlevel.uppercore.placeholder;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -7,10 +9,14 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.placeholder.events.PlaceholderManagerHookEvent;
 import xyz.upperlevel.uppercore.placeholder.managers.CustomPlaceholderManager;
-import xyz.upperlevel.uppercore.placeholder.managers.OfficialPlaceholderManager;
+import xyz.upperlevel.uppercore.placeholder.managers.PapiPlaceholderManager;
+import xyz.upperlevel.uppercore.util.PluginUtil;
 
 public final class PlaceholderUtil {
+    @Getter
+    @Setter
     private static PlaceholderManager manager = null;
+    private static boolean fallback = false;
 
     private PlaceholderUtil() {
     }
@@ -70,12 +76,20 @@ public final class PlaceholderUtil {
             manager = event.getPlaceholderManager();
             Uppercore.logger().info("Successfully hooked with custom PlaceholderManager");
         } else if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            manager = new OfficialPlaceholderManager();
+            manager = new PapiPlaceholderManager();
             Uppercore.logger().info("Successfully hooked into PlaceholderAPI");
         } else {
             manager = new CustomPlaceholderManager();
-            Uppercore.logger().warning("Cannot find PlaceholderAPI");
+            Uppercore.logger().warning("Cannot find PlaceholderAPI, using internal system.");
+            fallback = true;
+            PluginUtil.onPluginLoaded("PlaceholderAPI", PlaceholderUtil::onPapiEnable);
         }
+    }
+
+    public static void onPapiEnable(Plugin plugin) {
+        if (!fallback) return; // Another manager has been registered (and it is not a fallback)
+        Uppercore.logger().info("Late hooking into PlaceholderAPI");
+        manager = new PapiPlaceholderManager();
     }
 
     public static void register(Plugin plugin, Placeholder placeholder) {

@@ -16,7 +16,7 @@ public class BoardManager implements Listener  {
     private static final BoardManager eventHandler = new BoardManager();
 
     static {
-        Bukkit.getPluginManager().registerEvents(eventHandler, Uppercore.get());
+        Bukkit.getPluginManager().registerEvents(eventHandler, Uppercore.plugin());
     }
 
     private BoardManager() {

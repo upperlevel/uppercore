@@ -35,7 +35,7 @@ public class UpdaterTask {
                 action.run();
             }
         };
-        task.runTaskTimer(Uppercore.get(), now ? 0 : interval, interval);
+        task.runTaskTimer(Uppercore.plugin(), now ? 0 : interval, interval);
     }
 
     public boolean isStarted() {

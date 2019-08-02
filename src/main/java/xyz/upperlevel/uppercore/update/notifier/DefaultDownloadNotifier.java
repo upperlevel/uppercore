@@ -42,7 +42,7 @@ public class DefaultDownloadNotifier implements DownloadNotifier {
         notifyStart();
 
         task = Bukkit.getScheduler().runTaskTimer(
-                Uppercore.get(),
+                Uppercore.plugin(),
                 this::tick,
                 delay,
                 delay

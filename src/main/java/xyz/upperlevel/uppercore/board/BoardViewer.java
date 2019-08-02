@@ -75,7 +75,7 @@ public class BoardViewer {
                     update(BoardViewer.this.placeholderRegistry);
                 }
             };
-            updater.runTaskTimer(Uppercore.get(), 0, board.getAutoUpdateInterval());
+            updater.runTaskTimer(Uppercore.plugin(), 0, board.getAutoUpdateInterval());
         }
         this.board = board;
     }

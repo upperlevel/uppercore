@@ -1,6 +1,0 @@
-name: Uppercore
-version: @project.version@
-main: "xyz.upperlevel.uppercore.Uppercore"
-author: [Uppercore]
-description: "Huge API that covers and adds Spigot utilities!"
-softdepend: [PlaceholderAPI, Vault]

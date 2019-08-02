@@ -3,37 +3,34 @@ package xyz.upperlevel.uppercore;
 import de.slikey.effectlib.EffectManager;
 import lombok.Getter;
 import org.bstats.Metrics;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.arena.Arena;
-import xyz.upperlevel.uppercore.arena.ArenaCommands;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.HelpCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.config.ConfigUtil;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
-import xyz.upperlevel.uppercore.storage.StorageManager;
-import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
+import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.registry.RegistryRoot;
 import xyz.upperlevel.uppercore.script.ScriptManager;
-import xyz.upperlevel.uppercore.update.DownloadableUpdateChecker;
-import xyz.upperlevel.uppercore.update.SpigetUpdateChecker;
-import xyz.upperlevel.uppercore.util.CrashUtil;
+import xyz.upperlevel.uppercore.storage.StorageManager;
 
 import java.io.File;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 @Getter
-public class Uppercore extends JavaPlugin {
+public class Uppercore {
     public static final String SCRIPT_CONFIG = "script_engine.yml";
-    public static final String SPIGOT_ID = "uppercore.45866";
-    public static final long SPIGET_ID = 45866;
 
     private static Uppercore instance;
+
+    private Plugin plugin;
+    private Logger coreLogger;
 
     private RegistryRoot registryRoot = new RegistryRoot();
     private GuiManager guis;
@@ -41,64 +38,64 @@ public class Uppercore extends JavaPlugin {
     private ScriptManager scripts;
     private StorageManager storages;
     private EffectManager effects;
-    private DownloadableUpdateChecker updater;
     private ConfigParserRegistry parsers = ConfigParserRegistry.createStandard();
 
     private Metrics metrics;
 
-    @Override
-    public void onEnable() {
+    public void onEnable(JavaPlugin plugin) {
+        if (instance != null) {
+            if (instance.plugin == plugin) {
+                throw new RuntimeException("Creating two instances of UpperCore!");
+            } else {
+                throw new RuntimeException("Two different plugins are trying to use UpperCore, did you forget to relocate?");
+            }
+        }
         instance = this;
 
-        try {
-            // Metrics setup
-            metrics = new Metrics(this);
-            // UpdateChecker setup
-            updater = new SpigetUpdateChecker(this, SPIGOT_ID, SPIGET_ID);
+        this.plugin = plugin;
+        coreLogger = LogManager.getLogManager().getLogger(plugin.getLogger().getName() + ".ucore");
+        coreLogger.info("Loading UpperCore version: " + UppercoreInfo.VERSION);
 
-            PlaceholderUtil.tryHook();
-            EconomyManager.enable();
+        // Metrics setup
+        metrics = new Metrics(plugin);
+        // UpdateChecker setup
 
-            // Command configuration
-            saveResource("command.yml", false);
-            Config cfg = Config.fromYaml(new File(Uppercore.get().getDataFolder(), "command.yml"));
-            Command.configure(cfg);
-            HelpCommand.configure(cfg);
-            FunctionalCommand.configure(cfg);
+        PlaceholderUtil.tryHook();
+        EconomyManager.enable();
 
-            // Game configuration
-            saveResource("game.yml", false);
-            cfg = Config.fromYaml(new File(Uppercore.get().getDataFolder(), "game.yml"));
-            Arena.configure(cfg);
+        // Command configuration
+        plugin.saveResource("uppercore.yml", false);
+        Config cfg = Config.fromYaml(new File(plugin.getDataFolder(), "uppercore.yml"));
+        Config commandConfig = cfg.getConfigRequired("commands");
+        Command.configure(commandConfig);
+        HelpCommand.configure(commandConfig);
+        FunctionalCommand.configure(commandConfig);
 
-            // Managers
-            guis = new GuiManager();
-            hotbars = new HotbarManager();
-            scripts = new ScriptManager();
-            storages = new StorageManager();
-            effects = new EffectManager(this);
+        // Game configuration
+        plugin.saveResource("game.yml", false);
+        cfg = Config.fromYaml(new File(plugin.getDataFolder(), "game.yml"));
+        Arena.configure(cfg);
 
-            // ScriptManager setup
-            File scriptsConfigFile = new File(getDataFolder(), SCRIPT_CONFIG);
-            if (!scriptsConfigFile.exists())
-                saveResource(SCRIPT_CONFIG, false);
-            scripts.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
+        // Managers
+        guis = new GuiManager();
+        hotbars = new HotbarManager();
+        scripts = new ScriptManager();
+        storages = new StorageManager();
+        effects = new EffectManager(plugin);
 
-            // Metrics custom data setup
-            // TODO: custom data
-            // TODO: check what plugins use uppercore?
-        } catch (Throwable t) {
-            CrashUtil.saveCrash(this, t);
-            setEnabled(false);
+        // ScriptManager setup
+        File scriptsConfigFile = new File(plugin.getDataFolder(), SCRIPT_CONFIG);
+        if (!scriptsConfigFile.exists()) {
+            plugin.saveResource(SCRIPT_CONFIG, false);
         }
+        scripts.load(new File(plugin.getDataFolder(), "engines"), scriptsConfigFile);
+
+        // Metrics custom data setup
+        // TODO: custom data
+        // TODO: check what plugins use uppercore?
     }
 
-    @Override
     public void onDisable() {
-    }
-
-    public File getFile() {
-        return super.getFile();
     }
 
     public static Uppercore get() {
@@ -106,11 +103,15 @@ public class Uppercore extends JavaPlugin {
     }
 
     public static Logger logger() {
-        return instance.getLogger();
+        return get().coreLogger;
     }
 
     public static Logger logger(String name) {
         return LogManager.getLogManager().getLogger(logger().getName() + "." + name);
+    }
+
+    public static Plugin plugin() {
+        return get().plugin;
     }
 
     public static RegistryRoot registry() {

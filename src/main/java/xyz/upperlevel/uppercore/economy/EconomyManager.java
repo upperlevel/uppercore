@@ -6,10 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import xyz.upperlevel.uppercore.Uppercore;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
+import xyz.upperlevel.uppercore.util.PluginUtil;
 
 public class EconomyManager {
     @Getter
@@ -17,19 +14,19 @@ public class EconomyManager {
     private static Economy economy;
 
     public static void enable() {
-        if(Bukkit.getPluginManager().getPlugin("Vault") == null) {
-            Uppercore.logger().severe("Cannot load vault, economy not supported!");
-            enabled = false;
-            return;
-        }
-        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            Uppercore.logger().severe("Cannot find any economy service, economy not supported");
-            enabled = false;
-            return;
-        }
-        enabled = true;
-        economy = rsp.getProvider();
+        Uppercore.logger().severe("Disabling economy until vault load");
+        enabled = false;
+
+        PluginUtil.onPluginLoaded("Vault", p -> {
+            RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
+            if (rsp == null) {
+                Uppercore.logger().severe("Cannot find any economy service, economy not supported");
+                enabled = false;
+                return;
+            }
+            enabled = true;
+            economy = rsp.getProvider();
+        });
     }
 
     public static Economy getEconomy() {

@@ -25,7 +25,7 @@ public class AnvilGui implements Gui {
     @Override
     public void show(Player player) {
         new AnvilGUI(
-                Uppercore.get(),
+                Uppercore.plugin(),
                 player,
                 message,
                 this::onAnvilClick

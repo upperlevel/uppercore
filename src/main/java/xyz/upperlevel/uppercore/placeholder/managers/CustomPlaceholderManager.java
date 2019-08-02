@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.placeholder.managers;
 
 import lombok.Getter;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.managers.customs.*;
@@ -34,14 +35,15 @@ public class CustomPlaceholderManager extends BasePlaceholderManager {
 
 
     public void addDefaults() {
-        register(get(), new PlayerDisplayNamePlaceholder());
-        register(get(), new PlayerFoodPlaceholder());
-        register(get(), new PlayerHealthPlaceholder());
-        register(get(), new PlayerLevelPlaceholder());
-        register(get(), new PlayerNamePlaceholder());
-        register(get(), new PlayerSaturationPlaceholder());
-        register(get(), new VaultBalancePlaceholder());
-        register(get(), new PlayerWorldPlaceholder());
+        Plugin plugin = Uppercore.plugin();
+        register(plugin, new PlayerDisplayNamePlaceholder());
+        register(plugin, new PlayerFoodPlaceholder());
+        register(plugin, new PlayerHealthPlaceholder());
+        register(plugin, new PlayerLevelPlaceholder());
+        register(plugin, new PlayerNamePlaceholder());
+        register(plugin, new PlayerSaturationPlaceholder());
+        register(plugin, new VaultBalancePlaceholder());
+        register(plugin, new PlayerWorldPlaceholder());
     }
 
     private class CustomPlaceholderRegistry implements PlaceholderRegistry<CustomPlaceholderRegistry> {

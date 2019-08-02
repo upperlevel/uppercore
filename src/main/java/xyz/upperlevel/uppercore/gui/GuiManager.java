@@ -36,7 +36,7 @@ public class GuiManager implements Listener {
     private boolean called = false;
 
     public GuiManager() {
-        Bukkit.getPluginManager().registerEvents(this, Uppercore.get());
+        Bukkit.getPluginManager().registerEvents(this, Uppercore.plugin());
     }
 
     /**
@@ -277,7 +277,7 @@ public class GuiManager implements Listener {
         if (e.getPlayer() instanceof Player && !called) {
             //Cannot call Inventory actions in an inventory event
             Bukkit.getScheduler().runTaskLater(
-                    Uppercore.get(),
+                    Uppercore.plugin(),
                     () -> close((Player) e.getPlayer()),
                     0
             );

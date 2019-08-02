@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public abstract class StorageConnector {
-    public static final File DRIVERS_FOLDER = new File(Uppercore.get().getDataFolder(), "db_drivers");
+    public static final File DRIVERS_FOLDER = new File(Uppercore.plugin().getDataFolder(), "db_drivers");
 
     static {
         // On class load, adds the current downloaded jars to the classpath
