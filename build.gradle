@@ -50,6 +50,9 @@ repositories {
     maven {
         url "http://maven.elmakers.com/repository/" // EffectLib
     }
+    maven {
+        url = "http://repo.extendedclip.com/content/repositories/placeholderapi/" // PlaceholderAPI
+    }
 }
 
 dependencies {
