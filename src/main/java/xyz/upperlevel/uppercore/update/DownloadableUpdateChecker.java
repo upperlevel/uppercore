@@ -54,17 +54,8 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
 
     @Override
     protected BaseComponent[] buildMessage() {
-       // if(command == null)
-       //     command = buildCommand();
-        return new ComponentBuilder("[" + getPlugin().getDescription().getName() + "] Update available!")
-                .color(ChatColor.GOLD)
-                .bold(true)
-                .append("(Click ")
-                .append("HERE")
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command.getUsage(null, true)))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Update " + getPlugin().getDescription().getName()).create()))
-                .append(" to update)")
-                .create();
+        if (command == null) command = buildCommand();
+        return command.buildMessage();
     }
 
     @Override
@@ -147,7 +138,6 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         public UpdateCommand() {
             super("update");
             setDescription("Updates the plugin");
-            setMessage(buildMessage());
 
             setPermissionCompleter(PermissionCompleter.NONE);
             setPermissionPortion(DownloadableUpdateChecker.this.getPermission());
@@ -173,6 +163,18 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
                 sender.sendMessage(ChatColor.RED + "Update not found, nothing to update (state: " + getLastState() + ")");
             }
             return true;
+        }
+
+        protected BaseComponent[] buildMessage() {
+            return new ComponentBuilder("[" + getPlugin().getDescription().getName() + "] Update available!")
+                    .color(ChatColor.GOLD)
+                    .bold(true)
+                    .append("(Click ")
+                    .append("HERE")
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, getFullName()))
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Update " + getPlugin().getDescription().getName()).create()))
+                    .append(" to update)")
+                    .create();
         }
 
         @Override
