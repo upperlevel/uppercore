@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UItem implements ItemResolver {
     /**
-     * Based on the ItemMeta's class, gets the correct CustomItem implementation.
+     * Based on the ItemMeta's class, gets the correct UItem implementation.
      */
     private static final Map<Class<? extends ItemMeta>, Class<? extends UItem>> deserializers = new HashMap<>();
 
@@ -155,7 +155,7 @@ public class UItem implements ItemResolver {
     }
 
     /*
-    public static void registerCustomDeserializer(Class<? extends CustomItem> deserializer, Material... aliases) {
+    public static void registerCustomDeserializer(Class<? extends UItem> deserializer, Material... aliases) {
         for (Material m : aliases) {
             if (m != null) {
                 deserializers.put(m, deserializer);

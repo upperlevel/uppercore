@@ -706,7 +706,7 @@ public abstract class Config {
 
     // Custom Item
 
-    public UItem getCustomItem(String key, Function<Config, UItem> deserializer) {
+    public UItem getUItem(String key, Function<Config, UItem> deserializer) {
         Config sub = getConfig(key);
         if (sub == null) return null;
 
@@ -717,27 +717,27 @@ public abstract class Config {
         }
     }
 
-    public UItem getCustomItem(String key) {
-        return getCustomItem(key, UItem::deserialize);
+    public UItem getUItem(String key) {
+        return getUItem(key, UItem::deserialize);
     }
 
-    public UItem getCustomItem(String key, PlaceholderRegistry local) {
-        return getCustomItem(key, config -> UItem.deserialize(config, local));
+    public UItem getUItem(String key, PlaceholderRegistry local) {
+        return getUItem(key, config -> UItem.deserialize(config, local));
     }
 
-    public UItem getCustomItem(String key, UItem def) {
-        UItem res = getCustomItem(key);
+    public UItem getUItem(String key, UItem def) {
+        UItem res = getUItem(key);
         return res != null ? res : def;
     }
 
-    public UItem getCustomItemRequired(String key) {
-        UItem res = getCustomItem(key);
+    public UItem getUItemRequired(String key) {
+        UItem res = getUItem(key);
         checkPropertyNotNull(key, res);
         return res;
     }
 
-    public UItem getCustomItemRequired(String key, PlaceholderRegistry local) {
-        UItem res = getCustomItem(key, local);
+    public UItem getUItemRequired(String key, PlaceholderRegistry local) {
+        UItem res = getUItem(key, local);
         checkPropertyNotNull(key, res);
         return res;
     }
