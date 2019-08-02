@@ -57,7 +57,6 @@ public class GuiOpenAction extends Action<GuiOpenAction> {
 
 
     public static class GuiOpenActionType extends BaseActionType<GuiOpenAction> {
-
         public GuiOpenActionType() {
             super(GuiOpenAction.class, "open-gui");
             setParameters(

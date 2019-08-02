@@ -118,7 +118,6 @@ public class HotbarManager implements Listener {
             e.setCancelled(true);
             player.updateInventory();
         }
-
     }
 
     @EventHandler

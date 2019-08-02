@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static xyz.upperlevel.uppercore.Uppercore.hotbars;
+
 // TODO
 public class RequireAction extends Action<RequireAction> {
     public static final RequireActionType TYPE = new RequireActionType();
@@ -94,7 +96,7 @@ public class RequireAction extends Action<RequireAction> {
             Uppercore.logger().severe("Cannot find hotbar \"" + id + "\"");
             return false;
         }
-        HotbarView view = null; // TODO: hotbars().view(player);
+        HotbarView view = hotbars().view(player);
         return view.isHolding(hotbar);
     }
 

@@ -173,8 +173,7 @@ public class Hotbar {
      * Removes all the links.
      */
     public void clearIcons() {
-        for (int slot = 0; slot < icons.length; slot++)
-            icons[slot] = null;
+        Arrays.fill(icons, null);
         size = 0;
     }
 
