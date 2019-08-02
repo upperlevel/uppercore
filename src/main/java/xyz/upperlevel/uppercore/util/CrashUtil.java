@@ -1,6 +1,8 @@
 package xyz.upperlevel.uppercore.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import java.io.File;
@@ -17,23 +19,28 @@ public final class CrashUtil {
     public static final DateFormat CRASH_FORMAT = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss_z");
 
     public static void saveCrash(Plugin plugin, Throwable t) {
-        plugin.getLogger().severe("--- A severe error caused Uppercore to crash ---");
+        String crashHeader = "--- A severe error caused Uppercore to crash ---";
+        String barrier = StringUtils.repeat("-", crashHeader.length());
+        plugin.getLogger().severe(barrier);
+        plugin.getLogger().severe(crashHeader);
         File target = saveCrashToFile(plugin, t);
-        if (target == null) return;
-        plugin.getLogger().severe(t.getMessage());
-        plugin.getLogger().severe("Full report written in this file: " + target.getName());
+        if (target != null) {
+            plugin.getLogger().severe("Report written in this file: " + target.getName());
+        }
+        plugin.getLogger().log(Level.SEVERE, "Writing report on console:", t);
+        plugin.getLogger().severe(barrier);
     }
 
     public static File saveCrashToFile(Plugin plugin, Throwable exc) {
         File file = createCrashFile(plugin);
         if (file == null) {
-            plugin.getLogger().log(Level.SEVERE, "Cannot print log to file, writing on console", exc);
             return null;
         }
         try (FileWriter writer = new FileWriter(file)) {
             exc.printStackTrace(new PrintWriter(writer));
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Error while writing crash log", e);
+            return null;
         }
         return file;
     }
