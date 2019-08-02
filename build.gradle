@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.*
 
 plugins {
     id "java"
-    id "maven"
+    id "maven-publish"
     id "com.github.johnrengelman.shadow" version "5.1.0"
     // id "checkstyle"
 }
@@ -78,7 +78,6 @@ dependencies {
     integrationTestCompileOnly "org.spigotmc:spigot-api:" + mcVersion
 
     compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3" // anvil-gui
-    compile "de.slikey:EffectLib:6.1" // EffectLib
     compileOnly "me.clip:placeholderapi:2.9.2" // placeholder-api
     integrationTestCompileOnly "me.clip:placeholderapi:2.9.2" // placeholder-api
     compileOnly "net.milkbowl.vault:VaultAPI:1.6" // vault

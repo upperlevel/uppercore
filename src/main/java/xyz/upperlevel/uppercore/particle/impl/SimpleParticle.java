@@ -37,7 +37,7 @@ public class SimpleParticle extends CustomParticle {
         setColor(Color.WHITE);
     }
 
-    @ConfigConstructor
+    @ConfigConstructor// TODO: parameter please
     public SimpleParticle(Config data) {
         super(ParticleType.SIMPLE, data);
         setColor(data.getColor("color", Color.WHITE));

@@ -19,7 +19,6 @@ import java.util.List;
 
 /**
  * Particle created from the dust of a specific block.
- * Supports both block material and block data (for colored wool or similar)
  */
 public class BlockDustParticle extends CustomParticle {
     /**
@@ -29,23 +28,13 @@ public class BlockDustParticle extends CustomParticle {
     @Getter
     private Material blockType;
 
-    /**
-     * Data of the block this particle will display.
-     * @param blockData the new displayed block data
-     * @return the displayed block's data
-     */
-    @Getter
-    @Setter
-    private byte blockData;
-
     public BlockDustParticle() {
         super(ParticleType.BLOCK_DUST);
 
         setBlockType(Material.WHITE_WOOL);
-        setBlockData((byte) 0);
     }
 
-    @ConfigConstructor
+    @ConfigConstructor// TODO: parameter please
     public BlockDustParticle(Config data) {
         super(ParticleType.BLOCK_DUST, data);
         Config block = data.getConfigRequired("block");
@@ -54,7 +43,6 @@ public class BlockDustParticle extends CustomParticle {
             throw new InvalidConfigException("Particle must be a block!", "in particle '" + ParticleType.BLOCK_DUST.name() + "'");
         }
         setBlockType(type);
-        setBlockData(block.getByte("data", (byte)0));
     }
 
     /**
@@ -73,7 +61,7 @@ public class BlockDustParticle extends CustomParticle {
                 .amount(getAmount())
                 .offset(offsetX, offsetY, offsetZ)
                 .speed(getSpeed())
-                .material(blockType, blockData)
+                .material(blockType)
                 .display(players);
     }
 }
