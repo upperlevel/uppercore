@@ -99,6 +99,19 @@ shadowJar {
 }
 project.tasks.assemble.dependsOn project.tasks.shadowJar
 
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+    }
+    /*repositories {
+        maven {
+            url "http://repo.myorg.com"
+        }
+    }*/
+}
+
 /*
 checkstyle {
     configFile = rootProject.file('config/checkstyle/checkstyle.xml')
