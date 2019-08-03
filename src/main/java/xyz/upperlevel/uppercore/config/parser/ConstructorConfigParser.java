@@ -22,6 +22,9 @@ public class ConstructorConfigParser<T> extends ConfigParser {
     private final Class<T> declaredClass;
     @Getter
     private final boolean inlineable;
+
+    private final boolean scalarInlineable;
+
     @Getter
     private final Map<String, Property> nodesByName;
     @Getter
@@ -45,12 +48,14 @@ public class ConstructorConfigParser<T> extends ConfigParser {
             type = ConstructorType.RAW_NODE;
             nodesByName = null;
             positionalArguments = null;
+            scalarInlineable = false;
         } else if (parameters.length == 1 && parameters[0].getType() == Config.class) {
             // Raw config constructor (special case)
             // The constructor will manually parse the data from the Config instance
             type = ConstructorType.RAW_CONFIG;
             nodesByName = null;
             positionalArguments = null;
+            scalarInlineable = false;
         } else {
             type = ConstructorType.NORMAL;
             nodesByName = new HashMap<>();
@@ -77,6 +82,11 @@ public class ConstructorConfigParser<T> extends ConfigParser {
                     );
                 }
             }
+
+            scalarInlineable = inlineable &&
+                    positionalArguments.stream()
+                            .skip(1)
+                            .noneMatch(x -> x.required);
         }
     }
 
@@ -182,7 +192,7 @@ public class ConstructorConfigParser<T> extends ConfigParser {
         assert inlineable;// Cannot parseInline a non-inlineable object (or at least, it shouldn't be done)
 
         if (root.getNodeId() == NodeId.scalar) {
-            if (positionalArguments.size() > 1) {
+            if (!scalarInlineable) {
                 throw new ConfigException(declaredClass.getSimpleName() + " does not take only one argument", root);
             }
             // Single argument properties can be constructed even without an explicit list

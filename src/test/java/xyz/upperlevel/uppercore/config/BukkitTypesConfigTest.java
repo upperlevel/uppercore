@@ -1,6 +1,9 @@
 package xyz.upperlevel.uppercore.config;
 
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.plugin.Plugin;
@@ -35,6 +38,7 @@ public class BukkitTypesConfigTest {
                                    @ConfigProperty("patternt") PatternType patternTypeName,
                                    @ConfigProperty("pattern") Pattern pattern,
                                    @ConfigProperty("firework") FireworkEffect fireworkEffect
+                                   //@ConfigProperty("playsound") PlaySound playSound
                                    //@ConfigProperty("potiont")  PotionEffectType potionEffectType,
                                    //@ConfigProperty("potione")  PotionEffect potionEffect
         ) {
@@ -64,6 +68,7 @@ public class BukkitTypesConfigTest {
                             .build(),
                     fireworkEffect
             );
+            //assertEquals(new PlaySound(fake(Sound.AMBIENT_CAVE), null, null), playSound); // TODO: Cannot mock CompatibleSound
             /*assertEquals(
                     PotionEffectType.JUMP,
                     potionEffectType
@@ -108,6 +113,7 @@ public class BukkitTypesConfigTest {
                                         "  colors: [green, white, red]\n" +
                                         "  fade-colors: [aqua]\n" +
                                         "  type: creeper"
+                                        //"playsound: ambient cave"
                                         /*"potiont: jump\n" +
                                         "potione: \n" +
                                         "  duration: 100\n" +
