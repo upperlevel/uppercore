@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.config.parser;
 
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -15,7 +14,7 @@ public class EnumConfigParser<T extends Enum<T>> extends ConfigParser {
     }
 
     @Override
-    public T parse(Plugin plugin, Node root) {
+    public T parse(Node root) {
         checkTag(root, Tag.STR);
         ScalarNode node = (ScalarNode) root;
         String s = node.getValue().replace(' ', '_').toUpperCase();

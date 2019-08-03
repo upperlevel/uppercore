@@ -4,16 +4,16 @@ import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.uppercore.arena.ArenaManager;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.HelpCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
+import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
-import xyz.upperlevel.uppercore.economy.EconomyManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
+import xyz.upperlevel.uppercore.registry.Registry;
 import xyz.upperlevel.uppercore.registry.RegistryRoot;
 import xyz.upperlevel.uppercore.script.ScriptManager;
 import xyz.upperlevel.uppercore.storage.StorageManager;
@@ -127,7 +127,7 @@ public class Uppercore {
         return get().plugin;
     }
 
-    public static RegistryRoot registry() {
+    public static Registry registry() {
         return instance.registryRoot;
     }
 

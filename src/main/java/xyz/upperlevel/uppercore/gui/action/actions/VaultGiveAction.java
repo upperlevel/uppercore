@@ -4,11 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -25,10 +23,9 @@ public class VaultGiveAction extends Action<VaultGiveAction> {
 
     @ConfigConstructor(inlineable = true)
     public VaultGiveAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("value") PlaceholderValue<Double> value
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.value = value;
     }
 
@@ -53,9 +50,8 @@ public class VaultGiveAction extends Action<VaultGiveAction> {
         }
 
         @Override
-        public VaultGiveAction create(Plugin plugin, Map<String, Object> pars) {
+        public VaultGiveAction create(Map<String, Object> pars) {
             return new VaultGiveAction(
-                    plugin,
                     PlaceholderValue.doubleValue((String) pars.get("value"))
             );
         }

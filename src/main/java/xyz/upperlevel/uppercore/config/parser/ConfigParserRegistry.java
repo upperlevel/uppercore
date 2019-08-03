@@ -39,7 +39,7 @@ public class ConfigParserRegistry {
     public <T> void register(Class<T> clazz, Function<Node, T> parser) {
         parsersByClass.put(clazz,t -> new ConfigParser(clazz) {
             @Override
-            public T parse(Plugin plugin, Node root) {
+            public T parse(Node root) {
                 return parser.apply(root);
             }
         });
@@ -48,7 +48,7 @@ public class ConfigParserRegistry {
     public <T> void register(Class<T> clazz, Function<String, T> parser, Tag... expectedTags) {
         parsersByClass.put(clazz, t -> new ConfigParser(clazz) {
             @Override
-            public T parse(Plugin plugin, Node root) {
+            public T parse(Node root) {
                 checkTag(root, Arrays.asList(expectedTags));
                 return parser.apply(((ScalarNode)root).getValue());
             }
@@ -183,7 +183,7 @@ public class ConfigParserRegistry {
         register(BigDecimal.class, BigDecimal::new, Tag.INT, Tag.FLOAT);
         register(Boolean.class, new ConfigParser(Boolean.class) {
             @Override
-            public Boolean parse(Plugin plugin, Node root) {
+            public Boolean parse(Node root) {
                 checkTag(root, Tag.BOOL);
                 ScalarNode s = (ScalarNode) root;
                 switch (s.getValue().toLowerCase()) {
@@ -202,7 +202,7 @@ public class ConfigParserRegistry {
         register(String.class, Function.identity(), Tag.STR);
         register(Character.class, new ConfigParser(Character.class) {
             @Override
-            public Character parse(Plugin plugin, Node root) {
+            public Character parse(Node root) {
                 checkTag(root, Tag.STR);
                 ScalarNode n = (ScalarNode) root;
                 String s = n.getValue();
@@ -213,14 +213,14 @@ public class ConfigParserRegistry {
         });
         register(Date.class, new ConfigParser(Date.class) {
             @Override
-            public Date parse(Plugin plugin, Node root) {
+            public Date parse(Node root) {
                 checkTag(root, Tag.TIMESTAMP);
                 return (Date) TIMESTAMP_CONSTRUCTOR.construct(root);
             }
         });
         register(Calendar.class, new ConfigParser(Calendar.class) {
             @Override
-            public Calendar parse(Plugin plugin, Node root) {
+            public Calendar parse(Node root) {
                 checkTag(root, Tag.TIMESTAMP);
                 TIMESTAMP_CONSTRUCTOR.construct(root);
                 return TIMESTAMP_CONSTRUCTOR.getCalendar();

@@ -3,11 +3,9 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -28,10 +26,9 @@ public class ScriptAction extends Action<ScriptAction> {
 
     @ConfigConstructor(inlineable = true)
     public ScriptAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("id") String path
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.path = path;
     }
 
@@ -63,9 +60,8 @@ public class ScriptAction extends Action<ScriptAction> {
         }
 
         @Override
-        public ScriptAction create(Plugin plugin, Map<String, Object> pars) {
+        public ScriptAction create(Map<String, Object> pars) {
             return new ScriptAction(
-                    plugin,
                     (String) pars.get("id")
             );
         }

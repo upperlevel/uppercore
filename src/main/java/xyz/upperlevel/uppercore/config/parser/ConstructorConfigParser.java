@@ -2,7 +2,6 @@ package xyz.upperlevel.uppercore.config.parser;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.nodes.*;
 import xyz.upperlevel.uppercore.config.*;
 import xyz.upperlevel.uppercore.config.exceptions.*;
@@ -14,7 +13,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparingInt;
-import static xyz.upperlevel.uppercore.util.GenericUtil.extractClassFromType;
 
 public class ConstructorConfigParser<T> extends ConfigParser {
     private ObjectConstructor<T> targetConstructor;
@@ -22,7 +20,6 @@ public class ConstructorConfigParser<T> extends ConfigParser {
     private final ConstructorType type;
     @Getter
     private final Class<T> declaredClass;
-    private final boolean passPlugin;
     @Getter
     private final boolean inlineable;
     @Getter
@@ -41,18 +38,6 @@ public class ConstructorConfigParser<T> extends ConfigParser {
 
         this.inlineable = inlineable;
         targetConstructor = constructor;
-
-        if (parameters.length > 0 && parameters[0].isAnnotationPresent(CurrentPlugin.class)) {
-            passPlugin = true;
-
-            if (parameters[0].getType() != Plugin.class) {
-                throw new IllegalStateException("@CurrentPlugin must hold be a Plugin (" + declaredClass.getName() + ")");
-            }
-
-            parameters = Arrays.copyOfRange(parameters, 1, parameters.length);
-        } else {
-            passPlugin = false;
-        }
 
         if (parameters.length == 1 && parameters[0].getType() == Node.class) {
             // Raw node constructor (special case)
@@ -124,39 +109,34 @@ public class ConstructorConfigParser<T> extends ConfigParser {
         return type != ConstructorType.NORMAL;
     }
 
-    protected T parseSpecial(Plugin plugin, Node root) {
+    protected T parseSpecial(Node root) {
         Object param;
         switch (type) {
             case RAW_NODE: param = root; break;
             case RAW_CONFIG: param = new TrackingConfig(root); break;
             default: throw new IllegalStateException();
         }
-        Object[] args;
-        if (passPlugin) {
-            args = new Object[]{plugin, param};
-        } else {
-            args = new Object[]{param};
-        }
+
         try {
-            return targetConstructor.construct(args);
+            return targetConstructor.construct(new Object[]{param});
         } catch (Exception e) {
             throw new ConfigException(null, null, e.getMessage(), root.getStartMark(), null, e);
         }
     }
 
-    public void mapUnfold(Plugin plugin, String prefix, MappingNode node) {
+    public void mapUnfold(String prefix, MappingNode node) {
         if (node.getValue().isEmpty()) return;
         for (NodeTuple t : node.getValue()) {
-            fill(plugin, prefix, t.getKeyNode(), t.getValueNode());
+            fill(prefix, t.getKeyNode(), t.getValueNode());
         }
     }
 
-    public void fill(Plugin plugin, String prefix, Node key, Node value) {
+    public void fill(String prefix, Node key, Node value) {
         String name = prefix + extractName(key);
 
         if (unfoldingNodes.contains(name)) {
             checkNodeId(value, NodeId.mapping);
-            mapUnfold(plugin, prefix + name + ".", (MappingNode) value);
+            mapUnfold( prefix + name + ".", (MappingNode) value);
             return;
         }
 
@@ -169,24 +149,24 @@ public class ConstructorConfigParser<T> extends ConfigParser {
         if (entry.parsed != null) {
             throw new DuplicatePropertyConfigException(key, entry.source, name);
         }
-        entry.parse(plugin, key, value);
+        entry.parse(key, value);
     }
 
     @Override
-    public T parse(Plugin plugin, Node root) {
+    public T parse(Node root) {
         if (isSpecial()) {
-            return parseSpecial(plugin, root);
+            return parseSpecial(root);
         }
         resetEntries();
         if (root.getNodeId() != NodeId.mapping) {
             if (inlineable) {
-                return parseInline(plugin, root);
+                return parseInline(root);
             }
             throw new WrongNodeTypeConfigException(root, NodeId.mapping);
         }
         MappingNode rootMap = (MappingNode) root;
         for (NodeTuple tuple : rootMap.getValue()) {
-            fill(plugin, "", tuple.getKeyNode(), tuple.getValueNode());
+            fill("", tuple.getKeyNode(), tuple.getValueNode());
         }
         // Check for required but uninitialized properties
         List<Property> uninitializedProperties = nodesByName.values().stream()
@@ -195,10 +175,10 @@ public class ConstructorConfigParser<T> extends ConfigParser {
         if (!uninitializedProperties.isEmpty()) {
             throw new RequiredPropertyNotFoundConfigException(root, uninitializedProperties.stream().map(p -> p.name).collect(Collectors.toList()));
         }
-        return constructObject(plugin, root);
+        return constructObject(root);
     }
 
-    protected T parseInline(Plugin plugin, Node root) {
+    protected T parseInline(Node root) {
         assert inlineable;// Cannot parseInline a non-inlineable object (or at least, it shouldn't be done)
 
         if (root.getNodeId() == NodeId.scalar) {
@@ -207,7 +187,7 @@ public class ConstructorConfigParser<T> extends ConfigParser {
             }
             // Single argument properties can be constructed even without an explicit list
             if (!positionalArguments.isEmpty()) {
-                positionalArguments.get(0).parse(plugin, null, root);
+                positionalArguments.get(0).parse(null, root);
             }
         } else if (root.getNodeId() == NodeId.sequence) {
             SequenceNode node = ((SequenceNode) root);
@@ -216,28 +196,19 @@ public class ConstructorConfigParser<T> extends ConfigParser {
                 throw new ConfigException("Too many arguments (max: " + positionalArguments.size() + ")", root);
             }
             for (int i = 0; i < argsLen; i++) {
-                positionalArguments.get(i).parse(plugin, null, node.getValue().get(i));
+                positionalArguments.get(i).parse(null, node.getValue().get(i));
             }
         } else {
             throw new WrongNodeTypeConfigException(root, NodeId.scalar, NodeId.sequence);
         }
-        return constructObject(plugin, root);
+        return constructObject(root);
     }
 
-    protected T constructObject(Plugin plugin, Node root) {
+    protected T constructObject(Node root) {
         int size = positionalArguments.size();
-
-        if (passPlugin) {
-            size++;
-        }
 
         Object[] args = new Object[size];
         int index = 0;
-
-        if (passPlugin) {
-            args[index++] = plugin;
-        }
-
 
         for (int i = 0; i < positionalArguments.size(); i++) {
             args[index++] = positionalArguments.get(i).getOrDef();
@@ -380,10 +351,6 @@ public class ConstructorConfigParser<T> extends ConfigParser {
             name = "";
             required = true;
 
-            if (parameter.isAnnotationPresent(CurrentPlugin.class)) {
-                throw new IllegalStateException("Only first argument can be @CurrentPlugin (" + parameter.getName() + ")");
-            }
-
             ConfigProperty annotation = parameter.getAnnotation(ConfigProperty.class);
             if (annotation != null) {
                 name = annotation.value();
@@ -409,15 +376,15 @@ public class ConstructorConfigParser<T> extends ConfigParser {
                 def = Optional.empty();
                 Type optType = ((ParameterizedType) parameter.getParameterizedType()).getActualTypeArguments()[0];
                 ConfigParser nonOptionalParser = registry.getFor(optType);
-                parser = (plugin, node) -> Optional.of(nonOptionalParser.parse(plugin, node));
+                parser = node -> Optional.of(nonOptionalParser.parse(node));
             } else {
                 parser = registry.getFor(parameter.getParameterizedType())::parse;
             }
         }
 
-        public void parse(Plugin plugin, Node key, Node value) {
+        public void parse(Node key, Node value) {
             source = key;
-            parsed = parser.parse(plugin, value);
+            parsed = parser.parse(value);
         }
 
         public Object getOrDef() {
@@ -435,7 +402,7 @@ public class ConstructorConfigParser<T> extends ConfigParser {
     }
 
     public interface Parser {
-        Object parse(Plugin plugin, Node root);
+        Object parse(Node root);
     }
 
     public enum ConstructorType {

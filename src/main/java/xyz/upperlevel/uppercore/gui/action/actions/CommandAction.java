@@ -4,10 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -26,11 +24,10 @@ public class CommandAction extends Action<CommandAction> {
 
     @ConfigConstructor
     public CommandAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("command") PlaceholderValue<String> command,
             @ConfigProperty(value = "executor", optional = true) Executor executor
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.command = command;
         this.executor = executor != null ? executor : Executor.PLAYER;
     }
@@ -52,9 +49,8 @@ public class CommandAction extends Action<CommandAction> {
         }
 
         @Override
-        public CommandAction create(Plugin plugin, Map<String, Object> pars) {
+        public CommandAction create(Map<String, Object> pars) {
             return new CommandAction(
-                    plugin,
                     PlaceholderUtil.process((String) pars.get("command")),
                     (Executor) pars.get("executor")
             );

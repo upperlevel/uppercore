@@ -4,11 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -31,12 +29,11 @@ public class VaultTakeAction extends Action<VaultTakeAction> {
 
     @ConfigConstructor
     public VaultTakeAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("value") PlaceholderValue<Double> value,
             @ConfigProperty(value = "actions", optional = true) List<Action> actions,
             @ConfigProperty(value = "fail", optional = true) List<Action> fail
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.value = value;
         this.actions = actions != null ? actions : Collections.emptyList();
         this.fail = fail != null ? actions : Collections.emptyList();
@@ -71,9 +68,8 @@ public class VaultTakeAction extends Action<VaultTakeAction> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public VaultTakeAction create(Plugin plugin, Map<String, Object> pars) {
+        public VaultTakeAction create(Map<String, Object> pars) {
             return new VaultTakeAction(
-                    plugin,
                     PlaceholderValue.doubleValue((String) pars.get("value")),
                     (List<Action>) pars.get("actions"),
                     (List<Action>) pars.get("fail")

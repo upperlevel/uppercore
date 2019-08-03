@@ -37,7 +37,7 @@ public class ArrayParser extends ConfigParser {
     }
 
     @Override
-    public Object parse(Plugin plugin, Node root) {
+    public Object parse(Node root) {
         checkTag(root, Tag.SEQ);
 
 
@@ -46,7 +46,7 @@ public class ArrayParser extends ConfigParser {
         Object array = Array.newInstance(componentClass, length);
         List<Node> entries = node.getValue();
         for (int i = 0; i < length; i++) {
-            arraySetter.set(array, i, handleParser.parse(plugin, entries.get(i)));
+            arraySetter.set(array, i, handleParser.parse(entries.get(i)));
         }
 
         return array;

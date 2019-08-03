@@ -3,10 +3,8 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
@@ -31,12 +29,11 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
 
     @ConfigConstructor
     public HotbarGiveAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("id") PlaceholderValue<String> hotbarPath,
             @ConfigProperty(value = "actions", optional = true) List<Action> actions,
             @ConfigProperty(value = "fail", optional = true) List<Action> fail
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.hotbarPath = hotbarPath;
         this.actions = actions;
         this.fail = fail;
@@ -79,9 +76,8 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public HotbarGiveAction create(Plugin plugin, Map<String, Object> pars) {
+        public HotbarGiveAction create(Map<String, Object> pars) {
             return new HotbarGiveAction(
-                    plugin,
                     PlaceholderValue.stringValue((String) pars.get("id")),
                     (List<Action>) pars.get("actions"),
                     (List<Action>) pars.get("fail")

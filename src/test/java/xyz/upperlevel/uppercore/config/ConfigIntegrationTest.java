@@ -56,7 +56,7 @@ public class ConfigIntegrationTest {
                         "life", 42
                 ),
                 "stringkey", "teststring"
-        )).get(B.class, null);
+        )).get(B.class);
     }
 
     // Test exceptions

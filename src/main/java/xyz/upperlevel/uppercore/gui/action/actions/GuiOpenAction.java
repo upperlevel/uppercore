@@ -7,7 +7,6 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.Gui;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
@@ -30,17 +29,16 @@ public class GuiOpenAction extends Action<GuiOpenAction> {
 
     @ConfigConstructor
     public GuiOpenAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("id") PlaceholderValue<String> guiId,
             @ConfigProperty(value = "remove-history", optional = true) Boolean clearStack
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.guiId = guiId;
         this.clearStack = clearStack != null ? clearStack : false;
     }
 
     public GuiOpenAction(Plugin plugin, PlaceholderValue<String> guiId) {
-        this(plugin, guiId, null);
+        this(guiId, null);
     }
 
     @Override
@@ -66,9 +64,8 @@ public class GuiOpenAction extends Action<GuiOpenAction> {
         }
 
         @Override
-        public GuiOpenAction create(Plugin plugin, Map<String, Object> pars) {
+        public GuiOpenAction create(Map<String, Object> pars) {
             return new GuiOpenAction(
-                    plugin,
                     PlaceholderUtil.process((String) pars.get("id")),
                     (Boolean) pars.get("remove-history")
             );

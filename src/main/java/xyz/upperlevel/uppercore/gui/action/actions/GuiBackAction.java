@@ -1,9 +1,7 @@
 package xyz.upperlevel.uppercore.gui.action.actions;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 
@@ -15,10 +13,8 @@ public class GuiBackAction extends Action<GuiBackAction> {
     public static final GuiBackActionType TYPE = new GuiBackActionType();
 
     @ConfigConstructor(inlineable = true)
-    public GuiBackAction(
-            @CurrentPlugin Plugin plugin
-    ) {
-        super(plugin, TYPE);
+    public GuiBackAction() {
+        super(TYPE);
     }
 
     @Override
@@ -34,8 +30,8 @@ public class GuiBackAction extends Action<GuiBackAction> {
         }
 
         @Override
-        public GuiBackAction create(Plugin plugin, Map<String, Object> parameters) {
-            return new GuiBackAction(plugin);
+        public GuiBackAction create(Map<String, Object> parameters) {
+            return new GuiBackAction();
         }
 
         @Override

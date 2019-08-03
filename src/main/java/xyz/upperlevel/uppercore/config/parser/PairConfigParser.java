@@ -19,7 +19,7 @@ public class PairConfigParser extends ConfigParser {
     }
 
     @Override
-    public Pair<?, ?> parse(Plugin plugin, Node root) {
+    public Pair<?, ?> parse(Node root) {
         checkNodeId(root, ImmutableList.of(NodeId.mapping, NodeId.sequence));
         if (root.getNodeId() == NodeId.mapping) {
             List<NodeTuple> val = ((MappingNode)root).getValue();
@@ -30,8 +30,8 @@ public class PairConfigParser extends ConfigParser {
                 throw new ConfigException("Too many values for a Pair!", val.get(1).getKeyNode());
             }
             NodeTuple t = val.get(0);
-            Object first = firstParser.parse(plugin, t.getKeyNode());
-            Object second = secondParser.parse(plugin, t.getValueNode());
+            Object first = firstParser.parse(t.getKeyNode());
+            Object second = secondParser.parse(t.getValueNode());
             return new Pair<>(first, second);
         } else if (root.getNodeId() == NodeId.sequence) {
             List<Node> val = ((SequenceNode)root).getValue();
@@ -41,8 +41,8 @@ public class PairConfigParser extends ConfigParser {
             if (val.size() > 2) {
                 throw new ConfigException("Too many elements for a pair!", root);
             }
-            Object first = firstParser.parse(plugin, val.get(0));
-            Object second = secondParser.parse(plugin, val.get(1));
+            Object first = firstParser.parse(val.get(0));
+            Object second = secondParser.parse(val.get(1));
             return new Pair<>(first, second);
         } else {
             throw new IllegalStateException("Unreachable");

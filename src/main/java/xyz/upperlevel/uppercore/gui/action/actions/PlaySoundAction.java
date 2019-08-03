@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -25,12 +23,11 @@ public class PlaySoundAction extends Action<PlaySoundAction> {
 
 
     public PlaySoundAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("sound") Sound sound,
             @ConfigProperty(value = "volume", optional = true) PlaceholderValue<Float> volume,
             @ConfigProperty(value = "pitch", optional = true) PlaceholderValue<Float> pitch
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.sound = sound;
         this.volume = volume != null ? volume : PlaceholderValue.fake(1.0f);
         this.pitch = pitch != null ? volume : PlaceholderValue.fake(1.0f);
@@ -54,9 +51,8 @@ public class PlaySoundAction extends Action<PlaySoundAction> {
         }
 
         @Override
-        public PlaySoundAction create(Plugin plugin, Map<String, Object> pars) {
+        public PlaySoundAction create(Map<String, Object> pars) {
             return new PlaySoundAction(
-                    plugin,
                     (Sound) pars.get("sound"),
                     PlaceholderUtil.parseFloat(pars.get("volume")),
                     PlaceholderUtil.parseFloat(pars.get("pitch"))

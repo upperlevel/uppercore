@@ -86,7 +86,6 @@ public class BukkitTypesConfigTest {
     public void basicTest() {
         registry.getFor(ConfigLoaderExample.class)
                 .parse(
-                        plugin,
                         new StringReader(
                                 "pos: [31, 24, 56]\n" +
                                         "color1: 0;128;0\n" +

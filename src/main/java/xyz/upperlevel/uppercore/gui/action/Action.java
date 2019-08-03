@@ -12,18 +12,15 @@ import xyz.upperlevel.uppercore.registry.Registry;
 
 public abstract class Action<T extends Action<T>> implements Link {
     @Getter
-    private final Plugin plugin;
-    @Getter
     private final ActionType<T> type;
 
     @Getter
     @Setter
     private Registry<?> registry;
 
-    public Action(Plugin plugin, ActionType<T> type) {
-        this.plugin = plugin;
+    public Action(ActionType<T> type) {
         this.type = type;
-        this.registry = Uppercore.registry().get(plugin);
+        this.registry = Uppercore.registry();
     }
 
     @PolymorphicSelector

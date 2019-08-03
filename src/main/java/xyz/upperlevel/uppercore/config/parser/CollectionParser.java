@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.config.parser;
 
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -21,13 +20,13 @@ public class CollectionParser<T extends Collection> extends ConfigParser {
     }
 
     @Override
-    public T parse(Plugin plugin, Node root) {
+    public T parse(Node root) {
         checkTag(root, expectedTag);
         SequenceNode node = (SequenceNode) root;
 
         T collection = collectionSupplier.get();
         for (Node entry : node.getValue()) {
-            collection.add(parser.parse(plugin, entry));
+            collection.add(parser.parse(entry));
         }
 
         return collection;

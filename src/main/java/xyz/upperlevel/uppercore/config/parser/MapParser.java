@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.config.parser;
 
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeId;
@@ -21,12 +20,12 @@ public class MapParser<T extends Map<Object, Object>> extends ConfigParser {
     }
 
     @Override
-    public T parse(Plugin plugin, Node rawNode) {
+    public T parse(Node rawNode) {
         checkNodeId(rawNode, NodeId.mapping);
         MappingNode node = (MappingNode) rawNode;
         T map = mapSupplier.get();
         for (NodeTuple entry : node.getValue()) {
-            map.put(keyParser.parse(plugin, entry.getKeyNode()), valueParser.parse(plugin, entry.getValueNode()));
+            map.put(keyParser.parse(entry.getKeyNode()), valueParser.parse(entry.getValueNode()));
         }
 
         return map;

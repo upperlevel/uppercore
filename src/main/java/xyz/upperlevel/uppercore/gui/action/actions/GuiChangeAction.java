@@ -3,11 +3,9 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.Gui;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
@@ -27,10 +25,9 @@ public class GuiChangeAction extends Action<GuiChangeAction> {
 
     @ConfigConstructor(inlineable = true)
     public GuiChangeAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("id") PlaceholderValue<String> guiId
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.guiId = guiId;
     }
 
@@ -56,9 +53,8 @@ public class GuiChangeAction extends Action<GuiChangeAction> {
         }
 
         @Override
-        public GuiChangeAction create(Plugin plugin, Map<String, Object> pars) {
+        public GuiChangeAction create(Map<String, Object> pars) {
             return new GuiChangeAction(
-                    plugin,
                     PlaceholderUtil.process((String) pars.get("id"))
             );
         }

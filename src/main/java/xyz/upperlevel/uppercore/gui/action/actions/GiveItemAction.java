@@ -3,10 +3,8 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -22,10 +20,9 @@ public class GiveItemAction extends Action<GiveItemAction> {
 
     @ConfigConstructor(inlineable = true)
     public GiveItemAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("item") UItem item
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.item = item;
     }
 
@@ -45,9 +42,8 @@ public class GiveItemAction extends Action<GiveItemAction> {
         }
 
         @Override
-        public GiveItemAction create(Plugin plugin, Map<String, Object> pars) {
+        public GiveItemAction create(Map<String, Object> pars) {
             return new GiveItemAction(
-                    plugin,
                     (UItem) pars.get("item")
             );
         }

@@ -14,14 +14,14 @@ import java.util.Map;
 
 public interface Parser<T> {
 
-    T load(Plugin plugin, Object object);
+    T load(Object object);
 
     Object save(T t);
 
     static Parser<String> strValue() {
         return new Parser<String>() {
             @Override
-            public String load(Plugin plugin, Object object) {
+            public String load(Object object) {
                 return object.toString();
             }
 
@@ -35,7 +35,7 @@ public interface Parser<T> {
     static Parser<Short> shortValue() {
         return new Parser<Short>() {
             @Override
-            public Short load(Plugin plugin, Object object) {
+            public Short load(Object object) {
                 if (object instanceof Number)
                     return ((Number) object).shortValue();
                 else if (object instanceof String)
@@ -54,7 +54,7 @@ public interface Parser<T> {
     static Parser<Integer> intValue() {
         return new Parser<Integer>() {
             @Override
-            public Integer load(Plugin plugin, Object object) {
+            public Integer load(Object object) {
                 if (object instanceof Number)
                     return ((Number) object).intValue();
                 else if (object instanceof String)
@@ -73,7 +73,7 @@ public interface Parser<T> {
     static Parser<Long> longValue() {
         return new Parser<Long>() {
             @Override
-            public Long load(Plugin plugin, Object object) {
+            public Long load(Object object) {
                 if (object instanceof Number)
                     return ((Number) object).longValue();
                 else if (object instanceof String)
@@ -92,7 +92,7 @@ public interface Parser<T> {
     static Parser<Float> floatValue() {
         return new Parser<Float>() {
             @Override
-            public Float load(Plugin plugin, Object object) {
+            public Float load(Object object) {
                 if (object instanceof Number)
                     return ((Number) object).floatValue();
                 else if (object instanceof String)
@@ -111,7 +111,7 @@ public interface Parser<T> {
     static Parser<Double> doubleValue() {
         return new Parser<Double>() {
             @Override
-            public Double load(Plugin plugin, Object object) {
+            public Double load(Object object) {
                 if (object instanceof Number)
                     return ((Number) object).doubleValue();
                 else if (object instanceof String)
@@ -130,7 +130,7 @@ public interface Parser<T> {
     static Parser<Boolean> boolValue() {
         return new Parser<Boolean>() {
             @Override
-            public Boolean load(Plugin plugin, Object raw) {
+            public Boolean load(Object raw) {
                 if (raw instanceof Boolean) {
                     return (Boolean) raw;
                 } else if (raw instanceof String) {
@@ -159,9 +159,9 @@ public interface Parser<T> {
     static Parser<List<Action>> actionsValue() {
         return new Parser<List<Action>>() {
             @Override
-            public List<Action> load(Plugin plugin, Object object) {
+            public List<Action> load(Object object) {
                 if (object instanceof Collection)
-                    return ActionType.deserialize(plugin, (Collection<Map<String, Object>>) object);
+                    return ActionType.deserialize((Collection<Map<String, Object>>) object);
                 else
                     throw new IllegalArgumentException("Cannot parse " + object + " as short");
             }
@@ -177,7 +177,7 @@ public interface Parser<T> {
         return new Parser<UItem>() {
             @Override
             @SuppressWarnings("unchecked")
-            public UItem load(Plugin plugin, Object object) {
+            public UItem load(Object object) {
                 if (object instanceof ItemStack)
                     return new UItem((ItemStack) object);
                 else if (object instanceof Map)
@@ -196,7 +196,7 @@ public interface Parser<T> {
     static Parser<Sound> soundValue() {
         return new Parser<Sound>() {
             @Override
-            public Sound load(Plugin plugin, Object object) {
+            public Sound load(Object object) {
                 if (object instanceof Sound)
                     return (Sound) object;
                 else {
@@ -218,7 +218,7 @@ public interface Parser<T> {
         return new Parser<T>() {
             @Override
             @SuppressWarnings("unchecked")
-            public T load(Plugin plugin, Object object) {
+            public T load(Object object) {
                 if (clazz.isInstance(object)) {
                     return (T) object;
                 } else if (object instanceof String) {

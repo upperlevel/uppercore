@@ -22,14 +22,14 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T load(Plugin plugin, Object config) {
+    public T load(Object config) {
         if (parameters == null)
             throw new IllegalStateException("ActionType's parameters not initialized!");
         if (parameters.size() == 0) {//No parameter
-            return create(plugin, Collections.emptyMap());
+            return create(Collections.emptyMap());
         } else if (config == null) {//No parameter
             if (requiredArgs == 0)
-                return create(plugin, Collections.emptyMap());
+                return create(Collections.emptyMap());
             else
                 throw new RequiredParameterNotFoundException(getFirstRequired().name);
         } else if (config instanceof Map) {//Multiple parameter
@@ -46,13 +46,13 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
                                     return null;
                             }
                         } else
-                            v = p.parser.load(plugin, v);
+                            v = p.parser.load(v);
                         return Maps.immutableEntry(p.name, v);
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            return create(plugin, pars);
+            return create(pars);
         } else {//One parameter
             if (requiredArgs == 1) {
                 Map<String, Object> pars = parameters.values().stream()
@@ -60,13 +60,13 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
                             Object v = p.required ? config : p.defValue;
                             if (v == null)
                                 return null;
-                            v = p.parser.load(plugin, v);
+                            v = p.parser.load(v);
                             return Maps.immutableEntry(p.name, v);
                         })
                         .filter(Objects::nonNull)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-                return create(plugin, pars);
+                return create(pars);
             } else
                 throw new BadParameterUseException();
         }
@@ -76,7 +76,7 @@ public abstract class BaseActionType<T extends Action> extends ActionType<T> {
         return parameters.values().stream().filter(Parameter::isRequired).findFirst().orElse(null);
     }
 
-    public abstract T create(Plugin plugin, Map<String, Object> parameters);
+    public abstract T create(Map<String, Object> parameters);
 
     @Override
     @SuppressWarnings("unchecked")

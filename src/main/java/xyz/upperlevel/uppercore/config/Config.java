@@ -744,36 +744,28 @@ public abstract class Config {
 
     // ConfigParser way
 
-    public <T> T get(Class<T> type, Plugin plugin) {
-        return (T) get((Type) type, plugin);
-    }
-
-    public Object get(Type type, Plugin plugin) {
-        return ConfigParserRegistry.getStandard()
-                .getFor(type)
-                .parse(plugin, getYamlNode());
-    }
-
-    public <T> T get(String key, Type type, Plugin plugin) {
-        Node node = getNode(key);
-        if (node == null) return null;
+    public <T> T get(Type type) {
         return (T) ConfigParserRegistry.getStandard()
                 .getFor(type)
-                .parse(plugin, node);
+                .parse(getYamlNode());
     }
 
-    public <T> T get(String key, Class<T> type, Plugin plugin) {
-        return (T) get(key, (Type) type, plugin);
+    public <T> T get(String key, Type type, T def) {
+        Node node = getNode(key);
+        if (node == null) return def;
+        return (T) ConfigParserRegistry.getStandard()
+                .getFor(type)
+                .parse(node);
     }
 
-    public <T> T getRequired(String key, Type type, Plugin plugin) {
-        Object res = get(key, type, plugin);
+    public <T> T get(String key, Type type) {
+        return get(key, type, null);
+    }
+
+    public <T> T getRequired(String key, Type type) {
+        Object res = get(key, type);
         checkPropertyNotNull(key, res);
         return (T) res;
-    }
-
-    public <T> T getRequired(String key, Class<T> type, Plugin plugin) {
-        return getRequired(key, (Type) type, plugin);
     }
 
     // Config map

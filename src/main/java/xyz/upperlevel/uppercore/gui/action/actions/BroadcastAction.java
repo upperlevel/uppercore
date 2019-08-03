@@ -4,10 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -33,12 +31,11 @@ public class BroadcastAction extends Action<BroadcastAction> {
 
     @ConfigConstructor(inlineable = true)
     private BroadcastAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("message") PlaceholderValue<String> message,
             @ConfigProperty(value = "permission", optional = true) String permission,
             @ConfigProperty(value = "raw", optional = true) Boolean raw
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.message = message;
         this.permission = permission;
         this.raw = raw != null ? raw : false;
@@ -90,9 +87,8 @@ public class BroadcastAction extends Action<BroadcastAction> {
         }
 
         @Override
-        public BroadcastAction create(Plugin plugin, Map<String, Object> pars) {
+        public BroadcastAction create(Map<String, Object> pars) {
             return new BroadcastAction(
-                    plugin,
                     PlaceholderUtil.process((String) pars.get("message")),
                     (String) pars.get("permission"),
                     (boolean) pars.get("raw")

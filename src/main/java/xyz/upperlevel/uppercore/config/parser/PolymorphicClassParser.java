@@ -22,10 +22,10 @@ public class PolymorphicClassParser extends ConfigParser {
 
 
     @Override
-    public Object parse(Plugin plugin, Node root) {
+    public Object parse(Node root) {
         Class<?> selectedClass;
 
-        selectedClass = classSelector.parse(plugin, root);
+        selectedClass = classSelector.parse(root);
 
         if (selectedClass == null) {
             throw new ConfigException("Cannot determine subclass of " + handleClass.getSimpleName(), root);
@@ -45,7 +45,7 @@ public class PolymorphicClassParser extends ConfigParser {
             // If the selector has already used it then it's normal that the real constructor doesn't have it anymore
             ((ConstructorConfigParser) parser).setIgnoreUnmatchedProperties(isPropertyUsedByPolymorphicSelector);
         }
-        return parser.parse(plugin, root);
+        return parser.parse(root);
     }
 
     public ConstructorConfigParser getDirectParser() {

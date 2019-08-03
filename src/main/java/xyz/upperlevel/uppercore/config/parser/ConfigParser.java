@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.config.parser;
 
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeId;
@@ -21,10 +20,10 @@ public abstract class ConfigParser {
         this.handleType = handleType;
     }
 
-    public abstract Object parse(Plugin plugin, Node root);
+    public abstract Object parse(Node root);
 
-    public Object parse(Plugin plugin, Reader reader) {
-        return parse(plugin, defaultYaml.compose(reader));
+    public Object parse(Reader reader) {
+        return parse(defaultYaml.compose(reader));
     }
 
     public Type getHandleClass() {

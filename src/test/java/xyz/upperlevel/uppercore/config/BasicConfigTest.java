@@ -2,12 +2,10 @@ package xyz.upperlevel.uppercore.config;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableTable;
 import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.plugin.Plugin;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -16,7 +14,6 @@ import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.util.Pair;
 import xyz.upperlevel.uppercore.util.Position;
-import xyz.upperlevel.uppercore.util.TypeUtil;
 
 import java.io.StringReader;
 import java.lang.reflect.Type;
@@ -28,7 +25,6 @@ import static org.junit.Assert.assertEquals;
 import static xyz.upperlevel.uppercore.util.TypeUtil.typeOf;
 
 public class BasicConfigTest {
-    private static final Plugin plugin = null;
     @Rule
     public ExpectedException exc = ExpectedException.none();
 
@@ -66,7 +62,7 @@ public class BasicConfigTest {
                         "  x: 1.0\n" +
                         "  y: 2.0\n" +
                         "  z: 3.0\n"
-        )).get(ConfigLoaderExample.class, plugin);
+        )).get(ConfigLoaderExample.class);
     }
 
     public static class PolymorphicFather {
@@ -124,7 +120,6 @@ public class BasicConfigTest {
 
         // And then you parse
         PolymorphicFather dog = (PolymorphicFather) parser.parse(
-                plugin,
                 new StringReader(
                         "type: dog\n" +
                                 "furColor: blue\n"
@@ -134,7 +129,6 @@ public class BasicConfigTest {
         assertEquals(Color.BLUE, ((PolymorphicFather.Dog) dog).getFurColor());
 
         PolymorphicFather cat = (PolymorphicFather) parser.parse(
-                plugin,
                 new StringReader(
                         "type: cat\n" +
                                 "meowMessage: meoow\n"
@@ -144,7 +138,6 @@ public class BasicConfigTest {
         assertEquals("meoow", ((PolymorphicFather.Cat) cat).getMeowMessage());
 
         PolymorphicFather horse = (PolymorphicFather) parser.parse(
-                plugin,
                 new StringReader(
                         "type: horse\n"
                 )
@@ -186,7 +179,7 @@ public class BasicConfigTest {
                         "    x: 1.0\n" +
                         "    y: 2.0\n" +
                         "    z: 3.0\n"
-        )).get(UnfoldTest.class, plugin);
+        )).get(UnfoldTest.class);
     }
 
     @Test
@@ -206,7 +199,7 @@ public class BasicConfigTest {
                         "    x: 1.0\n" +
                         "    y: 2.0\n" +
                         "    z: 3.0\n"
-        )).get(UnfoldTest.class, plugin);
+        )).get(UnfoldTest.class);
     }
 
     public static class IncorrectUnfoldingTest {
@@ -268,7 +261,7 @@ public class BasicConfigTest {
         ));
         Type t1 = typeOf(Pair.class, int.class, int.class);
         Type t2 = typeOf(Pair.class, String.class, String.class);
-        assertEquals(Pair.of(1, 2), cfg.getRequired("a", t1, null));
-        assertEquals(Pair.of("a", "b"), cfg.getRequired("c", t2, null));
+        assertEquals(Pair.of(1, 2), cfg.getRequired("a", t1));
+        assertEquals(Pair.of("a", "b"), cfg.getRequired("c", t2));
     }
 }

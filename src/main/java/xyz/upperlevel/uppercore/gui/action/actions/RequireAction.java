@@ -4,10 +4,8 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
@@ -43,14 +41,13 @@ public class RequireAction extends Action<RequireAction> {
 
     @ConfigConstructor
     public RequireAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty(value = "permission", optional = true) String permission,
             @ConfigProperty(value = "hotbar", optional = true) PlaceholderValue<String> hotbar,
             @ConfigProperty(value = "script", optional = true) String script,
             @ConfigProperty(value = "actions", optional = true) List<Action> actions,
             @ConfigProperty(value = "fail", optional = true) List<Action> fail
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.permission = permission;
         this.hotbar = hotbar;
         this.script = script;
@@ -138,9 +135,8 @@ public class RequireAction extends Action<RequireAction> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public RequireAction create(Plugin plugin, Map<String, Object> pars) {
+        public RequireAction create(Map<String, Object> pars) {
             return new RequireAction(
-                    plugin,
                     (String) pars.get("permission"),
                     PlaceholderValue.stringValue((String) pars.get("hotbar")),
                     (String) pars.get("script"),

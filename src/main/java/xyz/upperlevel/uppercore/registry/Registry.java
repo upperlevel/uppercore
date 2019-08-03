@@ -18,9 +18,6 @@ import java.util.stream.Collectors;
 
 public class Registry<T> {
     @Getter
-    private final RegistryRoot root;
-
-    @Getter
     private final Class<?> type;
 
     @Getter
@@ -29,41 +26,20 @@ public class Registry<T> {
     @Getter
     private final Registry<?> parent;
 
-    @Getter
-    private Plugin plugin = null;
-
     private Map<String, Child> children = new HashMap<>();
 
-    public Registry(@NonNull RegistryRoot root, Class<?> type, @NonNull String name, Registry<?> parent) {
-        this.root = root;
+    public Registry(Class<?> type, @NonNull String name, Registry<?> parent) {
         this.type = type;
         this.name = name;
         this.parent = parent;
-        if (type != null) {
-            root.onChildCreate(this);// Update type registers
-        }
-        if (parent != null) {
-            plugin = parent.getPlugin();
-        }
     }
 
-    public Registry(Class<?> type, String name, Registry parent) {
-        this(parent.getRoot(), type, name, parent);
-    }
-
-    public Registry(RegistryRoot root, Class<?> type, String name) {
-        this(root, type, name, null);
+    public Registry(Class<?> type, String name) {
+        this(type, name, null);
     }
 
     public boolean isFolder() {
         return type == null;
-    }
-
-    public void  setPlugin(@NonNull Plugin plugin) {
-        if (this.plugin != null) {
-            throw new IllegalStateException();
-        }
-        this.plugin = plugin;
     }
 
     public Registry<?> registerChild(@NonNull String registryName) {
@@ -72,7 +48,7 @@ public class Registry<T> {
 
     public <O> Registry<O> registerChild(@NonNull String registryName, Class<O> type) {
         registryName = registryName.toLowerCase();
-        Registry<O> child = new Registry<>(root, type, registryName, this);
+        Registry<O> child = new Registry<>(type, registryName, this);
         Child entry = new Child(false, child);
         boolean conflict = children.putIfAbsent(registryName, entry) != null;
 
@@ -168,9 +144,16 @@ public class Registry<T> {
                 .collect(CollectionUtil.toMap());
     }
 
+    public Registry<?> getRoot() {
+        Registry<?> current = this;
+        while (current.parent != null) current = current.parent;
+        return current;
+    }
+
     public Object find(@NonNull String path) {
-        if (path.indexOf(RegistryRoot.PLUGIN_PATH_DIVIDER) > 0) {
-            return root.find(path);
+        // Root callable by @path
+        if (!path.isEmpty() && path.charAt(0) == '@') {
+            return getRoot().find(path.substring(1));
         }
         int dividerIndex = path.indexOf('.');
         if (dividerIndex < 0) {
@@ -232,7 +215,7 @@ public class Registry<T> {
         }
         // When the cycle is done the only register left is
         // the plugin root (because it's the only one without a parent)
-        return current.getName() + RegistryRoot.PLUGIN_PATH_DIVIDER + String.join(".", names);
+        return String.join(".", names);
     }
 
     @Override
@@ -260,5 +243,9 @@ public class Registry<T> {
         public boolean equals(Object other) {
             return other instanceof Child && Objects.equals(((Child)other).value, value);
         }
+    }
+
+    public static Registry<?> root() {
+        return new Registry<>(null, "");
     }
 }

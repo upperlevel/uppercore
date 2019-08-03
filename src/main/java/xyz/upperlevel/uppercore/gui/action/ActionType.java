@@ -28,7 +28,7 @@ public abstract class ActionType<T extends Action> {
     @Getter
     private final String type;
 
-    public abstract T load(Plugin plugin, Object config);
+    public abstract T load(Object config);
 
     public abstract Object save(T action);
 
@@ -65,12 +65,12 @@ public abstract class ActionType<T extends Action> {
         addActionType(CommandAction.TYPE);
     }
 
-    public static List<Action> deserialize(Plugin plugin, Collection<Map<String, Object>> config) {
-        return config.stream().map(data -> ActionType.deserialize(plugin, data)).collect(Collectors.toList());
+    public static List<Action> deserialize(Collection<Map<String, Object>> config) {
+        return config.stream().map(ActionType::deserialize).collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
-    public static Action deserialize(Plugin plugin, Object config) {
+    public static Action deserialize(Object config) {
         if (config instanceof Map) {
             Map<String, Object> c = (Map<String, Object>) config;
             if (c.size() > 1)
@@ -82,13 +82,13 @@ public abstract class ActionType<T extends Action> {
             ActionType t = types.get(type.toLowerCase());
             if (t == null)
                 throw new IllegalArgumentException("Cannot find action \"" + type + "\" in " + types.keySet());
-            return t.load(plugin, action.getValue());
+            return t.load(action.getValue());
         } else if (config instanceof String) {
             String type = (String) config;
             ActionType t = types.get(type.toLowerCase());
             if (t == null)
                 throw new IllegalArgumentException("Cannot find action \"" + type + "\" in " + types.keySet());
-            return t.load(plugin, null);//No argument
+            return t.load(null);//No argument
         } else
             throw new InvalidConfigException("Invalid value type");
     }

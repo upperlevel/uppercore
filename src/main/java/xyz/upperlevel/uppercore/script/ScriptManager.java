@@ -86,7 +86,7 @@ public class ScriptManager {
     public void reloadConfig(Config configFile) {
         extensionsToEngineName = new HashMap<>();
 
-        ScriptConfig config = configFile.get(ScriptConfig.class, null);
+        ScriptConfig config = configFile.get(ScriptConfig.class);
         for (Map.Entry<String, String> obj : config.engines.entrySet()) {
             extensionsToEngineName.put(obj.getKey(), obj.getValue());
         }

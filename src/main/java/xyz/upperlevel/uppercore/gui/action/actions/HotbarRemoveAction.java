@@ -3,11 +3,9 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -24,10 +22,9 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
 
     @ConfigConstructor(inlineable = true)
     public HotbarRemoveAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("id") PlaceholderValue<String> id
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.id = id;
     }
 
@@ -54,10 +51,8 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
-        public HotbarRemoveAction create(Plugin plugin, Map<String, Object> pars) {
+        public HotbarRemoveAction create(Map<String, Object> pars) {
             return new HotbarRemoveAction(
-                    plugin,
                     PlaceholderValue.stringValue((String) pars.get("id"))
             );
         }

@@ -3,10 +3,8 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.config.CurrentPlugin;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -28,11 +26,10 @@ public class MessageAction extends Action<MessageAction> {
 
     @ConfigConstructor
     public MessageAction(
-            @CurrentPlugin Plugin plugin,
             @ConfigProperty("message") PlaceholderValue<String> message,
             @ConfigProperty(value = "raw", optional = true) Boolean raw
     ) {
-        super(plugin, TYPE);
+        super(TYPE);
         this.message = message;
         this.raw = raw != null ? raw : false;
     }
@@ -58,9 +55,8 @@ public class MessageAction extends Action<MessageAction> {
         }
 
         @Override
-        public MessageAction create(Plugin plugin, Map<String, Object> pars) {
+        public MessageAction create(Map<String, Object> pars) {
             return new MessageAction(
-                    plugin,
                     PlaceholderUtil.process((String) pars.get("message")),
                     (Boolean) pars.get("raw")
             );

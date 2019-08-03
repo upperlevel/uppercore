@@ -16,16 +16,16 @@ public class PlaceholderValueParser extends ConfigParser {
     }
 
     @Override
-    public PlaceholderValue parse(Plugin plugin, Node root) {
+    public PlaceholderValue parse(Node root) {
         checkNodeId(root, NodeId.scalar);
         ScalarNode node = (ScalarNode) root;// TODO: support more complex types like PlaceholderValue<List<String>> or similar
         //TODO Test Translate colors and such
         if (!PlaceholderUtil.hasPlaceholders(node.getValue())) {
-            return PlaceholderValue.fake(valueParser.parse(plugin, node));
+            return PlaceholderValue.fake(valueParser.parse(node));
         } else {
             // Replace the node's value with the resolved placeholders value
             return (player, local) ->
-                    valueParser.parse(plugin, replaceValue(node, PlaceholderUtil.resolve(player, node.getValue(), local)));
+                    valueParser.parse(replaceValue(node, PlaceholderUtil.resolve(player, node.getValue(), local)));
         }
     }
 }

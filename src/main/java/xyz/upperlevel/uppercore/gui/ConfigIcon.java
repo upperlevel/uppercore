@@ -269,7 +269,7 @@ public class ConfigIcon {
                 res.actions = Collections.emptyList();
             else
                 res.actions = actions.stream()
-                        .map(obj -> ActionType.deserialize(plugin, obj))
+                        .map(ActionType::deserialize)
                         .collect(Collectors.toList());
             return res;
         }
