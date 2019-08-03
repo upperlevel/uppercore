@@ -1,10 +1,9 @@
 package xyz.upperlevel.uppercore.arena;
 
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.util.WorldUtil;
 
 import java.io.File;
@@ -16,12 +15,12 @@ public class ArenaManager {
     public static final File ARENAS_FOLDER = new File(Uppercore.getPlugin().getDataFolder(), "arenas");
     public static ArenaManager instance = new ArenaManager();
 
-    private final Map<String, ArenaContainer> byId = new HashMap<>();
+    private final Map<String, Arena> byId = new HashMap<>();
 
     //================================================================================
     // Loading
 
-    private void load(Phase lobbyPhase) {
+    public <A extends Arena> void load(Class<A> arenaClass) {
         File[] files = ARENAS_FOLDER.listFiles();
         if (files == null) {
             return;
@@ -30,17 +29,17 @@ public class ArenaManager {
             String id = file.getName().substring(0, file.getName().lastIndexOf('.'));
 
             // First loads the arena world.
-            String world = ArenaContainer.getSignature(id);
+            String world = Arena.getSignature(id);
             WorldUtil.createEmptyWorld(world);
 
             // Then loads arena's data.
-            ConfigurationSection section = YamlConfiguration.loadConfiguration(file).getConfigurationSection(id);
-            ArenaContainer arena = ArenaContainer.deserialize(id, section);
+            Config cfg = Config.fromYaml(file);
+            A arena = cfg.getRequired("arena", arenaClass, null);
             register(arena);
 
             // If the arena is ready, sets to enabled.
             if (arena.isReady()) {
-                arena.setEnabled(true, lobbyPhase);
+                arena.setEnabled(true);
             }
         }
     }
@@ -48,16 +47,16 @@ public class ArenaManager {
     //================================================================================
     // Registering
 
-    public void register(ArenaContainer arena) {
+    public void register(Arena arena) {
         byId.put(arena.getId(), arena);
     }
 
-    public ArenaContainer get(String id) {
+    public Arena get(String id) {
         return byId.get(id);
     }
 
-    public ArenaContainer get(World world) {
-        for (ArenaContainer arena : byId.values()) {
+    public Arena get(World world) {
+        for (Arena arena : byId.values()) {
             if (world.equals(arena.getWorld())) {
                 return arena;
             }
@@ -65,8 +64,8 @@ public class ArenaManager {
         return null;
     }
 
-    public ArenaContainer get(Player player) {
-        for (ArenaContainer arena : byId.values()) {
+    public Arena get(Player player) {
+        for (Arena arena : byId.values()) {
             if (arena.getPlayers().contains(player)) {
                 return arena;
             }
@@ -74,19 +73,19 @@ public class ArenaManager {
         return null;
     }
 
-    public void destroy(ArenaContainer arena) {
+    public void destroy(Arena arena) {
         byId.remove(arena.getId());
         if (arena.getWorld() != null) {
             arena.destroy();
         }
     }
 
-    public Collection<ArenaContainer> getArenas() {
+    public Collection<Arena> getArenas() {
         return byId.values();
     }
 
     public void unload() {
-        for (ArenaContainer arena : byId.values()) {
+        for (Arena arena : byId.values()) {
             arena.unload();
         }
     }
