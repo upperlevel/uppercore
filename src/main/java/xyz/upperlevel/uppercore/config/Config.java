@@ -766,14 +766,14 @@ public abstract class Config {
         return (T) get(key, (Type) type, plugin);
     }
 
-    public Object getRequired(String key, Type type, Plugin plugin) {
+    public <T> T getRequired(String key, Type type, Plugin plugin) {
         Object res = get(key, type, plugin);
         checkPropertyNotNull(key, res);
-        return res;
+        return (T) res;
     }
 
     public <T> T getRequired(String key, Class<T> type, Plugin plugin) {
-        return (T) get(key, (Type) type, plugin);
+        return getRequired(key, (Type) type, plugin);
     }
 
     // Config map
