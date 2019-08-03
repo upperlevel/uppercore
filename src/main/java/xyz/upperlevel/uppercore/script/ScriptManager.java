@@ -74,7 +74,7 @@ public class ScriptManager {
             final ClassLoader old = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             ScriptEngine engine = engineManager.getEngineByName("js");
-            engine.eval("Java.type(\"xyz.upperlevel.uppercore.Uppercore\").logger().info(\"JS engine works!\")");
+            engine.eval("Java.type(\"" + Uppercore.class.getName() + "\").logger().info(\"JS engine works!\")");
             Thread.currentThread().setContextClassLoader(old);
         } catch (ScriptException e) {
             e.printStackTrace();
