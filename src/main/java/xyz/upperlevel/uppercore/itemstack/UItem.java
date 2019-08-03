@@ -27,22 +27,19 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 public class UItem implements ItemResolver {
-    /**
-     * Based on the ItemMeta's class, gets the correct UItem implementation.
-     */
-    private static final Map<Class<? extends ItemMeta>, Class<? extends UItem>> deserializers = new HashMap<>();
+    private static final Map<Class<? extends ItemMeta>, Class<? extends UItem>> items = new HashMap<>();
 
     static {
-        deserializers.put(BannerMeta.class, UBannerItem.class);
-        deserializers.put(EnchantmentStorageMeta.class, UEnchantmentStorageItem.class);
-        deserializers.put(FireworkEffectMeta.class, UFireworkEffectItem.class);
-        deserializers.put(FireworkMeta.class, UFireworkItem.class);
-        deserializers.put(LeatherArmorMeta.class, ULeatherArmorItem.class);
-        deserializers.put(MapMeta.class, UMapItem.class);
-        deserializers.put(PotionMeta.class, UPotionItem.class);
-        deserializers.put(SkullMeta.class, USkullItem.class);
-        deserializers.put(KnowledgeBookMeta.class, UKnowledgeBookItem.class);
-        deserializers.put(TropicalFishBucketMeta.class, UTropicalFishBucketItem.class);
+        items.put(BannerMeta.class, UBannerItem.class);
+        items.put(EnchantmentStorageMeta.class, UEnchantmentStorageItem.class);
+        items.put(FireworkEffectMeta.class, UFireworkEffectItem.class);
+        items.put(FireworkMeta.class, UFireworkItem.class);
+        items.put(LeatherArmorMeta.class, ULeatherArmorItem.class);
+        items.put(MapMeta.class, UMapItem.class);
+        items.put(PotionMeta.class, UPotionItem.class);
+        items.put(SkullMeta.class, USkullItem.class);
+        items.put(KnowledgeBookMeta.class, UKnowledgeBookItem.class);
+        items.put(TropicalFishBucketMeta.class, UTropicalFishBucketItem.class);
     }
 
     public static final UItem AIR = new UItem(new ItemStack(Material.AIR));
@@ -167,28 +164,9 @@ public class UItem implements ItemResolver {
         return Material.getMaterial(material);
     }
 
-    public static UItem deserialize(Config config, PlaceholderRegistry placeholders) {
-        Material type = config.getMaterialRequired("type");
-
-        Class<? extends ItemMeta> meta = Bukkit.getItemFactory().getItemMeta(type).getClass();
-        Class<? extends UItem> deserializer = deserializers.getOrDefault(meta, UItem.class);
-
-        try {
-            return deserializer
-                    .getConstructor(Material.class, Config.class, PlaceholderRegistry.class)
-                    .newInstance(type, config, placeholders);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static UItem deserialize(Config config) {
-        return deserialize(config, PlaceholderRegistry.def());
-    }
-
     @PolymorphicSelector
     private static Class<?> selectChild(@ConfigProperty("type") Material type) {
         Class<? extends ItemMeta> target = Bukkit.getItemFactory().getItemMeta(type).getClass();
-        return deserializers.getOrDefault(target, UItem.class);
+        return items.getOrDefault(target, UItem.class);
     }
 }

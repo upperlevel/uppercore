@@ -94,6 +94,8 @@ public class BukkitTypesConfigTest {
 
     @Test
     public void basicTest() {
+        PlaceholderUtil.setManager(new FakePlaceholderManager());
+
         registry.getFor(ConfigLoaderExample.class)
                 .parse(
                         new StringReader(

@@ -3,7 +3,6 @@ package xyz.upperlevel.uppercore.config;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlRepresenter;
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;
@@ -13,7 +12,6 @@ import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundExcept
 import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.itemstack.UItem;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
@@ -27,7 +25,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -706,23 +703,8 @@ public abstract class Config {
 
     // Custom Item
 
-    public UItem getUItem(String key, Function<Config, UItem> deserializer) {
-        Config sub = getConfig(key);
-        if (sub == null) return null;
-
-        try {
-            return deserializer.apply(sub);
-        } catch (InvalidConfigException e) {
-            throw adjustParsingException(key, e);
-        }
-    }
-
     public UItem getUItem(String key) {
-        return getUItem(key, UItem::deserialize);
-    }
-
-    public UItem getUItem(String key, PlaceholderRegistry local) {
-        return getUItem(key, config -> UItem.deserialize(config, local));
+        return get(key, UItem.class);
     }
 
     public UItem getUItem(String key, UItem def) {
@@ -732,12 +714,6 @@ public abstract class Config {
 
     public UItem getUItemRequired(String key) {
         UItem res = getUItem(key);
-        checkPropertyNotNull(key, res);
-        return res;
-    }
-
-    public UItem getUItemRequired(String key, PlaceholderRegistry local) {
-        UItem res = getUItem(key, local);
         checkPropertyNotNull(key, res);
         return res;
     }

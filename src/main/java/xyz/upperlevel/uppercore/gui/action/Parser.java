@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.gui.action;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
@@ -181,7 +182,7 @@ public interface Parser<T> {
                 if (object instanceof ItemStack)
                     return new UItem((ItemStack) object);
                 else if (object instanceof Map)
-                    return UItem.deserialize(Config.from((Map<String, Object>) object));
+                    return Config.from((Map<String, Object>) object).get(UItem.class);
                 else
                     throw new IllegalArgumentException("Cannot parse " + object + " as Item");
             }

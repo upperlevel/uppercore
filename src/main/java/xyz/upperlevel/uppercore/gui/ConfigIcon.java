@@ -99,7 +99,7 @@ public class ConfigIcon {
             result.updateInterval = config.getInt("update-interval", 0);
 
             if (config.has("item")) {
-                result.display = UItem.deserialize(config.getConfigRequired("item"));
+                result.display = config.getUItemRequired("item");
             }
             if (config.has("click")) {
                 result.link = IconClick.deserialize(plugin, config.getConfig("click"));
