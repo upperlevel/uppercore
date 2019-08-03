@@ -6,24 +6,17 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.junit.Test;
-import xyz.upperlevel.uppercore.FakePlaceholderManager;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.gui.GuiSize;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
-import xyz.upperlevel.uppercore.placeholder.managers.CustomPlaceholderManager;
-import xyz.upperlevel.uppercore.sound.PlaySound;
 
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
-import static xyz.upperlevel.uppercore.placeholder.PlaceholderValue.fake;
 
 public class BukkitTypesConfigTest {
     public static final ConfigParserRegistry registry = ConfigParserRegistry.getStandard();
-    private static final Plugin plugin = null;
 
     public static class ConfigLoaderExample {
         @ConfigConstructor
@@ -94,8 +87,6 @@ public class BukkitTypesConfigTest {
 
     @Test
     public void basicTest() {
-        PlaceholderUtil.setManager(new FakePlaceholderManager());
-
         registry.getFor(ConfigLoaderExample.class)
                 .parse(
                         new StringReader(
