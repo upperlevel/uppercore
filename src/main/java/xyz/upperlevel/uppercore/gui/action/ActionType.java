@@ -102,7 +102,7 @@ public abstract class ActionType<T extends Action> {
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> serialize(List<Action> s) {
         return s.stream()
-                .map(ActionType::serialize)
+                .map((Function<Action, Map<String, Object>>) ActionType::serialize)
                 .collect(Collectors.toList());
     }
 
