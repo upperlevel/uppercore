@@ -8,6 +8,6 @@ public interface RegistryVisitor {
     VisitResult postVisitRegistry(Registry<?> registry);
 
     enum VisitResult {
-        CONTINUE, SKIP, TERMINATE;
+        CONTINUE, SKIP, TERMINATE
     }
 }

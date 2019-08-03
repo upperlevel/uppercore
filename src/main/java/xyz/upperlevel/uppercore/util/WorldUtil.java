@@ -72,7 +72,7 @@ public final class WorldUtil {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static boolean deleteFolder(File path) {
         if (path.exists()) {
-            File files[] = path.listFiles();
+            File[] files = path.listFiles();
             if (files != null) {
                 for (File file : files) {
                     if (file.isDirectory()) {
@@ -94,7 +94,7 @@ public final class WorldUtil {
                 if (source.isDirectory()) {
                     if (!target.exists())
                         target.mkdirs();
-                    String files[] = source.list();
+                    String[] files = source.list();
                     for (String file : files) {
                         File srcFile = new File(source, file);
                         File destFile = new File(target, file);

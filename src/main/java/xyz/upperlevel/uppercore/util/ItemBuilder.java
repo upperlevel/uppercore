@@ -107,7 +107,7 @@ public class ItemBuilder {
 
         List<String> enchants = section.getStringList("enchantments");
         for (String enchant : enchants) {
-            String tmp[] = enchant.split(",");
+            String[] tmp = enchant.split(",");
 
             Enchantment enc = Enchantment.getByName(tmp[0]);
             int lev = Integer.parseInt(tmp[1]);

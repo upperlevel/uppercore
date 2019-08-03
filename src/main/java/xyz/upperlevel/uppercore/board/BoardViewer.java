@@ -126,17 +126,17 @@ public class BoardViewer {
         private void split(String line, StringBuffer prefix, StringBuffer entry, StringBuffer suffix) {
             if (!line.isEmpty()) {
                 int pre = Math.min(line.length(), MAX_PREFIX_CHARS);
-                prefix.append(line.substring(0, pre));
-                line = line.substring(pre, line.length());
+                prefix.append(line, 0, pre);
+                line = line.substring(pre);
 
                 if (!line.isEmpty()) {
                     int mid = Math.min(line.length(), MAX_ENTRY_CHARS);
-                    entry.append(line.substring(0, mid));
-                    line = line.substring(mid, line.length());
+                    entry.append(line, 0, mid);
+                    line = line.substring(mid);
 
                     if (!line.isEmpty()) {
                         int suf = Math.min(line.length(), MAX_SUFFIX_CHARS);
-                        suffix.append(line.substring(0, suf));
+                        suffix.append(line, 0, suf);
                     }
                 }
             }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class SpigotUpdateChecker extends UpdateChecker {
     public static final String API_URL = "http://www.spigotmc.org/api/general.php";
@@ -30,7 +31,7 @@ public class SpigotUpdateChecker extends UpdateChecker {
         HttpURLConnection connection = (HttpURLConnection) new URL(API_URL).openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
-        connection.getOutputStream().write(("key=" + API_KEY + "&resource=" + resId).getBytes("UTF-8"));
+        connection.getOutputStream().write(("key=" + API_KEY + "&resource=" + resId).getBytes(StandardCharsets.UTF_8));
         return (new BufferedReader(new InputStreamReader(connection.getInputStream()))).readLine();
     }
 }

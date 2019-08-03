@@ -246,7 +246,7 @@ public class ConstructorConfigParser<T> extends ConfigParser {
             // That is one of the main reasons that the raw types aren't encouraged
             return false;
         }
-        return nodesByName.keySet().contains(name);
+        return nodesByName.containsKey(name);
     }
 
     private static <T> ConstructorConfigParser<T> createForClass(Class<T> clazz, ConfigParserRegistry registry) {
