@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.board;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -30,6 +31,7 @@ public class SimpleConfigBoard implements Board {
         this.autoUpdateInterval = autoUpdateInterval;
     }
 
+    @ConfigConstructor // TODO: parameters
     public SimpleConfigBoard(Config config) {
         this(
                 config.getMessageStr("title"),
