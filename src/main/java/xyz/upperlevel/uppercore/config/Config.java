@@ -750,6 +750,10 @@ public abstract class Config {
                 .parse(getYamlNode());
     }
 
+    public <T> T get(Class<T> clazz) {
+        return get((Type) clazz);
+    }
+
     public <T> T get(String key, Type type, T def) {
         Node node = getNode(key);
         if (node == null) return def;
@@ -762,10 +766,18 @@ public abstract class Config {
         return get(key, type, null);
     }
 
+    public <T> T get(String key, Class<T> clazz) {
+        return get(key, (Type) clazz);
+    }
+
     public <T> T getRequired(String key, Type type) {
         Object res = get(key, type);
         checkPropertyNotNull(key, res);
         return (T) res;
+    }
+
+    public <T> T getRequired(String key, Class<T> clazz) {
+        return getRequired(key, (Type) clazz);
     }
 
     // Config map
