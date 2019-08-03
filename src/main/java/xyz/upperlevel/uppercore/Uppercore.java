@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bstats.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.upperlevel.uppercore.arena.Arena;
+import xyz.upperlevel.uppercore.arena.ArenaManager;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.HelpCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
@@ -22,13 +22,14 @@ import java.io.File;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-@Getter
 public class Uppercore {
     public static final String SCRIPT_CONFIG = "script_engine.yml";
 
     private static Uppercore instance;
 
     private Plugin plugin;
+
+    @Getter
     private Logger coreLogger;
 
     private RegistryRoot registryRoot = new RegistryRoot();
@@ -36,11 +37,12 @@ public class Uppercore {
     private HotbarManager hotbars;
     private ScriptManager scripts;
     private StorageManager storages;
+
     private ConfigParserRegistry parsers = ConfigParserRegistry.createStandard();
 
     private Metrics metrics;
 
-    public void onEnable(JavaPlugin plugin) {
+    private Uppercore(JavaPlugin plugin) {
         if (instance != null) {
             if (instance.plugin == plugin) {
                 throw new RuntimeException("Creating two instances of UpperCore!");
@@ -49,10 +51,10 @@ public class Uppercore {
             }
         }
         instance = this;
-
         this.plugin = plugin;
-        coreLogger = LogManager.getLogManager().getLogger(plugin.getLogger().getName() + ".ucore");
-        coreLogger.info("Loading UpperCore version: " + UppercoreInfo.VERSION);
+
+        this.coreLogger = Logger.getLogger(plugin.getLogger().getName() + ".ucore");
+        this.coreLogger.info("Loading UpperCore version: " + UppercoreInfo.VERSION);
 
         // Metrics setup
         metrics = new Metrics(plugin);
@@ -69,10 +71,11 @@ public class Uppercore {
         HelpCommand.configure(commandConfig);
         FunctionalCommand.configure(commandConfig);
 
-        // Game configuration
+        /* TODO Arena API is late to be defined...
         plugin.saveResource("game.yml", false);
         cfg = Config.fromYaml(new File(plugin.getDataFolder(), "game.yml"));
         Arena.configure(cfg);
+        */
 
         // Managers
         guis = new GuiManager();
@@ -92,11 +95,30 @@ public class Uppercore {
         // TODO: check what plugins use uppercore?
     }
 
-    public void onDisable() {
+    /**
+     * Unloads Uppercore and destroys the current instance.
+     */
+    public void destroy() {
+        // TODO remove garbage
+        instance = null;
+    }
+
+    /**
+     * Returns an instance of Uppercore to use within the given plugin.
+     *
+     * @param plugin the target plugin.
+     * @return an instance of Uppercore.
+     */
+    public static Uppercore hook(JavaPlugin plugin) {
+        return new Uppercore(plugin);
     }
 
     public static Uppercore get() {
         return instance;
+    }
+
+    public static Plugin getPlugin() {
+        return instance.plugin;
     }
 
     public static Logger logger() {

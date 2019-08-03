@@ -1,5 +1,7 @@
 package xyz.upperlevel.uppercore.arena;
 
+import org.bukkit.entity.Player;
+
 /**
  * Every game is composed by one or multiple phases,
  * every phase can even contain multiple phases (a {@link NodePhase}) forming a tree.
@@ -19,4 +21,8 @@ public interface Phase {
     void onEnable(Phase previousPhase);
 
     void onDisable(Phase nextPhase);
+
+    void onPlayerJoin(Player player);
+
+    void onPlayerQuit(Player player);
 }

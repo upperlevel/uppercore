@@ -1,107 +1,97 @@
 package xyz.upperlevel.uppercore.arena;
 
-import lombok.NonNull;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.arena.events.ArenaAddSignEvent;
-import xyz.upperlevel.uppercore.arena.events.ArenaCreateEvent;
-import xyz.upperlevel.uppercore.arena.events.ArenaDestroyEvent;
-import xyz.upperlevel.uppercore.arena.events.ArenaRemoveSignEvent;
-import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.util.WorldUtil;
 
-import java.util.*;
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ArenaManager implements Listener {
-    private final Map<String, Arena> arenasById = new HashMap<>();
-    private final Map<Block, Arena> arenasBySign = new HashMap<>();
+public class ArenaManager {
+    public static final File ARENAS_FOLDER = new File(Uppercore.getPlugin().getDataFolder(), "arenas");
+    public static ArenaManager instance = new ArenaManager();
 
-    public ArenaManager(Plugin plugin) {
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
+    private final Map<String, ArenaContainer> byId = new HashMap<>();
 
-    public void dismiss() {
-        HandlerList.unregisterAll(this);
-    }
+    //================================================================================
+    // Loading
 
-    public boolean register(@NonNull Arena arena) {
-        if (!arenasById.containsKey(arena.getId())) {
-            arenasById.put(arena.getId(), arena);
-            Bukkit.getPluginManager().callEvent(new ArenaCreateEvent(arena));
-            return true;
+    private void load(Phase lobbyPhase) {
+        File[] files = ARENAS_FOLDER.listFiles();
+        if (files == null) {
+            return;
         }
-        return false;
-    }
+        for (File file : files) {
+            String id = file.getName().substring(0, file.getName().lastIndexOf('.'));
 
-    public boolean unregister(String id) {
-        Arena arena = arenasById.remove(id);
-        if (arena != null) {
-            Bukkit.getPluginManager().callEvent(new ArenaDestroyEvent(arena));
-            return true;
+            // First loads the arena world.
+            String world = ArenaContainer.getSignature(id);
+            WorldUtil.createEmptyWorld(world);
+
+            // Then loads arena's data.
+            ConfigurationSection section = YamlConfiguration.loadConfiguration(file).getConfigurationSection(id);
+            ArenaContainer arena = ArenaContainer.deserialize(id, section);
+            register(arena);
+
+            // If the arena is ready, sets to enabled.
+            if (arena.isReady()) {
+                arena.setEnabled(true, lobbyPhase);
+            }
         }
-        return false;
     }
 
-    public Arena getArena(String id) {
-        return arenasById.get(id);
+    //================================================================================
+    // Registering
+
+    public void register(ArenaContainer arena) {
+        byId.put(arena.getId(), arena);
     }
 
-    public Arena getArena(Player player) {
-        for (Arena arena : arenasById.values()) {
-            if (arena.hasPlayer(player)) {
+    public ArenaContainer get(String id) {
+        return byId.get(id);
+    }
+
+    public ArenaContainer get(World world) {
+        for (ArenaContainer arena : byId.values()) {
+            if (world.equals(arena.getWorld())) {
                 return arena;
             }
         }
         return null;
     }
 
-    public Arena getArenaBySign(Block block) {
-        return arenasBySign.get(block);
+    public ArenaContainer get(Player player) {
+        for (ArenaContainer arena : byId.values()) {
+            if (arena.getPlayers().contains(player)) {
+                return arena;
+            }
+        }
+        return null;
     }
 
-    public Collection<Arena> getArenas() {
-        return arenasById.values();
-    }
-
-    @EventHandler
-    protected void onAddSign(ArenaAddSignEvent e) {
-        arenasBySign.put(e.getBlock(), e.getArena());
-    }
-
-    @EventHandler
-    protected void onBlockBreak(BlockBreakEvent e) {
-        Arena arena = arenasBySign.get(e.getBlock());
-        if (arena != null) {
-            arena.removeSign(e.getBlock());
-            e.getPlayer().sendMessage(ChatColor.RED + "You just broke an arena sign!");
+    public void destroy(ArenaContainer arena) {
+        byId.remove(arena.getId());
+        if (arena.getWorld() != null) {
+            arena.destroy();
         }
     }
 
-    @EventHandler
-    protected void onRemoveSign(ArenaRemoveSignEvent e) {
-        arenasBySign.remove(e.getBlock(), e.getArena());
+    public Collection<ArenaContainer> getArenas() {
+        return byId.values();
     }
 
-    public List<Map<String, Object>> serialize() {
-        List<Map<String, Object>> serialized = new ArrayList<>();
-        for (Arena arena : arenasById.values()) {
-            serialized.add(arena.serialize());
+    public void unload() {
+        for (ArenaContainer arena : byId.values()) {
+            arena.unload();
         }
-        return serialized;
     }
 
-    public static ArenaManager load(Plugin plugin, List<Map<String, Object>> arenas, ArenaFactory arenaFactory) {
-        ArenaManager arenaManager = new ArenaManager(plugin);
-        for (Map<String, Object> arena : arenas) {
-            Config cfg = Config.from(arena);
-            arenaManager.register(arenaFactory.load(cfg.getStringRequired("id"), arena));
-        }
-        return arenaManager;
+    public static ArenaManager get() {
+        return instance;
     }
 }
