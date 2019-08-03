@@ -23,8 +23,6 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Uppercore {
-    public static final String SCRIPT_CONFIG = "script_engine.yml";
-
     private static Uppercore instance;
 
     private Plugin plugin;
@@ -84,11 +82,7 @@ public class Uppercore {
         storages = new StorageManager();
 
         // ScriptManager setup
-        File scriptsConfigFile = new File(plugin.getDataFolder(), SCRIPT_CONFIG);
-        if (!scriptsConfigFile.exists()) {
-            plugin.saveResource(SCRIPT_CONFIG, false);
-        }
-        scripts.load(new File(plugin.getDataFolder(), "engines"), scriptsConfigFile);
+        scripts.load(new File(plugin.getDataFolder(), "engines"), cfg.getConfigRequired("scripts"));
 
         // Metrics custom data setup
         // TODO: custom data

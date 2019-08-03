@@ -1,9 +1,7 @@
 package xyz.upperlevel.uppercore.script;
 
 import lombok.Getter;
-import org.bstats.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
@@ -31,7 +29,7 @@ public class ScriptManager {
     @Getter
     private Map<String, String> extensionsToEngineName;
 
-    public void load(File classPath, File scriptEngineConfig) {
+    public void load(File classPath, Config scriptEngineConfig) {
         this.classPath = classPath;
         {//Create classLoader
             File[] files = classPath.listFiles();
@@ -85,10 +83,10 @@ public class ScriptManager {
         reloadConfig(scriptEngineConfig);
     }
 
-    public void reloadConfig(File configFile) {
+    public void reloadConfig(Config configFile) {
         extensionsToEngineName = new HashMap<>();
 
-        ScriptConfig config = Config.fromYaml(configFile).get(ScriptConfig.class, null);
+        ScriptConfig config = configFile.get(ScriptConfig.class, null);
         for (Map.Entry<String, String> obj : config.engines.entrySet()) {
             extensionsToEngineName.put(obj.getKey(), obj.getValue());
         }

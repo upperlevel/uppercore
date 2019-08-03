@@ -42,11 +42,11 @@ commands:
 # -------------- Advanced! Do not change unless you know what you're doing --------------
 # ---------------------------------------------------------------------------------------
 
-# Extensions to script engine names
-# Do NOT change unless you know what you're doing!
-script-engines:
-  js: javascript
-  py: python
+scripts:
+  # Extensions to script engine names
+  engines:
+    js: javascript
+    py: python
 
 # A spigot bug re-clicks a slot twice if there is too much lag, this behaviour
 # might cause the lobby-leave hotbar button to press instantly after joining.
