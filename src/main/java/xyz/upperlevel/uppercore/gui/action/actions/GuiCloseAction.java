@@ -12,7 +12,7 @@ import static xyz.upperlevel.uppercore.Uppercore.guis;
 public class GuiCloseAction extends Action<GuiCloseAction> {
     public static final GuiCloseActionType TYPE = new GuiCloseActionType();
 
-    @ConfigConstructor
+    @ConfigConstructor(inlineable = true)
     public GuiCloseAction() {
         super(TYPE);
     }

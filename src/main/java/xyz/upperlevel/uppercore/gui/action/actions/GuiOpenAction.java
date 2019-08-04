@@ -27,7 +27,7 @@ public class GuiOpenAction extends Action<GuiOpenAction> {
     @Getter
     private final boolean clearStack;
 
-    @ConfigConstructor
+    @ConfigConstructor(inlineable = true)
     public GuiOpenAction(
             @ConfigProperty("id") PlaceholderValue<String> guiId,
             @ConfigProperty(value = "remove-history", optional = true) Boolean clearStack

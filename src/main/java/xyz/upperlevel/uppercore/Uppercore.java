@@ -115,6 +115,10 @@ public class Uppercore {
         return instance;
     }
 
+    public static void overrideInstance(Uppercore instance) {
+        Uppercore.instance = instance;
+    }
+
     public static Plugin getPlugin() {
         return instance.plugin;
     }

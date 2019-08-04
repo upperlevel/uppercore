@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
@@ -22,6 +23,7 @@ public class PlaySoundAction extends Action<PlaySoundAction> {
     private final PlaceholderValue<Float> volume, pitch;
 
 
+    @ConfigConstructor(inlineable = true)
     public PlaySoundAction(
             @ConfigProperty("sound") Sound sound,
             @ConfigProperty(value = "volume", optional = true) PlaceholderValue<Float> volume,

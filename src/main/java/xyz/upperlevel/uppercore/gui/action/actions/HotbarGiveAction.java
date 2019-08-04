@@ -27,7 +27,7 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
     @Getter
     private final List<Action> fail;
 
-    @ConfigConstructor
+    @ConfigConstructor(inlineable = true)
     public HotbarGiveAction(
             @ConfigProperty("id") PlaceholderValue<String> hotbarPath,
             @ConfigProperty(value = "actions", optional = true) List<Action> actions,

@@ -22,7 +22,7 @@ public class CommandAction extends Action<CommandAction> {
     private final PlaceholderValue<String> command;
     private final Executor executor;
 
-    @ConfigConstructor
+    @ConfigConstructor(inlineable = true)
     public CommandAction(
             @ConfigProperty("command") PlaceholderValue<String> command,
             @ConfigProperty(value = "executor", optional = true) Executor executor

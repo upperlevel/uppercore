@@ -24,7 +24,7 @@ public class MessageAction extends Action<MessageAction> {
     @Getter
     private final boolean raw;
 
-    @ConfigConstructor
+    @ConfigConstructor(inlineable = true)
     public MessageAction(
             @ConfigProperty("message") PlaceholderValue<String> message,
             @ConfigProperty(value = "raw", optional = true) Boolean raw

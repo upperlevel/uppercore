@@ -12,7 +12,7 @@ import static xyz.upperlevel.uppercore.Uppercore.guis;
 public class GuiReloadAction extends Action<GuiReloadAction> {
     public static final GuiReloadActionType TYPE = new GuiReloadActionType();
 
-    @ConfigConstructor
+    @ConfigConstructor(inlineable = true)
     public GuiReloadAction() {
         super(TYPE);
     }

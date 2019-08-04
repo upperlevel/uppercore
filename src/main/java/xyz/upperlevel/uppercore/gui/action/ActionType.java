@@ -7,16 +7,13 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.gui.action.actions.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class ActionType<T extends Action> {
-    private static Map<String, ActionType> types = new HashMap<>();
+    private static Map<String, ActionType<?>> types = new HashMap<>();
 
     static {
         registerDefaults();
@@ -108,5 +105,9 @@ public abstract class ActionType<T extends Action> {
 
     public static ActionType<?> getActionType(String type) {
         return types.get(type);
+    }
+
+    public static Map<String, ActionType<?>> getActionTypes() {
+        return Collections.unmodifiableMap(types);
     }
 }

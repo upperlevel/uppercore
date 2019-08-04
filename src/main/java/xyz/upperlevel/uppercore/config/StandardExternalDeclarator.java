@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.config;
 
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -7,12 +8,16 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
+import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.gui.GuiSize;
+import xyz.upperlevel.uppercore.gui.action.Action;
+import xyz.upperlevel.uppercore.gui.action.ActionType;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
 
 import java.util.Arrays;
@@ -183,6 +188,42 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
                 particlesEnabled,
                 color.orElse(particlesEnabled)
         );
+    }
+
+    @ConfigConstructor
+    public static Action<?> parseGuiAction(Node raw) {
+        checkTag(raw, Arrays.asList(Tag.MAP, Tag.STR));
+
+        if (raw instanceof MappingNode) {
+            MappingNode map = (MappingNode) raw;
+
+            if (map.getValue().size() > 1) {
+                throw new ConfigException("Cannot have more than one action for now", raw);
+            }
+
+            Node typeNode = map.getValue().get(0).getKeyNode();
+            Node valueNode = map.getValue().get(0).getValueNode();
+            checkTag(typeNode, Tag.STR);
+            String type = ((ScalarNode)typeNode).getValue();
+
+            ActionType<?> t = ActionType.getActionType(type.toLowerCase());
+            if (t == null) {
+                throw new ConfigException("Cannot find action \"" + type + "\" in " + ActionType.getActionTypes().keySet(), typeNode);
+            }
+
+            //return t.load(action.getValue());
+            return (Action<?>) ConfigParserRegistry.getStandard()
+                    .getFor(t.getHandleClass())
+                    .parse(valueNode);
+        } else { // Tag.STR
+            String type = ((ScalarNode)raw).getValue();
+
+            ActionType<?> t = ActionType.getActionType(type.toLowerCase());
+            if (t == null) {
+                throw new ConfigException("Cannot find action \"" + type + "\" in " + ActionType.getActionTypes().keySet(), raw);
+            }
+            return Config.from(ImmutableMap.of()).get(t.getHandleClass());
+        }
     }
 
     @ConfigConstructor

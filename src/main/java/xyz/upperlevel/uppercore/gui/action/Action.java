@@ -22,13 +22,4 @@ public abstract class Action<T extends Action<T>> implements Link {
         this.type = type;
         this.registry = Uppercore.registry();
     }
-
-    @PolymorphicSelector
-    private static Class<? extends Action> selectAction(@ConfigProperty("type") String rawType) {
-        ActionType<?> type = ActionType.getActionType(rawType);
-        if (type == null) {
-            throw new InvalidConfigException("Cannot find action " + rawType);
-        }
-        return type.getHandleClass();
-    }
 }

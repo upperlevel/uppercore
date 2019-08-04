@@ -27,7 +27,7 @@ public class VaultTakeAction extends Action<VaultTakeAction> {
     @Getter
     private List<Action> fail;
 
-    @ConfigConstructor
+    @ConfigConstructor(inlineable = true)
     public VaultTakeAction(
             @ConfigProperty("value") PlaceholderValue<Double> value,
             @ConfigProperty(value = "actions", optional = true) List<Action> actions,
