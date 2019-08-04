@@ -18,6 +18,12 @@ project.ext {
     mcVersion = "1.13-R0.1-SNAPSHOT"
 }
 
+test {
+    testLogging {
+        exceptionFormat = "full"
+    }
+}
+
 sourceSets {
     integrationTest {
         java {
