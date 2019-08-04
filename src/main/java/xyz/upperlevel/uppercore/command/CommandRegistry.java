@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -12,15 +13,15 @@ import java.util.List;
 import java.util.Locale;
 
 public class CommandRegistry {
-    private final Plugin plugin;
-    private final List<Command> commands = new ArrayList<>();
+    private static final List<Command> commands = new ArrayList<>();
 
-    public CommandRegistry(Plugin plugin) {
-        this.plugin = plugin;
+    private CommandRegistry() {
     }
 
-    public boolean register(Command command) {
-        Permission root = new Permission(plugin.getName().toLowerCase(Locale.ENGLISH));
+    public static boolean register(Command command) {
+        Uppercore.logger().info("[Uppercore] Registering command: " + command.getFullName());
+
+        Permission root = new Permission(Uppercore.getPlugin().getName().toLowerCase(Locale.ENGLISH));
         command.completePermission(root);
         command.registerPermission();
 
@@ -33,7 +34,7 @@ public class CommandRegistry {
         return true;
     }
 
-    private void printMarkdown(FileWriter writer, List<Command> commands) throws IOException {
+    private static void printMarkdown(FileWriter writer, List<Command> commands) throws IOException {
         for (Command command : commands) {
             writer.write(command.getFullName() + " | " + command.getPermission().getName() + " | " + command.getSenderType().name() + "\n");
 
@@ -43,7 +44,7 @@ public class CommandRegistry {
         }
     }
 
-    public void printMarkdown(File file) {
+    public static void printMarkdown(File file) {
         try {
             file.getParentFile().mkdirs();
             file.createNewFile();
@@ -57,13 +58,5 @@ public class CommandRegistry {
             throw new IllegalStateException(e);
         }
 
-    }
-
-    public void printMarkdown() {
-        printMarkdown(new File(plugin.getDataFolder(), "COMMANDS.md"));
-    }
-
-    public static CommandRegistry create(Plugin plugin) {
-        return new CommandRegistry(plugin);
     }
 }

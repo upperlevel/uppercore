@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.HelpCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
+import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParserManager;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
@@ -74,6 +75,9 @@ public class Uppercore {
         cfg = Config.fromYaml(new File(plugin.getDataFolder(), "game.yml"));
         Arena.configure(cfg);
         */
+
+        // Commands
+        ArgumentParserManager.init();
 
         // Managers
         guis = new GuiManager();

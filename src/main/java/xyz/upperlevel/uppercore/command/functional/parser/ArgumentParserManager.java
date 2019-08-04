@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.command.functional.parser;
 
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.parsers.ArenaArgumentParser;
 import xyz.upperlevel.uppercore.command.functional.parser.def.*;
 
@@ -8,15 +9,11 @@ import java.util.*;
 public final class ArgumentParserManager {
     private static Map<Class<?>, ArgumentParser> parsers = new HashMap<>();
 
-    static {
-        init();
-    }
-
     /**
      * Registers some default argument parsers.
      */
     public static void init() {
-        register(FunctionalArgumentParser.load(new ArenaArgumentParser()));
+        register(new ArenaArgumentParser());
         register(FunctionalArgumentParser.load(new PrimitiveArgumentParsers()));
         register(Arrays.asList(
                 new ColorArgumentParser(),
@@ -25,6 +22,7 @@ public final class ArgumentParserManager {
                 new SoundArgumentParser(),
                 new VectorArgumentParser()
         ));
+        Uppercore.logger().info("Argument parsers registered!");
     }
 
     /**

@@ -46,7 +46,7 @@ public class FunctionalCommand extends Command {
     private static Message invalidArgumentTypeMessage;
 
     public FunctionalCommand(String name, Object residence, Method function) {
-        super(name);
+        super(name.toLowerCase(Locale.ENGLISH));
         this.residence = residence;
         this.function = function;
 
@@ -62,7 +62,11 @@ public class FunctionalCommand extends Command {
 
         WithPermission permission = function.getAnnotation(WithPermission.class);
         if (permission != null) {
-            setPermissionPortion(new Permission(permission.value(), permission.description(), permission.user().get()));
+            setPermissionPortion(new Permission(
+                    permission.value().isEmpty() ? getName() : permission.value(),
+                    permission.description(),
+                    permission.user().get())
+            );
             setPermissionCompleter(permission.completer());
         }
 
