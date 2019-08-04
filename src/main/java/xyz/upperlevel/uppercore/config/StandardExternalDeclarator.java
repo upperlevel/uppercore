@@ -87,7 +87,7 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
         ScalarNode node = (ScalarNode) rawNode;
         Enchantment res = null;
         if (node.getTag() == Tag.STR) {
-            NamespacedKey key = parseConfigNamespacedKey(node.getValue().replace(' ', '_').toUpperCase(), node);
+            NamespacedKey key = parseConfigNamespacedKey(node.getValue().replace(' ', '_').toLowerCase(Locale.ENGLISH), node);
             res = Enchantment.getByKey(key);
         }
         if (res == null) {
