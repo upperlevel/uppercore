@@ -22,7 +22,6 @@ public final class ArgumentParserManager {
                 new SoundArgumentParser(),
                 new VectorArgumentParser()
         ));
-        Uppercore.logger().info("Argument parsers registered!");
     }
 
     /**

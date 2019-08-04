@@ -17,6 +17,7 @@ public class TestAllArgumentParser {
         data.put("10.9", float.class);
         data.put("true", boolean.class);
 
+        ArgumentParserManager.init();
         Map<String, Object> result = new HashMap<>();
         for (Map.Entry<String, Class<?>> entry : data.entrySet()) {
             try {
