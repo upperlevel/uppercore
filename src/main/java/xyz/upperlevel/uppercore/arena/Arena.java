@@ -48,6 +48,10 @@ public class Arena {
     @Setter
     private Location lobby;
 
+    @Getter
+    @Setter
+    private OnQuitHandler onQuitHandler;
+
     public Arena(String id) {
         this.id = id.toLowerCase(ENGLISH);
         this.signature = getSignature(id);
@@ -218,6 +222,8 @@ public class Arena {
             return;
         }
         players.remove(player);
-        player.teleport(getFreeWorld().getSpawnLocation()); // TODO temp
+        if (onQuitHandler != null) {
+            onQuitHandler.handle(player);
+        }
     }
 }
