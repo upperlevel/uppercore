@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.PolymorphicSelector;
@@ -19,7 +18,6 @@ import xyz.upperlevel.uppercore.itemstack.meta.*;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -166,7 +164,15 @@ public class UItem implements ItemResolver {
 
     @PolymorphicSelector
     private static Class<?> selectChild(@ConfigProperty("type") Material type) {
-        Class<? extends ItemMeta> target = Bukkit.getItemFactory().getItemMeta(type).getClass();
-        return items.getOrDefault(target, UItem.class);
+        Class<? extends ItemMeta> sourceClass = Bukkit.getItemFactory().getItemMeta(type).getClass();
+
+        // The meta interfaces are implemented by craftbukkit classes
+        for (Map.Entry<Class<? extends ItemMeta>, Class<? extends UItem>> entry : items.entrySet()) {
+            if (entry.getKey().isAssignableFrom(sourceClass)) {
+                return entry.getValue();
+            }
+        }
+
+        return UItem.class;
     }
 }

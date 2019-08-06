@@ -23,7 +23,7 @@ public class ULeatherArmorItem extends UItem {
             @ConfigProperty("type") Material type,
             @ConfigProperty(value = "data", optional = true) PlaceholderValue<Short> data,
             @ConfigProperty(value = "amount", optional = true) PlaceholderValue<Integer> amount,
-            @ConfigProperty(value = "value", optional = true) String rawName,
+            @ConfigProperty(value = "name", optional = true) String rawName,
             @ConfigProperty(value = "lore", optional = true) List<PlaceholderValue<String>> lore,
             @ConfigProperty(value = "flags", optional = true) List<ItemFlag> flags,
             @ConfigProperty(value = "enchantments", optional = true) Map<Enchantment, PlaceholderValue<Integer>> enchantments,
