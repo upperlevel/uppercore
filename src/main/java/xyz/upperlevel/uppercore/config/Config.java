@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.config;
 
+import lombok.NonNull;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlRepresenter;
@@ -28,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static xyz.upperlevel.uppercore.config.ConfigUtil.legacyAwareMaterialParse;
 
@@ -785,11 +787,32 @@ public abstract class Config {
 
     // Helper functions and Config builders
 
-    public static Config from(Map<String, Object> map) {
+    public static Config from(@NonNull Map<String, Object> map) {
         return new Config() {
             @Override
             public Object get(String key) {
-                return map.get(key);
+                int start = 0;
+
+                Map<String, Object> current = map;
+
+                while (true) {
+                    int strEnd = key.indexOf(".", start);
+
+                    if (strEnd == -1) {
+                        return current.get(key.substring(start));
+                    }
+
+                    String currentKey = key.substring(start, strEnd);
+                    Object nextObj = current.get(currentKey);
+
+                    if (nextObj == null) return null;
+
+                    if (!(nextObj instanceof Map)) {
+                        throw invalidValueTypeException(key, "Map");
+                    }
+                    current = (Map<String, Object>) nextObj;
+                    start = strEnd + 1;
+                }
             }
 
             @Override
@@ -804,7 +827,7 @@ public abstract class Config {
         };
     }
 
-    public static Config from(ConfigurationSection section) {
+    public static Config from(@NonNull ConfigurationSection section) {
         return new Config() {
             @Override
             public Object get(String key) {
@@ -837,5 +860,9 @@ public abstract class Config {
         } catch (IOException e) {
             throw new RuntimeException("Failed to read yaml " + in.getName(), e);
         }
+    }
+
+    public static Config empty() {
+        return from(emptyMap());
     }
 }

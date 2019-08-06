@@ -11,8 +11,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class ConfigIntegrationTest {
@@ -104,6 +103,19 @@ public class ConfigIntegrationTest {
                 "    c: d\n"
         ));
         assertEquals("d", c.getStringRequired("a.b.c"));
+
+        c = Config.from(ImmutableMap.of(
+                "a", ImmutableMap.of(
+                        "b", ImmutableMap.of(
+                                "c", "d"
+                        )
+                )
+        ));
+        assertEquals("d", c.getStringRequired("a.b.c"));
+
+        c = Config.from(ImmutableMap.of("a", ImmutableMap.of("test123", "mictest")));
+        assertEquals("mictest", c.getStringRequired("a.test123"));
+        assertNull(c.getString("b.test.abc"));
     }
 
     @Test
