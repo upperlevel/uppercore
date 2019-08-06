@@ -45,6 +45,9 @@ public class Arena {
     private final World world;
 
     @Getter
+    private final PlaceholderRegistry placeholders;
+
+    @Getter
     private boolean enabled;
 
     @Getter
@@ -67,6 +70,7 @@ public class Arena {
         if (world == null) {
             throw new IllegalStateException("Arena's world isn't loaded, or doesn't exist: " + signature);
         }
+        this.placeholders = createPlaceholders();
     }
 
     @ConfigConstructor
@@ -86,33 +90,62 @@ public class Arena {
         }
     }
 
+    /**
+     * Gets the arena name.
+     * Currently it's just an alias to <code>getId()</code>.
+     */
+    public String getName() {
+        return id;
+    }
+
+    /**
+     * Creates the placeholders for this arena.
+     */
+    protected PlaceholderRegistry createPlaceholders() {
+        return PlaceholderRegistry.create()
+                .set("arena_id", () -> id)
+                .set("arena_name", this::getName)
+                .set("arena_signature", () -> signature)
+                .set("players", () -> Integer.toString(players.size()));
+    }
+
     /* Join signs */
 
-    /** Adds a join sign to the arena. */
+    /**
+     * Adds a join sign to the arena.
+     */
     public boolean addJoinSign(Sign joinSign) {
         boolean result = joinSigns.add(joinSign);
         updateJoinSign(joinSign);
         return result;
     }
 
-    /** Removes a join sign from the arena. */
+    /**
+     * Removes a join sign from the arena.
+     */
     public boolean removeJoinSign(Sign joinSign) {
         boolean result = joinSigns.remove(joinSign);
         joinSign.getBlock().breakNaturally();
         return result;
     }
 
-    /** A list of all join signs present for this arena. */
+    /**
+     * A list of all join signs present for this arena.
+     */
     public Collection<Sign> getJoinSigns() {
         return Collections.unmodifiableSet(joinSigns);
     }
 
-    /** Iterates over all join signs and updates them. */
+    /**
+     * Iterates over all join signs and updates them.
+     */
     public void updateJoinSigns() {
         getJoinSigns().forEach(this::updateJoinSign);
     }
 
-    /** Decorates the given join sign. May be overwritten. */
+    /**
+     * Decorates the given join sign. May be overwritten.
+     */
     public void updateJoinSign(Sign joinSign) {
     }
 
