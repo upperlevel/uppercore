@@ -12,6 +12,7 @@ import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
@@ -26,6 +27,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static xyz.upperlevel.uppercore.config.ConfigUtil.legacyAwareMaterialParse;
 import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkTag;
 
 public class StandardExternalDeclarator implements ConfigExternalDeclarator {
@@ -59,8 +61,9 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
         if (node.getTag() == Tag.INT) {
             throw new ConfigException("Cannot find Material by int, find the correct name here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html", rawNode.getStartMark());
         } else {// node.getTag() == Tag.STR
-            res = Material.getMaterial(node.getValue().replace(' ', '_').toUpperCase());
+            res = legacyAwareMaterialParse(node.getValue());
         }
+
         if (res == null) {
             throw new WrongValueConfigException(node, node.getValue(), "Material");
         }

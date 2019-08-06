@@ -5,10 +5,12 @@ import com.google.common.collect.Maps;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
 import java.io.File;
@@ -69,6 +71,20 @@ public final class ConfigUtil {
         } else {
             return Color.fromRGB(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
         }
+    }
+
+    public static Material legacyAwareMaterialParse(String name) {
+        String processedName = name.replace(' ', '_').toUpperCase();
+
+        Material res = Material.getMaterial(processedName);
+        if (res != null) return res;
+
+        res = Material.getMaterial(processedName, true);
+        if (res != null) {
+            Uppercore.logger().severe("------ LEGACY MATERIAL FOUND: '" + processedName + "' PLEASE REPLACE WITH: '" + res.name() + "'");
+        }
+
+        return res;
     }
 
     public static FireworkEffect.Type parseFireworkEffectType(String s) {

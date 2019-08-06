@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
+import static xyz.upperlevel.uppercore.config.ConfigUtil.legacyAwareMaterialParse;
 
 @SuppressWarnings({"unchecked"}) // -_-
 public abstract class Config {
@@ -513,7 +514,7 @@ public abstract class Config {
             if (raw instanceof Number) {
                 throw invalidConfigException(key, "Cannot use ID to get material, visit https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for names");
             } else if (raw instanceof String) {
-                res = Material.getMaterial(((String) raw).replace(' ', '_').toUpperCase());
+                res = legacyAwareMaterialParse((String) raw);
             } else {
                 throw invalidValueTypeException(key, "String");
             }
