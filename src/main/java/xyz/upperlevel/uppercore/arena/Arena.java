@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.Yaml;
@@ -23,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Locale.ENGLISH;
 
@@ -54,6 +58,8 @@ public class Arena {
     @Setter
     private OnQuitHandler onQuitHandler;
 
+    private final Set<Sign> joinSigns = new HashSet<>();
+
     public Arena(String id) {
         this.id = id.toLowerCase(ENGLISH);
         this.signature = getSignature(id);
@@ -66,9 +72,48 @@ public class Arena {
     @ConfigConstructor
     public Arena(
             @ConfigProperty("id") String id,
-            @ConfigProperty("lobby") Location lobby) {
+            @ConfigProperty("lobby") Location lobby,
+            @ConfigProperty("join-signs") List<Location> joinSigns) {
         this(id);
         this.lobby = lobby;
+        for (Location sign : joinSigns) {
+            Block block = sign.getBlock();
+            if (!(block.getState() instanceof Sign)) {
+                Uppercore.logger().warning("An invalid sign was saved for arena: " + id);
+                continue;
+            }
+            this.joinSigns.add((Sign) block.getState());
+        }
+    }
+
+    /* Join signs */
+
+    /** Adds a join sign to the arena. */
+    public boolean addJoinSign(Sign joinSign) {
+        boolean result = joinSigns.add(joinSign);
+        updateJoinSign(joinSign);
+        return result;
+    }
+
+    /** Removes a join sign from the arena. */
+    public boolean removeJoinSign(Sign joinSign) {
+        boolean result = joinSigns.remove(joinSign);
+        joinSign.getBlock().breakNaturally();
+        return result;
+    }
+
+    /** A list of all join signs present for this arena. */
+    public Collection<Sign> getJoinSigns() {
+        return Collections.unmodifiableSet(joinSigns);
+    }
+
+    /** Iterates over all join signs and updates them. */
+    public void updateJoinSigns() {
+        getJoinSigns().forEach(this::updateJoinSign);
+    }
+
+    /** Decorates the given join sign. May be overwritten. */
+    public void updateJoinSign(Sign joinSign) {
     }
 
     public boolean isReady() {
@@ -79,6 +124,7 @@ public class Arena {
         return new HashMap<String, Object>() {{
             put("id", id);
             put("lobby", LocUtil.serialize(lobby));
+            put("join-signs", joinSigns.stream().map(sign -> LocUtil.serialize(sign.getLocation())).collect(Collectors.toList()));
         }};
     }
 

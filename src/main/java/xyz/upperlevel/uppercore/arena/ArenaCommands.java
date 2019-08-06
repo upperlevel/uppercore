@@ -3,6 +3,8 @@ package xyz.upperlevel.uppercore.arena;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
@@ -155,5 +157,35 @@ public class ArenaCommands {
         }
         arena.setLobby(player.getLocation());
         player.sendMessage(GREEN + "Arena lobby set.");
+    }
+
+    // ================================================================================
+    // arena addjoinsign
+    // ================================================================================
+
+    @AsCommand(description = "Adds an arena join sign.")
+    public void addJoinSign(Player player, Arena arena) {
+        Block block = player.getTargetBlock(null, 10);
+        if (!(block.getState() instanceof Sign)) {
+            player.sendMessage(RED + "You're not targeting a sign.");
+            return;
+        }
+        arena.addJoinSign((Sign) block.getState());
+        player.sendMessage(GREEN + "Join sign added for arena: " + YELLOW + arena.getId() + GREEN + ".");
+    }
+
+    // ================================================================================
+    // arena rmjoinsign
+    // ================================================================================
+
+    @AsCommand(description = "Removes an arena join sign.")
+    public void rmJoinSign(Player player, Arena arena) {
+        Block block = player.getTargetBlock(null, 10);
+        if (!(block.getState() instanceof Sign)) {
+            player.sendMessage(RED + "You're not targeting a sign.");
+            return;
+        }
+        arena.removeJoinSign((Sign) block.getState());
+        player.sendMessage(GREEN + "Join sign removed for arena: " + YELLOW + arena.getId() + GREEN + ".");
     }
 }
