@@ -1,14 +1,12 @@
-package xyz.upperlevel.uppercore.arena.parsers;
+package xyz.upperlevel.uppercore.arena;
 
-import xyz.upperlevel.uppercore.arena.Arena;
-import xyz.upperlevel.uppercore.arena.ArenaManager;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ArenaArgumentParser implements ArgumentParser {
+public class ArenaCommandArgumentParser implements ArgumentParser {
     @Override
     public Class<?>[] getParsableTypes() {
         return new Class[]{ Arena.class };

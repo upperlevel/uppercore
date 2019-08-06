@@ -50,7 +50,9 @@ public class FunctionalCommand extends Command {
     public FunctionalCommand(String name, Object residence, Method function) {
         super(name.toLowerCase(Locale.ENGLISH));
         this.residence = residence;
+
         this.function = function;
+        function.setAccessible(true);
 
         AsCommand command = function.getAnnotation(AsCommand.class);
         if (command == null) {
@@ -203,8 +205,8 @@ public class FunctionalCommand extends Command {
         }
         try {
             function.invoke(residence, objects.toArray());
-        } catch (IllegalAccessException ignored) { // Should not be called
-            throw new IllegalStateException("What the hell have you done to reach this exception?");
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(residence.getClass().getSimpleName() + "." + function.getName() + " isn't reachable.");
         } catch (InvocationTargetException e) {
             throw new IllegalStateException("The command " + getClass().getName() + " thrown an exception", e);
         }
