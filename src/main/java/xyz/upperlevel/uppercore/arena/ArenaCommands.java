@@ -147,4 +147,19 @@ public class ArenaCommands {
             arenas.forEach(arena -> sender.sendMessage((arena.isReady() ? GREEN : RED) + "- " + arena.getId()));
         }
     }
+
+    // ================================================================================
+    // arena lobby
+    // ================================================================================
+
+    @AsCommand(description = "Sets the arena lobby.")
+    public void setLobby(Player player) {
+        Arena arena = ArenaManager.get().get(player.getWorld());
+        if (arena == null) {
+            player.sendMessage(RED + "This world doesn't hold any arena.");
+            return;
+        }
+        arena.setLobby(player.getLocation());
+        player.sendMessage(GREEN + "Arena lobby set.");
+    }
 }

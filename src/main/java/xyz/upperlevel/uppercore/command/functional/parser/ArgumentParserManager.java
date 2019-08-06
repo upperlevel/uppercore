@@ -1,7 +1,6 @@
 package xyz.upperlevel.uppercore.command.functional.parser;
 
-import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.arena.parsers.ArenaArgumentParser;
+import xyz.upperlevel.uppercore.arena.ArenaCommandArgumentParser;
 import xyz.upperlevel.uppercore.command.functional.parser.def.*;
 
 import java.util.*;
@@ -13,7 +12,7 @@ public final class ArgumentParserManager {
      * Registers some default argument parsers.
      */
     public static void init() {
-        register(new ArenaArgumentParser());
+        register(new ArenaCommandArgumentParser());
         register(FunctionalArgumentParser.load(new PrimitiveArgumentParsers()));
         register(Arrays.asList(
                 new ColorArgumentParser(),
