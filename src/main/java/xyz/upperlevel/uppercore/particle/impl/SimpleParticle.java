@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.particle.CustomParticle;
 import xyz.upperlevel.uppercore.particle.ParticleType;
 import xyz.upperlevel.uppercore.particle.ParticleUtil;
@@ -37,10 +38,17 @@ public class SimpleParticle extends CustomParticle {
         setColor(Color.WHITE);
     }
 
-    @ConfigConstructor// TODO: parameter please
-    public SimpleParticle(Config data) {
-        super(ParticleType.SIMPLE, data);
-        setColor(data.getColor("color", Color.WHITE));
+    @ConfigConstructor
+    public SimpleParticle(
+            @ConfigProperty(value = "offset.x", optional = true) Float offsetX,
+            @ConfigProperty(value = "offset.y", optional = true) Float offsetY,
+            @ConfigProperty(value = "offset.z", optional = true) Float offsetZ,
+            @ConfigProperty(value = "speed", optional = true) Float speed,
+            @ConfigProperty(value = "amount", optional = true) Integer amount,
+            @ConfigProperty(value = "color", optional = true) Color color
+    ) {
+        super(ParticleType.SIMPLE, offsetX, offsetY, offsetZ, speed, amount);
+        setColor(color != null ? color : Color.WHITE);
     }
 
     @Override

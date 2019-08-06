@@ -10,6 +10,7 @@ import org.bukkit.material.MaterialData;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
+import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.particle.CustomParticle;
 import xyz.upperlevel.uppercore.particle.ParticleType;
@@ -34,15 +35,20 @@ public class BlockDustParticle extends CustomParticle {
         setBlockType(Material.WHITE_WOOL);
     }
 
-    @ConfigConstructor// TODO: parameter please
-    public BlockDustParticle(Config data) {
-        super(ParticleType.BLOCK_DUST, data);
-        Config block = data.getConfigRequired("block");
-        Material type = block.getMaterialRequired("type");
-        if (!type.isBlock()) {
+    @ConfigConstructor
+    public BlockDustParticle(
+            @ConfigProperty(value = "offset.x", optional = true) Float offsetX,
+            @ConfigProperty(value = "offset.y", optional = true) Float offsetY,
+            @ConfigProperty(value = "offset.z", optional = true) Float offsetZ,
+            @ConfigProperty(value = "speed", optional = true) Float speed,
+            @ConfigProperty(value = "amount", optional = true) Integer amount,
+            @ConfigProperty("block.type") Material blockType
+    ) {
+        super(ParticleType.BLOCK_DUST, offsetX, offsetY, offsetZ, speed, amount);
+        if (!blockType.isBlock()) {
             throw new InvalidConfigException("Particle must be a block!", "in particle '" + ParticleType.BLOCK_DUST.name() + "'");
         }
-        setBlockType(type);
+        setBlockType(blockType);
     }
 
     /**

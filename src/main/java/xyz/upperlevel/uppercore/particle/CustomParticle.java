@@ -31,15 +31,22 @@ public abstract class CustomParticle {
         setAmount(1);
     }
 
-    public CustomParticle(ParticleType type, Config data) {
+    public CustomParticle(
+            ParticleType type,
+            Float offsetX,
+            Float offsetY,
+            Float offsetZ,
+            Float speed,
+            Integer amount
+    ) {
         this.type = type;
         setOffset(
-                data.getFloat("offset.x", 0f),
-                data.getFloat("offset.y", 0f),
-                data.getFloat("offset.z", 0f)
+                offsetX != null ? offsetX : 0f,
+                offsetY != null ? offsetY : 0f,
+                offsetZ != null ? offsetZ : 0f
         );
-        setSpeed(data.getFloat("speed", 0.05f));
-        setAmount(data.getInt("amount", 10));
+        setSpeed(speed != null ? speed : 0.05f);
+        setAmount(amount != null ? amount : 10);
     }
 
     public void setOffset(float x, float y, float z) {
