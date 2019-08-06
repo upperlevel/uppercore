@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 public final class Sql {
     private Sql() {
@@ -130,6 +131,10 @@ public final class Sql {
 
         @Override
         public boolean insert(Map<String, Object> data, DuplicatePolicy duplicatePolicy) {
+            if (duplicatePolicy == DuplicatePolicy.MERGE) {
+                return this.update(data);
+            }
+
             try {
                 String query = "INSERT INTO " + table.getPath() + " (`id`, `data`) VALUES (?, '{}')";
                 if (duplicatePolicy == DuplicatePolicy.REPLACE) {
@@ -152,8 +157,7 @@ public final class Sql {
             }
         }
 
-        @Override
-        public boolean update(Map<String, Object> data) {
+        private boolean update(Map<String, Object> data) {
             try {
                 PreparedStatement statement = sql.prepareStatement("UPDATE `" + table.database.name + "`.`" + table.name + "` SET `data`=?");
                 statement.setString(1, new JSONObject(data).toJSONString());
@@ -197,14 +201,14 @@ public final class Sql {
 
         @SuppressWarnings("unchecked")
         @Override
-        public Map<String, Object> getData() {
+        public Optional<Map<String, Object>> getData() {
             try {
                 PreparedStatement statement = sql.prepareStatement("SELECT `data` FROM `" + table.database.name + "`.`" + table.name + "`");
                 ResultSet result = statement.executeQuery();
                 if (result.next()) {
-                    return (Map<String, Object>) new JSONParser().parse(result.getString("data"));
+                    return Optional.of((Map<String, Object>) new JSONParser().parse(result.getString("data")));
                 }
-                throw new IllegalStateException("Element not found: " + id);
+                return Optional.empty();
             } catch (SQLException e) {
                 throw new IllegalStateException("Can't get all the element: " + id, e);
             } catch (ParseException e) {

@@ -14,6 +14,7 @@ import xyz.upperlevel.uppercore.storage.*;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.KEEP_OLD;
 import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.REPLACE;
@@ -96,7 +97,7 @@ public final class MongoDb {
 
         @Override
         public boolean create() {
-            throw new UnsupportedOperationException("MongoDB drivers are unable to create databases.");
+            return false; // Always open
         }
 
         @Override
@@ -122,13 +123,13 @@ public final class MongoDb {
         @Override
         public boolean create() {
             // On MongoDB db.getCollection() does the job
-            return true;
+            return false;
         }
 
         @Override
         public boolean drop() {
             coll.drop();
-            return false;
+            return true;
         }
 
         @Override
@@ -162,15 +163,12 @@ public final class MongoDb {
                     // Thrown if element already inserted
                     return false;
                 }
-            } else  {
+            } else if (duplicatePolicy == DuplicatePolicy.MERGE) {
+                UpdateResult res = coll.updateOne(new Document("_id", id), new Document(data));
+                return res.getModifiedCount() > 0;
+            } else {
                 throw new IllegalStateException();
             }
-        }
-
-        @Override
-        public boolean update(Map<String, Object> data) {
-            UpdateResult res = coll.updateOne(new Document("_id", id), new Document(data));
-            return res.getModifiedCount() > 0;
         }
 
         @Override
@@ -190,8 +188,8 @@ public final class MongoDb {
         }
 
         @Override
-        public Map<String, Object> getData() {
-            return coll.find(new Document("_id", id)).first();
+        public Optional<Map<String, Object>> getData() {
+            return Optional.ofNullable(coll.find(new Document("_id", id)).first());
         }
 
         @Override

@@ -9,11 +9,11 @@ import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.rethinkdb.RethinkDB.r;
 import static com.rethinkdb.net.Connection.Builder;
-import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.KEEP_OLD;
-import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.REPLACE;
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.*;
 
 public final class RethinkDb {
     private RethinkDb() {
@@ -170,15 +170,12 @@ public final class RethinkDb {
             } else if (duplicatePolicy == KEEP_OLD) {
                 MapObject res = table.insert(data).run(conn);
                 return ((Number) res.get("inserted")).intValue() > 0;
+            } else if (duplicatePolicy == MERGE) {
+                MapObject res = doc.update(data).run(conn);
+                return ((Number) res.get("replaced")).intValue() > 0;
             } else {
                 throw new IllegalStateException();
             }
-        }
-
-        @Override
-        public boolean update(Map<String, Object> data) {
-            MapObject res = doc.update(data).run(conn);
-            return ((Number) res.get("replaced")).intValue() > 0;
         }
 
         @Override
@@ -191,8 +188,9 @@ public final class RethinkDb {
         }
 
         @Override
-        public Map<String, Object> getData() {
-            return doc.run(conn);
+        public Optional<Map<String, Object>> getData() {
+            // TODO: test
+            return Optional.ofNullable(doc.run(conn));
         }
 
         @Override
@@ -200,6 +198,5 @@ public final class RethinkDb {
             MapObject res = doc.delete().run(conn);
             return ((Number) res.get("deleted")).intValue() > 0;
         }
-
     }
 }

@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
@@ -69,12 +71,16 @@ public final class Flatfile {
 
         public DatabaseImpl(String name) {
             this.name = name;
-            this.folder =  new File("plugins", name + File.separator + "db");
+            this.folder =  new File(Uppercore.plugin().getDataFolder(), "storage/flatfile/" + name + ".db");
         }
 
         @Override
         public boolean create() {
-            return folder.mkdirs();
+            if (!folder.exists()) {
+                folder.mkdirs();
+                return true;
+            }
+            return false;
         }
 
         @Override
@@ -111,11 +117,6 @@ public final class Flatfile {
         @Override
         public Element element(String id) {
             File file = new File(folder, id + ".json");
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                throw new IllegalStateException("Can't create element file: " + file.getName(), e);
-            }
             return new ElementImpl(id, file);
         }
     }
@@ -135,32 +136,34 @@ public final class Flatfile {
             if (duplicatePolicy == DuplicatePolicy.KEEP_OLD && file.exists()) {
                 return false;
             }
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write(new JSONObject(data).toJSONString());
-                writer.flush();
-            } catch (IOException e) {
-                throw new IllegalStateException("Can't write to file: " + file, e);
+
+            Map<String, Object> writeData = null;
+
+            if (duplicatePolicy == DuplicatePolicy.MERGE) {
+                writeData = getData().orElseGet(HashMap::new);
+                writeData.putAll(data);
+            } else {
+                writeData = data;
+            }
+
+            if (duplicatePolicy == DuplicatePolicy.REPLACE) {
+                try (FileWriter writer = new FileWriter(file)) {
+                    writer.write(new JSONObject(writeData).toJSONString());
+                    writer.flush();
+                } catch (IOException e) {
+                    throw new IllegalStateException("Can't write to file: " + file, e);
+                }
             }
             return true;
-        }{}
-
-        @Override
-        public boolean update(Map<String, Object> data) {
-            Map<String, Object> newData = getData();
-            newData.putAll(data);
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write(new JSONObject(newData).toJSONString());
-                writer.flush();
-                return true;
-            } catch (IOException e) {
-                throw new IllegalStateException("Can't write to file: " + file.getPath(), e);
-            }
         }
 
         @Override
         public Object get(String parameter) {
             String prev = null;
-            Object tree = getData();
+            Object tree = getData().orElse(null);
+
+            if (tree == null) return null;
+
             for (String step : parameter.split("\\.")) {
                 if (tree instanceof Map) {
                     tree = ((Map<String, Object>) tree).get(step);
@@ -173,10 +176,12 @@ public final class Flatfile {
         }
 
         @Override
-        public Map<String, Object> getData() {
+        public Optional<Map<String, Object>> getData() {
+            if (!file.exists()) return Optional.empty();
+
             JSONParser parser = new JSONParser();
             try {
-                return (Map<String, Object>) parser.parse(new FileReader(file));
+                return Optional.of((Map<String, Object>) parser.parse(new FileReader(file)));
             } catch (IOException | ParseException e) {
                 throw new IllegalStateException("Can't read element file: " + file.getPath(), e);
             }

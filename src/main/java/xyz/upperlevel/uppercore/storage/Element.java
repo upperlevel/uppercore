@@ -2,11 +2,13 @@ package xyz.upperlevel.uppercore.storage;
 
 import xyz.upperlevel.uppercore.config.Config;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 public interface Element {
     /**
-     * Sends the given data remotely on this element.
+     * Changes the data of this element present on the database using the DuplicatePolicy for merge problems.
      *
      * @param data the data to insert
      * @param policy what to do when a duplicate is found while inserting
@@ -14,17 +16,6 @@ public interface Element {
      * @return {@code true} if inserted, otherwise {@code false}.
      */
     boolean insert(Map<String, Object> data, DuplicatePolicy policy);
-
-    /**
-     * Updates the existing data with the given one.
-     * If a parameter is found in both, the remote one is replaced.
-     * If a parameter is present only in the new data given, it'll be added.
-     *
-     * @param data the update data
-     *
-     * @return {@code true} if something got updated, otherwise {@code false}.
-     */
-    boolean update(Map<String, Object> data);
 
     /**
      * Gets the value of a remote parameter.
@@ -39,10 +30,10 @@ public interface Element {
      *
      * @return the data
      */
-    Map<String, Object> getData();
+    Optional<Map<String, Object>> getData();
 
-    default Config asConfig() {
-        return Config.from(getData());
+    default Optional<Config> asConfig() {
+        return getData().map(Config::from);
     }
 
     /**

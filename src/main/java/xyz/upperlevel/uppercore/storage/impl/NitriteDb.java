@@ -2,14 +2,15 @@ package xyz.upperlevel.uppercore.storage.impl;
 
 import org.dizitart.no2.*;
 import org.dizitart.no2.filters.Filters;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Optional;
 
-import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.KEEP_OLD;
-import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.REPLACE;
+import static xyz.upperlevel.uppercore.storage.DuplicatePolicy.*;
 
 public final class NitriteDb {
     private NitriteDb() {
@@ -76,28 +77,30 @@ public final class NitriteDb {
 
         public DatabaseImpl(String name) {
             this.name = name;
-            this.file = new File("storage/" + name + ".db");
+            this.file = new File(Uppercore.plugin().getDataFolder(), "storage/nitrite/" + name + ".db");
         }
 
         private Nitrite ensureOpened() {
             if (db == null) {
-                db = Nitrite.builder().compressed().filePath("storage/" + name + ".db").openOrCreate();
+                this.file.getParentFile().mkdirs();
+                db = Nitrite.builder().compressed().filePath(this.file).openOrCreate();
             }
             return db;
         }
 
         @Override
         public boolean create() {
-            File folder = new File("storage");
-            folder.mkdirs();
-
+            boolean notPresent = db == null && !this.file.exists();
             ensureOpened();
-            return true;
+            return notPresent; // Before
         }
 
         @Override
         public boolean drop() {
-            ensureOpened();
+            if (db != null) {
+                db.close();
+                db = null;
+            }
             return file.delete();
         }
 
@@ -118,7 +121,7 @@ public final class NitriteDb {
 
         @Override
         public boolean create() {
-            return true;
+            return false;
         }
 
         @Override
@@ -157,15 +160,12 @@ public final class NitriteDb {
             } else if (policy == KEEP_OLD) {
                 WriteResult res = coll.insert(newData);
                 return res.getAffectedCount() > 0;
+            } else if (policy == MERGE) {
+                WriteResult res = coll.update(Filters.eq("id", id), new Document(data));
+                return res.getAffectedCount() > 0;
             } else {
                 throw new IllegalStateException();
             }
-        }
-
-        @Override
-        public boolean update(Map<String, Object> data) {
-            WriteResult res = coll.update(Filters.eq("id", id), new Document(data));
-            return res.getAffectedCount() > 0;
         }
 
         @Override
@@ -185,8 +185,8 @@ public final class NitriteDb {
         }
 
         @Override
-        public Map<String, Object> getData() {
-            return coll.find(Filters.eq("id", id)).firstOrDefault();
+        public Optional<Map<String, Object>> getData() {
+            return Optional.ofNullable(coll.find(Filters.eq("id", id)).firstOrDefault());
         }
 
         @Override
