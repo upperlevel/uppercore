@@ -34,7 +34,7 @@ public class ArenaManager {
 
             // Then loads arena's data.
             Config cfg = Config.fromYaml(file);
-            A arena = cfg.getRequired("arena", arenaClass);
+            A arena = cfg.get(arenaClass);
             register(arena);
 
             // If the arena is ready, sets to enabled.

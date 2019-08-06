@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.events.ArenaJoinEvent;
 import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent;
@@ -18,6 +19,7 @@ import xyz.upperlevel.uppercore.util.LocUtil;
 import xyz.upperlevel.uppercore.util.WorldUtil;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -76,7 +78,6 @@ public class Arena {
     public Map<String, Object> serialize() {
         return new HashMap<String, Object>() {{
             put("id", id);
-            put("signature", signature);
             put("lobby", LocUtil.serialize(lobby));
         }};
     }
@@ -93,9 +94,7 @@ public class Arena {
         File file = new File(ArenaManager.ARENAS_FOLDER, id + ".yml");
         file.createNewFile();
 
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        yaml.set(id, serialize());
-        yaml.save(file);
+        new Yaml().dump(serialize(), new FileWriter(file));
     }
 
     /**
