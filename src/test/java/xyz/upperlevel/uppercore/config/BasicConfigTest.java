@@ -6,12 +6,20 @@ import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import xyz.upperlevel.uppercore.FakePlaceholderManager;
+import xyz.upperlevel.uppercore.UpperTestUtil;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.exceptions.PropertyNotFoundParsingException;
 import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
+import xyz.upperlevel.uppercore.gui.action.Action;
+import xyz.upperlevel.uppercore.gui.action.actions.BroadcastAction;
+import xyz.upperlevel.uppercore.gui.action.actions.CommandAction;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.util.Pair;
 import xyz.upperlevel.uppercore.util.Position;
 
@@ -22,11 +30,17 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static xyz.upperlevel.uppercore.util.TypeUtil.typeOf;
 
 public class BasicConfigTest {
     @Rule
     public ExpectedException exc = ExpectedException.none();
+
+    @BeforeClass
+    public static void setUpClass() {
+        UpperTestUtil.setup();
+    }
 
     public static class ConfigLoaderExample {
         @ConfigConstructor
@@ -263,5 +277,28 @@ public class BasicConfigTest {
         Type t2 = typeOf(Pair.class, String.class, String.class);
         assertEquals(Pair.of(1, 2), cfg.getRequired("a", t1));
         assertEquals(Pair.of("a", "b"), cfg.getRequired("c", t2));
+    }
+
+    @Test
+    public void actionTest() {
+        Config cfg = Config.fromYaml(new StringReader(
+                "actionList:\n" +
+                        "- broadcast: 'hello'\n" +
+                        "- command: 'quake join a1'\n" +
+                        "- type: 'command'\n" +
+                        "  command: quake quit\n" +
+                        "  executor: player\n"
+        ));
+        Type actionList = typeOf(List.class, Action.class);
+        List<Action<?>> actions = cfg.getRequired("actionList", actionList);
+
+        assertEquals(3, actions.size());
+        assertEquals(BroadcastAction.TYPE, actions.get(0).getType());
+        assertEquals(CommandAction.TYPE, actions.get(1).getType());
+
+        assertEquals(CommandAction.TYPE, actions.get(2).getType());
+        CommandAction a3 = (CommandAction) actions.get(2);
+        assertEquals("quake quit", a3.getCommand().resolve(null));
+        assertEquals(CommandAction.Executor.PLAYER, a3.getExecutor());
     }
 }

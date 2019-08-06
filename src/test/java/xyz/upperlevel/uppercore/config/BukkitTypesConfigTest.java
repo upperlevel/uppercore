@@ -7,8 +7,10 @@ import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.util.Vector;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import xyz.upperlevel.uppercore.FakePlaceholderManager;
+import xyz.upperlevel.uppercore.UpperTestUtil;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.gui.GuiSize;
@@ -24,6 +26,11 @@ import static org.mockito.Mockito.mock;
 
 public class BukkitTypesConfigTest {
     public static final ConfigParserRegistry registry = ConfigParserRegistry.getStandard();
+
+    @BeforeClass
+    public static void setUpClass() {
+        UpperTestUtil.setup();
+    }
 
     public static class ConfigLoaderExample {
         @ConfigConstructor
@@ -42,8 +49,7 @@ public class BukkitTypesConfigTest {
                                    @ConfigProperty("patterni") PatternType patternTypeId,
                                    @ConfigProperty("patternt") PatternType patternTypeName,
                                    @ConfigProperty("pattern") Pattern pattern,
-                                   @ConfigProperty("firework") FireworkEffect fireworkEffect,
-                                   @ConfigProperty("action1") List<Action<?>> actions
+                                   @ConfigProperty("firework") FireworkEffect fireworkEffect
                                    //@ConfigProperty("playsound") PlaySound playSound
                                    //@ConfigProperty("potiont")  PotionEffectType potionEffectType,
                                    //@ConfigProperty("potione")  PotionEffect potionEffect
@@ -74,8 +80,6 @@ public class BukkitTypesConfigTest {
                             .build(),
                     fireworkEffect
             );
-            assertEquals(1, actions.size());
-            assertEquals(BroadcastAction.TYPE, actions.get(0).getType());
             //assertEquals(new PlaySound(fake(Sound.AMBIENT_CAVE), null, null), playSound); // TODO: Cannot mock CompatibleSound
             /*assertEquals(
                     PotionEffectType.JUMP,
@@ -97,10 +101,6 @@ public class BukkitTypesConfigTest {
 
     @Test
     public void basicTest() {
-        PlaceholderUtil.setManager(new FakePlaceholderManager());
-        Uppercore core = mock(Uppercore.class);
-        Uppercore.overrideInstance(core);
-
         registry.getFor(ConfigLoaderExample.class)
                 .parse(
                         new StringReader(
@@ -124,9 +124,7 @@ public class BukkitTypesConfigTest {
                                         "  trail: true\n" +
                                         "  colors: [green, white, red]\n" +
                                         "  fade-colors: [aqua]\n" +
-                                        "  type: creeper\n" +
-                                        "action1:\n" +
-                                        "- broadcast: 'hello'"
+                                        "  type: creeper\n"
                                         //"playsound: ambient cave"
                                         /*"potiont: jump\n" +
                                         "potione: \n" +

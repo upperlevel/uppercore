@@ -8,14 +8,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.*;
 import org.yaml.snakeyaml.nodes.Tag;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
+import xyz.upperlevel.uppercore.config.parser.ConstructorConfigParser;
 import xyz.upperlevel.uppercore.gui.GuiSize;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.ActionType;
@@ -25,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static java.util.Collections.emptyList;
 import static xyz.upperlevel.uppercore.config.ConfigUtil.legacyAwareMaterialParse;
@@ -200,24 +200,47 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
         if (raw instanceof MappingNode) {
             MappingNode map = (MappingNode) raw;
 
-            if (map.getValue().size() > 1) {
-                throw new ConfigException("Cannot have more than one action for now", raw);
-            }
+            List<NodeTuple> params = map.getValue();
 
-            Node typeNode = map.getValue().get(0).getKeyNode();
-            Node valueNode = map.getValue().get(0).getValueNode();
-            checkTag(typeNode, Tag.STR);
-            String type = ((ScalarNode)typeNode).getValue();
+            Node explicitTypeNode = params.stream()
+                    .filter(p -> p.getKeyNode() instanceof ScalarNode && ((ScalarNode) p.getKeyNode()).getValue().equals("type"))
+                    .findFirst()
+                    .map(NodeTuple::getValueNode)
+                    .orElse(null);
+
+            String type;
+            Node typeNode;
+            Node parameters;
+
+            if (explicitTypeNode != null) {
+                checkTag(explicitTypeNode, Tag.STR);
+                type = ((ScalarNode) explicitTypeNode).getValue();
+                typeNode = explicitTypeNode;
+                parameters = map;
+            } else {
+                if (map.getValue().size() > 1) {
+                    throw new ConfigException("Cannot have more than one action for now", raw);
+                }
+
+                typeNode = map.getValue().get(0).getKeyNode();
+                Node valueNode = map.getValue().get(0).getValueNode();
+                checkTag(typeNode, Tag.STR);
+                type = ((ScalarNode) typeNode).getValue();
+                parameters = valueNode;
+            }
 
             ActionType<?> t = ActionType.getActionType(type.toLowerCase());
             if (t == null) {
                 throw new ConfigException("Cannot find action \"" + type + "\" in " + ActionType.getActionTypes().keySet(), typeNode);
             }
 
-            //return t.load(action.getValue());
-            return (Action<?>) ConfigParserRegistry.getStandard()
-                    .getFor(t.getHandleClass())
-                    .parse(valueNode);
+            ConstructorConfigParser<?> parser = (ConstructorConfigParser<?>) ConfigParserRegistry.getStandard().getFor(t.getHandleClass());
+            Predicate<String> oldPred = parser.getIgnoreUnmatchedProperties();
+            parser.setIgnoreUnmatchedProperties(x -> x.equals("type") || oldPred.test(x));
+            Action<?> res = (Action<?>) parser.parse(parameters);
+            parser.setIgnoreUnmatchedProperties(oldPred);
+
+            return res;
         } else { // Tag.STR
             String type = ((ScalarNode)raw).getValue();
 
