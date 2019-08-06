@@ -3,10 +3,12 @@ package xyz.upperlevel.uppercore.command.functional;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.CommandContext;
 import xyz.upperlevel.uppercore.command.NodeCommand;
+import xyz.upperlevel.uppercore.command.SenderType;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParserManager;
@@ -73,7 +75,14 @@ public class FunctionalCommand extends Command {
         if (function.getParameterCount() == 0) {
             throw new IllegalArgumentException("'" + function.getName() + "' command function has 0 parameters. A command function should have at least one.");
         }
-        firstParameter = function.getParameters()[0];
+
+        this.firstParameter = function.getParameters()[0];
+
+        // If the first parameter is Player, forces SenderType check.
+        if (firstParameter.getType() == Player.class) {
+            setSenderType(SenderType.PLAYER);
+        }
+
         this.parameters = new FunctionalParameter[function.getParameterCount() - 1];
         for (int i = 0; i < function.getParameterCount() - 1; i++) {
             Parameter parameter = function.getParameters()[i + 1];
@@ -132,13 +141,17 @@ public class FunctionalCommand extends Command {
     protected boolean onCall(CommandSender sender, List<String> args) {
         List<Object> objects = new ArrayList<>();
 
-        // As first parameters are supported CommandSender or CommandContext
-        if (firstParameter.getType() == CommandSender.class) {
+        Class<?> type = firstParameter.getType();
+        if (CommandSender.class == type) {
             objects.add(sender);
-        } else if (firstParameter.getType() == CommandContext.class) {
+        } else if (CommandContext.class == type) {
             objects.add(new CommandContext(sender, this));
+        } else if (Player.class == type) {
+            objects.add(sender);
         } else {
-            throw new IllegalArgumentException("'" + function.getName() + "' command function has a wrong first parameter type.");
+            throw new IllegalArgumentException(
+                    function.getName() + " has an unsupported first parameter: " + firstParameter.getType().getSimpleName()
+            );
         }
 
         int currArgIndex = 0;
