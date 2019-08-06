@@ -67,14 +67,8 @@ public class ArenaCommands {
     // ================================================================================
 
     @AsCommand(description = "Edits an arena.")
-    public void edit(Player player) {
-        Arena arena = ArenaManager.get().get(player.getWorld());
-        if (arena == null) {
-            player.sendMessage(RED + "This world does not hold any arena.");
-            return;
-        }
-        Location to = new Location(arena.getWorld(), 0, 64, 0);
-        player.teleport(to);
+    public void edit(Player player, Arena arena) {
+        player.teleport(arena.getLobby() != null ? arena.getLobby() : new Location(arena.getWorld(), 0, 64, 0));
     }
 
     // ================================================================================
