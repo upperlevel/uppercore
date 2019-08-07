@@ -1,15 +1,17 @@
-## Uppercore
-Uppercore is a huge plugin that contains all needs for dev-friendly Spigot development.
-With Uppercore, you'll finally be able to create fully configurable and optimized plugins with few lines of code.
+## What is Uppercore?
+Uppercore is a set of APIs, above Bukkit and Spigot ones, that provides a dev-friendly development to the user.
 
-## Board
-Uppercore provides a Scoreboard Api that wraps the uncomfortable Bukkit one (if you have ever used it you know what I'm talking about).
-See how to use it [there](https://github.com/upperlevel/uppercore/wiki/Board). Learning it takes just few minutes!
+Bare Spigot lacks of many features, just think about the poor command system, scoreboards, configs, GUIs.
+Most of the times the developer is forced to fulfill these lacks by copy-pasting its own wrappers.
 
-## Config
-Bukkit Configuration Api is usable as it is but works only with Yaml!
-What if you have a bare Map (loaded from file or not) and you want to get different types of objects from that?
-You just can't without writing verbose code full of instanceof and casts.
+Well, Uppercore avoids that by including all the needs!
 
-That's why we add this big interface to Uppercore.
-You can find more information [here](https://github.com/upperlevel/uppercore/wiki/Config).
+## How to build?
+
+To build the library:
+
+`gradle clean shadowJar`
+
+To build the integration-test:
+
+`gradle clean testJar`
