@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.config.parser;
 
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeId;
@@ -8,13 +9,29 @@ import org.yaml.snakeyaml.nodes.Tag;
 import xyz.upperlevel.uppercore.config.exceptions.WrongNodeTypeConfigException;
 
 import java.io.Reader;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
 public abstract class ConfigParser {
     public static Yaml defaultYaml = new Yaml();
+    private static final MethodHandle styleGetter;
 
     private final Type handleType;
+
+    static {
+        try {
+            Field reflectedField = ScalarNode.class.getDeclaredField("style");
+            reflectedField.setAccessible(true);
+            final MethodHandles.Lookup lookup = MethodHandles.lookup();
+            styleGetter = lookup.unreflectGetter(reflectedField);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot initialize style getter for snakeyaml ScalarNode", e);
+        }
+    }
 
     public ConfigParser(Type handleType) {
         this.handleType = handleType;
@@ -57,7 +74,12 @@ public abstract class ConfigParser {
     }
 
     public static ScalarNode replaceValue(ScalarNode original, String newValue) {
-        return new ScalarNode(original.getTag(), true, newValue, original.getStartMark(),
-                original.getEndMark(), original.getStyle());
+        DumperOptions.ScalarStyle style;
+        try {
+            style = (DumperOptions.ScalarStyle) styleGetter.invokeExact(original);
+        } catch (Throwable t) {
+            throw new RuntimeException("Cannot invoke style getter", t);
+        }
+        return new ScalarNode(original.getTag(), true, newValue, original.getStartMark(), original.getEndMark(), style);
     }
 }
