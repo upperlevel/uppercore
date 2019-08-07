@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class UKnowledgeBookItem extends UItem {
             @ConfigProperty(value = "recipes", optional = true) List<PlaceholderValue<String>> recipes
     ) {
         super(type, data, amount, rawName, lore, flags, enchantments);
-        this.recipes = recipes;
+        this.recipes = recipes != null ? recipes : Collections.emptyList();
     }
 
     @Override

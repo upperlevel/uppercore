@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class UFireworkItem extends UItem {
             @ConfigProperty(value = "power", optional = true) PlaceholderValue<Integer> power
     ) {
         super(type, data, amount, rawName, lore, flags, enchantments);
-        this.effects = effects;
+        this.effects = effects != null ? effects : Collections.emptyList();
         this.power = power;
     }
 

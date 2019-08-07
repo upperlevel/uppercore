@@ -45,8 +45,14 @@ public class UTropicalFishBucketItem extends UItem {
     public void processMeta(Player player, ItemMeta meta) {
         super.processMeta(player, meta);
         TropicalFishBucketMeta bucket = (TropicalFishBucketMeta) meta;
-        bucket.setBodyColor(bodyColor.resolve(player, getPlaceholders()));
-        bucket.setPattern(pattern.resolve(player, getPlaceholders()));
-        bucket.setPatternColor(patternColor.resolve(player, getPlaceholders()));
+        if (bodyColor != null) {
+            bucket.setBodyColor(bodyColor.resolve(player, getPlaceholders()));
+        }
+        if (pattern != null) {
+            bucket.setPattern(pattern.resolve(player, getPlaceholders()));
+        }
+        if (patternColor != null) {
+            bucket.setPatternColor(patternColor.resolve(player, getPlaceholders()));
+        }
     }
 }
