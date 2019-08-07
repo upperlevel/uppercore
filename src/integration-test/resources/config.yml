@@ -1,0 +1,29 @@
+# ================================================================================
+# Hotbar
+# ================================================================================
+hotbar:
+  icons:
+    - slot: 8
+      item:
+        type: RED_BED
+        name: "&eSay lol!"
+        lore:
+          - "&7Right-click to say lol!"
+      click:
+        actions:
+          - type: command
+            command: "say lol"
+            executor: player
+    - slot: 5
+      item:
+        type: INK_SAC
+        name: "&0Kill yourself!"
+        lore:
+          - "&7Kill yourself legally!"
+      click:
+        actions:
+          - type: command
+            command: "kill @p"
+            executor: player
+
+

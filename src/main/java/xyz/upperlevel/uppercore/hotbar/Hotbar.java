@@ -4,26 +4,23 @@ package xyz.upperlevel.uppercore.hotbar;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.gui.ChestGui;
 import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.gui.link.Link;
-import xyz.upperlevel.uppercore.registry.RegistryLoader;
 
-import java.beans.ConstructorProperties;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static xyz.upperlevel.uppercore.Uppercore.hotbars;
 
 public class Hotbar {
-    public static final RegistryLoader<Hotbar> CONFIG_LOADER = RegistryLoader.fromClass(Hotbar.class);
-
     @Getter
     private ConfigIcon[] icons = new ConfigIcon[9];
+
     @Getter
     private List<ConfigIcon> noSlotIcons = new ArrayList<>();
 
@@ -31,20 +28,6 @@ public class Hotbar {
     private int size = 0;
 
     public Hotbar() {
-    }
-
-    public Hotbar(Config config) {
-        if (config.has("icons")) {
-            for (Config section : config.getConfigList("icons")) {
-                ConfigIcon icon = ConfigIcon.deserialize(section);
-                int slot = section.getInt("slot", -1);
-                if (slot == -1) {
-                    noSlotIcons.add(icon);
-                } else {
-                    icons[slot] = icon;
-                }
-            }
-        }
     }
 
     @ConfigConstructor
@@ -218,16 +201,6 @@ public class Hotbar {
 
     public boolean remove(Player player) {
         return hotbars().view(player).removeHotbar(this);
-    }
-
-    /**
-     * Deserializes the hotbar by the given id and the given config.
-     *
-     * @param config the config where load the hotbar
-     * @return the hotbar created
-     */
-    public static Hotbar deserialize(Config config) {
-        return new Hotbar(config);
     }
 
     public static class HotbarOutOfSpaceException extends RuntimeException {

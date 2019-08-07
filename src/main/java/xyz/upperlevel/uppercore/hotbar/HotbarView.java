@@ -231,7 +231,6 @@ public class HotbarView {
     public boolean addHotbar(Hotbar hotbar) {
         if (isHolding(hotbar) || isOverlaying(hotbar))
             return false;
-        Uppercore.logger().info("Adding hotbar to player: " + player.getName());
         for (int slot = 0; slot < hotbar.getIcons().length; slot++) {
             ConfigIcon icon = hotbar.getIcon(slot);
             if (icon != null)
