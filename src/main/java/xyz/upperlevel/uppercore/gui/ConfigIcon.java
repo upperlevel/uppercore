@@ -21,6 +21,8 @@ import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
+import xyz.upperlevel.uppercore.registry.Registry;
+import xyz.upperlevel.uppercore.registry.RegistryTraceable;
 import xyz.upperlevel.uppercore.sound.PlaySound;
 
 import java.util.*;
@@ -28,7 +30,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-public class ConfigIcon {
+public class ConfigIcon implements RegistryTraceable {
     @Getter
     private ItemResolver display;
     @Getter
@@ -93,7 +95,14 @@ public class ConfigIcon {
             link.run((Player) e.getWhoClicked());
     }
 
-    public static ConfigIcon deserialize(Plugin plugin, Config config) {
+    @Override
+    public void setParentRegistry(Registry parent) {
+        if (link instanceof RegistryTraceable) {
+            ((RegistryTraceable) link).setParentRegistry(parent);
+        }
+    }
+
+    public static ConfigIcon deserialize(Config config) {
         ConfigIcon result = new ConfigIcon();
         try {
             result.updateInterval = config.getInt("update-interval", 0);
@@ -102,7 +111,7 @@ public class ConfigIcon {
                 result.display = config.getUItemRequired("item");
             }
             if (config.has("click")) {
-                result.link = IconClick.deserialize(plugin, config.getConfig("click"));
+                result.link = IconClick.deserialize(config.getConfig("click"));
             }
 
             result.slot = config.getInt("slot", -1);
@@ -169,8 +178,7 @@ public class ConfigIcon {
         }
     }
 
-    public static class IconClick implements Link {
-
+    public static class IconClick implements Link, RegistryTraceable {
         private String permission;
         private Message noPermissionError;
         private PlaySound noPermissionSound;
@@ -236,8 +244,9 @@ public class ConfigIcon {
         @Override
         public void run(Player player) {
             if (checkPermission(player) && pay(player)) {
-                for (Action action : actions)
+                for (Action action : actions) {
                     action.run(player);
+                }
             }
         }
 
@@ -253,8 +262,15 @@ public class ConfigIcon {
             return '{' + joiner.toString() + '}';
         }
 
+        @Override
+        public void setParentRegistry(Registry parent) {
+            for (Action action : actions) {
+                action.setParentRegistry(parent);
+            }
+        }
+
         @SuppressWarnings("unchecked")
-        public static IconClick deserialize(Plugin plugin, Config config) {
+        public static IconClick deserialize(Config config) {
             IconClick res = new IconClick();
             res.permission = (String) config.get("permission");
             res.noPermissionError = config.getMessage("no-permission-message", "You don't have permission!");

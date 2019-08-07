@@ -2,8 +2,7 @@ package xyz.upperlevel.uppercore.registry;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.plugin.Plugin;
+import org.apache.commons.lang.StringUtils;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.registry.RegistryVisitor.VisitResult;
 import xyz.upperlevel.uppercore.util.CollectionUtil;
@@ -16,80 +15,81 @@ import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Registry<T> {
-    @Getter
-    private final Class<?> type;
-
+public class Registry {
     @Getter
     private final String name;
 
     @Getter
-    private final Registry<?> parent;
+    private final Registry parent;
 
-    private Map<String, Child> children = new HashMap<>();
+    private Map<String, Object> children = new HashMap<>();
 
-    public Registry(Class<?> type, @NonNull String name, Registry<?> parent) {
-        this.type = type;
+    public Registry(@NonNull String name, Registry parent) {
         this.name = name;
         this.parent = parent;
     }
 
-    public Registry(Class<?> type, String name) {
-        this(type, name, null);
-    }
-
-    public boolean isFolder() {
-        return type == null;
-    }
-
-    public Registry<?> registerChild(@NonNull String registryName) {
-        return registerChild(registryName, null);
-    }
-
-    public <O> Registry<O> registerChild(@NonNull String registryName, Class<O> type) {
-        registryName = registryName.toLowerCase();
-        Registry<O> child = new Registry<>(type, registryName, this);
-        Child entry = new Child(false, child);
-        boolean conflict = children.putIfAbsent(registryName, entry) != null;
-
+    private void registerLocal(String name, Object value) {
+        name = name.toLowerCase(Locale.ENGLISH);
+        boolean conflict = children.putIfAbsent(name, value) != null;
         if (conflict) {
-            throw new IllegalArgumentException("Child with name '" + registryName + "' already present");
+            throw new IllegalArgumentException("Entry with name '" + name + "' already present in " + getPath());
         }
+        if (value instanceof RegistryTraceable) {
+            ((RegistryTraceable) value).setParentRegistry(this);
+        }
+    }
+
+    public Registry registerFolder(@NonNull String registryName) {
+        String[] parts = StringUtils.split(registryName, '.');
+
+        if (parts.length == 0) throw new IllegalArgumentException("empty name");
+
+        Registry current = this;
+        Registry child = null;
+
+        for (String part : parts) {
+            Object childObj = current.get(part);
+
+            if (childObj != null && !(childObj instanceof Registry)) {
+                throw new IllegalArgumentException("Trying to register folder inside a non-folder " + current.getPath() + "." + part);
+            }
+
+            child = (Registry) childObj;
+            if (child == null) {
+                child = new Registry(part.toLowerCase(Locale.ENGLISH), this);
+                current.register(part, child);
+            }
+            current = child;
+        }
+
         return child;
     }
 
-    public void registerChild(@NonNull Registry<?> registry) {
-        if (registry.parent != this) {
-            throw new IllegalArgumentException("registry parent is not this");
+    public <T> T register(@NonNull String name, @NonNull T object) {
+        if (name.startsWith("@")) {
+            return root().register(name.substring(1), object);
         }
-        Child entry = new Child(false, registry);
-        boolean conflict = children.putIfAbsent(registry.name, entry) != null;
 
-        if (conflict) {
-            throw new IllegalArgumentException("Child with name '" + registry.name + "' already present");
+        int divIndex = name.lastIndexOf('.');
+        if (divIndex == -1) {
+            registerLocal(name, object);
+        } else {
+            registerFolder(name.substring(0, divIndex)).register(name.substring(divIndex + 1), object);
         }
-    }
 
-    public T register(@NonNull String name, @NonNull T object) {
-        if (isFolder()) throw new IllegalStateException("Cannot register object in a folder registry (" + getPath() + ")");
-        name = name.toLowerCase();
-        Child entry = new Child(true, object);
-        boolean conflict = children.putIfAbsent(name, entry) != null;
-        if (conflict) {
-            throw new IllegalArgumentException("Entry with name '" + name + "' already present");
-        }
         return object;
     }
 
-    public T register(String id, Reader in, RegistryLoader<? extends T> loader) {
+    public <T> T load(String id, Reader in, RegistryLoader<? extends T> loader) {
         T object = loader.load(this, id, in);
         return register(id, object);
     }
 
-    public T registerFile(File file, RegistryLoader<? extends T> loader) {
-        String id = FileUtil.getName(file).toLowerCase();
+    public <T> T loadFile(File file, RegistryLoader<? extends T> loader) {
+        String id = FileUtil.getName(file);
         try {
-            return register(id, new FileReader(file), loader);
+            return load(id, new FileReader(file), loader);
         } catch (InvalidConfigException e) {
             e.addLocation("in file " + file.getPath());
             e.addLocation("from registry " + getPath());
@@ -99,85 +99,63 @@ public class Registry<T> {
         }
     }
 
-    public void registerFolder(@NonNull File file, RegistryLoader<? extends T> loader, boolean recursive) {
+    public void loadFolder(@NonNull File file, RegistryLoader<?> loader, boolean recursive) {
         File[] files = file.listFiles();
         if (files == null) return;
         for (File f : files) {
             if (f.isDirectory()) {
                 if (!recursive) continue;
-                registerFolder(f, loader, true);
+                registerFolder(file.getName()).loadFolder(f, loader, true);
             } else {
-                registerFile(file, loader);
+                loadFile(file, loader);
             }
         }
     }
-    public void registerFolder(@NonNull File file, RegistryLoader<? extends T> loader) {
-        registerFolder(file, loader, false);
+
+    public void loadFolder(@NonNull File file, RegistryLoader loader) {
+        loadFolder(file, loader, false);
     }
 
+
+    protected Object getUnchecked(String name) {
+        return children.get(name.toLowerCase(Locale.ENGLISH));
+    }
 
     @SuppressWarnings("unchecked")
-    public T get(@NonNull String name) {
-        name = name.toLowerCase();
-        Child entry = children.get(name);
-        return entry == null ? null : entry.leaf ? (T) entry.value : null;
+    public <T> T get(@NonNull String name) {
+        if (!name.isEmpty() && name.charAt(0) == '@') {
+            return getRoot().get(name.substring(1));
+        }
+
+        Registry current = this;
+        String[] parts = StringUtils.split(name, '.');
+
+        for (int i = 0; i < parts.length - 1; i++) {
+            Object next = current.getUnchecked(parts[i]);
+            if (next == null) throw new IllegalArgumentException("Cannot find folder " + String.join(".", Arrays.copyOf(parts, i + 1)) +
+                    " in " + getPath() + " available: " + entries().keySet());
+            current = (Registry) next;
+        }
+
+        return (T) current.getUnchecked(parts[parts.length - 1]);
     }
 
-    public Registry<?> getChild(@NonNull String name) {
-        name = name.toLowerCase();
-        Child entry = children.get(name);
-        return entry == null ? null : entry.leaf ? null : (Registry<?>) entry.value;
-    }
-
-    public Collection<Registry<?>> getChildren() {
+    public List<Registry> getFolders() {
         return children.values().stream()
-                .filter(c -> !c.leaf)
-                .map(c -> (Registry<?>) c.value)
+                .filter(c -> c instanceof Registry)
+                .map(c -> (Registry) c)
                 .collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, T> getRegistered() {
-        return children.entrySet().stream()
-                .filter(c -> c.getValue().leaf)
-                .map(c -> new AbstractMap.SimpleEntry<>(c.getKey(), (T) c.getValue().value))
-                .collect(CollectionUtil.toMap());
+    public Map<String, Object> entries() {
+        return Collections.unmodifiableMap(children);
     }
 
-    public Registry<?> getRoot() {
-        Registry<?> current = this;
+    public Registry getRoot() {
+        Registry current = this;
         while (current.parent != null) current = current.parent;
         return current;
-    }
-
-    public Object find(@NonNull String path) {
-        // Root callable by @path
-        if (!path.isEmpty() && path.charAt(0) == '@') {
-            return getRoot().find(path.substring(1));
-        }
-        int dividerIndex = path.indexOf('.');
-        if (dividerIndex < 0) {
-            return get(path);
-        } else {
-            String localPath = path.substring(0, dividerIndex);
-            Child entry = children.get(localPath);
-            if (entry == null) {
-                throw new IllegalArgumentException("Cannot find registry '" + localPath + "':" + children.keySet());
-            }
-            if (entry.leaf) {
-                throw new IllegalArgumentException("'" + localPath + "' is not a Registry");
-            }
-            return ((Registry<?>)entry.value).find(path.substring(dividerIndex + 1));
-        }
-    }
-
-    public <R> R find(@NonNull String path, @NonNull Class<R> expected) {
-        Object raw = find(path);
-        if (raw == null) return null;
-        if (!expected.isInstance(raw)) {
-            throw new IllegalArgumentException("Illegal registry type, found: " + raw.getClass().getSimpleName() + " while expected: " + expected.getSimpleName());
-        }
-        return (R) raw;
     }
 
     public VisitResult visit(@NonNull RegistryVisitor visitor) {
@@ -185,30 +163,21 @@ public class Registry<T> {
         if (selfRes == VisitResult.TERMINATE) return VisitResult.TERMINATE;
         if (selfRes == VisitResult.SKIP) return VisitResult.CONTINUE;
         // Get folders and files
-        // Sort the stream so that folders come before files
-        List<Map.Entry<String, Child>> l = children.entrySet().stream()
-                .sorted((a, b) -> Boolean.compare(a.getValue().leaf, b.getValue().leaf))
-                .collect(Collectors.toList());
-        // Iterate all the "folders" (registries)
-        Iterator<Map.Entry<String, Child>> i = l.iterator();
-        Map.Entry<String, Child> e;
-        while (!(e = i.next()).getValue().leaf) {
-            VisitResult res = ((Registry<?>)e.getValue().value).visit(visitor);
+        for (Map.Entry<String, Object> entry : children.entrySet()) {
+            VisitResult res;
+            if (entry.getValue() instanceof Registry) {
+                res = ((Registry) entry.getValue()).visit(visitor);
+            } else {
+                res = visitor.visitEntry(entry.getKey(), entry.getValue());
+            }
             if (res == VisitResult.TERMINATE) return VisitResult.TERMINATE;
-            if (!i.hasNext()) return visitor.postVisitRegistry(this);
-        }
-        // Iterate all the "files" (entries)
-        while (e != null) {
-            VisitResult res = visitor.visitEntry(e.getKey(), e.getValue().value);
-            if (res == VisitResult.TERMINATE) return VisitResult.TERMINATE;
-            e = i.hasNext() ? i.next() : null;
         }
         return visitor.postVisitRegistry(this);
     }
 
     public String getPath() {
         Deque<String> names = new ArrayDeque<>();
-        Registry<?> current = this;
+        Registry current = this;
         while (current.getParent() != null) {
             names.push(current.getName());
             current = current.getParent();
@@ -222,30 +191,12 @@ public class Registry<T> {
     public String toString() {
         return "{" +
                 children.entrySet().stream()
-                        .map(c -> c.getKey() + "=" + c.getValue().value)
+                        .map(c -> c.getKey() + "=" + c.getValue())
                         .collect(Collectors.joining(",")) +
                 "}";
     }
 
-
-    @RequiredArgsConstructor
-    @Getter
-    private static final class Child {
-        private final boolean leaf;
-        private final Object value;
-
-        @Override
-        public int hashCode() {
-            return value.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof Child && Objects.equals(((Child)other).value, value);
-        }
-    }
-
-    public static Registry<?> root() {
-        return new Registry<>(null, "");
+    public static Registry root() {
+        return new Registry("", null);
     }
 }

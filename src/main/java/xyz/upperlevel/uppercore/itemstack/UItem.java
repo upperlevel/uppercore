@@ -85,6 +85,7 @@ public class UItem implements ItemResolver {
         if (enchantments != null) {
             this.enchantments.putAll(enchantments);
         }
+        this.placeholders = PlaceholderRegistry.def();
     }
 
     public UItem(ItemStack item) {

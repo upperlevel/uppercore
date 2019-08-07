@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.gui;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -8,6 +9,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
@@ -15,6 +17,8 @@ import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.gui.link.Link;
 import xyz.upperlevel.uppercore.itemstack.ItemResolver;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
+import xyz.upperlevel.uppercore.registry.Registry;
+import xyz.upperlevel.uppercore.registry.RegistryTraceable;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
 
 import java.util.*;
@@ -23,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static xyz.upperlevel.uppercore.Uppercore.guis;
 
-public class ChestGui implements Gui {
+public class ChestGui implements Gui, RegistryTraceable {
     @Getter
     private PlaceholderValue<String> title;
     @Getter
@@ -54,7 +58,7 @@ public class ChestGui implements Gui {
      * @param size  the size of the gui
      * @param title the title of the gui
      */
-    public ChestGui(int size, PlaceholderValue<String> title) {
+    public ChestGui(int size, @NonNull PlaceholderValue<String> title) {
         this.title = title;
         this.size = size;
         this.icons = new ConfigIcon[size];
@@ -67,7 +71,7 @@ public class ChestGui implements Gui {
      * @param type  the type of the gui
      * @param title the title of the gui
      */
-    public ChestGui(InventoryType type, PlaceholderValue<String> title) {
+    public ChestGui(InventoryType type, @NonNull PlaceholderValue<String> title) {
         this.type = type;
         this.title = title;
         this.icons = new ConfigIcon[type.getDefaultSize()];
@@ -80,7 +84,7 @@ public class ChestGui implements Gui {
      * @param size  the size of the gui
      * @param title the title of the gui
      */
-    public ChestGui(int size, InventoryType type, PlaceholderValue<String> title) {
+    public ChestGui(int size, InventoryType type, @NonNull PlaceholderValue<String> title) {
         this.title = title;
         this.size = size;
         this.type = type;
@@ -94,14 +98,14 @@ public class ChestGui implements Gui {
     }
 
     @SuppressWarnings("unchecked")
-    protected ChestGui(Plugin plugin, Config config) {
+    protected ChestGui(@NonNull Config config) {
         if (config.has("type")) {
             type = config.getEnum("type", InventoryType.class);
             icons = new ConfigIcon[type.getDefaultSize()];
         } else if (config.has("size")) {
             size = config.getInt("size");
             if (size % 9 != 0) {
-                plugin.getLogger().warning("In a gui: size must be a multiple of 9");
+                Uppercore.logger().warning("In a gui: size must be a multiple of 9");
                 size = GuiSize.min(size);
             }
             icons = new ConfigIcon[size];
@@ -113,7 +117,7 @@ public class ChestGui implements Gui {
         Collection<Map<String, Object>> iconsData = (Collection<Map<String, Object>>) config.getCollection("icons");
         if (iconsData != null) {
             for (Map<String, Object> data : iconsData) {
-                ConfigIcon item = ConfigIcon.deserialize(plugin, Config.from(data));
+                ConfigIcon item = ConfigIcon.deserialize(Config.from(data));
                 icons[(int) data.get("slot")] = item;
             }
         }
@@ -152,11 +156,11 @@ public class ChestGui implements Gui {
     public void onSetup() {
     }
 
-    public void setTitle(String title) {
+    public void setTitle(@NonNull String title) {
         this.title = PlaceholderValue.stringValue(title);
     }
 
-    public void setTitle(PlaceholderValue<String> title) {
+    public void setTitle(@NonNull PlaceholderValue<String> title) {
         this.title = title;
     }
 
@@ -348,6 +352,14 @@ public class ChestGui implements Gui {
         return new ChestGui(this);
     }
 
+    @Override
+    public void setParentRegistry(Registry parent) {
+        for (ConfigIcon icon : this.icons) {
+            if (icon == null) continue;
+            icon.setParentRegistry(parent);
+        }
+    }
+
     /**
      * Loads a gui from id and configuration section.
      *
@@ -356,9 +368,9 @@ public class ChestGui implements Gui {
      * @return the gui created
      */
     @SuppressWarnings("unchecked")
-    public static ChestGui deserialize(Plugin plugin, String id, Config config) {
+    public static ChestGui deserialize(String id, Config config) {
         try {
-            return new ChestGui(plugin, config);
+            return new ChestGui(config);
         } catch (InvalidConfigException e) {
             e.addLocation("in gui " + id);
             throw e;

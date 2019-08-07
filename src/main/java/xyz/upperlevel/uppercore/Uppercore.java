@@ -15,7 +15,6 @@ import xyz.upperlevel.uppercore.gui.GuiManager;
 import xyz.upperlevel.uppercore.hotbar.HotbarManager;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.registry.Registry;
-import xyz.upperlevel.uppercore.registry.RegistryRoot;
 import xyz.upperlevel.uppercore.script.ScriptManager;
 import xyz.upperlevel.uppercore.storage.StorageManager;
 
@@ -31,7 +30,7 @@ public class Uppercore {
     @Getter
     private Logger coreLogger;
 
-    private RegistryRoot registryRoot = new RegistryRoot();
+    private Registry registryRoot = Registry.root();
     private GuiManager guis;
     private HotbarManager hotbars;
     private ScriptManager scripts;

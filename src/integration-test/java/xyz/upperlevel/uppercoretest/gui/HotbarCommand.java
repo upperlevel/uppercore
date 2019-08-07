@@ -31,7 +31,7 @@ public class HotbarCommand extends Command {
         setPermissionCompleter(PermissionCompleter.NONE);
 
         // Register guis
-        registry.register("test", new InputStreamReader(getClass().getResourceAsStream("/hotbars/test.yml")), Hotbar.CONFIG_LOADER);
+        registry.load("test", new InputStreamReader(getClass().getResourceAsStream("/hotbars/test.yml")), Hotbar.CONFIG_LOADER);
 
         logger.info("Registered " + registry.getRegistered().size() + " hotbars: " + registry.getRegistered().keySet());
     }

@@ -33,10 +33,10 @@ public class Hotbar {
     public Hotbar() {
     }
 
-    public Hotbar(Plugin plugin, Config config) {
+    public Hotbar(Config config) {
         if (config.has("icons")) {
             for (Config section : config.getConfigList("icons")) {
-                ConfigIcon icon = ConfigIcon.deserialize(plugin, section);
+                ConfigIcon icon = ConfigIcon.deserialize(section);
                 int slot = section.getInt("slot", -1);
                 if (slot == -1) {
                     noSlotIcons.add(icon);
@@ -226,8 +226,8 @@ public class Hotbar {
      * @param config the config where load the hotbar
      * @return the hotbar created
      */
-    public static Hotbar deserialize(Plugin plugin, Config config) {
-        return new Hotbar(plugin, config);
+    public static Hotbar deserialize(Config config) {
+        return new Hotbar(config);
     }
 
     public static class HotbarOutOfSpaceException extends RuntimeException {

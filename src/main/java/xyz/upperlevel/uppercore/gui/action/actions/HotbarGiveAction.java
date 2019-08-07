@@ -3,9 +3,9 @@ package xyz.upperlevel.uppercore.gui.action.actions;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
@@ -43,7 +43,7 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
     public void run(Player player) {
         String hotbarPath = this.hotbarPath.resolve(player);
 
-        Hotbar hotbar = (Hotbar) getRegistry().get(hotbarPath);
+        Hotbar hotbar = getRegistry().get(hotbarPath);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + hotbarPath + "\"");
             return;
@@ -52,7 +52,7 @@ public class HotbarGiveAction extends Action<HotbarGiveAction> {
     }
 
     @Override
-    public void setRegistry(Registry<?> registry) {
+    public void setRegistry(Registry registry) {
         super.setRegistry(registry);
         for (Action<?> action : actions) {
             action.setRegistry(registry);

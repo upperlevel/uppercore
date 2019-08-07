@@ -45,7 +45,7 @@ public class GuiOpenAction extends Action<GuiOpenAction> {
     public void run(Player player) {
         String guiId = this.guiId.resolve(player);
 
-        Gui gui = (Gui) getRegistry().find(guiId);
+        Gui gui = getRegistry().get(guiId);
         if (gui == null) {
             Uppercore.logger().severe("Cannot find gui \"" + guiId + "\"");
             return;

@@ -30,7 +30,7 @@ public class GuiCommand extends Command {
         setPermissionCompleter(PermissionCompleter.NONE);
 
         // Register guis
-        registry.register("test", new InputStreamReader(getClass().getResourceAsStream("/guis/test.yml")), Gui.CONFIG_LOADER);
+        registry.load("test", new InputStreamReader(getClass().getResourceAsStream("/guis/test.yml")), Gui.CONFIG_LOADER);
 
         logger.info("Registered " + registry.getRegistered().size() + " guis: " + registry.getRegistered().keySet());
     }

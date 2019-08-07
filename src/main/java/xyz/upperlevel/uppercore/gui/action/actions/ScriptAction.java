@@ -35,7 +35,7 @@ public class ScriptAction extends Action<ScriptAction> {
     @Override
     public void run(Player player) {
         if (script == null) {
-            Script script = (Script) getRegistry().find(path);
+            Script script = getRegistry().get(path);
             if (script == null) {
                 Uppercore.logger().severe("Cannot find script \"" + path + "\"");
                 this.script = Script.EMPTY;

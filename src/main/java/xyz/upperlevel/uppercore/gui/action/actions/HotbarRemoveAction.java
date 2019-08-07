@@ -32,7 +32,7 @@ public class HotbarRemoveAction extends Action<HotbarRemoveAction> {
     public void run(Player player) {
         String barId = id.resolve(player);
 
-        Hotbar hotbar = (Hotbar) getRegistry().find(barId);
+        Hotbar hotbar = getRegistry().get(barId);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + barId + "\"");
             return;

@@ -70,7 +70,7 @@ public class RequireAction extends Action<RequireAction> {
     }
 
     @Override
-    public void setRegistry(Registry<?> registry) {
+    public void setRegistry(Registry registry) {
         super.setRegistry(registry);
         for (Action<?> action : actions) {
             action.setRegistry(registry);
@@ -88,7 +88,7 @@ public class RequireAction extends Action<RequireAction> {
 
     private boolean hasHotbar(Player player, PlaceholderValue<String> hotbarPath) {
         String id = hotbarPath.resolve(player);
-        Hotbar hotbar = (Hotbar) getRegistry().find(id);
+        Hotbar hotbar = getRegistry().get(id);
         if (hotbar == null) {
             Uppercore.logger().severe("Cannot find hotbar \"" + id + "\"");
             return false;
@@ -98,7 +98,7 @@ public class RequireAction extends Action<RequireAction> {
     }
 
     private boolean testScript(Player player, String path) {
-        Script script = (Script) getRegistry().find(path);
+        Script script = getRegistry().get(path);
         if (script == null) {
             Uppercore.logger().severe("Cannot find script '" + path + "'");
             return true;
