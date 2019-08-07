@@ -258,6 +258,7 @@ public class ConfigParserRegistry {
             Class keyClass = extractClassFromType(getGenericChildren(t, 0));
             return new MapParser<>(EnumMap.class, () -> new EnumMap(keyClass), getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1)));
         });
+        register(LinkedHashMap.class, (Type t) -> new MapParser<>(LinkedHashMap.class, LinkedHashMap::new, getFor(getGenericChildren(t, 0)), getFor(getGenericChildren(t, 1))));
     }
 
     public void registerPlaceholders() {

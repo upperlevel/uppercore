@@ -762,7 +762,9 @@ public abstract class Config {
     // Config map
 
     public Map<String, Config> asConfigMap() {
-        return keys().collect(Collectors.toMap(k -> k, this::getConfig));
+        LinkedHashMap<String, Config> res = new LinkedHashMap<>();
+        keys().forEachOrdered(x -> res.put(x, getConfig(x)));
+        return res;
     }
 
     // Exception throwers
