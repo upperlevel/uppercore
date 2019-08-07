@@ -1,4 +1,4 @@
-import org.apache.tools.ant.filters.*
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id "java"
@@ -72,16 +72,21 @@ dependencies {
     integrationTestCompileOnly "org.projectlombok:lombok:1.18.8"
     integrationTestAnnotationProcessor "org.projectlombok:lombok:1.18.8"
 
+    /* JUnit */
     testCompile "junit:junit:4.12"
+
+    /* Mockito */
     testCompile "org.mockito:mockito-core:2.+"
 
+    /* Spigot API */
     compileOnly "org.spigotmc:spigot-api:" + mcVersion
     testCompile "org.spigotmc:spigot-api:" + mcVersion
     integrationTestCompileOnly "org.spigotmc:spigot-api:" + mcVersion
 
+    /* Bukkit */
     compileOnly "org.bukkit:bukkit:" + mcVersion
     testCompile "org.bukkit:bukkit:" + mcVersion
-    integrationTestCompileOnly "org.spigotmc:spigot-api:" + mcVersion
+    integrationTestCompileOnly "org.bukkit:bukkit:" + mcVersion
 
     compile "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3" // anvil-gui
     compileOnly "me.clip:placeholderapi:2.9.2" // placeholder-api
@@ -97,12 +102,17 @@ dependencies {
 }
 
 shadowJar {
+    archiveClassifier.set("lib")
+
     relocate "org.bstats", "${project.group}.libs.metrics"
-    baseName = "Uppercore"
-    classifier = null
-    version = null
 }
-project.tasks.assemble.dependsOn project.tasks.shadowJar
+
+task testJar(type: ShadowJar) {
+    archiveClassifier.set("test")
+
+    from sourceSets.main.output
+    from sourceSets.integrationTest.output
+}
 
 publishing {
     publications {
