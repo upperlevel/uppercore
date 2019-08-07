@@ -1,25 +1,18 @@
 package xyz.upperlevel.uppercore.config;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import static java.lang.Integer.parseInt;
-import static xyz.upperlevel.uppercore.util.CollectionUtil.toMap;
 
 public final class ConfigUtil {
     public static final Map<String, Color> COLOR_BY_NAME = new HashMap<>(ImmutableMap.<String, Color>builder()
