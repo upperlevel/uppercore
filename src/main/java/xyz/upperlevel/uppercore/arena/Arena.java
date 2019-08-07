@@ -51,7 +51,7 @@ public class Arena {
     private boolean enabled;
 
     @Getter
-    private final PhaseManager phaseManager = new PhaseManager();
+    private final PhaseManager phaseManager;
 
     @Getter
     @Setter
@@ -67,6 +67,10 @@ public class Arena {
         this.id = id.toLowerCase(ENGLISH);
         this.signature = getSignature(id);
         this.world = Bukkit.getWorld(signature);
+
+        this.phaseManager = new PhaseManager(signature);
+        phaseManager.onEnable(null); // Just for log purposes.
+
         if (world == null) {
             throw new IllegalStateException("Arena's world isn't loaded, or doesn't exist: " + signature);
         }
@@ -284,24 +288,37 @@ public class Arena {
         if (!enabled) {
             throw new IllegalStateException("An arena not enabled can't be joined.");
         }
+        // Bukkit-event
         ArenaJoinEvent event = new ArenaJoinEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
+            return false;
+        }
+        // Method-event
+        if (phaseManager.onJoin(player)) {
             return false;
         }
         players.add(player);
         return true;
     }
 
-    public void quit(Player player) {
+    public boolean quit(Player player) {
+        // Bukkit-event
         ArenaQuitEvent event = new ArenaQuitEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            return;
+            return false;
         }
-        players.remove(player);
+        // Method-event
+        if (phaseManager.onQuit(player)) {
+            return false;
+        }
+        if (!players.remove(player)) {
+            return false;
+        }
         if (onQuitHandler != null) {
             onQuitHandler.handle(player);
         }
+        return true;
     }
 }

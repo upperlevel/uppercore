@@ -123,7 +123,7 @@ public class Uppercore {
     }
 
     public static Logger logger() {
-        return get().coreLogger;
+        return instance.plugin.getLogger();
     }
 
     public static Logger logger(String name) {
