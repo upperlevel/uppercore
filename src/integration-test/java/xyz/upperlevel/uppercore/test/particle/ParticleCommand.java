@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercoretest.particle;
+package xyz.upperlevel.uppercore.test.particle;
 
 import com.google.common.collect.ImmutableList;
 import org.bukkit.ChatColor;
@@ -42,7 +42,6 @@ public class ParticleCommand extends NodeCommand {
 
         BlockDustParticle particle = new BlockDustParticle();
         particle.setBlockType(material);
-        particle.setBlockData(data);
         particle.display(player.getLocation().add(0, 3, 0), ImmutableList.of(player));
     }
 }

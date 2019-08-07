@@ -113,9 +113,9 @@ public class BoardViewer {
         }
 
         // The entry cannot be equal to other entries
-        private String differEntry(String entry, int position) {
+        private String differEntry(String entry, int position, String color) {
             while (entries.contains(entry)) {
-                entry += ChatColor.RESET;
+                entry += color;
             }
             if (entry.length() > MAX_ENTRY_CHARS) {
                 throw new IllegalArgumentException("Too much chars for registrable \"" + entry + "\" at: \"" + position + "\"");
@@ -149,18 +149,18 @@ public class BoardViewer {
                         entryBfr = new StringBuffer(),
                         suffixBfr = new StringBuffer();
                 split(line, prefixBfr, entryBfr, suffixBfr);
+                // Prefix
+                prefix = prefixBfr.toString();
+                team.setPrefix(prefix);
+
                 // Entry
                 if (entry != null) {
                     clear(); // Remove previous entry
                 }
-                this.entry = differEntry(entryBfr.toString(), position);
+                this.entry = differEntry(entryBfr.toString(), position, ChatColor.getLastColors(prefix));
                 entries.add(entry);
                 team.addEntry(entry);
                 objective.getScore(entry).setScore(position);
-
-                // Prefix
-                prefix = prefixBfr.toString();
-                team.setPrefix(prefix);
 
                 // Suffix
                 suffix = suffixBfr.toString();

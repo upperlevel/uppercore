@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
 
@@ -230,6 +231,7 @@ public class HotbarView {
     public boolean addHotbar(Hotbar hotbar) {
         if (isHolding(hotbar) || isOverlaying(hotbar))
             return false;
+        Uppercore.logger().info("Adding hotbar to player: " + player.getName());
         for (int slot = 0; slot < hotbar.getIcons().length; slot++) {
             ConfigIcon icon = hotbar.getIcon(slot);
             if (icon != null)

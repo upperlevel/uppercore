@@ -1,6 +1,6 @@
 name: UppercoreTest
 version: final
-main: "xyz.upperlevel.uppercoretest.UppercoreTest"
+main: "UppercoreTest"
 author: [Upperlevel]
 description: "A plugin used to test Uppercore."
 depend: [Uppercore]

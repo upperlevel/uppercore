@@ -93,14 +93,6 @@ public class Uppercore {
     }
 
     /**
-     * Unloads Uppercore and destroys the current instance.
-     */
-    public void destroy() {
-        // TODO remove garbage
-        instance = null;
-    }
-
-    /**
      * Returns an instance of Uppercore to use within the given plugin.
      *
      * @param plugin the target plugin.
@@ -108,6 +100,14 @@ public class Uppercore {
      */
     public static Uppercore hook(JavaPlugin plugin) {
         return new Uppercore(plugin);
+    }
+
+    public static void destroy() {
+        if (instance == null) {
+            throw new IllegalStateException("No Uppercore instance created.");
+        }
+        // TODO disable other stuff
+        instance = null;
     }
 
     public static Uppercore get() {

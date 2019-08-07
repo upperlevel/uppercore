@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercoretest.command.functional;
+package xyz.upperlevel.uppercore.test.command.functional;
 
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.command.PermissionUser;

@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercoretest.placeholders;
+package xyz.upperlevel.uppercore.test.placeholders;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.command.CommandSender;

@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercoretest.board;
+package xyz.upperlevel.uppercore.test.board;
 
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.board.Board;
