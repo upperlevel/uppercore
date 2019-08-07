@@ -102,15 +102,16 @@ dependencies {
 }
 
 shadowJar {
-    archiveClassifier.set("lib")
-
+    classifier = "lib"
     relocate "org.bstats", "${project.group}.libs.metrics"
 }
 
 task testJar(type: ShadowJar) {
-    archiveClassifier.set("test")
+    classifier = "test"
 
-    from sourceSets.main.output
+    dependsOn tasks.shadowJar
+
+    from zipTree(shadowJar.outputs.files.singleFile)
     from sourceSets.integrationTest.output
 }
 
@@ -138,11 +139,6 @@ checkstyle {
     ignoreFailures = true
 }
 */
-
-task buildTest(type: Jar) {
-    from sourceSets.integrationTest.output
-    baseName = "UppercoreTest"
-}
 
 // This part of the config is needed to filter the class UppercoreInfo.java, replacing the needed properties
 
