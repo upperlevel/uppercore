@@ -8,5 +8,6 @@ public class UppercoreTestCommand extends NodeCommand {
         super("utest");
 
         FunctionalCommand.inject(this, new TestHotbar());
+        FunctionalCommand.inject(this, new TestBoard());
     }
 }

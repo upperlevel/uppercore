@@ -20,6 +20,7 @@ public class UppercoreTest extends JavaPlugin {
         saveDefaultConfig();
 
         TestHotbar.loadConfig();
+        TestBoard.loadConfig();
 
         CommandRegistry.register(new UppercoreTestCommand());
     }
