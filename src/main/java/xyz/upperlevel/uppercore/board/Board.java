@@ -221,4 +221,8 @@ public class Board {
     public void open(Player player) {
         open(player, PlaceholderRegistry.def());
     }
+
+    public boolean isOpened(Player player) {
+        return player.getScoreboard() == scoreboard;
+    }
 }
