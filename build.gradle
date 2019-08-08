@@ -143,6 +143,7 @@ checkstyle {
 
 // This part of the config is needed to filter the class UppercoreInfo.java, replacing the needed properties
 
+/*
 task generateUppercoreInfo(type: Copy) {
     println(buildDir)
     from ("${projectDir}/src/main/java/xyz/upperlevel/uppercore") {
@@ -164,4 +165,4 @@ sourceSets {
 
 compileJava {
     dependsOn generateUppercoreInfo
-}
+}*/
