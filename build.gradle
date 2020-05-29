@@ -48,16 +48,16 @@ repositories {
         url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" // bukkit
     }
     maven {
-        url "http://nexus.hc.to/content/repositories/pub_releases" // vault
+        url "https://mvnrepository.com/artifact/net.milkbowl.vault/VaultAPI" // vault
     }
     maven {
-        url "http://repo.bstats.org/content/repositories/releases/" // metrics
+        url "https://mvnrepository.com/artifact/org.bstats/bstats-bukkit" // bstats
     }
     maven {
         url "http://maven.elmakers.com/repository/" // EffectLib
     }
     maven {
-        url = "http://repo.extendedclip.com/content/repositories/placeholderapi/" // PlaceholderAPI
+        url "https://repo.extendedclip.com/content/repositories/placeholderapi/" // PlaceholderAPI
     }
 }
 
