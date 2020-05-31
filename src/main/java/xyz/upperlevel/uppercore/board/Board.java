@@ -33,8 +33,21 @@ public class Board {
 
     private final Set<String> entries = new HashSet<>();
 
+    /**
+     * Initializes the Board from a new Bukkit Scoreboard.
+     */
     public Board() {
-        this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        this(null);
+    }
+
+    /**
+     * Initializes the Board from an external Bukkit Scoreboard.
+     */
+    public Board(Scoreboard scoreboard) {
+        if (scoreboard == null) { // If the scoreboard is null, creates one empty to avoid issues.
+            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        }
+        this.scoreboard = scoreboard;
     }
 
     public void setTitle(String title) {
@@ -100,6 +113,8 @@ public class Board {
     }
 
     private void updateTitle(Player player, PlaceholderRegistry placeholders) {
+        if (title == null)
+            return;
         if (objective == null) {
             objective = scoreboard.registerNewObjective("scoreboard", "dummy", title.resolve(player, placeholders));
             objective.setDisplaySlot(DisplaySlot.SIDEBAR);
