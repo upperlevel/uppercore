@@ -2,7 +2,6 @@ package xyz.upperlevel.uppercore.update;
 
 import lombok.Getter;
 import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +11,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
+
+import static xyz.upperlevel.uppercore.util.JsonUtil.GENERAL_GSON;
+import static xyz.upperlevel.uppercore.util.JsonUtil.JSON_MAP_TYPE;
 
 public class SpigetUpdateChecker extends DownloadableUpdateChecker {
     private static final String USER_AGENT  = "Mozilla/5.0 (X11; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0";
@@ -49,7 +51,7 @@ public class SpigetUpdateChecker extends DownloadableUpdateChecker {
         conn.setRequestProperty("User-Agent", USER_AGENT);
         if(((HttpURLConnection)conn).getResponseCode() == 404)
             return null;
-        return JSONValue.parse(new InputStreamReader((InputStream)conn.getContent()));
+        return  GENERAL_GSON.fromJson(new InputStreamReader((InputStream)conn.getContent()), JSON_MAP_TYPE);
     }
 
     public URLConnection fileQuery(String postfix) throws IOException {

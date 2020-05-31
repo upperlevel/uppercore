@@ -34,7 +34,7 @@ public final class MariaDb  {
         @Override
         public String[] getDownloadLinks() {
             return new String[] {
-                    "https://oss.sonatype.org/content/repositories/releases/org/mariadb/jdbc/mariadb-java-client/2.1.2/mariadb-java-client-2.1.2.jar"
+                    "https://oss.sonatype.org/content/repositories/releases/org/mariadb/jdbc/mariadb-java-client/2.6.0/mariadb-java-client-2.6.0.jar"
             };
         }
 

@@ -39,15 +39,15 @@ public final class NitriteDb {
         @Override
         public String[] getDownloadLinks() {
             return new String[] {
-                    "https://oss.sonatype.org/content/repositories/releases/org/dizitart/nitrite/3.0.2/nitrite-3.0.2.jar",
-                    "https://oss.sonatype.org/content/repositories/releases/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar",
-                    "https://oss.sonatype.org/content/repositories/releases/com/h2database/h2-mvstore/1.4.196/h2-mvstore-1.4.196.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/org/dizitart/nitrite/3.4.1/nitrite-3.4.1.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/com/h2database/h2-mvstore/1.4.200/h2-mvstore-1.4.200.jar",
                     "https://oss.sonatype.org/content/repositories/releases/org/objenesis/objenesis/2.6/objenesis-2.6.jar",
-                    "https://oss.sonatype.org/content/repositories/releases/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar",
-                    "https://oss.sonatype.org/content/repositories/releases/com/fasterxml/jackson/core/jackson-annotations/2.9.5/jackson-annotations-2.9.5.jar",
-                    "https://oss.sonatype.org/content/repositories/releases/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar",
-                    "https://oss.sonatype.org/content/repositories/releases/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.jar",
-                    "https://oss.sonatype.org/content/repositories/releases/uk/co/jemos/podam/podam/7.1.0.RELEASE/podam-7.1.0.RELEASE.jar"
+                    "https://oss.sonatype.org/content/repositories/releases/com/fasterxml/jackson/core/jackson-databind/2.10.1/jackson-databind-2.10.1.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/com/fasterxml/jackson/core/jackson-annotations/2.10.1/jackson-annotations-2.10.1.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/com/squareup/okhttp3/okhttp/4.3.1/okhttp-4.3.1.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/uk/co/jemos/podam/podam/7.2.3.RELEASE/podam-7.2.3.RELEASE.jar"
             };
         }
 

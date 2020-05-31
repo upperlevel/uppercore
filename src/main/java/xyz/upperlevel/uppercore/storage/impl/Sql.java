@@ -1,8 +1,6 @@
 package xyz.upperlevel.uppercore.storage.impl;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.google.gson.JsonParseException;
 import xyz.upperlevel.uppercore.storage.*;
 
 import java.sql.PreparedStatement;
@@ -10,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
+
+import static xyz.upperlevel.uppercore.util.JsonUtil.GENERAL_GSON;
+import static xyz.upperlevel.uppercore.util.JsonUtil.JSON_MAP_TYPE;
 
 public final class Sql {
     private Sql() {
@@ -143,7 +144,7 @@ public final class Sql {
                 PreparedStatement statement = sql.prepareStatement(query);
                 statement.setString(1, id);
                 if (duplicatePolicy == DuplicatePolicy.REPLACE) {
-                    statement.setString(2, new JSONObject(data).toJSONString());
+                    statement.setString(2, GENERAL_GSON.toJson(data));
                 }
                 statement.executeUpdate();
                 return true;
@@ -160,7 +161,7 @@ public final class Sql {
         private boolean update(Map<String, Object> data) {
             try {
                 PreparedStatement statement = sql.prepareStatement("UPDATE `" + table.database.name + "`.`" + table.name + "` SET `data`=?");
-                statement.setString(1, new JSONObject(data).toJSONString());
+                statement.setString(1, GENERAL_GSON.toJson(data));
                 statement.executeUpdate();
                 return true;
             } catch (SQLException e) {
@@ -189,12 +190,12 @@ public final class Sql {
                 statement.setString(2, id);
                 ResultSet result = statement.executeQuery();
                 if (result.next()) {
-                    return new JSONParser().parse(result.getString(encoded));
+                    return GENERAL_GSON.fromJson(result.getString(encoded), JSON_MAP_TYPE);
                 }
                 throw new IllegalArgumentException("Parameter '" + parameter + "' not found for element: " + id);
             } catch (SQLException e) {
                 throw new IllegalStateException("Can't get element: " + id, e);
-            } catch (ParseException e) {
+            } catch (JsonParseException e) {
                 throw new IllegalStateException("Read invalid JSON from element: " + id, e);
             }
         }
@@ -206,12 +207,12 @@ public final class Sql {
                 PreparedStatement statement = sql.prepareStatement("SELECT `data` FROM `" + table.database.name + "`.`" + table.name + "`");
                 ResultSet result = statement.executeQuery();
                 if (result.next()) {
-                    return Optional.of((Map<String, Object>) new JSONParser().parse(result.getString("data")));
+                    return Optional.of((Map<String, Object>) GENERAL_GSON.fromJson(result.getString("data"), JSON_MAP_TYPE));
                 }
                 return Optional.empty();
             } catch (SQLException e) {
                 throw new IllegalStateException("Can't get all the element: " + id, e);
-            } catch (ParseException e) {
+            } catch (JsonParseException e) {
                 throw new IllegalStateException("Read invalid JSON from element: " + id, e);
             }
         }

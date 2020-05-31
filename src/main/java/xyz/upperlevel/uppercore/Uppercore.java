@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore;
 
 import lombok.Getter;
-import org.bstats.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.command.Command;
@@ -40,7 +40,7 @@ public class Uppercore {
 
     private Metrics metrics;
 
-    private Uppercore(JavaPlugin plugin) {
+    private Uppercore(JavaPlugin plugin, int bStatsId) {
         if (instance != null) {
             if (instance.plugin == plugin) {
                 throw new RuntimeException("Creating two instances of UpperCore!");
@@ -55,7 +55,9 @@ public class Uppercore {
         this.coreLogger.info("Loading UpperCore version: " + UppercoreInfo.VERSION);
 
         // Metrics setup
-        metrics = new Metrics(plugin);
+        if (bStatsId != 0) {
+            metrics = new Metrics(plugin, bStatsId);
+        }
         // UpdateChecker setup
 
         PlaceholderUtil.tryHook();
@@ -96,10 +98,21 @@ public class Uppercore {
      * Returns an instance of Uppercore to use within the given plugin.
      *
      * @param plugin the target plugin.
+     * @param bStatsId the bStats id (if you want metrics to be collected), or 0 to disable metrics
+     * @return an instance of Uppercore.
+     */
+    public static Uppercore hook(JavaPlugin plugin, int bStatsId) {
+        return new Uppercore(plugin, bStatsId);
+    }
+
+    /**
+     * Returns an instance of Uppercore to use within the given plugin.
+     *
+     * @param plugin the target plugin.
      * @return an instance of Uppercore.
      */
     public static Uppercore hook(JavaPlugin plugin) {
-        return new Uppercore(plugin);
+        return new Uppercore(plugin, 0);
     }
 
     public static void destroy() {

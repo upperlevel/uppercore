@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.config.parser;
 
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.nodes.Node;
 import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.UnparsableConfigType;

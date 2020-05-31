@@ -46,7 +46,7 @@ public final class MongoDb {
         @Override
         public String[] getDownloadLinks() {
             return new String[] {
-                    "https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/3.8.0/mongo-java-driver-3.8.0.jar"
+                    "https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/3.12.4/mongo-java-driver-3.12.4.jar"
             };
         }
 

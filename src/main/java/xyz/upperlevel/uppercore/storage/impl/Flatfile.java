@@ -1,8 +1,6 @@
 package xyz.upperlevel.uppercore.storage.impl;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.google.gson.JsonParseException;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
@@ -15,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
+
+import static xyz.upperlevel.uppercore.util.JsonUtil.GENERAL_GSON;
+import static xyz.upperlevel.uppercore.util.JsonUtil.JSON_MAP_TYPE;
 
 @SuppressWarnings("unchecked")
 @Deprecated
@@ -148,7 +149,7 @@ public final class Flatfile {
 
             if (duplicatePolicy == DuplicatePolicy.REPLACE) {
                 try (FileWriter writer = new FileWriter(file)) {
-                    writer.write(new JSONObject(writeData).toJSONString());
+                    writer.write(GENERAL_GSON.toJson(writeData));
                     writer.flush();
                 } catch (IOException e) {
                     throw new IllegalStateException("Can't write to file: " + file, e);
@@ -179,10 +180,9 @@ public final class Flatfile {
         public Optional<Map<String, Object>> getData() {
             if (!file.exists()) return Optional.empty();
 
-            JSONParser parser = new JSONParser();
             try {
-                return Optional.of((Map<String, Object>) parser.parse(new FileReader(file)));
-            } catch (IOException | ParseException e) {
+                return Optional.of(GENERAL_GSON.fromJson(new FileReader(file), JSON_MAP_TYPE));
+            } catch (JsonParseException | IOException e) {
                 throw new IllegalStateException("Can't read element file: " + file.getPath(), e);
             }
         }

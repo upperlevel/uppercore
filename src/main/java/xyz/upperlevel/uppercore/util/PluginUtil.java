@@ -17,8 +17,10 @@ import java.util.function.Consumer;
 public final class PluginUtil {
     public static void onPluginLoaded(String pluginName, Consumer<Plugin> callback) {
         if (Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
+            Bukkit.getLogger().severe("PLUGIN ENABLED: " + pluginName);
             callback.accept(Bukkit.getPluginManager().getPlugin(pluginName));
         } else {
+            Bukkit.getLogger().severe("PLUGIN DISABLED: " + pluginName + " WAITING FOR ACTIVATION");
             Bukkit.getPluginManager().registerEvents(new PluginLoadedListener(pluginName, callback), Uppercore.plugin());
         }
     }
@@ -29,9 +31,13 @@ public final class PluginUtil {
         private final Consumer<Plugin> callback;
 
         @EventHandler
-        public void onEnable(PluginEnableEvent e) {
+        public void onPluginEnable(PluginEnableEvent e) {
+            Bukkit.getLogger().severe("ENABLE EVENT: " + pluginName);
             // Check if the plugin name is what we're searching for
             if (!e.getPlugin().getName().equals(pluginName)) return;
+
+
+            Bukkit.getLogger().severe("FOUND!: " + pluginName);
 
             // Prepare for destruction (unregister listener)
             HandlerList.unregisterAll(this);
