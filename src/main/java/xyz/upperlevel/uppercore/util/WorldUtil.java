@@ -1,11 +1,8 @@
 package xyz.upperlevel.uppercore.util;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.material.Bed;
 
 import java.io.*;
 import java.util.Arrays;
@@ -40,10 +37,10 @@ public final class WorldUtil {
         world.setTicksPerAnimalSpawns(1);
         world.setTicksPerMonsterSpawns(1);
 
-        world.setGameRuleValue("keepInventory", "false");
-        world.setGameRuleValue("doMobSpawning", "false");
-        world.setGameRuleValue("doFireTick", "false");
-        world.setGameRuleValue("showDeathMessages", "false");
+        world.setGameRule(GameRule.KEEP_INVENTORY, false);
+        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        world.setGameRule(GameRule.DO_FIRE_TICK, false);
+        world.setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
 
         return world;
     }
@@ -113,13 +110,5 @@ public final class WorldUtil {
             }
         } catch (IOException ignored) {
         }
-    }
-
-    public static Block getBedHead(Block block) {
-        BlockState bs = block.getState();
-        if (!(bs instanceof Bed))
-            throw new IllegalArgumentException("The parameter 'block' must has a BedHelper State");
-        Bed bed = (Bed) bs;
-        return !bed.isHeadOfBed() ? block.getRelative(bed.getFacing().getOppositeFace()) : block;
     }
 }

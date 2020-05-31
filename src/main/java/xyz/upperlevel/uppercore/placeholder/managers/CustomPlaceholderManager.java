@@ -17,7 +17,7 @@ public class CustomPlaceholderManager extends BasePlaceholderManager {
     private Map<String, Placeholder> placeholders = new HashMap<>();
 
     @Getter
-    private final PlaceholderRegistry registry = new CustomPlaceholderRegistry();
+    private final PlaceholderRegistry<?> registry = new CustomPlaceholderRegistry();
 
     public CustomPlaceholderManager() {
         addDefaults();
@@ -47,11 +47,11 @@ public class CustomPlaceholderManager extends BasePlaceholderManager {
     }
 
     private class CustomPlaceholderRegistry implements PlaceholderRegistry<CustomPlaceholderRegistry> {
-        public PlaceholderRegistry getParent() {
+        public PlaceholderRegistry<?> getParent() {
             return null;
         }
 
-        public void setParent(PlaceholderRegistry parent) {
+        public void setParent(PlaceholderRegistry<?> parent) {
             throw new UnsupportedOperationException();
         }
 

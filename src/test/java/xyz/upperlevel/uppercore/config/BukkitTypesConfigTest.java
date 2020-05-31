@@ -7,27 +7,21 @@ import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.util.Vector;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import xyz.upperlevel.uppercore.FakePlaceholderManager;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import xyz.upperlevel.uppercore.UpperTestUtil;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.gui.GuiSize;
-import xyz.upperlevel.uppercore.gui.action.Action;
-import xyz.upperlevel.uppercore.gui.action.actions.BroadcastAction;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 
 import java.io.StringReader;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class BukkitTypesConfigTest {
     public static final ConfigParserRegistry registry = ConfigParserRegistry.getStandard();
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         UpperTestUtil.setup();
     }

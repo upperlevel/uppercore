@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.upperlevel.uppercore.Uppercore;
@@ -34,7 +34,7 @@ public class ItemDemerger implements Listener{
 
     public static class EventListener implements Listener {
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        public void onPlayerPickupItem(EntityPickupItemEvent event) {
             ItemDemerger.clearItem(event.getItem().getItemStack());
         }
     }

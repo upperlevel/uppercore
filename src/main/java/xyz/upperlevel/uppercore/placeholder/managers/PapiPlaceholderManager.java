@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
-import me.clip.placeholderapi.external.EZPlaceholderHook;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
@@ -34,7 +34,7 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
 
     @Override
     public void register(Plugin plugin, Placeholder placeholder) {
-        new OfficialPlaceholderAdapter(plugin, placeholder).hook();
+        new OfficialPlaceholderAdapter(plugin, placeholder).register();
     }
 
     public Placeholder find(String id) {
@@ -53,17 +53,56 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
     }
 
 
-    private static class OfficialPlaceholderAdapter extends EZPlaceholderHook {
+    private static class OfficialPlaceholderAdapter extends PlaceholderExpansion {
         private final Placeholder placeholder;
+        private final Plugin plugin;
 
         public OfficialPlaceholderAdapter(Plugin plugin, Placeholder placeholder) {
-            super(plugin, placeholder.getId());
+            this.plugin = plugin;
             this.placeholder = placeholder;
         }
 
         @Override
         public String onPlaceholderRequest(Player player, String identifier) {
             return placeholder.resolve(player, identifier);
+        }
+
+        @Override
+        public String getIdentifier() {
+            return placeholder.getId();
+        }
+
+        @Override
+        public String getAuthor() {
+            return String.join(", ", plugin.getDescription().getAuthors());
+        }
+
+        @Override
+        public String getVersion() {
+            return plugin.getDescription().getVersion();
+        }
+
+        /**
+         * Because this is an internal class,
+         * you must override this method to let PlaceholderAPI know to not unregister your expansion class when
+         * PlaceholderAPI is reloaded
+         *
+         * @return true to persist through reloads
+         */
+        @Override
+        public boolean persist() {
+            return true;
+        }
+
+        /**
+         * Because this is a internal class, this check is not needed
+         * and we can simply return {@code true}
+         *
+         * @return Always true since it's an internal class.
+         */
+        @Override
+        public boolean canRegister(){
+            return true;
         }
     }
 

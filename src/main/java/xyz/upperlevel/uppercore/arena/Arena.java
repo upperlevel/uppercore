@@ -105,7 +105,7 @@ public class Arena {
     /**
      * Creates the placeholders for this arena.
      */
-    protected PlaceholderRegistry createPlaceholders() {
+    protected PlaceholderRegistry<?> createPlaceholders() {
         return PlaceholderRegistry.create()
                 .set("arena_id", () -> id)
                 .set("arena_name", this::getName)

@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.storage.impl;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
@@ -61,7 +62,7 @@ public final class MongoDb {
                         access.getStringRequired("username"),
                         access.getStringRequired("password").toCharArray()
                 );
-                client = new MongoClient(new ServerAddress(address, port), Collections.singletonList(credential));
+                client = new MongoClient(new ServerAddress(address, port), credential, MongoClientOptions.builder().build());
             } else {
                 client = new MongoClient(new ServerAddress(address, port));
             }

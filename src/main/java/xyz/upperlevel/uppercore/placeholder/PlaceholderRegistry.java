@@ -11,9 +11,9 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 public interface PlaceholderRegistry<T extends PlaceholderRegistry<T>> {
 
-    PlaceholderRegistry getParent();
+    PlaceholderRegistry<?> getParent();
 
-    void setParent(PlaceholderRegistry parent);
+    void setParent(PlaceholderRegistry<?> parent);
 
     Placeholder getLocal(String key);
 
@@ -21,7 +21,7 @@ public interface PlaceholderRegistry<T extends PlaceholderRegistry<T>> {
         Placeholder p = getLocal(key);
         if (p != null) return p;
         else {
-            PlaceholderRegistry parent = getParent();
+            PlaceholderRegistry<?> parent = getParent();
             return parent != null ? parent.get(key) : null;
         }
     }
@@ -62,22 +62,22 @@ public interface PlaceholderRegistry<T extends PlaceholderRegistry<T>> {
         return (T) this;
     }
 
-    static PlaceholderRegistry wrap(Map<String, Placeholder> handle) {
+    static SimplePlaceholderRegistry wrap(Map<String, Placeholder> handle) {
         return new SimplePlaceholderRegistry(handle);
     }
 
-    static PlaceholderRegistry wrap(String k1, String v1) {
+    static SimplePlaceholderRegistry wrap(String k1, String v1) {
         return wrap(ImmutableMap.of(k1, Placeholder.of(v1)));
     }
 
-    static PlaceholderRegistry wrap(String k1, String v1, String k2, String v2) {
+    static SimplePlaceholderRegistry wrap(String k1, String v1, String k2, String v2) {
         return wrap(ImmutableMap.of(
                 k1, Placeholder.of(v1),
                 k2, Placeholder.of(v2)
         ));
     }
 
-    static PlaceholderRegistry wrap(String k1, String v1, String k2, String v2, String k3, String v3) {
+    static SimplePlaceholderRegistry wrap(String k1, String v1, String k2, String v2, String k3, String v3) {
         return wrap(ImmutableMap.of(
                 k1, Placeholder.of(v1),
                 k2, Placeholder.of(v2),
@@ -85,7 +85,7 @@ public interface PlaceholderRegistry<T extends PlaceholderRegistry<T>> {
         ));
     }
 
-    static PlaceholderRegistry wrap(String k1, String v1, String k2, String v2, String k3, String v3, String k4, String v4) {
+    static SimplePlaceholderRegistry wrap(String k1, String v1, String k2, String v2, String k3, String v3, String k4, String v4) {
         return wrap(ImmutableMap.of(
                 k1, Placeholder.of(v1),
                 k2, Placeholder.of(v2),
@@ -94,15 +94,15 @@ public interface PlaceholderRegistry<T extends PlaceholderRegistry<T>> {
         ));
     }
 
-    static PlaceholderRegistry def() {
+    static PlaceholderRegistry<?> def() {
         return PlaceholderUtil.getRegistry();
     }
 
-    static PlaceholderRegistry create() {
+    static SimplePlaceholderRegistry create() {
         return new SimplePlaceholderRegistry();
     }
 
-    static PlaceholderRegistry create(PlaceholderRegistry parent) {
+    static SimplePlaceholderRegistry create(PlaceholderRegistry<?> parent) {
         return new SimplePlaceholderRegistry(parent);
     }
 }

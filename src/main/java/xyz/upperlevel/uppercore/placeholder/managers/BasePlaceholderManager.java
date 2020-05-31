@@ -22,7 +22,7 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
     }
 
     @Override
-    public String apply(Player player, String text, PlaceholderRegistry local) {
+    public String apply(Player player, String text, PlaceholderRegistry<?> local) {
         return apply(player, text, local::get);
     }
 
@@ -32,7 +32,7 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
     }
 
     @Override
-    public String single(Player player, String text, PlaceholderRegistry local) {
+    public String single(Player player, String text, PlaceholderRegistry<?> local) {
         return exec(player, text, this::find);
     }
 

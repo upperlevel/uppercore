@@ -87,7 +87,7 @@ public class ConfigParserRegistry {
         }
         final Method finalSelector = selector;
         /*
-         * This needs a little bit of explaination:
+         * This needs a little bit of explanation:
          * we're hacking the ConstructorConfigParser and letting him manage the arguments of the PolymorphicSelector
          * so we're using the PolymorphicSelector as a constructor of Class<?>
          * (yeah it's a hacky way to do it but it should work)
@@ -137,7 +137,7 @@ public class ConfigParserRegistry {
     }
 
     private boolean isArray(Type type) {
-        return (type instanceof Class && ((Class) type).isArray()) || (type instanceof GenericArrayType);
+        return (type instanceof Class && ((Class<?>) type).isArray()) || (type instanceof GenericArrayType);
     }
 
     public ConfigParser getFor(Type type) {

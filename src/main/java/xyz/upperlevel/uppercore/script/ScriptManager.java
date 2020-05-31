@@ -71,19 +71,6 @@ public class ScriptManager {
         }
         engineManager.put("Bukkit", Bukkit.getServer());
 
-        ScriptEngine engine = engineManager.getEngineByName("js");
-        if (engine != null) {
-            // Try the js engine.
-            try {
-                final ClassLoader old = Thread.currentThread().getContextClassLoader();
-                Thread.currentThread().setContextClassLoader(classLoader);
-                engine.eval("Java.type(\"" + Uppercore.class.getName() + "\").logger().info(\"JS engine works!\")");
-                Thread.currentThread().setContextClassLoader(old);
-            } catch (ScriptException e) {
-                e.printStackTrace();
-            }
-        }
-
         reloadConfig(scriptEngineConfig);
     }
 

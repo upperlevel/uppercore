@@ -1,12 +1,13 @@
 package xyz.upperlevel.uppercore.util;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bukkit.ChatColor.RESET;
@@ -17,12 +18,7 @@ public class ItemBuilder {
     private final ItemMeta meta;
 
     public ItemBuilder(Material type) {
-        this(type, (byte) 0);
-    }
-
-    @SuppressWarnings("deprecation")
-    public ItemBuilder(Material type, byte data) {
-        this(new ItemStack(type, 1, (short) 0, data));
+        this(new ItemStack(type, 1));
     }
 
     public ItemBuilder(ItemStack item) {
@@ -46,7 +42,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setDurability(short durability) {
-        item.setDurability(durability);
+        ((Damageable)meta).setDamage(durability);
         return this;
     }
 
@@ -63,58 +59,5 @@ public class ItemBuilder {
     public ItemStack build() {
         item.setItemMeta(meta);
         return item;
-    }
-
-    /**
-     * Serialize the item in a more user-friendly way than bukkit ones.
-     */
-    @SuppressWarnings("deprecation")
-    public static Map<String, Object> serialize(ItemStack item) {
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("type", item.getType().name());
-        result.put("data", item.getData().getData());
-        result.put("amount", item.getAmount());
-        result.put("durability", item.getDurability());
-
-        ItemMeta meta = item.getItemMeta();
-        result.put("displayName", meta.getDisplayName());
-        result.put("lore", meta.getLore());
-
-        // serializes enchants - <enchantment,level>
-        List<String> enchantments = new ArrayList<>();
-        item.getEnchantments().forEach((enc, lev) -> enchantments.add(enc.getName() + "," + lev));
-
-        result.put("enchantments", enchantments);
-
-        return result;
-    }
-
-    /**
-     * Deserialize items.
-     */
-    public static ItemStack deserialize(ConfigurationSection section) {
-        Material type = Material.getMaterial(section.getString("type"));
-        byte data = (byte) section.getInt("data");
-
-        ItemBuilder item = new ItemBuilder(type, data);
-
-        item.setAmount(section.getInt("amount"));
-        item.setDurability((short) section.getInt("durability"));
-
-        item.setDisplayName(section.getString("displayName"));
-        item.setLore(section.getString("lore"));
-
-        List<String> enchants = section.getStringList("enchantments");
-        for (String enchant : enchants) {
-            String[] tmp = enchant.split(",");
-
-            Enchantment enc = Enchantment.getByName(tmp[0]);
-            int lev = Integer.parseInt(tmp[1]);
-
-            item.addEnchantment(enc, lev);
-        }
-
-        return item.build();
     }
 }

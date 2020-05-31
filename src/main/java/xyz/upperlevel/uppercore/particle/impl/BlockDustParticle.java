@@ -1,14 +1,10 @@
 package xyz.upperlevel.uppercore.particle.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.material.MaterialData;
-import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;

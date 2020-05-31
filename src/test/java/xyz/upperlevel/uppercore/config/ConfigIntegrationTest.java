@@ -1,9 +1,7 @@
 package xyz.upperlevel.uppercore.config;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import xyz.upperlevel.uppercore.config.exceptions.RequiredPropertyNotFoundConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 
@@ -11,8 +9,8 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class ConfigIntegrationTest {
     /*
@@ -24,8 +22,6 @@ public class ConfigIntegrationTest {
      * any problems mixing the two of them and maintaining error
      * information (error line and similar) whenever possible.
      */
-    @Rule
-    public ExpectedException exc = ExpectedException.none();
 
     public static class A {
         @ConfigConstructor
@@ -62,11 +58,12 @@ public class ConfigIntegrationTest {
 
     @Test
     public void configExceptionTest1() {
-        exc.expect(WrongValueConfigException.class);
-        exc.expectMessage(containsString("line 1, column 4"));
-        Config.fromYaml(new StringReader(
-                "i: hello\n"
-        )).getIntRequired("i");
+        Exception exc = assertThrows(WrongValueConfigException.class, () -> {
+            Config.fromYaml(new StringReader(
+                    "i: hello\n"
+            )).getIntRequired("i");
+        });
+        assumeTrue(exc.getMessage().contains("line 1, column 4"));
     }
 
     @Test
@@ -79,20 +76,22 @@ public class ConfigIntegrationTest {
         )).getConfigListRequired("sub");
         assertEquals(14, cnfs.get(0).getRequired("i"));
         assertEquals("other_value", cnfs.get(0).getStringRequired("r"));
-        exc.expect(WrongValueConfigException.class);
-        exc.expectMessage(containsString("line 4, column 6"));
-        cnfs.get(1).getIntRequired("i");// Not an int, exception
+        Exception exc = assertThrows(WrongValueConfigException.class, () -> {
+            cnfs.get(1).getIntRequired("i");// Not an int, exception
+        });
+        assumeTrue(exc.getMessage().contains("line 4, column 6"));
     }
 
     @Test
     public void configExceptionTest3() {
-        exc.expect(RequiredPropertyNotFoundConfigException.class);
-        exc.expectMessage(containsString("line 1, column 1"));
-        Config.fromYaml(new StringReader(
-                "a: 1\n" +
-                "b: 2\n" +
-                "f: 6\n"
-        )).getRequired("c");
+        Exception exc = assertThrows(RequiredPropertyNotFoundConfigException.class, () -> {
+            Config.fromYaml(new StringReader(
+                    "a: 1\n" +
+                            "b: 2\n" +
+                            "f: 6\n"
+            )).getRequired("c");
+        });
+        assumeTrue(exc.getMessage().contains("line 1, column 1"));
     }
 
     @Test

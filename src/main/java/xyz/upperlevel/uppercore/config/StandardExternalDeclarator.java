@@ -19,6 +19,7 @@ import xyz.upperlevel.uppercore.gui.GuiSize;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.ActionType;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
+import xyz.upperlevel.uppercore.util.PluginUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -158,14 +159,9 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
 
     @ConfigConstructor
     public static PotionEffectType parsePotionEffectType(Node rawNode) {
-        checkTag(rawNode, Arrays.asList(Tag.STR, Tag.INT));
+        checkTag(rawNode, Arrays.asList(Tag.STR));
         ScalarNode node = (ScalarNode) rawNode;
-        PotionEffectType res;
-        if (node.getTag() == Tag.INT) {
-            res = PotionEffectType.getById(Integer.parseInt(node.getValue()));
-        } else {// node.getTag() == Tag.STR
-            res = PotionEffectType.getByName(node.getValue().replace(' ', '_').toUpperCase(Locale.ENGLISH));
-        }
+        PotionEffectType res = PotionEffectType.getByName(node.getValue().replace(' ', '_').toUpperCase(Locale.ENGLISH));
         if (res == null) {
             throw new WrongValueConfigException(node, node.getValue(), "PotionEffectType");
         }
@@ -266,10 +262,6 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
     }
 
     public static NamespacedKey parseNamespacedKey(String raw) {
-        int sepIndex = raw.indexOf(':');
-        if (sepIndex == -1) {
-            return NamespacedKey.minecraft(raw);
-        }
-        return new NamespacedKey(raw.substring(0, sepIndex), raw.substring(sepIndex + 1));
+        return PluginUtil.parseNamespacedKey(raw);
     }
 }

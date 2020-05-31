@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.util;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -23,6 +24,15 @@ public final class PluginUtil {
             Bukkit.getLogger().severe("PLUGIN DISABLED: " + pluginName + " WAITING FOR ACTIVATION");
             Bukkit.getPluginManager().registerEvents(new PluginLoadedListener(pluginName, callback), Uppercore.plugin());
         }
+    }
+
+    public static NamespacedKey parseNamespacedKey(String raw) {
+        int sepIndex = raw.indexOf(':');
+        if (sepIndex == -1) {
+            return NamespacedKey.minecraft(raw);
+        }
+
+        return new NamespacedKey(raw.substring(0, sepIndex), raw.substring(sepIndex + 1));
     }
 
     @RequiredArgsConstructor

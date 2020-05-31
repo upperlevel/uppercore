@@ -43,7 +43,6 @@ public class UItem implements ItemResolver {
     public static final UItem AIR = new UItem(new ItemStack(Material.AIR));
 
     private Material type;
-    private PlaceholderValue<Short> data;
     private PlaceholderValue<Integer> amount;
 
     // meta
@@ -57,7 +56,6 @@ public class UItem implements ItemResolver {
 
     public UItem(UItem item) {
         this.type = item.type;
-        this.data = item.data;
         this.amount = item.amount;
         this.displayName = item.displayName;
         this.lore = item.lore;
@@ -77,7 +75,6 @@ public class UItem implements ItemResolver {
             @ConfigProperty(value = "enchantments", optional = true) Map<Enchantment, PlaceholderValue<Integer>> enchantments
     ) {
         this.type = type;
-        this.data = data != null ? data : PlaceholderValue.fake((short)0);
         this.amount = amount != null ? amount : PlaceholderValue.fake(1);
         this.displayName = rawName == null ? null : PlaceholderValue.stringValue(ChatColor.RESET.toString() + rawName);
         this.lore = lore != null ? lore : Collections.emptyList();
@@ -90,7 +87,6 @@ public class UItem implements ItemResolver {
 
     public UItem(ItemStack item) {
         type = item.getType();
-        data = PlaceholderValue.shortValue(String.valueOf(item.getData().getData()));
         amount = PlaceholderValue.intValue(String.valueOf(item.getAmount()));
 
         ItemMeta meta = item.getItemMeta();
@@ -108,7 +104,7 @@ public class UItem implements ItemResolver {
 
     @Override
     public ItemStack resolve(Player player) {
-        ItemStack item = new ItemStack(type, amount.resolve(player), data.resolve(player));
+        ItemStack item = new ItemStack(type, amount.resolve(player));
         ItemMeta meta = item.getItemMeta();
         if(meta != null) {
             processMeta(player, meta);
@@ -138,7 +134,6 @@ public class UItem implements ItemResolver {
 
     protected void addStringDetails(StringJoiner joiner) {
         joiner.add("type: " + type);
-        joiner.add("data: " + data);
         joiner.add("amount: " + amount);
         joiner.add("displayName: " + displayName);
         joiner.add("lore: " + lore);

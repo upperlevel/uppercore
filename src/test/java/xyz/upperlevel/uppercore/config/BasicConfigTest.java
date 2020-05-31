@@ -6,20 +6,15 @@ import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import xyz.upperlevel.uppercore.FakePlaceholderManager;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import xyz.upperlevel.uppercore.UpperTestUtil;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.exceptions.PropertyNotFoundParsingException;
 import xyz.upperlevel.uppercore.config.parser.ConfigParser;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.actions.BroadcastAction;
 import xyz.upperlevel.uppercore.gui.action.actions.CommandAction;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.util.Pair;
 import xyz.upperlevel.uppercore.util.Position;
 
@@ -28,16 +23,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static xyz.upperlevel.uppercore.util.TypeUtil.typeOf;
 
 public class BasicConfigTest {
-    @Rule
-    public ExpectedException exc = ExpectedException.none();
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         UpperTestUtil.setup();
     }
@@ -198,22 +191,23 @@ public class BasicConfigTest {
 
     @Test
     public void mapUnfoldingTestUnusedExc() {
-        exc.expect(PropertyNotFoundParsingException.class);
-        exc.expectMessage(containsString("line 3, column 3"));
-        Config.fromYaml(new StringReader(
-                "unfold:\n" +
-                        "  test1: Stringa\n" +
-                        "  test2: 129\n" + // Line 3
-                        "enum: [hide enchants, hide attributes]\n" +
-                        "type: 55\n" +
-                        "unf:\n" +
-                        "  c: [15.0, 30.0, 60.0]\n" +
-                        "  e: 3\n" +
-                        "  d:\n" +
-                        "    x: 1.0\n" +
-                        "    y: 2.0\n" +
-                        "    z: 3.0\n"
-        )).get(UnfoldTest.class);
+        Exception exc = assertThrows(PropertyNotFoundParsingException.class, () -> {
+            Config.fromYaml(new StringReader(
+                    "unfold:\n" +
+                            "  test1: Stringa\n" +
+                            "  test2: 129\n" + // Line 3
+                            "enum: [hide enchants, hide attributes]\n" +
+                            "type: 55\n" +
+                            "unf:\n" +
+                            "  c: [15.0, 30.0, 60.0]\n" +
+                            "  e: 3\n" +
+                            "  d:\n" +
+                            "    x: 1.0\n" +
+                            "    y: 2.0\n" +
+                            "    z: 3.0\n"
+            )).get(UnfoldTest.class);
+        });
+        assumeTrue(exc.getMessage().contains("line 3, column 3"));
     }
 
     public static class IncorrectUnfoldingTest {
@@ -231,9 +225,10 @@ public class BasicConfigTest {
 
     @Test
     public void mapUnfoldingTestUsedPropertyException() {
-        exc.expect(IllegalArgumentException.class);
-        exc.expectMessage(containsString("Unfolding already used property"));
-        ConfigParserRegistry.getStandard().getFor(IncorrectUnfoldingTest.class);
+        Exception exc = assertThrows(IllegalArgumentException.class, () -> {
+            ConfigParserRegistry.getStandard().getFor(IncorrectUnfoldingTest.class);
+        });
+        assumeTrue(exc.getMessage().contains("Unfolding already used property"));
     }
 
     @Test

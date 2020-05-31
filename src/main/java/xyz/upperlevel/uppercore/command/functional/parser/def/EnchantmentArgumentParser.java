@@ -1,8 +1,6 @@
 package xyz.upperlevel.uppercore.command.functional.parser.def;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
 import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
 
@@ -11,6 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static xyz.upperlevel.uppercore.util.PluginUtil.parseNamespacedKey;
 
 public class EnchantmentArgumentParser implements ArgumentParser {
     @Override
@@ -27,9 +27,9 @@ public class EnchantmentArgumentParser implements ArgumentParser {
 
     @Override
     public Object parse(List<String> args) throws ArgumentParseException {
-        String ench = args.get(0);
+        String ench = args.get(0).toLowerCase(Locale.ENGLISH);
 
-        Enchantment result = Enchantment.getByKey(NamespacedKey.minecraft(ench.toLowerCase(Locale.ENGLISH)));
+        Enchantment result = Enchantment.getByKey(parseNamespacedKey(ench));
 
         if (result == null) {
             throw new ArgumentParseException(Enchantment.class, Collections.singletonList(ench));
@@ -40,7 +40,7 @@ public class EnchantmentArgumentParser implements ArgumentParser {
 
     @Override
     public List<String> suggest(List<String> args) {
-        Stream<String> vals = Stream.of(Enchantment.values()).map(Enchantment::getName);
+        Stream<String> vals = Stream.of(Enchantment.values()).map(e -> e.getKey().toString());
 
         if (!args.isEmpty()) {
             String e = args.get(0).toUpperCase(Locale.ENGLISH);

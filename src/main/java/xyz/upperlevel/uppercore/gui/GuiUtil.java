@@ -6,7 +6,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
@@ -17,10 +16,6 @@ import static org.bukkit.ChatColor.RED;
 
 public final class GuiUtil {
     private static Sound DEF_ERROR_SOUND;//Yeah, it's a lazy initialization with a constant field
-
-    public static ItemStack wool(DyeColor color, String name, String... lores) {
-        return setNameAndLores(new Wool(color).toItemStack(1), name, lores);
-    }
 
     @SuppressWarnings("deprecation")
     public static ItemStack stainedClay(DyeColor color, String name, String... lores) {

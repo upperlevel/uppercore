@@ -105,7 +105,7 @@ public final class PlaceholderUtil {
         return manager.apply(player, str);
     }
 
-    public static String resolve(Player player, String str, PlaceholderRegistry local) {
+    public static String resolve(Player player, String str, PlaceholderRegistry<?> local) {
         return manager.apply(player, str, local);
     }
 
@@ -117,7 +117,7 @@ public final class PlaceholderUtil {
         return manager.hasPlaceholders(str);
     }
 
-    public static PlaceholderRegistry getRegistry() {
+    public static PlaceholderRegistry<?> getRegistry() {
         return manager.getRegistry();
     }
 }

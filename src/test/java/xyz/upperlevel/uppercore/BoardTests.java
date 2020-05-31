@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import xyz.upperlevel.uppercore.board.Board;
 
 import java.util.HashSet;

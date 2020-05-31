@@ -9,7 +9,7 @@ import java.util.Map;
 public class SimplePlaceholderRegistry implements PlaceholderRegistry<SimplePlaceholderRegistry> {
     @Getter
     @Setter
-    private PlaceholderRegistry parent;
+    private PlaceholderRegistry<?> parent;
 
     private final Map<String, Placeholder> placeholders;
 
@@ -22,7 +22,7 @@ public class SimplePlaceholderRegistry implements PlaceholderRegistry<SimplePlac
         this(new HashMap<>());
     }
 
-    public SimplePlaceholderRegistry(PlaceholderRegistry parent) {
+    public SimplePlaceholderRegistry(PlaceholderRegistry<?> parent) {
         this(new HashMap<>());
         this.parent = parent;
     }
