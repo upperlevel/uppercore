@@ -10,8 +10,6 @@ import xyz.upperlevel.uppercore.placeholder.managers.customs.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xyz.upperlevel.uppercore.Uppercore.get;
-
 public class CustomPlaceholderManager extends BasePlaceholderManager {
 
     private Map<String, Placeholder> placeholders = new HashMap<>();
@@ -36,14 +34,8 @@ public class CustomPlaceholderManager extends BasePlaceholderManager {
 
     public void addDefaults() {
         Plugin plugin = Uppercore.plugin();
-        register(plugin, new PlayerDisplayNamePlaceholder());
-        register(plugin, new PlayerFoodPlaceholder());
-        register(plugin, new PlayerHealthPlaceholder());
-        register(plugin, new PlayerLevelPlaceholder());
-        register(plugin, new PlayerNamePlaceholder());
-        register(plugin, new PlayerSaturationPlaceholder());
-        register(plugin, new VaultBalancePlaceholder());
-        register(plugin, new PlayerWorldPlaceholder());
+        register(plugin, new PlayerPlaceholder());
+        register(plugin, new VaultPlaceholder());
     }
 
     private class CustomPlaceholderRegistry implements PlaceholderRegistry<CustomPlaceholderRegistry> {
@@ -64,7 +56,7 @@ public class CustomPlaceholderManager extends BasePlaceholderManager {
         }
 
         public CustomPlaceholderRegistry set(Placeholder placeholder) {
-            throw new UnsupportedOperationException("Use PlaceholderUtil.register o PlacholderManager#register instead!");
+            throw new UnsupportedOperationException("Use PlaceholderUtil.register o PlaceholderManager#register instead!");
         }
 
         public boolean has(String id) {

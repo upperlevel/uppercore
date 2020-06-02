@@ -29,7 +29,7 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
             field.setAccessible(true);
             placeholders = (Map<String, PlaceholderHook>) field.get(null);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException("Uncompatible PlaceholderAPI exception");
+            throw new RuntimeException("Incompatible PlaceholderAPI exception");
         }
     }
 

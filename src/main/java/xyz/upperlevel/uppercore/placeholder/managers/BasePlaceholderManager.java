@@ -44,8 +44,9 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
         while(matcher.find()) {
             String str = matcher.group(1);
             String replacement = exec(player, str, finder);
-            if(replacement != null)
+            if (replacement != null) {
                 matcher.appendReplacement(res, Matcher.quoteReplacement(replacement));
+            }
         }
         matcher.appendTail(res);
 
@@ -58,8 +59,9 @@ public abstract class BasePlaceholderManager implements PlaceholderManager {
     public static String exec(Player player, String text, Function<String, Placeholder> finder) {
         Placeholder found = finder.apply(text);
 
-        if(found != null)
-            return found.resolve(player, "");
+         if (found != null) {
+             return found.resolve(player, "");
+         }
 
         int index = text.lastIndexOf('_');
 
