@@ -112,7 +112,7 @@ public class Board {
         return team;
     }
 
-    private void updateTitle(Player player, PlaceholderRegistry placeholders) {
+    private void updateTitle(Player player, PlaceholderRegistry<?> placeholders) {
         if (title == null)
             return;
         if (objective == null) {
@@ -150,7 +150,7 @@ public class Board {
         return size;
     }
 
-    private void updateLine(int position, Player player, PlaceholderRegistry placeholders) {
+    private void updateLine(int position, Player player, PlaceholderRegistry<?> placeholders) {
         String line = lines.get(position).resolve(player, placeholders);
         Team team = getTeam(position);
 
@@ -212,14 +212,14 @@ public class Board {
         team.setSuffix(suffix);
     }
 
-    private void updateLines(Player player, PlaceholderRegistry placeholders) {
+    private void updateLines(Player player, PlaceholderRegistry<?> placeholders) {
         clearEntries();
         for (int position = 0; position < lines.size(); position++) {
             updateLine(position, player, placeholders);
         }
     }
 
-    public void update(Player player, PlaceholderRegistry placeholders) {
+    public void update(Player player, PlaceholderRegistry<?> placeholders) {
         updateTitle(player, placeholders);
         updateLines(player, placeholders);
     }
@@ -228,7 +228,7 @@ public class Board {
         update(player, PlaceholderRegistry.def());
     }
 
-    public void open(Player player, PlaceholderRegistry placeholders) {
+    public void open(Player player, PlaceholderRegistry<?> placeholders) {
         update(player, placeholders);
         player.setScoreboard(scoreboard);
     }

@@ -22,6 +22,7 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
     @Getter
     private final PapiPlaceholderRegistry registry = new PapiPlaceholderRegistry();
 
+    @SuppressWarnings("unchecked")
     public PapiPlaceholderManager() {
         try {
             Field field = PlaceholderAPI.class.getDeclaredField("placeholders");
@@ -119,11 +120,11 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
     }
 
     private class PapiPlaceholderRegistry implements PlaceholderRegistry<PapiPlaceholderRegistry> {
-        public PlaceholderRegistry getParent() {
+        public PlaceholderRegistry<?> getParent() {
             return null;
         }
 
-        public void setParent(PlaceholderRegistry parent) {
+        public void setParent(PlaceholderRegistry<?> parent) {
             throw new UnsupportedOperationException();
         }
 

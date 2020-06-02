@@ -45,7 +45,7 @@ public class Arena {
     private final World world;
 
     @Getter
-    private final PlaceholderRegistry placeholders;
+    private final PlaceholderRegistry<?> placeholders;
 
     @Getter
     private boolean enabled;
@@ -263,7 +263,7 @@ public class Arena {
         return players.contains(player);
     }
 
-    public void broadcast(Message message, PlaceholderRegistry placeholders) {
+    public void broadcast(Message message, PlaceholderRegistry<?> placeholders) {
         message.broadcast(players, placeholders);
     }
 

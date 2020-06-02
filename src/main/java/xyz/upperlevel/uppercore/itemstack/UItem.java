@@ -52,7 +52,7 @@ public class UItem implements ItemResolver {
     private Map<Enchantment, PlaceholderValue<Integer>> enchantments = new HashMap<>();
 
     //Local placeholders
-    private PlaceholderRegistry placeholders;
+    private PlaceholderRegistry<?> placeholders;
 
     public UItem(UItem item) {
         this.type = item.type;

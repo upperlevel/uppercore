@@ -25,7 +25,7 @@ public class HelpCommand {
         }
         int commandsSize = parent.getCommands().size();
         int maxPages = (int) Math.ceil(((double) commandsSize) / (double) commandsPerPage);
-        PlaceholderRegistry frame = PlaceholderRegistry.create()
+        PlaceholderRegistry<?> frame = PlaceholderRegistry.create()
                 .set("node_cmd", parent.getFullName())
                 .set("page", page)
                 .set("max_page", maxPages);

@@ -50,7 +50,7 @@ public class Message {
         return lines.stream().map(p -> p.resolve(player)).collect(Collectors.toList());
     }
 
-    public List<String> get(Player player, PlaceholderRegistry placeholders) {
+    public List<String> get(Player player, PlaceholderRegistry<?> placeholders) {
         return lines.stream().map(p -> p.resolve(player, placeholders)).collect(Collectors.toList());
     }
 
@@ -77,7 +77,7 @@ public class Message {
 
     //--------------FILTER
 
-    public Message filter(PlaceholderRegistry reg) {
+    public Message filter(PlaceholderRegistry<?> reg) {
         return new Message(
                 lines.stream()
                         .map(p -> PlaceholderValue.rawStringValue(p.resolve(null, reg)))
@@ -114,7 +114,7 @@ public class Message {
             player.sendMessage(TextUtil.translateCustom(message.resolve(player)));
     }
 
-    public void send(Player player, PlaceholderRegistry placeholders) {
+    public void send(Player player, PlaceholderRegistry<?> placeholders) {
         for(PlaceholderValue<String> message : lines)
             player.sendMessage(TextUtil.translateCustom(message.resolve(player, placeholders)));
     }
@@ -146,7 +146,7 @@ public class Message {
             sender.sendMessage(TextUtil.translateCustom(message.resolve(null)));
     }
 
-    public void send(CommandSender sender, PlaceholderRegistry placeholders) {
+    public void send(CommandSender sender, PlaceholderRegistry<?> placeholders) {
         for(PlaceholderValue<String> message : lines)
             sender.sendMessage(TextUtil.translateCustom(message.resolve(null, placeholders)));
     }
@@ -179,7 +179,7 @@ public class Message {
                 player.sendMessage(message.resolve(player));
     }
 
-    public void broadcast(Iterable<? extends Player> players, PlaceholderRegistry placeholders) {
+    public void broadcast(Iterable<? extends Player> players, PlaceholderRegistry<?> placeholders) {
         for(Player player : players)
             for(PlaceholderValue<String> message : lines)
                 player.sendMessage(message.resolve(player, placeholders));
@@ -211,7 +211,7 @@ public class Message {
         broadcast(Bukkit.getOnlinePlayers());
     }
 
-    public void broadcast(PlaceholderRegistry placeholders) {
+    public void broadcast(PlaceholderRegistry<?> placeholders) {
         broadcast(Bukkit.getOnlinePlayers(), placeholders);
     }
 
