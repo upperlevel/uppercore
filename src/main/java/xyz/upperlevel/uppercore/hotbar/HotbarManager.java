@@ -1,4 +1,5 @@
 package xyz.upperlevel.uppercore.hotbar;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -136,6 +137,14 @@ public class HotbarManager implements Listener {
         HotbarView h = view(e.getPlayer());
         if (h != null && h.isIconSlot(e.getPlayer().getInventory().getHeldItemSlot()))
             e.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent e) {
+        HotbarView h = view(e.getPlayer());
+        if (h != null && h.isIconSlot(e.getPlayer().getInventory().getHeldItemSlot())) {
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler
