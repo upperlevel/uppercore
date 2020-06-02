@@ -115,7 +115,7 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
 
         @Override
         public String resolve(Player player, String arg) {
-            return hook.onPlaceholderRequest(player, arg);
+            return hook.onRequest(player, arg);
         }
     }
 
