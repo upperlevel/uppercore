@@ -8,13 +8,13 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
-import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
-import java.io.StringReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
+/**
+ * This class acts as a raw wrapper to the Bukkit Scoreboard.
+ * It has been written without using any reference to other Uppercore's code so can be easily copy-pasted.
+ */
 public class Board {
     public static final int MAX_SCOREBOARD_LINES = 15;
     public static final int MAX_SCOREBOARD_TITLE_CHARACTERS = 32;
@@ -24,8 +24,8 @@ public class Board {
     public static final int MAX_TEAM_SUFFIX_CHARACTERS = 64;
 
     @Getter
-    private PlaceholderValue<String> title;
-    private List<PlaceholderValue<String>> lines = new ArrayList<>();
+    private String title;
+    private List<String> lines = new ArrayList<>();
 
     @Getter
     private final Scoreboard scoreboard;
@@ -33,16 +33,10 @@ public class Board {
 
     private final Set<String> entries = new HashSet<>();
 
-    /**
-     * Initializes the Board from a new Bukkit Scoreboard.
-     */
     public Board() {
         this(null);
     }
 
-    /**
-     * Initializes the Board from an external Bukkit Scoreboard.
-     */
     public Board(Scoreboard scoreboard) {
         if (scoreboard == null) { // If the scoreboard is null, creates one empty to avoid issues.
             scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -50,57 +44,19 @@ public class Board {
         this.scoreboard = scoreboard;
     }
 
-    public void setTitle(String title) {
-        if (title.length() > MAX_SCOREBOARD_TITLE_CHARACTERS) {
-            throw new IllegalArgumentException("Title too long, maximum characters accepted are: " + MAX_SCOREBOARD_TITLE_CHARACTERS);
+    // ================================================================================================
+    // Render
+    // ================================================================================================
+
+    private void renderTitle() {
+        if (title == null)
+            return;
+        if (objective == null) {
+            objective = scoreboard.registerNewObjective("scoreboard", "dummy", title);
+            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        } else {
+            objective.setDisplayName(title);
         }
-        setTitle(PlaceholderValue.fake(title));
-    }
-
-    public void setTitle(PlaceholderValue<String> title) {
-        this.title = title;
-    }
-
-    public List<PlaceholderValue<String>> getLines() {
-        return Collections.unmodifiableList(lines);
-    }
-
-    public void addLine(String line) {
-        addLine(PlaceholderValue.fake(line));
-    }
-
-    public void addLine(PlaceholderValue<String> line) {
-        if (lines.size() >= MAX_SCOREBOARD_LINES) {
-            throw new IllegalStateException("Scoreboard has already reached its maximum lines: " + MAX_SCOREBOARD_LINES);
-        }
-        lines.add(line);
-    }
-
-    public void setLines(Collection<String> lines) {
-        setLines(lines.stream().map(PlaceholderValue::fake).collect(Collectors.toList()));
-    }
-
-    public void setLines(List<PlaceholderValue<String>> lines) {
-        if (lines.size() > MAX_SCOREBOARD_LINES) {
-            throw new IllegalArgumentException("Too many lines, the maximum accepted is: " + MAX_SCOREBOARD_LINES);
-        }
-        this.lines = lines;
-    }
-
-    private void clearEntries() {
-        for (String entry : entries) {
-            scoreboard.resetScores(entry);
-        }
-        entries.clear();
-    }
-
-    public void clearLines() {
-        lines.clear();
-        clearEntries();
-    }
-
-    public void set(BoardModel model, Player reference) {
-        model.apply(this, reference);
     }
 
     private Team getTeam(int position) {
@@ -110,17 +66,6 @@ public class Board {
             team = scoreboard.registerNewTeam(id);
         }
         return team;
-    }
-
-    private void updateTitle(Player player, PlaceholderRegistry<?> placeholders) {
-        if (title == null)
-            return;
-        if (objective == null) {
-            objective = scoreboard.registerNewObjective("scoreboard", "dummy", title.resolve(player, placeholders));
-            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        } else {
-            objective.setDisplayName(title.resolve(player, placeholders));
-        }
     }
 
     public static int generateEntry(Set<String> entries, StringBuilder entry, String padding) {
@@ -150,17 +95,14 @@ public class Board {
         return size;
     }
 
-    private void updateLine(int position, Player player, PlaceholderRegistry<?> placeholders) {
-        String line = lines.get(position).resolve(player, placeholders);
+    private void renderLineAt(int position) {
+        String line = lines.get(position);
         Team team = getTeam(position);
 
         int startAt, endAt;
         String lastColor;
 
-        // ================================================================================
-        // Prefix
-        // ================================================================================
-
+        // ---------------------------------------------------------------- Prefix
         startAt = 0;
         endAt = Math.min(line.length(), startAt + MAX_TEAM_PREFIX_CHARACTERS);
 
@@ -168,10 +110,7 @@ public class Board {
         team.setPrefix(prefix);
         lastColor = ChatColor.getLastColors(prefix);
 
-        // ================================================================================
-        // Entry
-        // ================================================================================
-
+        // ---------------------------------------------------------------- Entry
         startAt = endAt;
 
         // The entry must take care of the prefix color.
@@ -193,10 +132,7 @@ public class Board {
         team.addEntry(entry);
         objective.getScore(entry).setScore(MAX_SCOREBOARD_LINES - position);
 
-        // ================================================================================
-        // Suffix
-        // ================================================================================
-
+        // ---------------------------------------------------------------- Suffix
         startAt = endAt;
         endAt = Math.min(line.length(), startAt + MAX_TEAM_SUFFIX_CHARACTERS - lastColor.length());
         String suffix = lastColor + line.substring(startAt, endAt);
@@ -212,32 +148,79 @@ public class Board {
         team.setSuffix(suffix);
     }
 
-    private void updateLines(Player player, PlaceholderRegistry<?> placeholders) {
+    private void renderLines() {
         clearEntries();
         for (int position = 0; position < lines.size(); position++) {
-            updateLine(position, player, placeholders);
+            renderLineAt(position);
         }
     }
 
-    public void update(Player player, PlaceholderRegistry<?> placeholders) {
-        updateTitle(player, placeholders);
-        updateLines(player, placeholders);
+    /**
+     * Applies the title and lines to the actual scoreboard.
+     * This means that when this method is called, the packets needed to update client's scoreboard are sent.
+     */
+    public void render() {
+        renderTitle();
+        renderLines();
     }
 
-    public void update(Player player) {
-        update(player, PlaceholderRegistry.def());
+    // ================================================================================================
+    // Routine
+    // ================================================================================================
+
+    public void setTitle(String title) {
+        if (title.length() > MAX_SCOREBOARD_TITLE_CHARACTERS) {
+            throw new IllegalArgumentException("Title too long, maximum characters accepted are: " + MAX_SCOREBOARD_TITLE_CHARACTERS);
+        }
+        this.title = title;
     }
 
-    public void open(Player player, PlaceholderRegistry<?> placeholders) {
-        update(player, placeholders);
-        player.setScoreboard(scoreboard);
+    public void addLine(String line) {
+        if (lines.size() >= MAX_SCOREBOARD_LINES) {
+            throw new IllegalStateException("Scoreboard has already reached its maximum lines: " + MAX_SCOREBOARD_LINES);
+        }
+        lines.add(line);
     }
+
+    public void setLines(List<String> lines) {
+        if (lines.size() > MAX_SCOREBOARD_LINES) {
+            throw new IllegalArgumentException("Too many lines, the maximum accepted is: " + MAX_SCOREBOARD_LINES);
+        }
+        this.lines = lines;
+    }
+
+    public List<String> getLines() {
+        return Collections.unmodifiableList(lines);
+    }
+
+    private void clearEntries() {
+        for (String entry : entries) {
+            scoreboard.resetScores(entry);
+        }
+        entries.clear();
+    }
+
+    public void clearLines() {
+        lines.clear();
+        clearEntries();
+    }
+
+    // ================================================================================================
+    // Utilities
+    // ================================================================================================
 
     public void open(Player player) {
-        open(player, PlaceholderRegistry.def());
+        player.setScoreboard(scoreboard);
     }
 
     public boolean isOpened(Player player) {
         return player.getScoreboard() == scoreboard;
+    }
+
+    public static Board create(String title, List<String> lines) {
+        Board board = new Board();
+        board.setTitle(title);
+        board.setLines(lines);
+        return board;
     }
 }

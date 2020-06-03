@@ -5,11 +5,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.upperlevel.uppercore.board.Board;
-import xyz.upperlevel.uppercore.board.BoardContainer;
 import xyz.upperlevel.uppercore.board.BoardModel;
 import xyz.upperlevel.uppercore.board.SimpleBoardModel;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ public class TestBoard implements BoardModel {
         }
 
         @Override
-        public void apply(Board board, Player reference) {
+        public void apply(Board board, Player player, PlaceholderRegistry<?> placeholders) {
             int startAtSlice = (int) ((System.currentTimeMillis() / 1000) % RAINBOW.length);
             board.setTitle(LIGHT_PURPLE + "Rainbow");
             board.setLines(generateRainbow(startAtSlice));
@@ -65,12 +65,12 @@ public class TestBoard implements BoardModel {
     }
 
     @Override
-    public void apply(Board board, Player reference) {
+    public void apply(Board board, Player player, PlaceholderRegistry<?> placeholders) {
         board.setTitle(YELLOW + "Test board");
         board.setLines(Arrays.asList(
                 "",
-                BLUE + reference.getName(),
-                RED + "" + reference.getHealth(),
+                BLUE + player.getName(),
+                RED + "" + player.getHealth(),
                 "",
                 // 168 characters line, the maximum reachable.
                 YELLOW + "===============================================================|======================" +
@@ -81,24 +81,24 @@ public class TestBoard implements BoardModel {
 
     @AsCommand
     public void board(Player player) {
-        new BoardContainer(this).open(player);
+        this.hook(new Board()).open(player, PlaceholderRegistry.def());
         player.sendMessage(GREEN + "Board opened.");
     }
 
     @AsCommand
     public void configBoard(Player player) {
-        new BoardContainer(CONFIG_BOARD).open(player);
+        this.hook(new Board()).open(player, PlaceholderRegistry.def());
         player.sendMessage(GREEN + "Config board opened.");
     }
 
     @AsCommand
     public void rainbowBoard(Player player) {
-        BoardContainer board = new BoardContainer(new RainbowBoard());
-        board.open(player);
+        BoardModel.Hook hooked = this.hook(new Board());
+        hooked.open(player, PlaceholderRegistry.def());
         new BukkitRunnable() {
             @Override
             public void run() {
-                board.update(player);
+                hooked.render(player, PlaceholderRegistry.def());
             }
         }.runTaskTimer(UppercoreTest.get(), 1, 20);
 
