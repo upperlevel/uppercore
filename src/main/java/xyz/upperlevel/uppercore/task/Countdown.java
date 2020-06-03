@@ -1,69 +1,64 @@
 package xyz.upperlevel.uppercore.task;
 
 import lombok.Getter;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import xyz.upperlevel.uppercore.Uppercore;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.Consumer;
 
-public class Countdown {
-    @Getter
-    private final Plugin plugin;
-
-    @Getter
-    private BukkitRunnable task;
-
+public abstract class Countdown extends BukkitRunnable {
     @Getter
     private final long startAt, repeatEach;
 
     @Getter
     private long currentTick;
 
-    private final Consumer<Long> onTick;
-    private final Runnable onEnd;
-
-    public Countdown(Plugin plugin, long startAt, long repeatEach, Consumer<Long> onTick, Runnable onEnd) {
-        this.plugin = plugin;
+    public Countdown(long startAt, long repeatEach) {
         this.startAt = startAt;
         this.repeatEach = repeatEach;
-        this.onTick = onTick;
-        this.onEnd = onEnd;
     }
 
     public void start() {
-        if (task != null) {
-            stop();
-        }
         currentTick = startAt;
-        task = new BukkitRunnable() {
+        runTaskTimer(Uppercore.plugin(), 0, repeatEach);
+    }
+
+    public long getTime() {
+        return currentTick / repeatEach;
+    }
+
+    protected abstract void onTick(long time);
+
+    protected abstract void onEnd();
+
+    @Override
+    public void run() {
+        onTick(currentTick / repeatEach);
+        if (currentTick > 0)
+            currentTick -= repeatEach;
+        else {
+            onEnd();
+            super.cancel();
+        }
+    }
+
+    public String toString(String pattern) {
+        return new SimpleDateFormat(pattern).format(new Date(currentTick * 50));
+    }
+
+    public static Countdown create(long startAt, long repeatEach, Consumer<Long> onTick, Runnable onEnd) {
+        return new Countdown(startAt, repeatEach) {
             @Override
-            public void run() {
-                onTick.accept(currentTick / repeatEach);
-                if (currentTick > 0)
-                    currentTick -= repeatEach;
-                else {
-                    onEnd.run();
-                    stop();
-                }
+            protected void onTick(long tick) {
+                onTick.accept(tick);
+            }
+
+            @Override
+            protected void onEnd() {
+                onEnd.run();
             }
         };
-        task.runTaskTimer(plugin, 0, repeatEach);
-    }
-
-    public boolean isStarted() {
-        return task != null;
-    }
-
-    public void stop() {
-        if (task != null) {
-            task.cancel();
-            task = null;
-        }
-    }
-
-    public String format(String pattern) {
-        return new SimpleDateFormat(pattern).format(new Date(currentTick * 50));
     }
 }
