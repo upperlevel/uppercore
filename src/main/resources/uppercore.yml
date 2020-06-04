@@ -1,3 +1,24 @@
+
+
+# ------------------------------------------------------------------------------------------------ Arenas
+arenas:
+  # This fields change where players are sent when the game ends. Possible values: 'bungee' or 'local'.
+  # - bungee: Sends the players to the server specified by hub-server.
+  # - local:  Sends the players to the location specified by hub-location.
+  mode: 'local'
+
+  hub-server: 'server2'
+
+  hub-location: {
+    world: world,
+    x: 0,
+    y: 100,
+    z: 0,
+    pitch: 0, # The head rotation on the Y axis.
+    yaw: 0    # The head rotation on the XZ axes.
+  }
+
+# ------------------------------------------------------------------------------------------------ Commands
 commands:
   # %permission% - permission required
   no-permission: "&cYou don't have the permission to run this command."

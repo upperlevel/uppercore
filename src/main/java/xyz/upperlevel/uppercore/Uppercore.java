@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.upperlevel.uppercore.arena.Arena;
+import xyz.upperlevel.uppercore.arena.OnQuitHandler;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.HelpCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
@@ -66,16 +68,16 @@ public class Uppercore {
         // Command configuration
         plugin.saveResource("uppercore.yml", false);
         Config cfg = Config.fromYaml(new File(plugin.getDataFolder(), "uppercore.yml"));
+
+        Config arenaCfg = cfg.getConfigRequired("arenas");
+        Arena.loadConfig(arenaCfg);
+        OnQuitHandler.Local.loadConfig(arenaCfg);
+        OnQuitHandler.Bungee.loadConfig(arenaCfg);
+
         Config commandConfig = cfg.getConfigRequired("commands");
         Command.configure(commandConfig);
         HelpCommand.configure(commandConfig);
         FunctionalCommand.configure(commandConfig);
-
-        /* TODO Arena API is late to be defined...
-        plugin.saveResource("game.yml", false);
-        cfg = Config.fromYaml(new File(plugin.getDataFolder(), "game.yml"));
-        Arena.configure(cfg);
-        */
 
         // Commands
         ArgumentParserManager.init();

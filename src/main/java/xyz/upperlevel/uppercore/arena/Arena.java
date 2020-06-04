@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.events.ArenaJoinEvent;
 import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent;
+import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 import static java.util.Locale.ENGLISH;
 
 public class Arena {
+    public static OnQuitHandler onQuitHandler;
+
     //================================================================================
     // Properties
     //================================================================================
@@ -56,10 +59,6 @@ public class Arena {
     @Getter
     @Setter
     private Location lobby;
-
-    @Getter
-    @Setter
-    private OnQuitHandler onQuitHandler;
 
     private final Set<Sign> joinSigns = new HashSet<>();
 
@@ -320,5 +319,19 @@ public class Arena {
             onQuitHandler.handle(player);
         }
         return true;
+    }
+
+    public static void loadConfig(Config cfg) {
+        String mode = cfg.getString("mode");
+        switch (mode) {
+            case "bungee":
+                onQuitHandler = new OnQuitHandler.Bungee();
+                break;
+            case "local":
+                onQuitHandler = new OnQuitHandler.Local();
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Unknown arena mode: %s", mode));
+        }
     }
 }
