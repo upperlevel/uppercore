@@ -31,8 +31,9 @@ public final class PluginUtil {
         if (sepIndex == -1) {
             return NamespacedKey.minecraft(raw);
         }
-
-        return new NamespacedKey(raw.substring(0, sepIndex), raw.substring(sepIndex + 1));
+        @SuppressWarnings("deprecation")// Come on bukkit...
+        NamespacedKey x = new NamespacedKey(raw.substring(0, sepIndex), raw.substring(sepIndex + 1));
+        return x;
     }
 
     @RequiredArgsConstructor

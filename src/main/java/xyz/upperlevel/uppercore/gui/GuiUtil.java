@@ -41,7 +41,8 @@ public final class GuiUtil {
         potion.setItemMeta(meta);
         return potion;
     }
-
+    
+    @SuppressWarnings("deprecation")
     public static ItemStack head(String playerName, String displayName, String... lore) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
         SkullMeta meta = (SkullMeta) item.getItemMeta();

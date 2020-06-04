@@ -9,6 +9,7 @@ import java.util.Map;
 public class StorageManager {
     private final Map<String, StorageConnector> storageByName = new HashMap<>();
 
+    @SuppressWarnings("deprecation")
     public StorageManager() {
         // SQL
         register(MariaDb.storage());

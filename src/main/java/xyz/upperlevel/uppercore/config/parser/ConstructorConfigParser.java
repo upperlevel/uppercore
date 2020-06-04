@@ -260,6 +260,7 @@ public class ConstructorConfigParser<T> extends ConfigParser {
     }
 
     private static <T> ConstructorConfigParser<T> createForClass(Class<T> clazz, ConfigParserRegistry registry) {
+        @SuppressWarnings("unchecked")
         Constructor<T>[] constructors = (Constructor<T>[]) clazz.getDeclaredConstructors();
         Constructor<T> targetConstructor = null;
         for (Constructor<T> constructor : constructors) {
@@ -284,7 +285,7 @@ public class ConstructorConfigParser<T> extends ConfigParser {
         method.setAccessible(true);
         Parameter[] parameters = method.getParameters();
         Class<?> returnType = method.getReturnType();
-        ObjectConstructor refinedConstructor = args -> method.invoke(declarator, args);
+        ObjectConstructor<?> refinedConstructor = args -> method.invoke(declarator, args);
         @SuppressWarnings("unchecked")
         ConstructorConfigParser<?> parser = new ConstructorConfigParser(returnType, registry, parameters, refinedConstructor, annotation.inlineable());
         return parser;

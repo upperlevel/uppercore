@@ -92,7 +92,7 @@ public class ConfigParserRegistry {
          * so we're using the PolymorphicSelector as a constructor of Class<?>
          * (yeah it's a hacky way to do it but it should work)
          */
-        // noinspection unchecked
+        @SuppressWarnings("unchecked")
         ConstructorConfigParser<Class<?>> classSelector = new ConstructorConfigParser(
                 Class.class, this, selector.getParameters(), args -> finalSelector.invoke(null, args), true);
 

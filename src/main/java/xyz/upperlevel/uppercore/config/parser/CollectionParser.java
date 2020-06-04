@@ -7,6 +7,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unchecked")
 public class CollectionParser<T extends Collection> extends ConfigParser {
     private final Supplier<T> collectionSupplier;
     private final ConfigParser parser;

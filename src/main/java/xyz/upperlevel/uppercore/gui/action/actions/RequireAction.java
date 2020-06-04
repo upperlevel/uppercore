@@ -35,17 +35,17 @@ public class RequireAction extends Action<RequireAction> {
     @Getter
     private final String script;
     @Getter
-    private final List<Action> actions;
+    private final List<Action<?>> actions;
     @Getter
-    private final List<Action> fail;
+    private final List<Action<?>> fail;
 
     @ConfigConstructor
     public RequireAction(
             @ConfigProperty(value = "permission", optional = true) String permission,
             @ConfigProperty(value = "hotbar", optional = true) PlaceholderValue<String> hotbar,
             @ConfigProperty(value = "script", optional = true) String script,
-            @ConfigProperty(value = "actions", optional = true) List<Action> actions,
-            @ConfigProperty(value = "fail", optional = true) List<Action> fail
+            @ConfigProperty(value = "actions", optional = true) List<Action<?>> actions,
+            @ConfigProperty(value = "fail", optional = true) List<Action<?>> fail
     ) {
         super(TYPE);
         this.permission = permission;
@@ -59,11 +59,11 @@ public class RequireAction extends Action<RequireAction> {
     @Override
     public void run(Player player) {
         if (test(player)) {
-            for (Action a : actions) {
+            for (Action<?> a : actions) {
                 a.run(player);
             }
         } else {
-            for (Action a : fail) {
+            for (Action<?> a : fail) {
                 a.run(player);
             }
         }
@@ -140,8 +140,8 @@ public class RequireAction extends Action<RequireAction> {
                     (String) pars.get("permission"),
                     PlaceholderValue.stringValue((String) pars.get("hotbar")),
                     (String) pars.get("script"),
-                    (List<Action>) pars.get("actions"),
-                    (List<Action>) pars.get("else")
+                    (List<Action<?>>) pars.get("actions"),
+                    (List<Action<?>>) pars.get("else")
             );
         }
 
