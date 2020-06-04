@@ -209,7 +209,7 @@ public class Arena {
             phaseManager.setPhase(getEntryPhase());
         } else {
             for (Player player : new ArrayList<>(players)) {
-                quit(player);
+                quit(player, ArenaQuitEvent.ArenaQuitReason.ARENA_ABORT);
             }
             phaseManager.setPhase(null);
             vacate();
@@ -226,8 +226,9 @@ public class Arena {
     public void unload() {
         vacate();
         for (Player player : world.getPlayers()) {
-            quit(player);
+            quit(player, ArenaQuitEvent.ArenaQuitReason.ARENA_ABORT);
         }
+        getPhaseManager().setPhase(null);
         WorldUtil.unloadWorld(world);
     }
 
@@ -312,13 +313,13 @@ public class Arena {
         return true;
     }
 
-    public boolean quit(Player player) {
+    public boolean quit(Player player, ArenaQuitEvent.ArenaQuitReason reason) {
         if (!players.contains(player)) {
             throw new IllegalStateException("You're not inside this arena.");
         }
 
         // Bukkit-event
-        ArenaQuitEvent event = new ArenaQuitEvent(player, this);
+        ArenaQuitEvent event = new ArenaQuitEvent(player, this, reason);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;

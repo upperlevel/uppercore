@@ -1,8 +1,14 @@
 package xyz.upperlevel.uppercore.arena;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Uppercore;
+import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent;
+import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent.ArenaQuitReason;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.util.WorldUtil;
 
@@ -11,7 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArenaManager {
+public class ArenaManager implements Listener {
     public static final File ARENAS_FOLDER = new File(Uppercore.getPlugin().getDataFolder(), "arenas");
     public static ArenaManager instance = new ArenaManager();
 
@@ -42,6 +48,7 @@ public class ArenaManager {
                 arena.setEnabled(true);
             }
         }
+        Bukkit.getPluginManager().registerEvents(this, Uppercore.plugin());
     }
 
     //================================================================================
@@ -87,6 +94,17 @@ public class ArenaManager {
     public void unload() {
         for (Arena arena : byId.values()) {
             arena.unload();
+        }
+    }
+
+    //================================================================================
+    // Events
+
+    @EventHandler
+    private void onPlayerQuit(PlayerQuitEvent e) {
+        Arena arena = get(e.getPlayer());
+        if (arena != null) {
+            arena.quit(e.getPlayer(), ArenaQuitReason.GAME_QUIT);
         }
     }
 

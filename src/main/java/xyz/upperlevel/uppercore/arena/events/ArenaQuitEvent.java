@@ -21,9 +21,13 @@ public class ArenaQuitEvent extends Event implements Cancellable {
     @Getter
     private Arena arena;
 
-    public ArenaQuitEvent(Player player, Arena arena) {
+    @Getter
+    private ArenaQuitReason reason;
+
+    public ArenaQuitEvent(Player player, Arena arena, ArenaQuitReason reason) {
         this.player = player;
         this.arena = arena;
+        this.reason = reason;
     }
 
     @Override
@@ -33,5 +37,9 @@ public class ArenaQuitEvent extends Event implements Cancellable {
 
     public static HandlerList getHandlerList() {
         return handlers;
+    }
+
+    public enum ArenaQuitReason {
+        GAME_QUIT, COMMAND, ARENA_END, ARENA_ABORT,
     }
 }
