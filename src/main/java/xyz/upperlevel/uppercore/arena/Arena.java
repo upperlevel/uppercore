@@ -4,11 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.Uppercore;
@@ -20,6 +18,7 @@ import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
 import xyz.upperlevel.uppercore.util.LocUtil;
+import xyz.upperlevel.uppercore.util.PlayerRestorer;
 import xyz.upperlevel.uppercore.util.WorldUtil;
 
 import java.io.File;
@@ -32,6 +31,9 @@ import java.util.stream.Collectors;
 import static java.util.Locale.ENGLISH;
 
 public class Arena {
+    public static final PlayerRestorer playerRestorer = new PlayerRestorer();
+
+    // Config
     public static OnQuitHandler onQuitHandler;
 
     //================================================================================
@@ -285,8 +287,15 @@ public class Arena {
 
     public boolean join(Player player) {
         if (!enabled) {
-            throw new IllegalStateException("An arena not enabled can't be joined.");
+            throw new IllegalStateException("A disabled arena can't be joined.");
         }
+        if (ArenaManager.get().get(player) != null) {
+            throw new IllegalStateException(String.format("The player %s is already inside another arena.", player.getName()));
+        }
+
+        // Takes an image of the player before calling the join event that usually setups the player.
+        PlayerRestorer.Image image = playerRestorer.screen(player);
+
         // Bukkit-event
         ArenaJoinEvent event = new ArenaJoinEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
@@ -298,10 +307,16 @@ public class Arena {
             return false;
         }
         players.add(player);
+
+        playerRestorer.remember(image); // If the player actually joined, we can remember the image took.
         return true;
     }
 
     public boolean quit(Player player) {
+        if (!players.contains(player)) {
+            throw new IllegalStateException("You're not inside this arena.");
+        }
+
         // Bukkit-event
         ArenaQuitEvent event = new ArenaQuitEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
@@ -318,6 +333,7 @@ public class Arena {
         if (onQuitHandler != null) {
             onQuitHandler.handle(player);
         }
+        playerRestorer.restore(player); // If the player actually quit, we can apply the image.
         return true;
     }
 
