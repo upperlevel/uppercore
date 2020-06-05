@@ -24,6 +24,14 @@ public class PhaseManager extends Phase {
     }
 
     @Override
+    public void onDisable(Phase next) {
+        super.onDisable(next);
+        if (phase != null) {
+            phase.onDisable(null); // Disables also the phase that is currently enabled within this manager.
+        }
+    }
+
+    @Override
     public boolean onJoin(Player player) {
         super.onJoin(player);
         if (phase != null) {
