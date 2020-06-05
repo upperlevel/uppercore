@@ -7,6 +7,7 @@ import xyz.upperlevel.uppercore.Uppercore;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 
 public abstract class Countdown extends BukkitRunnable {
     @Getter
@@ -48,7 +49,7 @@ public abstract class Countdown extends BukkitRunnable {
         return new SimpleDateFormat(pattern).format(new Date(currentTick * 50));
     }
 
-    public static Countdown create(long startAt, long repeatEach, Consumer<Long> onTick, Runnable onEnd) {
+    public static Countdown create(long startAt, long repeatEach, LongConsumer onTick, Runnable onEnd) {
         return new Countdown(startAt, repeatEach) {
             @Override
             protected void onTick(long tick) {
