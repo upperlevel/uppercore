@@ -48,12 +48,12 @@ public class Phase implements Listener {
     }
 
     public boolean onJoin(Player player) {
-        Uppercore.logger().info("Player joined phase: " + id);
+        //Uppercore.logger().info("Player joined phase: " + id);
         return false;
     }
 
     public boolean onQuit(Player player) {
-        Uppercore.logger().info("Player quit phase: " + id);
+        //Uppercore.logger().info("Player quit phase: " + id);
         return false;
     }
 }

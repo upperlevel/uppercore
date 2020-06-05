@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.util;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,17 +14,23 @@ public class PlayerRestorer {
     private final Map<Player, Image> bubbleByPlayer = new HashMap<>();
 
     public Image screen(Player player) {
-        return new Image(player);
+        Image res = new Image(player);
+        Dbg.pf("Took an image of %s", player.getName());
+        return res;
     }
 
     public void remember(Image image) {
         bubbleByPlayer.put(image.player, image);
+        Dbg.pf("Remembered %s's image", image.player.getName());
     }
 
     public void restore(Player player) {
         Image image = bubbleByPlayer.get(player);
         if (image != null) {
             image.apply(player);
+            Dbg.pf("Restored %s", player.getName());
+        } else {
+            Dbg.pf("Tried to restore %s, but there was no remembered image for him", player.getName());
         }
     }
 
@@ -45,6 +52,8 @@ public class PlayerRestorer {
 
         private final Location compassTarget;
 
+        private final GameMode gameMode;
+
         private Image(Player player) {
             this.player = player;
 
@@ -62,6 +71,8 @@ public class PlayerRestorer {
 
             armor = player.getInventory().getArmorContents();
             inventory = player.getInventory().getContents();
+
+            gameMode = player.getGameMode();
         }
 
         public void apply(Player p) {
@@ -84,6 +95,8 @@ public class PlayerRestorer {
             inv.setArmorContents(armor);
             inv.setContents(inventory);
             p.updateInventory();
+
+            p.setGameMode(gameMode);
         }
     }
 }

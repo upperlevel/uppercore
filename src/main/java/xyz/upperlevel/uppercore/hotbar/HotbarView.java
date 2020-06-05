@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.gui.ConfigIcon;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
+import xyz.upperlevel.uppercore.util.Dbg;
 
 import java.util.*;
 
@@ -229,8 +230,14 @@ public class HotbarView {
     }
 
     public boolean addHotbar(Hotbar hotbar) {
-        if (isHolding(hotbar) || isOverlaying(hotbar))
+        if (isHolding(hotbar)) {
+            Dbg.pf("%s is already holding a hotbar", player.getName());
             return false;
+        }
+        if (isOverlaying(hotbar)) {
+            Dbg.pf("The given hotbar would overlap the current %s hotbar-view", player.getName());
+            return false;
+        }
         for (int slot = 0; slot < hotbar.getIcons().length; slot++) {
             ConfigIcon icon = hotbar.getIcon(slot);
             if (icon != null)
@@ -239,16 +246,20 @@ public class HotbarView {
         for (ConfigIcon icon : hotbar.getNoSlotIcons())
             addIcon(icon);
         hotbars.add(hotbar);
+        Dbg.pf("Hotbar added to %s", player.getName());
         return true;
     }
 
     public boolean removeHotbar(Hotbar hotbar) {
-        if (!isHolding(hotbar))
+        if (!isHolding(hotbar)) {
+            Dbg.pf("Trying to remove an hotbar that %s isn't holding", player.getName());
             return false;
+        }
         Set<Integer> slots = new HashSet<>(slotsByHotbar.getOrDefault(hotbar, Collections.emptySet()));
         for (int slot : slots)
             removeIcon(slot);
         hotbars.remove(hotbar);
+        Dbg.pf("Hotbar removed from %s", player.getName());
         return true;
     }
 
@@ -261,6 +272,10 @@ public class HotbarView {
         return slotsByHotbar.get(hotbar);
     }
 
+    /**
+     * Checks if the given hotbar can be placed within the player's view.
+     * Basically checks if at least one item of the hotbar would overlap in the player's view.
+     */
     public boolean isOverlaying(Hotbar hotbar) {
         for (int slot = 0; slot < hotbar.getIcons().length; slot++) {
             ConfigIcon icon = hotbar.getIcon(slot);
