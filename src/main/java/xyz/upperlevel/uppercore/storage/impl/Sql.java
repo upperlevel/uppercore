@@ -16,6 +16,30 @@ public final class Sql {
     private Sql() {
     }
 
+    private static class StatementBank {
+        public PreparedStatement tableCreate;
+        public PreparedStatement tableDrop;
+        public PreparedStatement elementInsert;
+        public PreparedStatement elementReplace;
+        public PreparedStatement elementUpdate;
+        public PreparedStatement elementDelete;
+        public PreparedStatement elementGet;
+        public PreparedStatement elementGetParameter;
+        public PreparedStatement elementMerge;
+
+        public StatementBank(java.sql.Connection sql, String tableName) throws SQLException {
+            this.tableCreate = sql.prepareStatement("CREATE TABLE " + tableName + " (id VARCHAR(256), data JSON NOT NULL, PRIMARY KEY (id))");
+            this.tableDrop = sql.prepareStatement("DROP TABLE "  + tableName);
+            this.elementInsert = sql.prepareStatement("INSERT INTO " + tableName + " (`id`, `data`) VALUES (?, ?)");
+            this.elementReplace = sql.prepareStatement("REPLACE INTO " + tableName + " (`id`, `data`) VALUES (?, ?)");
+            this.elementUpdate = sql.prepareStatement("REPLACE INTO " + tableName + " (`id`, `data`) VALUES (?, ?)");
+            this.elementDelete = sql.prepareStatement("DELETE FROM " + tableName + " WHERE `id` = ?");
+            this.elementGet = sql.prepareStatement("SELECT data FROM " + tableName + " WHERE id = ?");
+            this.elementGetParameter = sql.prepareStatement("SELECT `data`->? FROM " + tableName + " WHERE `id` = ?");
+            this.elementMerge = sql.prepareStatement("INSERT INTO " + tableName + " (`id`, `data`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `data` = JSON_MERGE_PATCH(`data`, VALUES(`data`))");
+        }
+    }
+
     /* --------------------------------------------------------------------------------- Storage */
     public static class StorageImpl implements Storage {
         private final java.sql.Connection sql;
@@ -25,76 +49,31 @@ public final class Sql {
         }
 
         @Override
-        public Database database(String name) {
-            return new DatabaseImpl(sql, name);
-        }
-    }
-
-    /* --------------------------------------------------------------------------------- Database */
-    public static class DatabaseImpl implements Database {
-        private final java.sql.Connection sql;
-        private final String name;
-
-        public DatabaseImpl(java.sql.Connection sql, String name) {
-            this.sql = sql;
-            this.name = name;
-        }
-
-        @Override
-        public boolean create() {
-            try {
-                PreparedStatement statement = sql.prepareStatement("CREATE DATABASE `" + name + "`");
-                statement.executeUpdate();
-                return true;
-            } catch (SQLException e) {
-                return false;
-            }
-        }
-
-        @Override
-        public boolean drop() {
-            try {
-                PreparedStatement statement = sql.prepareStatement("DROP DATABASE `" + name + "`");
-                statement.executeUpdate();
-                return true;
-            } catch (SQLException e) {
-                return false;
-            }
-        }
-
-        @Override
         public Table table(String name) {
-            return new TableImpl(this, name);
+            try {
+                return new TableImpl(sql, name);
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to create prepared statements", e);
+            }
         }
     }
 
     /* --------------------------------------------------------------------------------- Table */
     public static class TableImpl implements Table {
         private final java.sql.Connection sql;
-        private final DatabaseImpl database;
+        private final StatementBank bank;
         private final String name;
 
-        public TableImpl(DatabaseImpl database, String name) {
-            this.sql = database.sql;
-            this.database = database;
+        public TableImpl(java.sql.Connection sql, String name) throws SQLException {
+            this.sql = sql;
+            this.bank = new StatementBank(sql, name);
             this.name = name;
-        }
-
-        private String getPath() {
-            return "`" + database.name + "`.`" + name + "`";
         }
 
         @Override
         public boolean create() {
             try {
-                PreparedStatement statement = sql.prepareStatement("USE `" + database.name + "`");
-                statement.executeUpdate();
-
-                statement = sql.prepareStatement("CREATE TABLE `" + name + "` (`id` VARCHAR(256), `data` JSON)");
-                statement.executeUpdate();
-
-                statement = sql.prepareStatement("ALTER TABLE " + getPath() + " ADD PRIMARY KEY(`id`)");
-                statement.executeUpdate();
+                bank.tableCreate.executeUpdate();
             } catch (SQLException e) {
                 return false;
             }
@@ -104,8 +83,7 @@ public final class Sql {
         @Override
         public boolean drop() {
             try {
-                PreparedStatement statement = sql.prepareStatement("DROP TABLE " + getPath());
-                statement.executeUpdate();
+                bank.tableDrop.executeUpdate();
             } catch (SQLException e) {
                 return false;
             }
@@ -114,65 +92,59 @@ public final class Sql {
 
         @Override
         public Element element(String id) {
-            return new ElementImpl(this, id);
+            return new ElementImpl(this, bank, id);
         }
     }
 
     /* --------------------------------------------------------------------------------- Element */
     public static class ElementImpl implements Element {
-        private final java.sql.Connection sql;
+        private final StatementBank bank;
         private final TableImpl table;
         private final String id;
 
-        public ElementImpl(TableImpl table, String id) {
-            this.sql = table.sql;
+        public ElementImpl(TableImpl table, StatementBank bank, String id) {
+            this.bank = bank;
             this.table = table;
             this.id = id;
         }
 
         @Override
         public boolean insert(Map<String, Object> data, DuplicatePolicy duplicatePolicy) {
-            if (duplicatePolicy == DuplicatePolicy.MERGE) {
-                return this.update(data);
-            }
-
             try {
-                String query = "INSERT INTO " + table.getPath() + " (`id`, `data`) VALUES (?, '{}')";
-                if (duplicatePolicy == DuplicatePolicy.REPLACE) {
-                    query += "ON DUPLICATE KEY UPDATE `data`=?";
+                PreparedStatement statement;
+                switch (duplicatePolicy) {
+                    case KEEP_OLD:
+                        statement = bank.elementInsert;
+                        break;
+                    case REPLACE:
+                        statement = bank.elementReplace;
+                        break;
+                    case MERGE:
+                        statement = bank.elementMerge;
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown duplicate policy " + duplicatePolicy.toString());
                 }
-                PreparedStatement statement = sql.prepareStatement(query);
+
                 statement.setString(1, id);
-                if (duplicatePolicy == DuplicatePolicy.REPLACE) {
-                    statement.setString(2, GENERAL_GSON.toJson(data));
-                }
+                statement.setString(2, GENERAL_GSON.toJson(data));
+
                 statement.executeUpdate();
                 return true;
             } catch (SQLException e) {
                 // We should get an exception only when an element was already
                 // present in the db and we weren't replacing it
-                if (duplicatePolicy == DuplicatePolicy.REPLACE) {
+                if (duplicatePolicy != DuplicatePolicy.KEEP_OLD) {
                     throw new IllegalStateException(e);
                 }
                 return false;
             }
         }
 
-        private boolean update(Map<String, Object> data) {
-            try {
-                PreparedStatement statement = sql.prepareStatement("UPDATE `" + table.database.name + "`.`" + table.name + "` SET `data`=?");
-                statement.setString(1, GENERAL_GSON.toJson(data));
-                statement.executeUpdate();
-                return true;
-            } catch (SQLException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-
         @Override
         public boolean drop() {
             try {
-                PreparedStatement statement = sql.prepareStatement("DELETE FROM `" + table.database.name + "`.`" + table.name + "` WHERE `id`=?");
+                PreparedStatement statement = bank.elementDelete;
                 statement.setString(1, id);
                 statement.executeUpdate();
             } catch (SQLException e) {
@@ -184,7 +156,7 @@ public final class Sql {
         @Override
         public Object get(String parameter) {
             try {
-                PreparedStatement statement = sql.prepareStatement("SELECT `data`->? FROM `" + table.database.name + "`.`" + table.name + "` WHERE `id`=?");
+                PreparedStatement statement = bank.elementGetParameter;
                 String encoded = "$." + parameter;
                 statement.setString(1, encoded);
                 statement.setString(2, id);
@@ -204,10 +176,12 @@ public final class Sql {
         @Override
         public Optional<Map<String, Object>> getData() {
             try {
-                PreparedStatement statement = sql.prepareStatement("SELECT `data` FROM `" + table.database.name + "`.`" + table.name + "`");
+
+                PreparedStatement statement = bank.elementGet;
+                statement.setString(1, id);
                 ResultSet result = statement.executeQuery();
                 if (result.next()) {
-                    return Optional.of((Map<String, Object>) GENERAL_GSON.fromJson(result.getString("data"), JSON_MAP_TYPE));
+                    return Optional.of(GENERAL_GSON.fromJson(result.getString("data"), JSON_MAP_TYPE));
                 }
                 return Optional.empty();
             } catch (SQLException e) {

@@ -40,7 +40,7 @@ public final class MariaDb  {
 
         @Override
         public Storage connect(Config access) {
-            String url = "jdbc:mariadb://" + access.getStringRequired("address") + ":" + access.getIntRequired("port");
+            String url = "jdbc:mariadb://" + access.getStringRequired("address") + ":" + access.getInt("port", 3306) + "/" + access.getStringRequired("database");
             try {
                 java.sql.Connection conn;
                 if (access.has("username") && access.has("password")) {

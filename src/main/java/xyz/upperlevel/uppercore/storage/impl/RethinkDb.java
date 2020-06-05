@@ -52,61 +52,27 @@ public final class RethinkDb {
         public Storage connect(Config access) {
             Builder builder = r.connection()
                     .hostname(access.getStringRequired("address"))
-                    .port(access.getIntRequired("port"));
+                    .port(access.getInt("port", 28015));
             if (access.has("username")) {
                 builder.user(access.getString("username"), access.getString("password", ""));
             }
-            return new StorageImpl(builder.connect());
+            return new StorageImpl(builder.connect(), access.getStringRequired("database"));
         }
     }
 
     /* --------------------------------------------------------------------------------- Connection */
     public static class StorageImpl implements Storage {
         private final Connection conn;
+        private Db db;
 
-        public StorageImpl(com.rethinkdb.net.Connection conn) {
+        public StorageImpl(com.rethinkdb.net.Connection conn, String dbName) {
             this.conn = conn;
-        }
-
-        @Override
-        public Database database(String name) {
-            return new DatabaseImpl(conn, name);
-        }
-    }
-
-    /* --------------------------------------------------------------------------------- Database */
-    public static class DatabaseImpl implements Database {
-        private final Connection conn;
-        private final String name;
-
-        public DatabaseImpl(Connection conn, String name) {
-            this.conn = conn;
-            this.name = name;
-        }
-
-        @Override
-        public boolean create() {
-            try {
-                MapObject res = r.dbCreate(name).run(conn);
-                return ((int) res.get("dbs_created")) > 0;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-
-        @Override
-        public boolean drop() {
-            try {
-                MapObject res = r.dbDrop(name).run(conn);
-                return ((Number) res.get("dbs_dropped")).intValue() > 0;
-            } catch (Exception e) {
-                return false;
-            }
+            this.db = r.db(dbName);
         }
 
         @Override
         public Table table(String name) {
-            return new TableImpl(conn, r.db(this.name), name);
+            return new TableImpl(conn, db, name);
         }
     }
 

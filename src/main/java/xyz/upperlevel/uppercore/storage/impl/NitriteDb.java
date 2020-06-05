@@ -53,29 +53,20 @@ public final class NitriteDb {
 
         @Override
         public Storage connect(Config access) {
-            return new StorageImpl();
+            StorageImpl s = new StorageImpl(access.getString("database", "default"));
+            s.ensureOpened();
+            return s;
         }
     }
 
-    /* --------------------------------------------------------------------------------- Connection */
+    /* --------------------------------------------------------------------------------- Storage */
     public static class StorageImpl implements Storage {
-        public StorageImpl() {
-        }
-
-        @Override
-        public Database database(String name) {
-            return new DatabaseImpl(name);
-        }
-    }
-
-    /* --------------------------------------------------------------------------------- Database */
-    public static class DatabaseImpl implements Database {
         private final String name;
         private final File file;
 
         private Nitrite db;
 
-        public DatabaseImpl(String name) {
+        public StorageImpl(String name) {
             this.name = name;
             this.file = new File(Uppercore.plugin().getDataFolder(), "storage/nitrite/" + name + ".db");
         }
@@ -89,25 +80,8 @@ public final class NitriteDb {
         }
 
         @Override
-        public boolean create() {
-            boolean notPresent = db == null && !this.file.exists();
-            ensureOpened();
-            return notPresent; // Before
-        }
-
-        @Override
-        public boolean drop() {
-            if (db != null) {
-                db.close();
-                db = null;
-            }
-            return file.delete();
-        }
-
-        @Override
         public Table table(String name) {
-            ensureOpened();
-            return new TableImpl(db.getCollection(name));
+            return new TableImpl(ensureOpened().getCollection(name));
         }
     }
 

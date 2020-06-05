@@ -54,57 +54,34 @@ public final class MongoDb {
         @Override
         public Storage connect(Config access) {
             String address = access.getStringRequired("address");
-            int port = access.getIntRequired("port");
+            int port = access.getInt("port", 27017);
             MongoClient client;
             if (access.has("database") && access.has("username") && access.has("password")) {
                 MongoCredential credential = MongoCredential.createCredential(
-                        access.getStringRequired("database"),
                         access.getStringRequired("username"),
+                        access.getStringRequired("database"),
                         access.getStringRequired("password").toCharArray()
                 );
                 client = new MongoClient(new ServerAddress(address, port), credential, MongoClientOptions.builder().build());
             } else {
                 client = new MongoClient(new ServerAddress(address, port));
             }
-            return new StorageImpl(client);
+            return new StorageImpl(client, access.getStringRequired("database"));
         }
     }
 
     /* --------------------------------------------------------------------------------- Connection */
     public static class StorageImpl implements Storage {
         private final MongoClient m;
-
-        public StorageImpl(MongoClient m) {
-            this.m = m;
-        }
-
-        @Override
-        public Database database(String name) {
-            try {
-                return new DatabaseImpl(m.getDatabase(name));
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Database not found: " + name, e);
-            }
-        }
-    }
-
-    /* --------------------------------------------------------------------------------- Database */
-    public static class DatabaseImpl implements Database {
         private final MongoDatabase db;
 
-        public DatabaseImpl(MongoDatabase db) {
-            this.db = db;
-        }
-
-        @Override
-        public boolean create() {
-            return false; // Always open
-        }
-
-        @Override
-        public boolean drop() {
-            db.drop();
-            return true;
+        public StorageImpl(MongoClient m, String db) {
+            this.m = m;
+            try {
+                this.db = m.getDatabase(db);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Database not found: " + db, e);
+            }
         }
 
         @Override

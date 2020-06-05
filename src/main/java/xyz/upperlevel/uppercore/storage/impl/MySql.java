@@ -34,7 +34,7 @@ public final class MySql {
 
         @Override
         public Storage connect(Config access) {
-            String url = "jdbc:mysql://" + access.getStringRequired("address") + ":" + access.getIntRequired("port");
+            String url = "jdbc:mysql://" + access.getStringRequired("address") + ":" + access.getInt("port", 3306) + "/" + access.getStringRequired("database");
             try {
                 java.sql.Connection conn;
                 if (access.has("username") && access.has("password")) {

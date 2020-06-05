@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static xyz.upperlevel.uppercore.util.JsonUtil.GENERAL_GSON;
 import static xyz.upperlevel.uppercore.util.JsonUtil.JSON_MAP_TYPE;
@@ -20,6 +21,8 @@ import static xyz.upperlevel.uppercore.util.JsonUtil.JSON_MAP_TYPE;
 @SuppressWarnings("unchecked")
 @Deprecated
 public final class Flatfile {
+    public static final Pattern TABLE_NAME_PATTERN = Pattern.compile("^[-a-zA-Z0-9_]+$");
+
     private Flatfile() {
     }
 
@@ -48,50 +51,26 @@ public final class Flatfile {
         public Storage connect(Config access) {
             Logger l = Uppercore.logger();
             l.warning("Flatfile storage is deprecated and it might be removed on future versions");
-            l.warning("Please use 'nitritedb' as it's a better storage");
+            l.warning("Please use 'nitritedb' as it's a better storage method");
             // No auth
-            return new StorageImpl();
+            return new StorageImpl(access.getString("database", "default"));
         }
     }
 
     /* --------------------------------------------------------------------------------- Connection */
     public static class StorageImpl implements Storage {
-        public StorageImpl() {
-        }
-
-        @Override
-        public Database database(String name) {
-            return new DatabaseImpl(name);
-        }
-    }
-
-    /* --------------------------------------------------------------------------------- Database */
-    public static class DatabaseImpl implements Database {
-        private final String name;
         private final File folder;
 
-        public DatabaseImpl(String name) {
-            this.name = name;
-            this.folder =  new File(Uppercore.plugin().getDataFolder(), "storage/flatfile/" + name + ".db");
-        }
-
-        @Override
-        public boolean create() {
-            if (!folder.exists()) {
-                folder.mkdirs();
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean drop() {
-            return folder.delete();
+        public StorageImpl(String db) {
+            this.folder =  new File(Uppercore.plugin().getDataFolder(), "storage/flatfile/" + db + ".db");
         }
 
         @Override
         public Table table(String name) {
-            return new TableImpl(folder, name);
+            if (!TABLE_NAME_PATTERN.matcher(name).matches()) {
+                throw new IllegalArgumentException("Invalid table name");
+            }
+            return new TableImpl(this.folder, name);
         }
     }
 
@@ -100,9 +79,9 @@ public final class Flatfile {
         private final String name;
         private final File folder;
 
-        public TableImpl(File dbFolder, String name) {
+        public TableImpl(File folder, String name) {
             this.name = name;
-            this.folder =  new File(dbFolder, name);
+            this.folder = new File(folder, name);
         }
 
         @Override
@@ -118,6 +97,9 @@ public final class Flatfile {
         @Override
         public Element element(String id) {
             File file = new File(folder, id + ".json");
+            if (!file.getAbsoluteFile().getParentFile().equals(folder.getAbsoluteFile())) {
+                throw new IllegalArgumentException("Invalid element id");
+            }
             return new ElementImpl(id, file);
         }
     }
