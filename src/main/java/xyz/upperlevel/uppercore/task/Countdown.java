@@ -21,7 +21,7 @@ public abstract class Countdown extends BukkitRunnable {
     }
 
     public void start() {
-        currentTick = startAt;
+        currentTick = startAt + repeatEach;
         runTaskTimer(Uppercore.plugin(), 0, repeatEach);
     }
 
@@ -35,12 +35,12 @@ public abstract class Countdown extends BukkitRunnable {
 
     @Override
     public void run() {
-        onTick(currentTick / repeatEach);
-        if (currentTick > 0)
-            currentTick -= repeatEach;
-        else {
+        currentTick -= repeatEach;
+        if (currentTick == 0) {
             onEnd();
             super.cancel();
+        } else {
+            onTick(currentTick / repeatEach);
         }
     }
 
