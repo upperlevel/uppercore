@@ -2,9 +2,13 @@ package xyz.upperlevel.uppercore.arena;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent.ArenaQuitReason;
@@ -79,6 +83,15 @@ public class ArenaManager implements Listener {
         return null;
     }
 
+    public Arena getArena(Sign joinSign) {
+        for (Arena arena : byId.values()) {
+            if (arena.getJoinSigns().contains(joinSign)) {
+                return arena;
+            }
+        }
+        return null;
+    }
+
     public void destroy(Arena arena) {
         byId.remove(arena.getId());
         if (arena.getWorld() != null) {
@@ -104,6 +117,20 @@ public class ArenaManager implements Listener {
         Arena arena = get(e.getPlayer());
         if (arena != null) {
             arena.quit(e.getPlayer(), ArenaQuitReason.GAME_QUIT);
+        }
+    }
+
+    @EventHandler
+    private void onJoinSignClick(PlayerInteractEvent e) {
+        Block block = e.getClickedBlock();
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && block != null) {
+            if (block.getState() instanceof Sign) {
+                Arena arena = getArena((Sign) block.getState());
+                // If the sign is a join-sign and the player isn't within any arena, then can join.
+                if (arena != null && arena.isEnabled() && get(e.getPlayer()) == null) {
+                    arena.join(e.getPlayer());
+                }
+            }
         }
     }
 
