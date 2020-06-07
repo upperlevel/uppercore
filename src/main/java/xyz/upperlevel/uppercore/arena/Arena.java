@@ -171,15 +171,12 @@ public class Arena {
      * Saves the arena world and writes data to arena's yml file.
      */
     public void save() throws IOException {
-        if (enabled) {
-            throw new IllegalStateException("Arena can't be saved while it's enabled.");
-        }
-
         ArenaManager.ARENAS_FOLDER.mkdirs();
         File file = new File(ArenaManager.ARENAS_FOLDER, id + ".yml");
         file.createNewFile();
 
         new Yaml().dump(serialize(), new FileWriter(file));
+        Dbg.pf("[%s] Saved to: %s", id, file.getPath().toString());
     }
 
     /**

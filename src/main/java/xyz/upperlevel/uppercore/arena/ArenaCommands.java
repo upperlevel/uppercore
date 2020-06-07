@@ -99,25 +99,11 @@ public class ArenaCommands {
     // ================================================================================
 
     @AsCommand(description = "Saves an arena.")
-    public void save(Player player) {
-        World world = player.getWorld();
-
-        Arena arena = ArenaManager.get().get(world);
-        if (arena == null) {
-            player.sendMessage(RED + "The world " + world.getName() + " doesn't hold any arena.");
-            return;
-        }
-
+    public void save(Player player, Arena arena) {
         if (!arena.isReady()) {
             player.sendMessage(RED + "This arena isn't ready yet.");
             return;
         }
-
-        if (arena.isEnabled()) {
-            player.sendMessage(RED + "You can't save an arena while it's enabled.");
-            return;
-        }
-
         try {
             arena.save();
         } catch (IOException e) {
@@ -125,7 +111,6 @@ public class ArenaCommands {
             player.sendMessage(RED + "I/O error during arena transferring, read console for more info.");
             return;
         }
-
         player.sendMessage(GREEN + "Arena saved: " + arena.getId());
     }
 
