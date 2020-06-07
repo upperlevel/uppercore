@@ -12,11 +12,13 @@ import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.events.ArenaJoinEvent;
 import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent;
+import xyz.upperlevel.uppercore.arena.events.JoinSignUpdateEvent;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.ConfigConstructor;
 import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
+import xyz.upperlevel.uppercore.util.Dbg;
 import xyz.upperlevel.uppercore.util.LocUtil;
 import xyz.upperlevel.uppercore.util.PlayerRestorer;
 import xyz.upperlevel.uppercore.util.WorldUtil;
@@ -114,14 +116,26 @@ public class Arena {
                 .set("players", () -> Integer.toString(players.size()));
     }
 
-    /* Join signs */
+    // ================================================================================================
+    // Join signs
+    // ================================================================================================
+
+    public void updateJoinSigns(Collection<Sign> joinSigns) {
+        JoinSignUpdateEvent event = new JoinSignUpdateEvent(this, joinSigns);
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    public void updateJoinSigns() {
+        //Dbg.pf("[%s] Dispatching join-signs update signal...", id);
+        updateJoinSigns(joinSigns);
+    }
 
     /**
      * Adds a join sign to the arena.
      */
     public boolean addJoinSign(Sign joinSign) {
         boolean result = joinSigns.add(joinSign);
-        updateJoinSign(joinSign);
+        updateJoinSigns(Collections.singletonList(joinSign));
         return result;
     }
 
@@ -139,19 +153,6 @@ public class Arena {
      */
     public Collection<Sign> getJoinSigns() {
         return Collections.unmodifiableSet(joinSigns);
-    }
-
-    /**
-     * Iterates over all join signs and updates them.
-     */
-    public void updateJoinSigns() {
-        getJoinSigns().forEach(this::updateJoinSign);
-    }
-
-    /**
-     * Decorates the given join sign. May be overwritten.
-     */
-    public void updateJoinSign(Sign joinSign) {
     }
 
     public boolean isReady() {
@@ -308,14 +309,14 @@ public class Arena {
             return false;
         }
         players.add(player);
-
         playerRestorer.remember(image); // If the player actually joined, we can remember the image took.
+        updateJoinSigns();
         return true;
     }
 
     public boolean quit(Player player, ArenaQuitEvent.ArenaQuitReason reason) {
         if (!players.contains(player)) {
-            throw new IllegalStateException("You're not inside this arena.");
+            return false;
         }
 
         // Bukkit-event
@@ -335,6 +336,7 @@ public class Arena {
             onQuitHandler.handle(player);
         }
         playerRestorer.restore(player); // If the player actually quit, we can apply the image.
+        updateJoinSigns();
         return true;
     }
 

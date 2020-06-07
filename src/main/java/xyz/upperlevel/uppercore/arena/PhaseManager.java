@@ -3,6 +3,9 @@ package xyz.upperlevel.uppercore.arena;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PhaseManager extends Phase {
     @Getter
     private Phase phase;
