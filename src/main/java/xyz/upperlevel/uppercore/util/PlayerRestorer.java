@@ -87,9 +87,8 @@ public class PlayerRestorer {
             p.setLevel(level);
             p.setExp(exp);
 
-            player.setScoreboard(scoreboard);
-
-            player.setCompassTarget(compassTarget);
+            if (scoreboard != null) player.setScoreboard(scoreboard);
+            if (compassTarget != null) player.setCompassTarget(compassTarget);
 
             PlayerInventory inv = p.getInventory();
             inv.setArmorContents(armor);
