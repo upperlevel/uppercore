@@ -1,18 +1,27 @@
 
-# ================================================
-# LOCAL
-# ================================================
+# ================================================================================================
+# Game
+# ================================================================================================
+
 arenas:
-  # This fields change where players are sent when the game ends. Possible values: 'bungee' or 'local'.
-  # - bungee: Sends the players to the server specified by hub-server.
-  # - local:  Sends the players to the location specified by hub-location.
+  # The modality on which the arenas run. Can be either 'local' or 'bungee'.
+  # - local:
+  #   Should be used when you have one server that handles both lobby and arenas.
+  #   Using this modality permits you to create auto-updatable signs that can be clicked by players
+  #   to join the arenas.
+  # - bungee:
+  #   Should be used when you have a BungeeCord based network, with - for
+  #   example - a server used just for lobby and one server for every arena.
+  #   Using this modality will make players auto-join the configured arena when
+  #   they join the arena's server and they'll be teleported back to the lobby server
+  #   as soon as the game ends.
   mode: 'local'
 
-  # ================================================
-  # LOCAL
-  # ================================================
-  # The following options apply only if mode is set to "local".
+  # *** LOCAL ONLY ***
 
+  # The location of the lobby (or hub), the place where players are teleported when the game ends.
+  # Usually this is also the place where you put join signs.
+  # TODO: make it configurable in-game through a command.
   hub-location: {
     world: world,
     x: 0,
@@ -22,19 +31,22 @@ arenas:
     yaw: 0    # The head rotation on the XZ axes.
   }
 
-  # ================================================
-  # BUNGEE
-  # ================================================
-  # The following options apply only if mode is set to "bungee".
+  # *** BUNGEE ONLY ***
 
-  # This is the arena that is automatically joined when the players join the server.
-  main-arena: 'arena1'
+  # This is the name of the arena that is automatically joined when the players join the server.
+  main-arena: 'my-arena'
 
-  # This is the server where players go back when the game ends.
+  # This is the server where players go back when the game ends (aka the lobby-server or hub-server).
+  # The name of the server, must be the same present in the BungeeCord configuration.
   hub-server: 'quake-lobby'
 
-# ------------------------------------------------------------------------------------------------ Commands
+# ================================================================================================
+# Commands
+# ================================================================================================
+
 commands:
+  # *** ERRORS ***
+
   # %permission% - permission required
   no-permission: "&cYou don't have the permission to run this command."
 
@@ -55,7 +67,7 @@ commands:
   # %wrong_argument%  - the wrong argument value
   invalid-argument-type: "&d%parameter%&c must be a &d%parameter_type%&c. Invalid value: '&d%wrong_argument%&c'."
 
-  # >>> HELP COMMAND:
+  # *** HELP COMMAND ***
 
   commands-per-page: 9
   show-inaccessible-commands: true
@@ -72,11 +84,11 @@ commands:
   # %cmd_desc%    - brief description for the command
   help-line: "&6%cmd% %cmd_usage%   &7%cmd_desc%"
 
+# ================================================================================================
+# Scripts
+# ================================================================================================
 
-
-# ---------------------------------------------------------------------------------------
-# -------------- Advanced! Do not change unless you know what you're doing --------------
-# ---------------------------------------------------------------------------------------
+# *** Advanced! Do not change unless you know what you're doing! ***
 
 scripts:
   # Extensions to script engine names
@@ -84,7 +96,11 @@ scripts:
     js: javascript
     py: python
 
-# A spigot bug re-clicks a slot twice if there is too much lag, this behaviour
-# might cause the lobby-leave hotbar button to press instantly after joining.
-# This is a cooldown that prevents the player from leaving the lobby before x milliseconds after joining
+# ================================================================================================
+# Misc
+# ================================================================================================
+
+# A spigot bug re-clicks a slot twice if there is too much lag, this behaviour might cause the
+# lobby-leave hotbar button to press instantly after joining. This is a cooldown that prevents
+# the player from leaving the lobby before x milliseconds after joining.
 join-leave-cooldown: 1000
