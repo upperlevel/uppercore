@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent.ArenaQuitReason;
@@ -111,6 +112,21 @@ public class ArenaManager implements Listener {
 
     //================================================================================
     // Events
+
+    @EventHandler
+    private void onPlayerJoin(PlayerJoinEvent e) {
+        if (Arena.mode.equals("bungee")) {
+            Arena arena = get(Arena.mainArenaName);
+            if (arena == null) {
+                Uppercore.logger().severe("No arena found with name: " + Arena.mainArenaName);
+                return;
+            }
+            Player p = e.getPlayer();
+            if (!arena.join(p)) {
+                Arena.onQuitHandler.handle(p);
+            }
+        }
+    }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e) {

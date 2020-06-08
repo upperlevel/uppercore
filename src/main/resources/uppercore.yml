@@ -1,13 +1,17 @@
 
-
-# ------------------------------------------------------------------------------------------------ Arenas
+# ================================================
+# LOCAL
+# ================================================
 arenas:
   # This fields change where players are sent when the game ends. Possible values: 'bungee' or 'local'.
   # - bungee: Sends the players to the server specified by hub-server.
   # - local:  Sends the players to the location specified by hub-location.
   mode: 'local'
 
-  hub-server: 'server2'
+  # ================================================
+  # LOCAL
+  # ================================================
+  # The following options apply only if mode is set to "local".
 
   hub-location: {
     world: world,
@@ -17,6 +21,17 @@ arenas:
     pitch: 0, # The head rotation on the Y axis.
     yaw: 0    # The head rotation on the XZ axes.
   }
+
+  # ================================================
+  # BUNGEE
+  # ================================================
+  # The following options apply only if mode is set to "bungee".
+
+  # This is the arena that is automatically joined when the players join the server.
+  main-arena: 'arena1'
+
+  # This is the server where players go back when the game ends.
+  hub-server: 'quake-lobby'
 
 # ------------------------------------------------------------------------------------------------ Commands
 commands:

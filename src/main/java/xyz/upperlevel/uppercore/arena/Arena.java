@@ -36,6 +36,8 @@ public class Arena {
     public static final PlayerRestorer playerRestorer = new PlayerRestorer();
 
     // Config
+    public static String mainArenaName;
+    public static String mode;
     public static OnQuitHandler onQuitHandler;
 
     //================================================================================
@@ -315,7 +317,6 @@ public class Arena {
         if (!players.contains(player)) {
             return false;
         }
-
         // Bukkit-event
         ArenaQuitEvent event = new ArenaQuitEvent(player, this, reason);
         Bukkit.getPluginManager().callEvent(event);
@@ -329,25 +330,22 @@ public class Arena {
         if (!players.remove(player)) {
             return false;
         }
+        // Here the player has quit for sure.
+        playerRestorer.restore(player);
+        updateJoinSigns();
         if (onQuitHandler != null) {
             onQuitHandler.handle(player);
         }
-        playerRestorer.restore(player); // If the player actually quit, we can apply the image.
-        updateJoinSigns();
         return true;
     }
 
     public static void loadConfig(Config cfg) {
-        String mode = cfg.getString("mode");
-        switch (mode) {
-            case "bungee":
-                onQuitHandler = new OnQuitHandler.Bungee();
-                break;
-            case "local":
-                onQuitHandler = new OnQuitHandler.Local();
-                break;
-            default:
-                throw new IllegalArgumentException(String.format("Unknown arena mode: %s", mode));
-        }
+        mode = cfg.getString("mode");
+
+        if (mode.equals("bungee")) onQuitHandler = new OnQuitHandler.Bungee();
+        else if (mode.equals("local")) onQuitHandler = new OnQuitHandler.Local();
+        else throw new IllegalStateException(String.format("Invalid Arena mode: %s", mode));
+
+        mainArenaName = cfg.getString("main-arena");
     }
 }
