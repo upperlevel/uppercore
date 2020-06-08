@@ -72,6 +72,10 @@ public final class Flatfile {
             }
             return new TableImpl(this.folder, name);
         }
+
+        @Override
+        public void close() {
+        }
     }
 
     /* --------------------------------------------------------------------------------- Table */

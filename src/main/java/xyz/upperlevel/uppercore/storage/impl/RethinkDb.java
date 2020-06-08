@@ -74,6 +74,11 @@ public final class RethinkDb {
         public Table table(String name) {
             return new TableImpl(conn, db, name);
         }
+
+        @Override
+        public void close() {
+            conn.close();
+        }
     }
 
     /* --------------------------------------------------------------------------------- Table */

@@ -88,6 +88,11 @@ public final class MongoDb {
         public Table table(String name) {
             return new TableImpl(db.getCollection(name));
         }
+
+        @Override
+        public void close() {
+            m.close();
+        }
     }
 
     /* --------------------------------------------------------------------------------- Table */

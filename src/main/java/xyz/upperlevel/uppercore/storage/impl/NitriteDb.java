@@ -5,6 +5,7 @@ import org.dizitart.no2.filters.Filters;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.storage.*;
+import xyz.upperlevel.uppercore.util.Dbg;
 
 import java.io.File;
 import java.util.Map;
@@ -73,10 +74,19 @@ public final class NitriteDb {
 
         private Nitrite ensureOpened() {
             if (db == null) {
-                this.file.getParentFile().mkdirs();
-                db = Nitrite.builder().compressed().filePath(this.file).openOrCreate();
+                file.getParentFile().mkdirs();
+                db = Nitrite.builder().compressed().filePath(file).openOrCreate();
+                Dbg.pf("Nitrite wasn't opened, opening it");
             }
             return db;
+        }
+
+        @Override
+        public void close() {
+            if (db != null && !db.isClosed()) {
+                db.close();
+                Dbg.pf("Nitrite was openend, closed it");
+            }
         }
 
         @Override

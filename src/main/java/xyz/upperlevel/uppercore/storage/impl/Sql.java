@@ -56,6 +56,15 @@ public final class Sql {
                 throw new RuntimeException("Failed to create prepared statements", e);
             }
         }
+
+        @Override
+        public void close() {
+            try {
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /* --------------------------------------------------------------------------------- Table */
