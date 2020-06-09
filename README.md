@@ -20,13 +20,13 @@ You can dive into these APIs in ther relative wiki pages.
 ##### arena-api
 A set of classes to handle arena creation, editing with support for signs and Bungee mode.
 
-###### board-api
+##### board-api
 Wraps the Bukkit scoreboard and permits easy config loading with placeholders support.
 
-###### command-api
+##### command-api
 Wraps the Bukkit commands API providing a clean interface able to handle commands-tree. Supports both class based and functional commands and, based on a given commands-tree is able to generate a HelpCommand.
 
-###### config-api
+##### config-api
 Permits to handle a key-value configuration originating from a Yaml file, that doesn't rely on Bukkit. It's been added an annotation system that permits to parse custom types and a tracker to fetch errors during parsing.
 
 ##### gui-api
@@ -36,7 +36,7 @@ A powerful GUI library that permits to manage fixed menu, based on Bukkit invent
 This API shares the same backend with GUIs but is applied only to hotbars. Hotbars are a set of items (a menu) that can be applied to the 8 slots that are visible within the players' inventory.
 
 ##### storage-api
-A common gateway for DB access. This API permits you to write DB-agnostic code using methods as easy as `putSomeData(...)` and `readSomeData(...)`. The DB-drivers are obviously not included in Uppercore and are downloaded when the plugin is enabled. These are storage types supported: MariaDb, MySql, MongoDb, RethinkDb, NitriteDb (for local only savings).
+A common gateway for DB access. This API permits you to write DB-agnostic code using methods as easy as `putSomeData(...)` and `readSomeData(...)`. The DB-drivers are obviously not included in Uppercore and are downloaded when the plugin is enabled. These are the storage types supported: MariaDb, MySql, MongoDb, RethinkDb, NitriteDb (for local only savings).
 
 ##### update-api
 An utility made to check whether there's an updated version of the plugin on Spigot and, in case, notify the plugin users.
@@ -65,8 +65,7 @@ gradle publishToMavenLocal
 ```
 
 ## Depending
-
-**gradle** - `build.gradle`
+If your plugin project's dependency system is based on Gradle, these are the lines that must be present within your `build.gradle` in order to use Uppercore:
 ```groovy
 repositories {
     mavenLocal()
@@ -80,6 +79,16 @@ shadowJar {
     relocate 'xyz.upperlevel.uppercore', '<your-project-package-name>.uppercore'
 }
 ```
-If you want to use Uppercore, these lines are **required** within your `build.gradle`.
 
-Uppercore is fetched in the Maven local repository (so it must be already installed) and is compiled with the dependant plugin code. To avoid issues its code is relocated.
+Basically, Uppercore is fetched in the Maven local repository (so it must be already installed) and is compiled with the dependant plugin code. To avoid issues its code is relocated.
+
+## Get started
+Within your plugin's entry class, insert the following line inside the `onEnable()` method.
+```java
+@Override
+public void onEnable() {
+     Uppercore.hook(this, BSTATS_ID);
+}
+```
+Where `BSTATS_ID` is the ID of the plugin in [bstats.org](https://bstats.org), a metrics platform.
+If not supported, just set it to 0.
