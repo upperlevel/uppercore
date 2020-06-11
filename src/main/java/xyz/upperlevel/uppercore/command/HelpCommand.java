@@ -13,6 +13,9 @@ import xyz.upperlevel.uppercore.util.Dbg;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.bukkit.ChatColor.LIGHT_PURPLE;
+import static org.bukkit.ChatColor.RED;
+
 public class HelpCommand {
     private static int commandsPerPage;
     private static boolean showInaccessibleCommands;
@@ -33,17 +36,29 @@ public class HelpCommand {
         if (parent == null) {
             throw new IllegalStateException("HelpCommand without parent");
         }
-        Dbg.pf("show-inaccessible-commands: %b", showInaccessibleCommands);
         List<Command> commands = parent.getCommands()
                 .stream()
                 .filter(cmd -> showInaccessibleCommands || cmd.hasPermission(sender))
                 .collect(Collectors.toList());
+
         int commandsSize = commands.size();
         int maxPages = (int) Math.ceil(((double) commandsSize) / (double) commandsPerPage);
+
+        if (page <= 0) {
+            sender.sendMessage(RED + "Page can't be null or negative.");
+            return;
+        }
+
+        if (page > maxPages) {
+            sender.sendMessage(RED + "Page has exceeded the max number of pages, which is " + LIGHT_PURPLE + maxPages + RED + ".");
+            return;
+        }
+
         PlaceholderRegistry<?> frame = PlaceholderRegistry.create()
                 .set("node_cmd", parent.getFullName())
                 .set("page", page)
                 .set("max_page", maxPages);
+
         headerMessage.send(sender, frame);
         for (int i = (page - 1) * commandsPerPage; i < Math.min(commandsSize, page * commandsPerPage); i++) {
             Command cmd = commands.get(i);

@@ -71,8 +71,6 @@ public final class ParameterHandler {
     }
 
     public static Object parse(Class<?> type, Queue<String> args) {
-        Dbg.pf(String.format("Parsing %s from %s", type.getSimpleName(), args.toString()));
-
         Parser parser = parserByType.get(type);
         if (parser == null)
             throw new IllegalStateException(String.format("Parser not found for type: %s", type.getSimpleName()));

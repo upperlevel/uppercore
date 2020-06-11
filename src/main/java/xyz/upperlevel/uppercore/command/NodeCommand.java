@@ -172,7 +172,6 @@ public class NodeCommand extends Command {
 
     @Override
     public List<String> suggest(CommandSender sender, Queue<String> args) {
-        Dbg.pf("%s suggesting for: %s", getFullName(), args.toString());
         if (args.size() > 1) {
             Command subCmd = getCommand(args.poll());
             if (subCmd != null) {
