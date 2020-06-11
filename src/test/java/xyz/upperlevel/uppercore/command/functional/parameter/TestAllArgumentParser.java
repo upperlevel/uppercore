@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.command.functional.parser;
+package xyz.upperlevel.uppercore.command.functional.parameter;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ public class TestAllArgumentParser {
             try {
                 Object parsed = ArgumentParserManager.get(entry.getValue()).parse(Collections.singletonList(entry.getKey()));
                 result.put(entry.getKey(), parsed);
-            } catch (ArgumentParseException e) {
+            } catch (ParameterParseException e) {
                 throw new IllegalStateException(e);
             }
         }

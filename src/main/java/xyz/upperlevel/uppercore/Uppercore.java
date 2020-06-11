@@ -6,10 +6,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.arena.Arena;
 import xyz.upperlevel.uppercore.arena.OnQuitHandler;
+import xyz.upperlevel.uppercore.arena.command.ArenaParameterHandler;
 import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.HelpCommand;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
-import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParserManager;
+import xyz.upperlevel.uppercore.command.functional.parameter.BukkitParameterHandler;
+import xyz.upperlevel.uppercore.command.functional.parameter.PrimitiveParameterHandler;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.economy.EconomyManager;
@@ -42,6 +44,12 @@ public class Uppercore {
 
     private Metrics metrics;
 
+    private static void setupCommands() {
+        PrimitiveParameterHandler.register();
+        BukkitParameterHandler.register();
+        ArenaParameterHandler.register();
+    }
+
     private Uppercore(JavaPlugin plugin, int bStatsId) {
         if (instance != null) {
             if (instance.plugin == plugin) {
@@ -65,7 +73,7 @@ public class Uppercore {
         PlaceholderUtil.tryHook();
         EconomyManager.enable();
 
-        // Command configuration
+        // uppercore.yml
         plugin.saveResource("uppercore.yml", false);
         Config cfg = Config.fromYaml(new File(plugin.getDataFolder(), "uppercore.yml"));
 
@@ -80,7 +88,7 @@ public class Uppercore {
         FunctionalCommand.configure(commandConfig);
 
         // Commands
-        ArgumentParserManager.init();
+        setupCommands();
 
         // Managers
         guis = new GuiManager();

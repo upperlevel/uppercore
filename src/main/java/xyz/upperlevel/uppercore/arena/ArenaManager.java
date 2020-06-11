@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Uppercore;
-import xyz.upperlevel.uppercore.arena.events.ArenaQuitEvent.ArenaQuitReason;
+import xyz.upperlevel.uppercore.arena.event.ArenaQuitEvent.ArenaQuitReason;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.util.WorldUtil;
 

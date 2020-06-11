@@ -9,14 +9,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.jetbrains.annotations.Nullable;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
+import xyz.upperlevel.uppercore.util.Dbg;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Command {
     @Getter
@@ -115,7 +114,7 @@ public abstract class Command {
      * Usage format should respect: {@code <arg1> <arg2> [optional=value]}.
      * The colored variable changes the usage color based on the sender.
      */
-    public abstract String getUsage(CommandSender sender, boolean colored);
+    public abstract String getUsage(@Nullable CommandSender sender, boolean colored);
 
     public String getFullName() {
         StringBuilder path = new StringBuilder();
@@ -146,7 +145,7 @@ public abstract class Command {
         return fullName;
     }
 
-    public boolean call(CommandSender sender, List<String> args) {
+    public boolean call(CommandSender sender, Queue<String> args) {
         if (!hasPermission(sender)) {
             noPermissionMessage.send(sender, PlaceholderRegistry.create()
                     .set("permission", permission.getName())
@@ -163,9 +162,33 @@ public abstract class Command {
         return true;
     }
 
-    protected abstract boolean onCall(CommandSender sender, List<String> args);
+    protected abstract boolean onCall(CommandSender sender, Queue<String> args);
 
-    public abstract List<String> suggest(CommandSender sender, List<String> arguments);
+    /**
+     * Given a list of the inserted args, that goes from the root comamnd through all sub-commands,
+     * returns a list of the suggested strings that can complete the very last arg inserted.
+     *
+     * Example:
+     * - args: ["q", "join", ""]
+     * - returns: ["arena1", "arena2", "arena3"]
+     *
+     * - args: ["q", "join"]
+     * - returns: []
+     *
+     * - args: ["q", "j"]
+     * - returns: ["join"]
+     *
+     * @param sender The sender requesting the suggestion.
+     * @param args   The args query inserted until now.
+     * @return       The suggestions.
+     */
+    public List<String> suggest(CommandSender sender, Queue<String> args) {
+        //Dbg.pf("Requesting suggestion at %s for: %s", name, args.toString());
+
+        // Can't suggest anything since we don't have a concrete structure of how args fit into parameters.
+        return Collections.emptyList();
+    }
+
     public static void configure(Config cfg) {
         noPermissionMessage = cfg.getMessage("no-permission");
         wrongSenderTypeMessage = cfg.getMessage("wrong-sender-type");

@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.arena;
+package xyz.upperlevel.uppercore.arena.command;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -7,10 +7,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.yaml.snakeyaml.Yaml;
+import xyz.upperlevel.uppercore.arena.Arena;
+import xyz.upperlevel.uppercore.arena.ArenaManager;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.command.functional.WithOptional;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collection;
 
 import static org.bukkit.ChatColor.*;
@@ -65,16 +69,16 @@ public class ArenaCommands {
     }
 
     // ================================================================================
-    // arena edit
+    // teleport
     // ================================================================================
 
-    @AsCommand(description = "Edits an arena.")
-    public void edit(Player player, Arena arena) {
+    @AsCommand(description = "Teleports the player to the specified arena.")
+    public void teleport(Player player, Arena arena) {
         player.teleport(arena.getLobby() != null ? arena.getLobby() : new Location(arena.getWorld(), 0, 64, 0));
     }
 
     // ================================================================================
-    // arena toggle
+    // toggle
     // ================================================================================
 
     @AsCommand(description = "Toggles the state of an arena.")
@@ -95,7 +99,7 @@ public class ArenaCommands {
     }
 
     // ================================================================================
-    // arena save
+    // save
     // ================================================================================
 
     @AsCommand(description = "Saves an arena.")
@@ -115,7 +119,7 @@ public class ArenaCommands {
     }
 
     // ================================================================================
-    // arena list
+    // list
     // ================================================================================
 
     @AsCommand(description = "Lists all arenas.")
@@ -130,7 +134,7 @@ public class ArenaCommands {
     }
 
     // ================================================================================
-    // arena lobby
+    // lobby
     // ================================================================================
 
     @AsCommand(description = "Sets the arena lobby.")
@@ -145,7 +149,7 @@ public class ArenaCommands {
     }
 
     // ================================================================================
-    // arena addjoinsign
+    // addjoinsign
     // ================================================================================
 
     @AsCommand(description = "Adds an arena join sign.")
@@ -160,7 +164,7 @@ public class ArenaCommands {
     }
 
     // ================================================================================
-    // arena rmjoinsign
+    // rmjoinsign
     // ================================================================================
 
     @AsCommand(description = "Removes an arena join sign.")
@@ -172,5 +176,15 @@ public class ArenaCommands {
         }
         arena.removeJoinSign((Sign) block.getState());
         player.sendMessage(GREEN + "Join sign removed for arena: " + YELLOW + arena.getId() + GREEN + ".");
+    }
+
+    // ================================================================================
+    // info
+    // ================================================================================
+    @AsCommand(description = "Shows information about the specified arena.")
+    public void info(CommandSender sender, Arena arena) {
+        StringWriter writer = new StringWriter();
+        new Yaml().dump(arena.serialize(), writer);
+        sender.sendMessage(GREEN + writer.toString());
     }
 }

@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.command.functional;
 
+import com.google.common.base.Defaults;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -7,13 +8,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.command.PermissionCompleter;
 import xyz.upperlevel.uppercore.command.SenderType;
-import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
-import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
+import xyz.upperlevel.uppercore.command.functional.parameter.ParameterHandler;
+import xyz.upperlevel.uppercore.command.functional.parameter.ParameterParseException;
 
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FunctionalParameter {
     @Getter
@@ -26,7 +30,7 @@ public class FunctionalParameter {
 
     @Getter
     @NonNull
-    private final ArgumentParser parser;
+    private final Class<?> type;
 
     /**
      * The name of the parameter, won't be null.
@@ -69,40 +73,44 @@ public class FunctionalParameter {
     @Setter
     private SenderType senderType;
 
-    public FunctionalParameter(FunctionalCommand command, Parameter original, ArgumentParser parser) {
+    public FunctionalParameter(FunctionalCommand command, Parameter original, Class<?> type) {
         this.command = command;
         this.original = original;
-        this.parser = parser;
+        this.type = type;
 
-        this.name = original.getName().toLowerCase();
+        this.name = original.getName();
 
         load(original);
     }
 
     private void load(Parameter parameter) {
-        WithName name = parameter.getAnnotation(WithName.class);
-        if (name != null) {
-            this.name = name.value();
+        WithName nameAnn = parameter.getAnnotation(WithName.class);
+        if (nameAnn != null) {
+            name = nameAnn.value();
         }
 
-        WithOptional optional = parameter.getAnnotation(WithOptional.class);
-        if (optional != null) {
-            this.optional = true;
-            if (optional.value().length >= parser.getConsumedCount()) {
-                try {
-                    this.defaultValue = parser.parse(Arrays.asList(optional.value()));
-                } catch (ArgumentParseException e) {
-                    throw new IllegalArgumentException("Optional's default value must be parsable to the parameter type. Invalid '" + Arrays.toString(optional.value()) + "' for type: " + original.getType().getSimpleName(), e);
-                }
-            } else if (parameter.getType().isPrimitive()) {
-                throw new IllegalArgumentException("Optional value cannot be primitive (unless given a default value)");
+        WithOptional wOptional = parameter.getAnnotation(WithOptional.class);
+        if (wOptional != null) {
+            optional = true;
+
+            List<String> defValArgs = Arrays.asList(wOptional.value());
+            try {
+                defaultValue = ParameterHandler.parse(type, new LinkedList<>(defValArgs));
+            } catch (ParameterParseException e) {
+                if (!defValArgs.isEmpty())
+                    Uppercore.logger().severe(String.format(
+                            "%s default value failed to parse for command: %s",
+                            getUsage(null, false),
+                            command.getFullName()
+                    ));
+                defaultValue = Defaults.defaultValue(type);
             }
         }
 
-        WithPermission permission = parameter.getAnnotation(WithPermission.class);
-        if (permission != null) {
-            this.permissionPortion = new Permission(permission.value(), permission.description(), permission.user().get());
-            this.permissionCompleter = permission.completer();
+        WithPermission permissionAnn = parameter.getAnnotation(WithPermission.class);
+        if (permissionAnn != null) {
+            permissionPortion = new Permission(permissionAnn.value(), permissionAnn.description(), permissionAnn.user().get());
+            permissionCompleter = permissionAnn.completer();
         }
     }
 
@@ -132,7 +140,7 @@ public class FunctionalParameter {
         if (optional) {
             String tmp = "";
             if (colored) {
-                tmp += hasPermission(sender) ? ChatColor.GREEN : ChatColor.RED;
+                tmp += (sender != null && hasPermission(sender)) ? ChatColor.GREEN : ChatColor.RED;
             }
             tmp += "[" + name;
             if (defaultValue != null) {

@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
+import xyz.upperlevel.uppercore.util.Dbg;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -148,47 +149,43 @@ public class NodeCommand extends Command {
     }
 
     @Override
-    public boolean call(CommandSender sender, List<String> args) {
+    public boolean call(CommandSender sender, Queue<String> args) {
         super.call(sender, args);
         if (args.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "Not enough arguments. You must specify the command name.");
             return false;
         }
-        Command cmd = getCommand(args.get(0));
+        String subCmdName = args.poll();
+        Command cmd = getCommand(subCmdName);
         if (cmd == null || !sender.hasPermission(cmd.getPermission())) {
-            sender.sendMessage(ChatColor.RED + "No command found for: " + args.get(0));
+            sender.sendMessage(ChatColor.RED + "No command found for: " + subCmdName);
             return false;
         }
-        cmd.call(sender, args.subList(1, args.size()));
+        cmd.call(sender, args);
         return true;
     }
 
     @Override
-    protected boolean onCall(CommandSender sender, List<String> args) {
-        return true;
+    protected boolean onCall(CommandSender sender, Queue<String> args) {
+        return false;
     }
 
     @Override
-    public List<String> suggest(CommandSender sender, List<String> arguments) {
-        if (arguments.isEmpty()) { // if there is no argument we list all runnable commands
-            return commands
-                    .stream()
-                    .filter(command -> sender.hasPermission(command.getPermission()))
-                    .map(Command::getName)
-                    .collect(Collectors.toList());
-        } else if (arguments.size() > 1) { // if there are more than one argument we get sub command and ask a suggestion
-            Command command = getCommand(arguments.get(0));
-            if (command != null) {
-                return command.suggest(sender, arguments.subList(1, arguments.size()));
+    public List<String> suggest(CommandSender sender, Queue<String> args) {
+        Dbg.pf("%s suggesting for: %s", getFullName(), args.toString());
+        if (args.size() > 1) {
+            Command subCmd = getCommand(args.poll());
+            if (subCmd != null) {
+                return subCmd.suggest(sender, args);
             }
             return Collections.emptyList();
-        } else { // if there is just one argument we need to get the commands that starts with it
-            String argument = arguments.get(0);
+        } else {
+            String arg = args.isEmpty() ? "" : args.poll();
             return commands
                     .stream()
                     .filter(command -> sender.hasPermission(command.getPermission()))
                     .map(Command::getName)
-                    .filter(name -> StringUtil.startsWithIgnoreCase(name, argument))
+                    .filter(name -> StringUtil.startsWithIgnoreCase(name, arg))
                     .collect(Collectors.toList());
         }
     }

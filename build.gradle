@@ -173,5 +173,7 @@ sourceSets {
 }
 
 compileJava {
+    options.compilerArgs += ['-parameters']
+
     dependsOn generateUppercoreInfo
 }

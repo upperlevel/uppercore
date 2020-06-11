@@ -1,4 +1,4 @@
-package xyz.upperlevel.uppercore.arena.events;
+package xyz.upperlevel.uppercore.arena.event;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 
 import java.lang.reflect.Field;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,13 +33,13 @@ public final class NativeCommandUtil {
         return new BukkitCommand(command.getName(), command.getDescription(), command.getUsage(null, false), new ArrayList<>(command.getAliases())) {
             @Override
             public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-                command.call(sender, Arrays.asList(args));
+                command.call(sender, new ArrayDeque<>(Arrays.asList(args)));
                 return true;
             }
 
             @Override
             public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-                return command.suggest(sender, Arrays.asList(args));
+                return command.suggest(sender, new ArrayDeque<>(Arrays.asList(args)));
             }
         };
     }

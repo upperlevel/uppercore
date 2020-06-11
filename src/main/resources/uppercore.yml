@@ -70,19 +70,19 @@ commands:
   # *** HELP COMMAND ***
 
   commands-per-page: 9
-  show-inaccessible-commands: true
+  show-inaccessible-commands: false
 
   # %node_cmd%  - helped node command
   # %page%      - current page
   # %max_page%  - max page
-  help-header: "&eHelp for command &6%node_cmd% &e[%page%/%max_page%]:"
+  help-header: "&aHelp for command &e%node_cmd% &a[&e%page%&a/%max_page%]:"
   help-footer: []
 
   # %node_cmd%    - node command owning current
   # %cmd%         - name of the command
   # %cmd_usage%   - parameters for command
   # %cmd_desc%    - brief description for the command
-  help-line: "&6%cmd% %cmd_usage%   &7%cmd_desc%"
+  help-line: "&7- &6%cmd%%cmd_usage% &7%cmd_desc%"
 
 # ================================================================================================
 # Scripts

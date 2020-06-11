@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -156,7 +157,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         }
 
         @Override
-        protected boolean onCall(CommandSender sender, List<String> args) {
+        protected boolean onCall(CommandSender sender, Queue<String> args) {
             if(getLastState() == VersionState.UPDATE_AVAILABLE || (needsRefresh() && check() == VersionState.UPDATE_AVAILABLE)) {
                 update(sender);
             } else {
@@ -178,7 +179,7 @@ public abstract class DownloadableUpdateChecker extends UpdateChecker {
         }
 
         @Override
-        public List<String> suggest(CommandSender sender, List<String> arguments) {
+        public List<String> suggest(CommandSender sender, Queue<String> args) {
             return Collections.emptyList(); // No parameters = no suggestions
         }
     }

@@ -9,12 +9,12 @@ import xyz.upperlevel.uppercore.command.Command;
 import xyz.upperlevel.uppercore.command.CommandContext;
 import xyz.upperlevel.uppercore.command.NodeCommand;
 import xyz.upperlevel.uppercore.command.SenderType;
-import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParseException;
-import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParser;
-import xyz.upperlevel.uppercore.command.functional.parser.ArgumentParserManager;
+import xyz.upperlevel.uppercore.command.functional.parameter.ParameterHandler;
+import xyz.upperlevel.uppercore.command.functional.parameter.ParameterParseException;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
+import xyz.upperlevel.uppercore.util.Dbg;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -88,12 +88,7 @@ public class FunctionalCommand extends Command {
         this.parameters = new FunctionalParameter[function.getParameterCount() - 1];
         for (int i = 0; i < function.getParameterCount() - 1; i++) {
             Parameter parameter = function.getParameters()[i + 1];
-            ArgumentParser parser = ArgumentParserManager.get(parameter.getType());
-            if (parser != null) {
-                this.parameters[i] = new FunctionalParameter(this, parameter, parser);
-            } else {
-                throw new IllegalArgumentException("'" + function.getName() + "' command function unparsable type: " + parameter.getType().getName());
-            }
+            this.parameters[i] = new FunctionalParameter(this, parameter, parameter.getType());
         }
     }
 
@@ -140,7 +135,7 @@ public class FunctionalCommand extends Command {
     }
 
     @Override
-    protected boolean onCall(CommandSender sender, List<String> args) {
+    protected boolean onCall(CommandSender sender, Queue<String> args) {
         List<Object> objects = new ArrayList<>();
 
         Class<?> type = firstParameter.getType();
@@ -156,10 +151,8 @@ public class FunctionalCommand extends Command {
             );
         }
 
-        int currArgIndex = 0;
         for (int i = 0; i < parameters.length; i++) {
             FunctionalParameter parameter = parameters[i];
-            ArgumentParser parser = parameter.getParser();
             if (!parameter.hasPermission(sender)) {
                 if (parameter.isOptional()) { // if the parameter is optional we add its default value
                     objects.add(parameter.getDefaultValue());
@@ -172,7 +165,7 @@ public class FunctionalCommand extends Command {
                     return false;
                 }
             } else { // if the sender has enough permissions to execute this parameter
-                if (currArgIndex >= args.size()) { // if we already used all of our arguments
+                if (args.isEmpty()) { // if we already used all of our arguments
                     if (parameter.isOptional()) {
                         // if the parameter is optional
                         objects.add(parameter.getDefaultValue()); // we can use its default value
@@ -184,26 +177,22 @@ public class FunctionalCommand extends Command {
                         return false;
                     }
                 } else { // otherwise, if we have other arguments to use
-                    int consumed = parser.getConsumedCount();
-                    if (consumed < 0) {
-                        consumed = args.size() - currArgIndex;
-                    }
                     try {
-                        objects.add(parser.parse(args.subList(currArgIndex, currArgIndex + consumed)));
-                    } catch (ArgumentParseException e) {
+                        objects.add(ParameterHandler.parse(parameter.getType(), args));
+                    } catch (ParameterParseException e) {
                         invalidArgumentTypeMessage.send(sender, PlaceholderRegistry.create()
                                 .set("parameter", parameter.getName())
                                 .set("parameter_type", parameter.getOriginal().getType().getSimpleName().toLowerCase(Locale.ENGLISH))
                                 .set("parameter_index", i)
-                                .set("wrong_argument", StringUtils.join(e.getArguments(), " "))
+                                .set("wrong_argument", StringUtils.join(e.getArgs(), " "))
                         );
                         return false;
                     }
-                    currArgIndex += consumed;
                 }
             }
         }
         try {
+            Dbg.pf("Invoking %s%s", function.getName(), objects.subList(1, objects.size()).toString());
             function.invoke(residence, objects.toArray());
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(residence.getClass().getSimpleName() + "." + function.getName() + " isn't reachable.");
@@ -214,23 +203,19 @@ public class FunctionalCommand extends Command {
     }
 
     @Override
-    public List<String> suggest(CommandSender sender, List<String> arguments) {
-        int start = 0;
-        for (FunctionalParameter parameter : parameters) {
-            if (!parameter.hasPermission(sender)) {// if the sender has not enough permissions for this parameter
-                return Collections.emptyList(); // we does not suggest nothing to him
+    public List<String> suggest(CommandSender sender, Queue<String> args) {
+        if (args.isEmpty()) {
+            return Collections.emptyList();
+        }
+        for (FunctionalParameter param : parameters) {
+            if (!param.hasPermission(sender)) {
+                return Collections.emptyList();
             }
-            ArgumentParser solver = parameter.getParser();
-            if (start >= arguments.size()) {
-                return solver.suggest(Collections.emptyList());
-            } else {
-                int consumed = solver.getConsumedCount();
-                if (consumed < 0 || consumed >= arguments.size() + start) { // if the current consumed count is unlimited or exceed all of our arguments
-                    return solver.suggest(arguments.subList(start, arguments.size())); // we are ready to suggest!
-                } else {
-                    start += consumed; // otherwise we go on until we reach the last parameter
-                }
+            List<String> suggestions = ParameterHandler.suggest(param.getType(), args);
+            if (!suggestions.isEmpty()) {
+                return suggestions;
             }
+            ParameterHandler.skip(param.getType(), args);
         }
         return Collections.emptyList();
     }

@@ -16,7 +16,7 @@ public class HelpCommand {
     private static Message footerMessage;
     private static Message lineMessage;
 
-    @AsCommand
+    @AsCommand(description = "Shows you info about the current command.")
     public void help(CommandContext context, @WithName("page") @WithOptional("1") int page) {
         CommandSender sender = context.sender();
         NodeCommand parent = context.command().getParent();
@@ -35,7 +35,7 @@ public class HelpCommand {
             lineMessage.send(sender, PlaceholderRegistry.create()
                     .set("node_cmd", cmd.getFullName())
                     .set("cmd", cmd.getName())
-                    .set("cmd_usage", cmd.getUsage(sender, false))
+                    .set("cmd_usage", " " + cmd.getUsage(sender, false))
                     .set("cmd_desc", cmd.getDescription()));
         }
         footerMessage.send(sender, frame);
