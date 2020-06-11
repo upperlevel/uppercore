@@ -24,7 +24,7 @@ public class NodeCommand extends Command {
     public NodeCommand(String name) {
         super(name);
 
-        everyPermission("*", PermissionUser.AVAILABLE);
+        everyPermission("*", PermissionUser.OP);
 
         FunctionalCommand.inject(this, new HelpCommand());
     }

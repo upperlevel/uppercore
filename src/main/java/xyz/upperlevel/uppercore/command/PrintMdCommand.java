@@ -22,15 +22,29 @@ public class PrintMdCommand {
         this.rootCmd = rootCmd;
     }
 
+    private static String b(String str) {
+        if (!str.isEmpty()) {
+            str = String.format("**%s**", str);
+        }
+        return str;
+    }
+
+    private static String code(String str) {
+        if (!str.isEmpty()) {
+            str = String.format("`%s`", str);
+        }
+        return str;
+    }
+
     private void printMd0(Writer writer, List<Command> commands) throws IOException {
         for (Command command : commands) {
             writer.write(String.format(
                     "%s | %s | %s | %s | %s\n",
                     command.getFullName(),
-                    command.getUsage(null, false),
+                    code(command.getUsage(null, false)),
                     command.getPermission().getName(),
-                    command.getPermission().getDefault().name(),
-                    command.getSenderType().name()
+                    code(command.getPermission().getDefault().name()),
+                    code(command.getSenderType().name())
             ));
 
             if (command instanceof NodeCommand)
@@ -39,8 +53,8 @@ public class PrintMdCommand {
     }
 
     public void printMd(Writer writer, List<Command> commands) throws IOException {
-        writer.write("Name | Usage | Permission | Permission default | Sender type\n");
-        writer.write("---- | ----- | ---------- | ------------------ | -----------\n");
+        writer.write("Command | Usage | Permission | Permission default | Sender type\n");
+        writer.write("------- | ----- | ---------- | ------------------ | -----------\n");
 
         printMd0(writer, commands);
 
@@ -51,7 +65,7 @@ public class PrintMdCommand {
             description = "Prints a .md file containing the registered commands tree."
     )
     @WithPermission
-    public void printCommandsMd(CommandSender sender) {
+    public void printMd(CommandSender sender) {
         File f = new File(Uppercore.getPlugin().getDataFolder(), "commands.md");
         try {
             FileWriter writer = new FileWriter(f);

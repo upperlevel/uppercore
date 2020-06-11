@@ -5,10 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
-import xyz.upperlevel.uppercore.command.Command;
-import xyz.upperlevel.uppercore.command.CommandContext;
-import xyz.upperlevel.uppercore.command.NodeCommand;
-import xyz.upperlevel.uppercore.command.SenderType;
+import xyz.upperlevel.uppercore.command.*;
 import xyz.upperlevel.uppercore.command.functional.parameter.ParameterHandler;
 import xyz.upperlevel.uppercore.command.functional.parameter.ParameterParseException;
 import xyz.upperlevel.uppercore.config.Config;
@@ -64,14 +61,14 @@ public class FunctionalCommand extends Command {
         setAliases(new HashSet<>(Arrays.asList(command.aliases())));
         setSenderType(command.sender());
 
-        WithPermission permission = function.getAnnotation(WithPermission.class);
-        if (permission != null) {
-            setPermissionPortion(new Permission(
-                    permission.value().isEmpty() ? getName() : permission.value(),
-                    permission.description(),
-                    permission.user().get())
-            );
-            setPermissionCompleter(permission.completer());
+        WithPermission wPerm = function.getAnnotation(WithPermission.class);
+        if (wPerm == null) { // If permission is null always put the most restrictive permission for security reasons.
+            setPermissionPortion(new Permission(getName(), "", PermissionUser.OP.get()));
+            setPermissionCompleter(PermissionCompleter.INHERIT);
+        } else {
+            String permName = wPerm.value().isEmpty() ? getName() : wPerm.value();
+            setPermissionPortion(new Permission(permName, wPerm.description(), wPerm.user().get()));
+            setPermissionCompleter(wPerm.completer());
         }
 
         if (function.getParameterCount() == 0) {

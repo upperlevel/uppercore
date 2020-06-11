@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.arena.Arena;
 import xyz.upperlevel.uppercore.arena.ArenaManager;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.command.functional.WithOptional;
+import xyz.upperlevel.uppercore.command.functional.WithPermission;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,7 +31,10 @@ public class ArenaCommands {
     // arena create
     // ================================================================================
 
-    @AsCommand(description = "Creates a new arena.")
+    @AsCommand(
+            description = "Creates a new arena."
+    )
+    @WithPermission
     public void create(Player player, String id) {
         if (ArenaManager.get().get(id) != null) {
             player.sendMessage(RED + "Arena already exists for: " + id);
