@@ -41,54 +41,6 @@ A common gateway for DB access. This API permits you to write DB-agnostic code u
 ##### update-api
 An utility made to check whether there's an updated version of the plugin on Spigot and, in case, notify the plugin users.
 
-## Installation
+## Docs
 
-Currently Uppercore isn't published on Maven central repository. Thus, you have to download this repository and publish Uppercore to Maven local, that is the Maven's repository that lies offline on your computer.
-
-Requirements:
-* git
-* gradle
-
-Clone the repository (or just download and extract the ZIP) wherever you like using:
-```
-git clone https://github.com/upperlevel/uppercore.git
-```
-
-With a terminal, step inside the Uppercore folder:
-```
-cd uppercore
-```
-
-Publish Uppercore to Maven local using:
-```
-gradle publishToMavenLocal
-```
-
-## Depending
-If your plugin project's dependency system is based on Gradle, these are the lines that must be present within your `build.gradle` in order to use Uppercore:
-```groovy
-repositories {
-    mavenLocal()
-}
-
-dependencies {
-    implementation group: 'xyz.upperlevel.uppercore', name: 'uppercore', version: '2.0'
-}
-
-shadowJar {
-    relocate 'xyz.upperlevel.uppercore', '<your-project-package-name>.uppercore'
-}
-```
-
-Basically, Uppercore is fetched in the Maven local repository (so it must be already installed) and is compiled with the dependant plugin code. To avoid issues its code is relocated.
-
-## Get started
-Within your plugin's entry class, insert the following line inside the `onEnable()` method.
-```java
-@Override
-public void onEnable() {
-     Uppercore.hook(this, BSTATS_ID);
-}
-```
-Where `BSTATS_ID` is the ID of the plugin in [bstats.org](https://bstats.org), a metrics platform.
-If not supported, just set it to 0.
+Don't hesitate to learn how to use Uppercore, [go to the wiki](https://github.com/upperlevel/uppercore/wiki)!
