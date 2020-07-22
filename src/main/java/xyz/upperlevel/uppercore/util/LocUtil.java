@@ -14,6 +14,8 @@ public final class LocUtil {
     }
 
     public static Map<String, Object> serialize(Location location) {
+        if (location == null)
+            return null;
         Map<String, Object> data = new HashMap<>();
         data.put("world", location.getWorld().getName());
         data.put("x", location.getX());

@@ -173,12 +173,14 @@ public class Arena {
      * Saves the arena world and writes data to arena's yml file.
      */
     public void save() throws IOException {
+        world.save();
+
         ArenaManager.ARENAS_FOLDER.mkdirs();
         File file = new File(ArenaManager.ARENAS_FOLDER, id + ".yml");
         file.createNewFile();
 
         new Yaml().dump(serialize(), new FileWriter(file));
-        Dbg.pf("[%s] Saved to: %s", id, file.getPath().toString());
+        Dbg.pf("[%s] Saved to: %s", id, file.getPath());
     }
 
     /**

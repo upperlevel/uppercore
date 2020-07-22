@@ -48,10 +48,8 @@ public class ArenaCommands {
         player.teleport(to);
         player.setFlying(false);
 
-        player.sendMessage(GREEN + "Arena created: " + id);
-        player.sendMessage(GRAY + "Paste your map's schematic here, or build it from scratch!");
-        player.sendMessage(GRAY + "Ensure you've set all arena parameters with: " + YELLOW + "/bw arena check");
-        player.sendMessage(GRAY + "When you're done type: " + YELLOW + "/bw arena save");
+        player.sendMessage(GREEN + "Arena created successfully: " + id);
+        player.sendMessage(GRAY + "The arena world generated is called: " + arena.getWorld().getName());
     }
 
     // ================================================================================
