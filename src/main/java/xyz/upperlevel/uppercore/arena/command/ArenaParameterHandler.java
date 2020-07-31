@@ -3,12 +3,8 @@ package xyz.upperlevel.uppercore.arena.command;
 import xyz.upperlevel.uppercore.arena.Arena;
 import xyz.upperlevel.uppercore.arena.ArenaManager;
 import xyz.upperlevel.uppercore.command.functional.parameter.ParameterHandler;
-import xyz.upperlevel.uppercore.command.functional.parameter.ParameterParseException;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
 import java.util.stream.Collectors;
 
 public final class ArenaParameterHandler {
@@ -28,9 +24,10 @@ public final class ArenaParameterHandler {
                 args -> {
                     if (args.remaining() > 1)
                         return Collections.emptyList();
+                    String arenaName = args.take();
                     return ArenaManager.get().getArenas()
                             .stream()
-                            .filter(arena -> arena.getId().startsWith(args.take()))
+                            .filter(arena -> arena.getId().startsWith(arenaName))
                             .map(Arena::getId)
                             .collect(Collectors.toList());
                 });
