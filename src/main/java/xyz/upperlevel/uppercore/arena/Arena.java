@@ -1,5 +1,13 @@
 package xyz.upperlevel.uppercore.arena;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -31,6 +39,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Locale.ENGLISH;
+import static xyz.upperlevel.uppercore.Uppercore.getPlugin;
 
 public class Arena {
     public static final PlayerRestorer playerRestorer = new PlayerRestorer();
@@ -68,6 +77,8 @@ public class Arena {
 
     private final Set<Sign> joinSigns = new HashSet<>();
 
+    private PacketAdapter playerListHandler;
+
     public Arena(String id) {
         this.id = id.toLowerCase(ENGLISH);
         this.signature = getSignature(id);
@@ -80,6 +91,8 @@ public class Arena {
             throw new IllegalStateException("Arena's world isn't loaded, or doesn't exist: " + signature);
         }
         this.placeholders = createPlaceholders();
+
+        handlePlayerList();
     }
 
     @ConfigConstructor
@@ -118,9 +131,7 @@ public class Arena {
                 .set("players", () -> Integer.toString(players.size()));
     }
 
-    // ================================================================================================
-    // Join signs
-    // ================================================================================================
+    // ------------------------------------------------------------------------------------------------ Join signs
 
     public void updateJoinSigns(Collection<Sign> joinSigns) {
         JoinSignUpdateEvent event = new JoinSignUpdateEvent(this, joinSigns);
@@ -156,6 +167,36 @@ public class Arena {
     public Collection<Sign> getJoinSigns() {
         return Collections.unmodifiableSet(joinSigns);
     }
+
+    // ------------------------------------------------------------------------------------------------ Player list
+
+    public void handlePlayerList() {
+        this.playerListHandler = new PacketAdapter(getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                if (!players.contains(event.getPlayer()))
+                    return; // The player hasn't join the arena, do not interfere with player list.
+                try {
+                    PacketContainer packet = event.getPacket();
+
+                    List<PlayerInfoData> result = packet.getPlayerInfoDataLists().read(0)
+                            .stream()
+                            .filter(info -> players.stream()
+                                    // If the tab player is contained in the arena then his name can be displayed in tab.
+                                    .anyMatch(player -> player.getName().equals(info.getProfile().getName())))
+                            .collect(Collectors.toList());
+
+                    packet.getPlayerInfoDataLists().write(0, result);
+                } catch (FieldAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(this.playerListHandler);
+    }
+
+    // ------------------------------------------------------------------------------------------------ Serialization
 
     public boolean isReady() {
         return lobby != null;
@@ -242,10 +283,11 @@ public class Arena {
         unload();
         WorldUtil.deleteWorld(world);
         new File(ArenaManager.ARENAS_FOLDER, id + ".yml").delete();
+        ProtocolLibrary.getProtocolManager().removePacketListener(playerListHandler);
     }
 
     public static String getSignature(String id) {
-        return Uppercore.getPlugin().getName() + "." + id.toLowerCase(ENGLISH);
+        return getPlugin().getName() + "." + id.toLowerCase(ENGLISH);
     }
 
     public static <A extends Arena> A create(Class<A> arenaClass, String id) {
