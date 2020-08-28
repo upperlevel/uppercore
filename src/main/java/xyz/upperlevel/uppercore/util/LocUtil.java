@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import xyz.upperlevel.uppercore.config.Config;
 
 import java.util.HashMap;
@@ -25,8 +26,13 @@ public final class LocUtil {
     }
 
     public static Location deserialize(Config section) {
+        String worldName = section.getString("world");
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            throw new IllegalArgumentException("World not found: " + worldName);
+        }
         return new Location(
-                Bukkit.getWorld(section.getString("world")),
+                world,
                 section.getDouble("x"),
                 section.getDouble("y"),
                 section.getDouble("z"),

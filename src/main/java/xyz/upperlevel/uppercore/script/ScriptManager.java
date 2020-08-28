@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore.script;
 
 import lombok.Getter;
-import org.bstats.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ScriptManager extends Manager<ScriptId> {
 
@@ -98,24 +97,6 @@ public class ScriptManager extends Manager<ScriptId> {
 
     public void register(Plugin plugin, String id, Script script) {
         register(new ScriptId(plugin, id, script));
-    }
-
-    public void setupMetrics(Metrics metrics) {
-        metrics.addCustomChart(new Metrics.AdvancedPie("script_engines_used") {
-
-            @Override
-            public HashMap<String, Integer> getValues(HashMap<String, Integer> map) {
-                Map<String, Long> counts = get()
-                        .stream()
-                        .collect(
-                                Collectors.groupingBy((ScriptId s) -> getEngineName(s.get().getEngine()),
-                                        Collectors.counting())
-                        );
-                for (Map.Entry<String, Long> e : counts.entrySet())
-                    map.put(e.getKey(), Math.toIntExact(e.getValue()));
-                return map;
-            }
-        });
     }
 
     public static ScriptRegistry subscribe(Plugin plugin) {

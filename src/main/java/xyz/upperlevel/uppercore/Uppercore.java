@@ -1,7 +1,7 @@
 package xyz.upperlevel.uppercore;
 
 import lombok.Getter;
-import org.bstats.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.upperlevel.uppercore.board.BoardManager;
 import xyz.upperlevel.uppercore.command.argument.ArgumentParserSystem;
@@ -50,7 +50,7 @@ public class Uppercore extends JavaPlugin {
             Connector.setupDir();
 
             //Metrics setup
-            metrics = new Metrics(this);
+            metrics = new Metrics(this, 1537);
             //UpdateChecker setup
             updater = new SpigetUpdateChecker(this, SPIGOT_ID, SPIGET_ID);
 
@@ -74,10 +74,6 @@ public class Uppercore extends JavaPlugin {
             if (!scriptsConfigFile.exists())
                 saveResource(SCRIPT_CONFIG, false);
             scripts.load(new File(getDataFolder(), "engines"), scriptsConfigFile);
-
-            //Metrics custom data setup
-            scripts.setupMetrics(metrics);
-
 
             //Gui setup
             new UppercoreCommand().subscribe();
