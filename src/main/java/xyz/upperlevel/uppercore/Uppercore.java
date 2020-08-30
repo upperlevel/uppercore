@@ -44,6 +44,8 @@ public class Uppercore {
 
     private Metrics metrics;
 
+    private boolean debugMode = false;
+
     private static void setupCommands() {
         PrimitiveParameterHandler.register();
         BukkitParameterHandler.register();
@@ -99,6 +101,8 @@ public class Uppercore {
         // ScriptManager setup
         scripts.load(new File(plugin.getDataFolder(), "engines"), cfg.getConfigRequired("scripts"));
 
+        this.debugMode = cfg.getBool("debug-mode");
+
         // Metrics custom data setup
         // TODO: custom data
         // TODO: check what plugins use uppercore?
@@ -135,6 +139,10 @@ public class Uppercore {
 
     public static Uppercore get() {
         return instance;
+    }
+
+    public static boolean isDebugMode() {
+        return instance.debugMode;
     }
 
     public static void overrideInstance(Uppercore instance) {

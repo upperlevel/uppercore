@@ -2,8 +2,9 @@ package xyz.upperlevel.uppercore.util;
 
 import xyz.upperlevel.uppercore.Uppercore;
 
-public class Dbg {
-    private static boolean active = true;
+public final class Dbg {
+    private Dbg() {
+    }
 
     private static Class<?> getCaller() {
         try {
@@ -14,7 +15,7 @@ public class Dbg {
     }
 
     private static void p0(String message, Class<?> caller) {
-        if (active) {
+        if (Uppercore.isDebugMode()) {
             String callerName = caller != null ? caller.getSimpleName() : "?";
             Uppercore.logger().info(String.format("[%s] %s", callerName, message));
         }
@@ -37,9 +38,5 @@ public class Dbg {
      */
     public static void pf(String format, Object... args) {
         p0(String.format(format, args), getCaller());
-    }
-
-    public static void loadConfig() {
-        // TODO load debug-mode active, currently always true
     }
 }
