@@ -5,19 +5,20 @@ import com.google.common.io.ByteStreams;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.util.Dbg;
+import xyz.upperlevel.uppercore.util.LocUtil;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public interface OnQuitHandler {
     void handle(Player player);
 
     class Local implements OnQuitHandler {
-        public static Location hub;
+        private static File hubFile;
+        private static Location hub;
 
         @Override
         public void handle(Player player) {
@@ -25,8 +26,18 @@ public interface OnQuitHandler {
             player.teleport(hub);
         }
 
-        public static void loadConfig(Config cfg) {
-            hub = cfg.getLocation("hub-location");
+        public static void setHub(Location hub) {
+            Local.hub = hub;
+            try {
+                new Yaml().dump(Local.hub, new FileWriter(hubFile));
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        public static void loadConfig() {
+            hubFile = new File(Uppercore.getPlugin().getDataFolder(), "hub.yml");
+            hub = LocUtil.deserialize(Config.fromYaml(hubFile));
         }
     }
 

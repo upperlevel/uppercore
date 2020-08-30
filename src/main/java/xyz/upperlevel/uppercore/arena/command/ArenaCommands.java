@@ -8,12 +8,16 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.Yaml;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.Arena;
 import xyz.upperlevel.uppercore.arena.ArenaManager;
+import xyz.upperlevel.uppercore.arena.OnQuitHandler;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.command.functional.WithOptional;
 import xyz.upperlevel.uppercore.command.functional.WithPermission;
+import xyz.upperlevel.uppercore.util.LocUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -183,10 +187,21 @@ public class ArenaCommands {
     // ================================================================================
     // info
     // ================================================================================
+
     @AsCommand(description = "Shows information about the specified arena.")
     public void info(CommandSender sender, Arena arena) {
         StringWriter writer = new StringWriter();
         new Yaml().dump(arena.serialize(), writer);
         sender.sendMessage(GREEN + writer.toString());
+    }
+
+    // ================================================================================
+    // sethub
+    // ================================================================================
+
+    @AsCommand(description = "Shows information about the specified arena.")
+    public void setHub(Player player) {
+        OnQuitHandler.Local.setHub(player.getLocation());
+        player.sendMessage(GREEN + "Hub set to your current position.");
     }
 }

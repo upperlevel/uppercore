@@ -18,18 +18,7 @@ arenas:
   mode: 'local'
 
   # *** LOCAL ONLY ***
-
-  # The location of the lobby (or hub), the place where players are teleported when the game ends.
-  # Usually this is also the place where you put join signs.
-  # TODO: make it configurable in-game through a command.
-  hub-location: {
-    world: world,
-    x: 0,
-    y: 100,
-    z: 0,
-    pitch: 0, # The head rotation on the Y axis.
-    yaw: 0    # The head rotation on the XZ axes.
-  }
+  # In local mode, when the game ends players are teleported to the hub location.
 
   # *** BUNGEE ONLY ***
 
