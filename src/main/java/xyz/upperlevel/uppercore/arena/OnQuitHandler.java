@@ -22,6 +22,10 @@ public interface OnQuitHandler {
 
         @Override
         public void handle(Player player) {
+            if (hub == null) {
+                Uppercore.logger().severe(String.format("Couldn't teleport %s to local hub because it hasn't been set yet.", player.getName()));
+                return;
+            }
             Dbg.pf("Teleporting %s to hub location", player.getName());
             player.teleport(hub);
         }
@@ -37,6 +41,10 @@ public interface OnQuitHandler {
 
         public static void loadConfig() {
             hubFile = new File(Uppercore.getPlugin().getDataFolder(), "hub.yml");
+            if (!hubFile.exists()) {
+                Uppercore.logger().warning("hub.yml file hasn't been found while using local mode.");
+                return;
+            }
             hub = LocUtil.deserialize(Config.fromYaml(hubFile));
         }
     }
