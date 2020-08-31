@@ -204,4 +204,13 @@ public class ArenaCommands {
         OnQuitHandler.Local.setHub(player.getLocation());
         player.sendMessage(GREEN + "Hub set to your current position.");
     }
+
+    // ================================================================================
+    // joingui
+    // ================================================================================
+
+    @AsCommand(description = "Shows a list of arenas that can be join if clicked.")
+    public void joinGui(Player player) {
+        ArenaManager.get().getJoinGui().show(player);
+    }
 }

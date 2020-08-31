@@ -34,6 +34,9 @@ public class Uppercore {
     @Getter
     private Logger coreLogger;
 
+    @Getter
+    private Config config;
+
     private Registry registryRoot = Registry.root();
     private GuiManager guis;
     private HotbarManager hotbars;
@@ -77,14 +80,14 @@ public class Uppercore {
 
         // uppercore.yml
         plugin.saveResource("uppercore.yml", false);
-        Config cfg = Config.fromYaml(new File(plugin.getDataFolder(), "uppercore.yml"));
+        config = Config.fromYaml(new File(plugin.getDataFolder(), "uppercore.yml"));
 
-        Config arenaCfg = cfg.getConfigRequired("arenas");
+        Config arenaCfg = config.getConfigRequired("arenas");
         Arena.loadConfig(arenaCfg);
         OnQuitHandler.Local.loadConfig();
         OnQuitHandler.Bungee.loadConfig(arenaCfg);
 
-        Config commandConfig = cfg.getConfigRequired("commands");
+        Config commandConfig = config.getConfigRequired("commands");
         Command.configure(commandConfig);
         HelpCommand.configure(commandConfig);
         FunctionalCommand.configure(commandConfig);
@@ -99,9 +102,9 @@ public class Uppercore {
         storages = new StorageManager();
 
         // ScriptManager setup
-        scripts.load(new File(plugin.getDataFolder(), "engines"), cfg.getConfigRequired("scripts"));
+        scripts.load(new File(plugin.getDataFolder(), "engines"), config.getConfigRequired("scripts"));
 
-        this.debugMode = cfg.getBool("debug-mode");
+        this.debugMode = config.getBool("debug-mode");
 
         // Metrics custom data setup
         // TODO: custom data

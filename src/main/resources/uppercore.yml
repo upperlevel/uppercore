@@ -29,6 +29,14 @@ arenas:
   # The name of the server, must be the same present in the BungeeCord configuration.
   hub-server: 'quake-lobby'
 
+  join-gui:
+    enabled-arena:
+      type: 'GREEN_STAINED_GLASS_PANE'
+      name: '&a%arena_name%'
+    disabled-arena:
+      type: 'RED_STAINED_GLASS_PANE'
+      name: '&c%arena_name%'
+
 # A spigot bug re-clicks a slot twice if there is too much lag, this behaviour might cause the
 # lobby-leave hotbar button to press instantly after joining. This is a cooldown that prevents
 # the player from leaving the lobby before x milliseconds after joining.

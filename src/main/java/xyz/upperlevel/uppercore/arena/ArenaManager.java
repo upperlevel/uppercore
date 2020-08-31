@@ -14,6 +14,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.event.ArenaQuitEvent.ArenaQuitReason;
 import xyz.upperlevel.uppercore.config.Config;
+import xyz.upperlevel.uppercore.gui.ChestGui;
+import xyz.upperlevel.uppercore.gui.ConfigIcon;
+import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.util.WorldUtil;
 
 import java.io.File;
@@ -109,6 +112,23 @@ public class ArenaManager implements Listener {
             arena.unload();
         }
     }
+
+    public ChestGui getJoinGui() {
+        ChestGui.Builder builder = ChestGui.builder((byId.size() / 9 + 1) * 9);
+        int slot = 0;
+        for (Arena arena : byId.values()) {
+            Config cfg = Uppercore.get().getConfig();
+            UItem item = arena.isEnabled() ? cfg.getUItemRequired("arenas.join-gui.enabled") : cfg.getUItemRequired("arenas.join-gui.disabled");
+            item.setPlaceholders(arena.getPlaceholders());
+            builder.set(slot, ConfigIcon.of(item, player -> {
+                if (arena.isEnabled())
+                    arena.join(player);
+            }));
+            slot++;
+        }
+        return builder.build();
+    }
+
 
     //================================================================================
     // Events
