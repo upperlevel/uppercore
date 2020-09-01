@@ -16,7 +16,9 @@ import xyz.upperlevel.uppercore.arena.event.ArenaQuitEvent.ArenaQuitReason;
 import xyz.upperlevel.uppercore.config.Config;
 import xyz.upperlevel.uppercore.gui.ChestGui;
 import xyz.upperlevel.uppercore.gui.ConfigIcon;
+import xyz.upperlevel.uppercore.gui.Icon;
 import xyz.upperlevel.uppercore.itemstack.UItem;
+import xyz.upperlevel.uppercore.util.Dbg;
 import xyz.upperlevel.uppercore.util.WorldUtil;
 
 import java.io.File;
@@ -114,15 +116,21 @@ public class ArenaManager implements Listener {
     }
 
     public ChestGui getJoinGui() {
-        ChestGui.Builder builder = ChestGui.builder((byId.size() / 9 + 1) * 9);
+        Config cfg = Uppercore.get().getConfig().getConfig("arenas.join-gui");
+        ChestGui.Builder builder = ChestGui.builder((byId.size() / 9 + 1) * 9)
+                .title(cfg.getStringRequired("title"));
         int slot = 0;
         for (Arena arena : byId.values()) {
-            Config cfg = Uppercore.get().getConfig();
-            UItem item = arena.isEnabled() ? cfg.getUItemRequired("arenas.join-gui.enabled") : cfg.getUItemRequired("arenas.join-gui.disabled");
+            if (!arena.isEnabled()) // If the arena isn't enabled doesn't show it.
+                continue;
+            // Otherwise shows the arena in the join-gui inventory, green if playable, red if not.
+            UItem item = arena.isPlayable() ? cfg.getUItemRequired("playable-arena") : cfg.getUItemRequired("ingame-arena");
             item.setPlaceholders(arena.getPlaceholders());
             builder.set(slot, ConfigIcon.of(item, player -> {
-                if (arena.isEnabled())
-                    arena.join(player);
+                Arena old = ArenaManager.get().get(player);
+                if (old != null)
+                    old.quit(player, ArenaQuitReason.GAME_QUIT);
+                arena.join(player);
             }));
             slot++;
         }

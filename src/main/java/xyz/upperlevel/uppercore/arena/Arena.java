@@ -259,6 +259,17 @@ public class Arena {
         }
     }
 
+    /**
+     * Checks whether the arena is playable.
+     *
+     * If an arena is playable, a newly joined player will be
+     * able to play within the arena. If not playable he'll be
+     * kicked out or casted to spectator.
+     */
+    public boolean isPlayable() {
+        return true;
+    }
+
     public Phase getEntryPhase() {
         return null;
     }

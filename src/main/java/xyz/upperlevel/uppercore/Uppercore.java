@@ -35,7 +35,7 @@ public class Uppercore {
     private Logger coreLogger;
 
     @Getter
-    private Config config;
+    private final Config config;
 
     private Registry registryRoot = Registry.root();
     private GuiManager guis;
@@ -104,7 +104,7 @@ public class Uppercore {
         // ScriptManager setup
         scripts.load(new File(plugin.getDataFolder(), "engines"), config.getConfigRequired("scripts"));
 
-        this.debugMode = config.getBool("debug-mode");
+        debugMode = config.getBool("debug-mode");
 
         // Metrics custom data setup
         // TODO: custom data

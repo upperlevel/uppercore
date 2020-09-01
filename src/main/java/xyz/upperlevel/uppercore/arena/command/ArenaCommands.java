@@ -211,6 +211,6 @@ public class ArenaCommands {
 
     @AsCommand(description = "Shows a list of arenas that can be join if clicked.")
     public void joinGui(Player player) {
-        ArenaManager.get().getJoinGui().show(player);
+        Uppercore.guis().open(player, ArenaManager.get().getJoinGui());
     }
 }

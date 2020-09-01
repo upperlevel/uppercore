@@ -33,7 +33,7 @@ public interface OnQuitHandler {
         public static void setHub(Location hub) {
             Local.hub = hub;
             try {
-                new Yaml().dump(Local.hub, new FileWriter(hubFile));
+                new Yaml().dump(LocUtil.serialize(Local.hub), new FileWriter(hubFile));
             } catch (IOException e) {
                 throw new IllegalStateException(e);
             }

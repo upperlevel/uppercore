@@ -20,6 +20,7 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.registry.Registry;
 import xyz.upperlevel.uppercore.registry.RegistryTraceable;
 import xyz.upperlevel.uppercore.task.UpdaterTask;
+import xyz.upperlevel.uppercore.util.Dbg;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -318,6 +319,7 @@ public class ChestGui implements Gui, RegistryTraceable {
 
     @Override
     public void onClick(InventoryClickEvent event) {
+        Dbg.pf("%s clicked the inventory at slot %d", event.getWhoClicked().getName(), event.getSlot());
         ConfigIcon icon = icons[event.getSlot()];
         if (icon != null)
             icon.onClick(event);

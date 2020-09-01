@@ -30,10 +30,11 @@ arenas:
   hub-server: 'quake-lobby'
 
   join-gui:
-    enabled-arena:
+    title: "Join an arena"
+    playable-arena:
       type: 'GREEN_STAINED_GLASS_PANE'
       name: '&a%arena_name%'
-    disabled-arena:
+    ingame-arena:
       type: 'RED_STAINED_GLASS_PANE'
       name: '&c%arena_name%'
 
