@@ -66,8 +66,8 @@ public class Uppercore {
         instance = this;
         this.plugin = plugin;
 
-        this.coreLogger = Logger.getLogger(plugin.getLogger().getName() + ".ucore");
-        this.coreLogger.info("Loading UpperCore version: " + UppercoreInfo.VERSION);
+        this.coreLogger = new UppercoreLogger(plugin);
+        this.coreLogger.info("Loading Uppercore version: " + UppercoreInfo.VERSION);
 
         // Metrics setup
         if (bStatsId != 0) {

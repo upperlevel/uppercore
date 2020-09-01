@@ -16,30 +16,21 @@ import java.util.Map;
 /**
  * PlaceholderManager that hooks into PlaceholderAPI (Papi) and works with it.
  */
-public class PapiPlaceholderManager extends BasePlaceholderManager {
-
-    private final Map<String, PlaceholderHook> placeholders;
+public class PAPIPlaceholderManager extends BasePlaceholderManager {
     @Getter
     private final PapiPlaceholderRegistry registry = new PapiPlaceholderRegistry();
-
-    @SuppressWarnings("unchecked")
-    public PapiPlaceholderManager() {
-        try {
-            Field field = PlaceholderAPI.class.getDeclaredField("placeholders");
-            field.setAccessible(true);
-            placeholders = (Map<String, PlaceholderHook>) field.get(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException("Incompatible PlaceholderAPI exception");
-        }
-    }
 
     @Override
     public void register(Plugin plugin, Placeholder placeholder) {
         new OfficialPlaceholderAdapter(plugin, placeholder).register();
     }
 
+    public Map<String, PlaceholderHook> getPlaceholders() {
+        return PlaceholderAPI.getPlaceholders();
+    }
+
     public Placeholder find(String id) {
-        PlaceholderHook hook = placeholders.get(id);
+        PlaceholderHook hook = getPlaceholders().get(id);
         return hook == null ? null : new Placeholder() {
             @Override
             public String getId() {
@@ -129,12 +120,12 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
         }
 
         public Placeholder getLocal(String key) {
-            PlaceholderHook hook = placeholders.get(key);
+            PlaceholderHook hook = getPlaceholders().get(key);
             return hook == null ? null : new PlaceholderHookWrapper(key, hook);
         }
 
         public Placeholder get(String key) {
-            PlaceholderHook hook = placeholders.get(key);
+            PlaceholderHook hook = getPlaceholders().get(key);
             return hook == null ? null : new PlaceholderHookWrapper(key, hook);
         }
 
@@ -143,12 +134,12 @@ public class PapiPlaceholderManager extends BasePlaceholderManager {
         }
 
         public boolean has(String id) {
-            return placeholders.containsKey(id);
+            return getPlaceholders().containsKey(id);
         }
 
 
         public boolean hasLocal(String id) {
-            return placeholders.containsKey(id);
+            return getPlaceholders().containsKey(id);
         }
     }
 }

@@ -1,6 +1,11 @@
 package xyz.upperlevel.uppercore.util;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import xyz.upperlevel.uppercore.Uppercore;
+
+import static org.bukkit.ChatColor.LIGHT_PURPLE;
+import static org.bukkit.ChatColor.WHITE;
 
 public final class Dbg {
     private Dbg() {
@@ -17,7 +22,7 @@ public final class Dbg {
     private static void p0(String message, Class<?> caller) {
         if (Uppercore.isDebugMode()) {
             String callerName = caller != null ? caller.getSimpleName() : "?";
-            Uppercore.logger().info(String.format("[%s] %s", callerName, message));
+            Bukkit.getConsoleSender().sendMessage(String.format(LIGHT_PURPLE + "[%s] %s", callerName, message));
         }
     }
 

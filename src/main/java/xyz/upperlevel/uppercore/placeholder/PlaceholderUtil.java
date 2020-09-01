@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.placeholder.events.PlaceholderManagerHookEvent;
 import xyz.upperlevel.uppercore.placeholder.managers.CustomPlaceholderManager;
-import xyz.upperlevel.uppercore.placeholder.managers.PapiPlaceholderManager;
+import xyz.upperlevel.uppercore.placeholder.managers.PAPIPlaceholderManager;
 import xyz.upperlevel.uppercore.util.PluginUtil;
 
 public final class PlaceholderUtil {
@@ -76,7 +76,7 @@ public final class PlaceholderUtil {
             manager = event.getPlaceholderManager();
             Uppercore.logger().info("Successfully hooked with custom PlaceholderManager");
         } else if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            manager = new PapiPlaceholderManager();
+            manager = new PAPIPlaceholderManager();
             Uppercore.logger().info("Successfully hooked into PlaceholderAPI");
         } else {
             manager = new CustomPlaceholderManager();
@@ -89,7 +89,7 @@ public final class PlaceholderUtil {
     public static void onPapiEnable(Plugin plugin) {
         if (!fallback) return; // Another manager has been registered (and it is not a fallback)
         Uppercore.logger().info("Late hooking into PlaceholderAPI");
-        manager = new PapiPlaceholderManager();
+        manager = new PAPIPlaceholderManager();
     }
 
     public static void register(Plugin plugin, Placeholder placeholder) {

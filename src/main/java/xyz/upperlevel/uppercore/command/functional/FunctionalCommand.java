@@ -189,7 +189,7 @@ public class FunctionalCommand extends Command {
             }
         }
         try {
-            Dbg.pf("Invoking %s%s", function.getName(), objects.subList(1, objects.size()).toString());
+            //Dbg.pf("Invoking %s%s", function.getName(), objects.subList(1, objects.size()).toString());
             function.invoke(residence, objects.toArray());
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(residence.getClass().getSimpleName() + "." + function.getName() + " isn't reachable.");
