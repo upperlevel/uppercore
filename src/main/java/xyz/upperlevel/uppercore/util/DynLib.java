@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -71,14 +72,18 @@ public class DynLib {
         }
     }
 
-    public static Pool parsePool(List<String> libs) {
-        return new Pool(libs.stream().map(url -> {
+    public static Pool from(List<String> urls) {
+        return new Pool(urls.stream().map(url -> {
             try {
                 return new DynLib(new URL(url));
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException(e);
             }
         }).collect(Collectors.toList()));
+    }
+
+    public static Pool from(String url) {
+        return from(Collections.singletonList(url));
     }
 
     public static void checkAssert(String classpath) {
