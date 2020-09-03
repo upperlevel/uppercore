@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.command.functional.FunctionalCommand;
 import xyz.upperlevel.uppercore.util.Dbg;
@@ -24,6 +25,7 @@ public class NodeCommand extends Command {
     public NodeCommand(String name) {
         super(name);
 
+        setPermissionPortion(new Permission(name.toLowerCase(), PermissionDefault.OP));
         everyPermission("*", PermissionUser.OP);
 
         FunctionalCommand.inject(this, new HelpCommand());
