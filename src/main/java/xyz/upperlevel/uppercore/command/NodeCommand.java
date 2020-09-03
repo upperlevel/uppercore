@@ -152,7 +152,9 @@ public class NodeCommand extends Command {
 
     @Override
     public boolean call(CommandSender sender, Queue<String> args) {
-        super.call(sender, args);
+        if (!super.call(sender, args)) {
+            return false;
+        }
         if (args.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "Not enough arguments. You must specify the command name.");
             return false;

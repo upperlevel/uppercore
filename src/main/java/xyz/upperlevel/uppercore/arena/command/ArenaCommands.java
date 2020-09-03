@@ -12,6 +12,7 @@ import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.Arena;
 import xyz.upperlevel.uppercore.arena.ArenaManager;
 import xyz.upperlevel.uppercore.arena.OnQuitHandler;
+import xyz.upperlevel.uppercore.command.PermissionUser;
 import xyz.upperlevel.uppercore.command.functional.AsCommand;
 import xyz.upperlevel.uppercore.command.functional.WithOptional;
 import xyz.upperlevel.uppercore.command.functional.WithPermission;
@@ -209,7 +210,12 @@ public class ArenaCommands {
     // joingui
     // ================================================================================
 
-    @AsCommand(description = "Shows a list of arenas that can be join if clicked.")
+    @AsCommand(
+            description = "Shows a list of arenas that can be join if clicked."
+    )
+    @WithPermission(
+            user = PermissionUser.AVAILABLE
+    )
     public void joinGui(Player player) {
         Uppercore.guis().open(player, ArenaManager.get().getJoinGui());
     }
