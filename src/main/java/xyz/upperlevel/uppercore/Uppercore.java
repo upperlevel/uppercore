@@ -157,7 +157,7 @@ public class Uppercore {
     }
 
     public static Logger logger() {
-        return instance.plugin.getLogger();
+        return instance.coreLogger;
     }
 
     public static Logger logger(String name) {

@@ -167,6 +167,13 @@ public class ArenaCommands {
             return;
         }
         arena.addJoinSign((Sign) block.getState());
+
+        try {
+            arena.save();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
         player.sendMessage(GREEN + "Join sign added for arena: " + YELLOW + arena.getId() + GREEN + ".");
     }
 
@@ -182,6 +189,13 @@ public class ArenaCommands {
             return;
         }
         arena.removeJoinSign((Sign) block.getState());
+
+        try {
+            arena.save();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
         player.sendMessage(GREEN + "Join sign removed for arena: " + YELLOW + arena.getId() + GREEN + ".");
     }
 

@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 public class UppercoreLogger extends Logger {
     public static final Map<Level, ChatColor> colorByLevel = new HashMap<Level, ChatColor>() {{
-        put(Level.INFO, ChatColor.AQUA);
         put(Level.SEVERE, ChatColor.RED);
         put(Level.WARNING, ChatColor.YELLOW);
     }};

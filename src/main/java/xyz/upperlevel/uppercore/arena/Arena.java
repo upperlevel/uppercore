@@ -193,7 +193,8 @@ public class Arena {
             }
         };
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(this.playerListHandler);
+        // FIX-ME sometimes hiding players from all the server (not only in tab list).
+        //ProtocolLibrary.getProtocolManager().addPacketListener(this.playerListHandler);
     }
 
     // ------------------------------------------------------------------------------------------------ Serialization
@@ -294,7 +295,7 @@ public class Arena {
         unload();
         WorldUtil.deleteWorld(world);
         new File(ArenaManager.ARENAS_FOLDER, id + ".yml").delete();
-        ProtocolLibrary.getProtocolManager().removePacketListener(playerListHandler);
+        //ProtocolLibrary.getProtocolManager().removePacketListener(playerListHandler);
     }
 
     public static String getSignature(String id) {
