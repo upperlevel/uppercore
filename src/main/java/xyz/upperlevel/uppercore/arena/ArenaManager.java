@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -25,6 +26,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.bukkit.ChatColor.RED;
 
 public class ArenaManager implements Listener {
     public static final File ARENAS_FOLDER = new File(Uppercore.getPlugin().getDataFolder(), "arenas");
@@ -89,11 +92,10 @@ public class ArenaManager implements Listener {
         return null;
     }
 
-    public Arena getArena(Sign joinSign) {
+    public Arena getArenaByJoinSign(Block block) {
         for (Arena arena : byId.values()) {
-            if (arena.getJoinSigns().contains(joinSign)) {
+            if (arena.getJoinSign(block) != null)
                 return arena;
-            }
         }
         return null;
     }
@@ -169,12 +171,21 @@ public class ArenaManager implements Listener {
         Block block = e.getClickedBlock();
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && block != null) {
             if (block.getState() instanceof Sign) {
-                Arena arena = getArena((Sign) block.getState());
+                Arena arena = getArenaByJoinSign(block);
                 // If the sign is a join-sign and the player isn't within any arena, then can join.
                 if (arena != null && arena.isEnabled() && get(e.getPlayer()) == null) {
                     arena.join(e.getPlayer());
                 }
             }
+        }
+    }
+
+    @EventHandler
+    private void onBlockBreak(BlockBreakEvent e) {
+        Arena arena = getArenaByJoinSign(e.getBlock());
+        if (arena != null) {
+            arena.removeJoinSign(e.getBlock());
+            e.getPlayer().sendMessage(RED + String.format("You broke a join-sign of the arena '%s'.", arena.getId()));
         }
     }
 

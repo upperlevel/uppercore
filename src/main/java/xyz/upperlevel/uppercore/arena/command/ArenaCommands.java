@@ -166,7 +166,14 @@ public class ArenaCommands {
             player.sendMessage(RED + "You're not targeting a sign.");
             return;
         }
-        arena.addJoinSign((Sign) block.getState());
+
+        Arena taker = ArenaManager.get().getArenaByJoinSign(block);
+        if (taker != null) {
+            player.sendMessage(RED + String.format("This sign is already a join-sign for the arena: '%s'.", taker.getId()));
+            return;
+        }
+
+        arena.addJoinSign(block);
 
         try {
             arena.save();
@@ -188,7 +195,7 @@ public class ArenaCommands {
             player.sendMessage(RED + "You're not targeting a sign.");
             return;
         }
-        arena.removeJoinSign((Sign) block.getState());
+        arena.removeJoinSign(block);
 
         try {
             arena.save();

@@ -75,7 +75,7 @@ public class Arena {
     @Setter
     private Location lobby;
 
-    private final Set<Sign> joinSigns = new HashSet<>();
+    private final Map<Block, Sign> joinSignByBlock = new HashMap<>();
 
     private PacketAdapter playerListHandler;
 
@@ -108,7 +108,7 @@ public class Arena {
                 Uppercore.logger().warning("An invalid sign was saved for arena: " + id);
                 continue;
             }
-            this.joinSigns.add((Sign) block.getState());
+            addJoinSign(block);
         }
     }
 
@@ -140,24 +140,30 @@ public class Arena {
 
     public void updateJoinSigns() {
         //Dbg.pf("[%s] Dispatching join-signs update signal...", id);
-        updateJoinSigns(joinSigns);
+        updateJoinSigns(joinSignByBlock.values());
     }
 
     /**
      * Adds a join sign to the arena.
      */
-    public boolean addJoinSign(Sign joinSign) {
-        boolean result = joinSigns.add(joinSign);
-        updateJoinSigns(Collections.singletonList(joinSign));
-        return result;
+    public void addJoinSign(Block block) {
+        if (!(block.getState() instanceof Sign))
+            throw new IllegalArgumentException("`block` must have a Sign block-state");
+
+        joinSignByBlock.put(block, (Sign) block.getState());
+        updateJoinSigns(getJoinSigns());
+    }
+
+    public Sign getJoinSign(Block block) {
+        return joinSignByBlock.get(block);
     }
 
     /**
      * Removes a join sign from the arena.
      */
-    public boolean removeJoinSign(Sign joinSign) {
-        boolean result = joinSigns.remove(joinSign);
-        joinSign.getBlock().breakNaturally();
+    public boolean removeJoinSign(Block block) {
+        boolean result = joinSignByBlock.remove(block) != null;
+        block.breakNaturally();
         return result;
     }
 
@@ -165,7 +171,7 @@ public class Arena {
      * A list of all join signs present for this arena.
      */
     public Collection<Sign> getJoinSigns() {
-        return Collections.unmodifiableSet(joinSigns);
+        return joinSignByBlock.values();
     }
 
     // ------------------------------------------------------------------------------------------------ Player list
@@ -207,7 +213,10 @@ public class Arena {
         return new HashMap<String, Object>() {{
             put("id", id);
             put("lobby", LocUtil.serialize(lobby));
-            put("join-signs", joinSigns.stream().map(sign -> LocUtil.serialize(sign.getLocation())).collect(Collectors.toList()));
+            put("join-signs", joinSignByBlock.keySet().stream()
+                    .map(sign -> LocUtil.serialize(sign.getLocation()))
+                    .collect(Collectors.toList())
+            );
         }};
     }
 
