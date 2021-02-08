@@ -140,6 +140,15 @@ public class Arena {
                 .set("players", () -> Integer.toString(players.size()));
     }
 
+    // ------------------------------------------------------------------------------------------------ Preload
+
+    public void preload() {
+        Uppercore.logger().info(String.format("Preloading the arena: %s. This will make players join it faster.", getName()));
+
+        world.loadChunk(lobby.getChunk());
+        getJoinSigns().forEach(joinSign -> world.loadChunk(joinSign.getChunk()));
+    }
+
     // ------------------------------------------------------------------------------------------------ Join signs
 
     public void updateJoinSigns(Collection<Sign> joinSigns) {

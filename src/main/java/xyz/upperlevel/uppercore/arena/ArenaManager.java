@@ -51,13 +51,15 @@ public class ArenaManager implements Listener {
             String id = file.getName().substring(0, file.getName().lastIndexOf('.'));
 
             // First loads the arena world.
-            String world = Arena.getSignature(id);
-            WorldUtil.createEmptyWorld(world);
+            String worldName = Arena.getSignature(id);
+            WorldUtil.createEmptyWorld(worldName);
 
             // Then loads arena's data.
             Config cfg = Config.fromYaml(file);
             A arena = cfg.get(arenaClass);
             register(arena);
+
+            arena.preload();
 
             // If the arena is ready, sets to enabled.
             if (arena.isReady()) {
