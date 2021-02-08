@@ -16,6 +16,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.event.ArenaJoinEvent;
@@ -42,6 +43,11 @@ import static java.util.Locale.ENGLISH;
 import static xyz.upperlevel.uppercore.Uppercore.getPlugin;
 
 public class Arena {
+    // The player can manually leave only after a certain delay after joining the arena.
+    // This is done in order to bypass a Spigot bug where if the player has right-clicked a sign, it could happen that right-clicks even the
+    // quit-bed and make him quit the arena soon after it has joined it.
+    public static final long CAN_MANUALLY_LEAVE_AFTER_JOIN_DELAY = 2 * 1000;
+
     public static final PlayerRestorer playerRestorer = new PlayerRestorer();
 
     // Config
@@ -76,6 +82,9 @@ public class Arena {
     private Location lobby;
 
     private final Map<Block, Sign> joinSignByBlock = new HashMap<>();
+
+    @Getter
+    private final Map<Player, Long> joinedAtByPlayer = new HashMap<>();
 
     private PacketAdapter playerListHandler;
 
@@ -374,7 +383,11 @@ public class Arena {
         }
         players.add(player);
         playerRestorer.remember(image); // If the player actually joined, we can remember the image took.
+
         updateJoinSigns();
+
+        joinedAtByPlayer.put(player, System.currentTimeMillis());
+
         return true;
     }
 
@@ -382,6 +395,13 @@ public class Arena {
         if (!players.contains(player)) {
             return false;
         }
+
+        // If the player is trying to quit the arena through a command but not enough time is passed then blocks it.
+        if (reason == ArenaQuitEvent.ArenaQuitReason.COMMAND && joinedAtByPlayer.getOrDefault(player, 0L) + CAN_MANUALLY_LEAVE_AFTER_JOIN_DELAY < System.currentTimeMillis()) {
+            Dbg.pf("%s is trying to quit the arena %s soon after having joined it", player.getName(), getName());
+            return false;
+        }
+
         // Bukkit-event
         ArenaQuitEvent event = new ArenaQuitEvent(player, this, reason);
         Bukkit.getPluginManager().callEvent(event);
@@ -392,6 +412,7 @@ public class Arena {
         if (phaseManager.onQuit(player)) {
             return false;
         }
+
         if (!players.remove(player)) {
             return false;
         }
