@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "xyz.upperlevel.uppercore"
-version = "2.0.1"
+version = "2.0.2"
 description = "Global API for Spigot plugins"
 
 sourceCompatibility = 1.8
