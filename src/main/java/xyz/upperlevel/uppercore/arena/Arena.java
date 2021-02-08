@@ -397,7 +397,7 @@ public class Arena {
         }
 
         // If the player is trying to quit the arena through a command but not enough time is passed then blocks it.
-        if (reason == ArenaQuitEvent.ArenaQuitReason.COMMAND && joinedAtByPlayer.getOrDefault(player, 0L) + CAN_MANUALLY_LEAVE_AFTER_JOIN_DELAY < System.currentTimeMillis()) {
+        if (reason == ArenaQuitEvent.ArenaQuitReason.COMMAND && joinedAtByPlayer.getOrDefault(player, 0L) + CAN_MANUALLY_LEAVE_AFTER_JOIN_DELAY > System.currentTimeMillis()) {
             Dbg.pf("%s is trying to quit the arena %s soon after having joined it", player.getName(), getName());
             return false;
         }
