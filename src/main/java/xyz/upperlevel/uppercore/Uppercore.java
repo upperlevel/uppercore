@@ -84,7 +84,7 @@ public class Uppercore {
 
         Config arenaCfg = config.getConfigRequired("arenas");
         Arena.loadConfig(arenaCfg);
-        OnQuitHandler.Local.loadConfig();
+        OnQuitHandler.Local.loadConfig(true);
         OnQuitHandler.Bungee.loadConfig(arenaCfg);
 
         Config commandConfig = config.getConfigRequired("commands");

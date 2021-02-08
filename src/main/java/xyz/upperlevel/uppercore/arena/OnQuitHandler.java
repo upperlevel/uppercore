@@ -2,6 +2,7 @@ package xyz.upperlevel.uppercore.arena;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -39,13 +40,22 @@ public interface OnQuitHandler {
             }
         }
 
-        public static void loadConfig() {
+        public static void loadConfig(boolean loadHubNextTick) {
             hubFile = new File(Uppercore.getPlugin().getDataFolder(), "hub.yml");
             if (!hubFile.exists()) {
                 Uppercore.logger().warning("hub.yml file hasn't been found while using local mode.");
                 return;
             }
-            hub = LocUtil.deserialize(Config.fromYaml(hubFile));
+
+            Runnable loadHub = () -> {
+                hub = LocUtil.deserialize(Config.fromYaml(hubFile));
+                Uppercore.logger().info("hub location has loaded");
+            };
+            if (loadHubNextTick) {
+                Bukkit.getScheduler().runTask(Uppercore.getPlugin(), loadHub);
+            } else {
+                loadHub.run();
+            }
         }
     }
 
