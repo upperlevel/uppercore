@@ -35,6 +35,10 @@ public class ArenaManager implements Listener {
 
     private final Map<String, Arena> byId = new HashMap<>();
 
+    public ArenaManager() {
+        Bukkit.getPluginManager().registerEvents(this, Uppercore.plugin());
+    }
+
     //================================================================================
     // Loading
 
@@ -60,7 +64,6 @@ public class ArenaManager implements Listener {
                 arena.setEnabled(true);
             }
         }
-        Bukkit.getPluginManager().registerEvents(this, Uppercore.plugin());
     }
 
     //================================================================================
