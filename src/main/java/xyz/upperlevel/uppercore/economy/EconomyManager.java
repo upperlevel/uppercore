@@ -14,7 +14,7 @@ public class EconomyManager {
     private static Economy economy;
 
     public static void enable() {
-        Uppercore.logger().severe("Disabling economy until vault load");
+        Uppercore.logger().info("Disabling economy until vault load");
         enabled = false;
 
         PluginUtil.onPluginLoaded("Vault", p -> {
