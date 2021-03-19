@@ -122,12 +122,15 @@ public class HotbarView {
     }
 
     public boolean isIcon(ItemStack item) {
-        for (ItemStack cache : items)
+        for (ItemStack cache : items) {
             if (cache != null) {
-                if (cache.equals(item))
+                if (cache.equals(item)) {
                     return true;
-            } else if (item == null)
-                return true;
+                }
+            } else if (item == null) {
+                return false;
+            }
+        }
         return false;
     }
 
