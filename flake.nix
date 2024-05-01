@@ -15,7 +15,7 @@
         with pkgs;
         {
           devShells.default = mkShell {
-            buildInputs = [ jdk gradle_7 ];
+            buildInputs = [ jdk gradle ];
           };
         }
       );

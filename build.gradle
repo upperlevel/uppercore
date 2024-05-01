@@ -3,13 +3,13 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id "java-library"
     id "maven-publish"
-    id "com.github.johnrengelman.shadow" version "5.2.0"
-    //id "io.freefair.lombok" version "8.6"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "io.freefair.lombok" version "8.6"
     // id "checkstyle"
 }
 
 group = "xyz.upperlevel.uppercore"
-version = "2.0.2"
+version = "2.0.3"
 description = "Global API for Spigot plugins"
 
 sourceCompatibility = 1.8
@@ -72,6 +72,8 @@ dependencies {
 
     /* Mockito */
     testImplementation "org.mockito:mockito-core:3.+"
+    /* Apache commons */
+    api 'org.apache.commons:commons-lang3:3.14.0'
 
     /* Spigot API */
     compileOnly "org.spigotmc:spigot-api:" + mcVersion
@@ -97,13 +99,6 @@ dependencies {
     compileOnly "org.mongodb:mongo-java-driver:3.12.4"
     compileOnly "com.rethinkdb:rethinkdb-driver:2.3.3"
     compileOnly "org.dizitart:nitrite:3.4.1"
-
-    /* lombok */
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.32'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
 }
 
 test {
@@ -121,8 +116,9 @@ test {
 
 shadowJar {
     archiveBaseName = null
-    
+
     relocate "org.bstats", "${project.group}.libs.metrics"
+    relocate "org.apache.commons", "${project.group}.libs.acommons"
 }
 
 task testJar(type: ShadowJar) {
