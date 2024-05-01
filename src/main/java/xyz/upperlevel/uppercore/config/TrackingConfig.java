@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.configuration.file.YamlConstructor;
-import org.yaml.snakeyaml.composer.Composer;
-import org.yaml.snakeyaml.constructor.BaseConstructor;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.nodes.*;
 import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
@@ -21,14 +20,14 @@ import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkNodeId;
 import static xyz.upperlevel.uppercore.config.parser.ConfigParser.checkTag;
 
 public class TrackingConfig extends Config {
-    public static BaseConstructor standardConstructor = new YamlConstructor();
+    public static FakeConstructor standardConstructor = new FakeConstructor(new LoaderOptions());
 
     @Getter
     private final MappingNode root;
 
     @Getter
     @Setter
-    private BaseConstructor constructor = standardConstructor;
+    private FakeConstructor constructor = standardConstructor;
 
     public TrackingConfig(@NonNull Node root) {
         checkTag(root, Tag.MAP);
@@ -66,8 +65,7 @@ public class TrackingConfig extends Config {
     public Object get(String key) {
         Node node = getNode(key);
         if (node == null) return null;
-        constructor.setComposer(new FakeComposer(node));
-        return constructor.getData();
+        return constructor.constructNode(node);
     }
 
     @Override
@@ -144,27 +142,14 @@ public class TrackingConfig extends Config {
         );
     }
 
-    protected static class FakeComposer extends Composer {
-        private final Node node;
 
-        public FakeComposer(Node node) {
-            super(null, null);
-            this.node = node;
+    protected static class FakeConstructor extends YamlConstructor {
+        public FakeConstructor(LoaderOptions loadingConfig) {
+            super(loadingConfig);
         }
 
-        @Override
-        public boolean checkNode() {
-            return true;
-        }
-
-        @Override
-        public Node getNode() {
-            return node;
-        }
-
-        @Override
-        public Node getSingleNode() {
-            return node;
+        public Object constructNode(Node node) {
+            return constructDocument(node);
         }
     }
 }
