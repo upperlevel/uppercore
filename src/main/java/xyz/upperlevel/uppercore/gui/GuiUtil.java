@@ -7,6 +7,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import xyz.upperlevel.uppercore.sound.CompatibleSound;
 
@@ -29,15 +30,27 @@ public final class GuiUtil {
     public static ItemStack potion(PotionType type, boolean extended, boolean upgraded, String name, String... lores) {
         ItemStack potion = new ItemStack(Material.POTION, 1);
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
-        meta.setBasePotionData(new PotionData(type, extended, upgraded));
+        applyPotionEffects(meta, type, extended, upgraded, name, lores);
         potion.setItemMeta(meta);
         return potion;
+    }
+
+    private static void applyPotionEffects(PotionMeta meta, PotionType type, boolean extended, boolean upgraded, String name, String... lores) {
+        meta.setBasePotionType(type);
+        if (extended || upgraded) {
+            PotionEffect orig = type.getPotionEffects().get(0);
+            int duration = orig.getDuration() * (extended ? 2 : 1);
+            int amplifier = orig.getAmplifier() * (upgraded ? 2 : 1);
+            meta.addCustomEffect(new PotionEffect(orig.getType(), duration, amplifier), true);
+        }
+        meta.setDisplayName(name);
+        meta.setLore(Arrays.asList(lores));
     }
 
     public static ItemStack splashPotion(PotionType type, boolean extended, boolean upgraded, String name, String... lores) {
         ItemStack potion = new ItemStack(Material.SPLASH_POTION, 1);
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
-        meta.setBasePotionData(new PotionData(type, extended, upgraded));
+        applyPotionEffects(meta, type, extended, upgraded, name, lores);
         potion.setItemMeta(meta);
         return potion;
     }

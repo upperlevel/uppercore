@@ -48,7 +48,7 @@ public class UPotionItem extends UItem {
         super.processMeta(player, m);
         PotionMeta meta = (PotionMeta) m;
         if (type != null) {
-            meta.setBasePotionData(new PotionData(type));
+            meta.setBasePotionType(type);
         }
         if (customColor != null) {
             meta.setColor(customColor.resolve(player));
