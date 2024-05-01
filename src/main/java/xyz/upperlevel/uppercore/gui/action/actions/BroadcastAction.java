@@ -9,8 +9,6 @@ import xyz.upperlevel.uppercore.config.ConfigProperty;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.BaseActionType;
 import xyz.upperlevel.uppercore.gui.action.Parser;
-import xyz.upperlevel.uppercore.nms.impl.MessageNms;
-import xyz.upperlevel.uppercore.nms.impl.entity.PlayerNms;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 
@@ -43,35 +41,40 @@ public class BroadcastAction extends Action<BroadcastAction> {
 
     @Override
     public void run(Player player) {
-        if(!raw) {
+        if (!raw) {
             if (permission != null)
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    if(p.hasPermission(permission))
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (p.hasPermission(permission))
                         p.sendMessage(translateCustom(message.resolve(p)));
                 }
             else
-                for(Player p : Bukkit.getOnlinePlayers())
+                for (Player p : Bukkit.getOnlinePlayers()) {
                     p.sendMessage(translateCustom(message.resolve(p)));
+                }
         } else {
-            if(message.hasPlaceholders()) {
+            if (message.hasPlaceholders()) {
                 sendJson(message, permission != null ? p -> p.hasPermission(permission) : p -> true);
             } else {
-                Object packet = MessageNms.jsonPacket(message.resolve(null));
-                sendPacket(packet, permission != null ? p -> p.hasPermission(permission) : p -> true);
+                sendMessage(message.resolve(null), permission != null ? p -> p.hasPermission(permission) : p -> true);
             }
         }
     }
 
-    private void sendPacket(Object packet, Predicate<Player> selector) {
-        for(Player p : Bukkit.getOnlinePlayers())
-            if(selector.test(p))
-                PlayerNms.sendPacket(p, packet);
+    private void sendMessage(String json, Predicate<Player> selector) {
+        String translated = translateCustom(json);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (selector.test(p)) {
+                p.sendMessage(translated);
+            }
+        }
     }
 
     private void sendJson(PlaceholderValue<String> json, Predicate<Player> selector) {
-        for(Player p : Bukkit.getOnlinePlayers())
-            if(selector.test(p))
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (selector.test(p)) {
                 p.sendMessage(translateCustom(json.resolve(p)));
+            }
+        }
     }
 
 

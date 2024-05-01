@@ -1,11 +1,10 @@
 package xyz.upperlevel.uppercore.util;
 
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import xyz.upperlevel.uppercore.nms.impl.MessageNms;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -70,7 +69,7 @@ public final class TextUtil {
     public static void sendComponentMessages(CommandSender sender, List<BaseComponent[]> messages) {
         for (BaseComponent[] msg : messages)
             if (sender instanceof Player)
-                MessageNms.sendJson((Player) sender, msg);
+                sender.spigot().sendMessage(msg);
             else
                 sender.sendMessage(BaseComponent.toLegacyText(msg));
     }
