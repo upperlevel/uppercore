@@ -61,7 +61,7 @@ public class BukkitTypesConfigTest {
             //assertEquals(Enchantment.THORNS, ench2);
             assertEquals(GuiSize.NORMAL, guiSize1);
             assertEquals(GuiSize.DOUBLE, guiSize2);
-            assertEquals(PatternType.RHOMBUS_MIDDLE, patternTypeId);
+            assertEquals(PatternType.RHOMBUS, patternTypeId);
             assertEquals(PatternType.MOJANG, patternTypeName);
             assertEquals(new Pattern(DyeColor.CYAN, PatternType.FLOWER), pattern);
             assertEquals(

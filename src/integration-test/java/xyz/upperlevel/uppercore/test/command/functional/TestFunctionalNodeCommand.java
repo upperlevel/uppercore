@@ -3,7 +3,7 @@ package xyz.upperlevel.uppercore.test.command.functional;
 import org.bukkit.command.CommandSender;
 import xyz.upperlevel.uppercore.command.NodeCommand;
 
-import java.util.List;
+import java.util.Queue;
 
 public class TestFunctionalNodeCommand extends NodeCommand {
     public TestFunctionalNodeCommand() {
@@ -13,7 +13,7 @@ public class TestFunctionalNodeCommand extends NodeCommand {
     }
 
     @Override
-    public boolean onCall(CommandSender sender, List<String> args) {
+    public boolean call(CommandSender sender, Queue<String> args) {
         sender.sendMessage("Sender: " + sender.getName());
         sender.sendMessage("Args: " + args);
         return true;

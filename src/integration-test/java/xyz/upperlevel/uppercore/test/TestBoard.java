@@ -1,6 +1,5 @@
 package xyz.upperlevel.uppercore.test;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

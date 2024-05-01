@@ -2,9 +2,11 @@ package xyz.upperlevel.uppercore.command.functional.parameter;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Collections.singletonList;
 
 public class TestAllArgumentParser {
 
@@ -17,11 +19,13 @@ public class TestAllArgumentParser {
         data.put("10.9", float.class);
         data.put("true", boolean.class);
 
-        ArgumentParserManager.init();
+        PrimitiveParameterHandler.register();
+        BukkitParameterHandler.register();
+
         Map<String, Object> result = new HashMap<>();
         for (Map.Entry<String, Class<?>> entry : data.entrySet()) {
             try {
-                Object parsed = ArgumentParserManager.get(entry.getValue()).parse(Collections.singletonList(entry.getKey()));
+                Object parsed = ParameterHandler.parse(entry.getValue(), new ArrayDeque<>(singletonList(entry.getKey())));
                 result.put(entry.getKey(), parsed);
             } catch (ParameterParseException e) {
                 throw new IllegalStateException(e);
