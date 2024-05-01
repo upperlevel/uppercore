@@ -4,7 +4,7 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "com.github.johnrengelman.shadow" version "5.2.0"
-    id "io.freefair.lombok" version "5.1.0"
+    //id "io.freefair.lombok" version "8.6"
     // id "checkstyle"
 }
 
@@ -16,7 +16,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 project.ext {
-    mcVersion = "1.15.2-R0.1-SNAPSHOT"
+    mcVersion = "1.20.6-R0.1-SNAPSHOT"
 }
 
 test {
@@ -79,9 +79,11 @@ dependencies {
     integrationTestCompileOnly "org.spigotmc:spigot-api:" + mcVersion
 
     /* Bukkit */
-    compileOnly "org.bukkit:bukkit:" + mcVersion
+    /*compileOnly "org.bukkit:bukkit:" + mcVersion
     testImplementation "org.bukkit:bukkit:" + mcVersion
     integrationTestCompileOnly "org.bukkit:bukkit:" + mcVersion
+    */
+
 
     api "xyz.upperlevel.spigot.anvilgui:spigot-anvil-gui:1.3" // anvil-gui
     compileOnly "me.clip:placeholderapi:2.10.9" // placeholder-api
@@ -95,6 +97,13 @@ dependencies {
     compileOnly "org.mongodb:mongo-java-driver:3.12.4"
     compileOnly "com.rethinkdb:rethinkdb-driver:2.3.3"
     compileOnly "org.dizitart:nitrite:3.4.1"
+
+    /* lombok */
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.32'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
 }
 
 test {
@@ -111,13 +120,13 @@ test {
 }
 
 shadowJar {
-    classifier = null
+    archiveBaseName = null
     
     relocate "org.bstats", "${project.group}.libs.metrics"
 }
 
 task testJar(type: ShadowJar) {
-    classifier = "test"
+    archiveBaseName = "test"
 
     dependsOn tasks.shadowJar
 
