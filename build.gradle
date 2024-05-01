@@ -12,8 +12,10 @@ group = "xyz.upperlevel.uppercore"
 version = "2.0.3"
 description = "Global API for Spigot plugins"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
+}
 
 project.ext {
     mcVersion = "1.20.6-R0.1-SNAPSHOT"
@@ -67,8 +69,8 @@ repositories {
 
 dependencies {
     /* JUnit */
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.0.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     /* Mockito */
     testImplementation "org.mockito:mockito-core:3.+"
