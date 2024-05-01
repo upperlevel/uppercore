@@ -58,7 +58,7 @@ public class BlockDustParticle extends CustomParticle {
     @Override
     public void display(Location location, List<Player> players) {
         ParticleUtil.builder()
-                .type(Particle.BLOCK_DUST)
+                .type(Particle.FALLING_DUST)
                 .center(location)
                 .amount(getAmount())
                 .offset(offsetX, offsetY, offsetZ)

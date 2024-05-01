@@ -64,38 +64,23 @@ public class ParticleUtil {
             // Credits to effectslib
             Object data = null;
             switch (type) {
-                case SPELL_MOB:
-                case SPELL_MOB_AMBIENT:
+                case ENTITY_EFFECT:
                     if (color == null) break;
-
                     // Colored particles can't have a speed of 0.
                     if (speed == 0) speed = 1;
-
-                    amount = 0;
-                    offsetX = color.getRed() / 255f;
-                    offsetY = color.getGreen() / 255f;
-                    offsetZ = color.getBlue() / 255f;
-
-                    // The redstone particle reverts to red if R is 0!
-                    if (offsetX < Float.MIN_NORMAL) {
-                        offsetX = Float.MIN_NORMAL;
-                    }
-
+                    data = color;
                     break;
-                case ITEM_CRACK:
+                case ITEM:
                     if (material == null || material == Material.AIR) return;
                     data = new ItemStack(material);
-
                     break;
-                case BLOCK_CRACK:
-                case BLOCK_DUST:
+                case BLOCK:
                 case FALLING_DUST:
+                case BLOCK_MARKER:
                     if (material == null || material == Material.AIR) return;
                     data = material.createBlockData();
-                    if (data == null) return;
-
                     break;
-                case REDSTONE:
+                case DUST:
                     if (color == null) {
                         color = Color.RED;
                     }

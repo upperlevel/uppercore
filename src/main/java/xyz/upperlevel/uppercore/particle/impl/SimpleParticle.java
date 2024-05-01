@@ -54,7 +54,7 @@ public class SimpleParticle extends CustomParticle {
     @Override
     public void display(Location loc, List<Player> players) {
         ParticleUtil.builder()
-                .type(Particle.REDSTONE)
+                .type(Particle.DUST)
                 .center(loc)
                 .offset(offsetX, offsetY, offsetZ)
                 .amount(getAmount())
