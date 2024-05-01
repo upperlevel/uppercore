@@ -16,13 +16,14 @@ public final class EnchantUtil {
         if (meta == null) {
             meta = Bukkit.getItemFactory().getItemMeta(item.getType());
         }
-
-        item.setItemMeta(glow(meta));
+        if (meta != null) {
+            item.setItemMeta(glow(meta));
+        }
         return item;
     }
 
     public static ItemMeta glow(ItemMeta meta) {
-        meta.addEnchant(Enchantment.LUCK, 1, true);
+        meta.addEnchant(Enchantment.FORTUNE, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         return meta;
     }

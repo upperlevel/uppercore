@@ -40,7 +40,7 @@ public final class NitriteDb {
         @Override
         public String[] getDownloadLinks() {
             return new String[] {
-                    "https://oss.sonatype.org/content/repositories/releases/org/dizitart/nitrite/3.4.1/nitrite-3.4.1.jar",
+                    "https://oss.sonatype.org/content/repositories/releases/org/dizitart/nitrite/3.4.3/nitrite-3.4.3.jar",
                     "https://oss.sonatype.org/content/repositories/releases/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar",
                     "https://oss.sonatype.org/content/repositories/releases/com/h2database/h2-mvstore/1.4.200/h2-mvstore-1.4.200.jar",
                     "https://oss.sonatype.org/content/repositories/releases/org/objenesis/objenesis/2.6/objenesis-2.6.jar",

@@ -1,6 +1,6 @@
 package xyz.upperlevel.uppercore.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;

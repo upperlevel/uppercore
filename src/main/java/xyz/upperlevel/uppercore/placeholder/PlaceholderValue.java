@@ -7,7 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.ConfigUtil;
-import xyz.upperlevel.uppercore.sound.CompatibleSound;
+import xyz.upperlevel.uppercore.sound.SoundUtil;
 import xyz.upperlevel.uppercore.util.TextUtil;
 
 import java.util.function.BiConsumer;
@@ -95,7 +95,7 @@ public interface PlaceholderValue<T> {
     }
 
     static PlaceholderValue<Sound> soundValue(String string) {
-        return value(string, CompatibleSound::get, null);
+        return value(string, x -> SoundUtil.get(x).orElse(null), null);
     }
 
     static <T> PlaceholderValue<T> fake(T value) {

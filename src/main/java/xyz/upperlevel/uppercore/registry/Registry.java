@@ -2,7 +2,7 @@ package xyz.upperlevel.uppercore.registry;
 
 import lombok.Getter;
 import lombok.NonNull;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import xyz.upperlevel.uppercore.config.exceptions.InvalidConfigException;
 import xyz.upperlevel.uppercore.registry.RegistryVisitor.VisitResult;
 import xyz.upperlevel.uppercore.util.CollectionUtil;

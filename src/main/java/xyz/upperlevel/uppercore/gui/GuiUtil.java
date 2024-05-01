@@ -6,10 +6,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
-import xyz.upperlevel.uppercore.sound.CompatibleSound;
+import xyz.upperlevel.uppercore.sound.SoundUtil;
 
 import java.util.Arrays;
 
@@ -75,8 +74,8 @@ public final class GuiUtil {
     }
 
     public static void sendErrorMessage(Player player, String message) {
-        if(DEF_ERROR_SOUND == null)
-            DEF_ERROR_SOUND = CompatibleSound.getRaw("BLOCK_ANVIL_USE");
+        if (DEF_ERROR_SOUND == null)
+            DEF_ERROR_SOUND = Sound.BLOCK_ANVIL_USE;
         sendErrorMessage(player, message, DEF_ERROR_SOUND);
     }
 

@@ -16,8 +16,8 @@ import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderUtil;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderValue;
 import xyz.upperlevel.uppercore.placeholder.message.Message;
-import xyz.upperlevel.uppercore.sound.CompatibleSound;
 import xyz.upperlevel.uppercore.sound.PlaySound;
+import xyz.upperlevel.uppercore.sound.SoundUtil;
 import xyz.upperlevel.uppercore.util.LocUtil;
 
 import java.io.File;
@@ -466,12 +466,8 @@ public abstract class Config {
         if (raw == null) {
             return def;
         } else {
-            Sound res = CompatibleSound.get(raw);
-            if (res == null) {
-                throw invalidConfigException(key, "Cannot find sound \"" + raw + "\", is it supported?");
-            } else {
-                return res;
-            }
+            return SoundUtil.get(raw)
+                    .orElseThrow(() -> invalidConfigException(key, "Cannot find sound \"" + raw + "\", is it supported?"));
         }
     }
 

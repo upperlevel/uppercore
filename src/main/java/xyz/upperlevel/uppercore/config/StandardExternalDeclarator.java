@@ -10,7 +10,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.nodes.*;
 import org.yaml.snakeyaml.nodes.Tag;
-import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.config.exceptions.ConfigException;
 import xyz.upperlevel.uppercore.config.exceptions.WrongValueConfigException;
 import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
@@ -18,7 +17,7 @@ import xyz.upperlevel.uppercore.config.parser.ConstructorConfigParser;
 import xyz.upperlevel.uppercore.gui.GuiSize;
 import xyz.upperlevel.uppercore.gui.action.Action;
 import xyz.upperlevel.uppercore.gui.action.ActionType;
-import xyz.upperlevel.uppercore.sound.CompatibleSound;
+import xyz.upperlevel.uppercore.sound.SoundUtil;
 import xyz.upperlevel.uppercore.util.PluginUtil;
 
 import java.util.Arrays;
@@ -51,7 +50,7 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
 
     @ConfigConstructor(inlineable = true)
     private Sound parseSound(String raw) {
-        return CompatibleSound.get(raw);
+        return SoundUtil.get(raw).orElse(null);
     }
 
     @ConfigConstructor

@@ -7,7 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.util.Vector;
 import xyz.upperlevel.uppercore.config.ConfigUtil;
-import xyz.upperlevel.uppercore.sound.CompatibleSound;
+import xyz.upperlevel.uppercore.sound.SoundUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,18 +82,13 @@ public final class BukkitParameterHandler {
         // Sound
         ParameterHandler.register(
                 Collections.singletonList(Sound.class),
-                args -> {
-                    Sound sound = CompatibleSound.get(args.take());
-                    if (sound == null)
-                        throw args.areWrong();
-                    return sound;
-                },
+                args -> SoundUtil.get(args.take()).orElseThrow(args::areWrong),
                 args -> {
                     if (args.remaining() > 1)
                         return Collections.emptyList();
                     String arg = args.take().toUpperCase(Locale.ENGLISH);
-                    return CompatibleSound.getTranslator().keySet()
-                            .stream()
+                    return Arrays.stream(Sound.values())
+                            .map(Enum::name)
                             .filter(sound -> sound.startsWith(arg))
                             .collect(Collectors.toList());
                 });

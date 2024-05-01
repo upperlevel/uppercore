@@ -2,11 +2,9 @@ package xyz.upperlevel.uppercore.gui.action;
 
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import xyz.upperlevel.uppercore.config.parser.ConfigParserRegistry;
 import xyz.upperlevel.uppercore.itemstack.UItem;
 import xyz.upperlevel.uppercore.config.Config;
-import xyz.upperlevel.uppercore.sound.CompatibleSound;
+import xyz.upperlevel.uppercore.sound.SoundUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -201,10 +199,8 @@ public interface Parser<T> {
                 if (object instanceof Sound)
                     return (Sound) object;
                 else {
-                    Sound s = CompatibleSound.get(object.toString());
-                    if(s == null)
-                        throw new IllegalArgumentException("Cannot find sound \"" + object.toString() + "\", is it supported?");
-                    return s;
+                    return SoundUtil.get(object.toString())
+                            .orElseThrow(() -> new IllegalArgumentException("Cannot find sound \"" + object + "\", is it supported?"));
                 }
             }
 
