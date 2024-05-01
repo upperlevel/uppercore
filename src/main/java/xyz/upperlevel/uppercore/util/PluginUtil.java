@@ -24,16 +24,6 @@ public final class PluginUtil {
         }
     }
 
-    public static NamespacedKey parseNamespacedKey(String raw) {
-        int sepIndex = raw.indexOf(':');
-        if (sepIndex == -1) {
-            return NamespacedKey.minecraft(raw);
-        }
-        @SuppressWarnings("deprecation")// Come on bukkit...
-        NamespacedKey x = new NamespacedKey(raw.substring(0, sepIndex), raw.substring(sepIndex + 1));
-        return x;
-    }
-
     @RequiredArgsConstructor
     private static class PluginLoadedListener implements Listener {
         private final String pluginName;

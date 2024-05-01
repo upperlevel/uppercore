@@ -20,10 +20,7 @@ import xyz.upperlevel.uppercore.gui.action.ActionType;
 import xyz.upperlevel.uppercore.sound.SoundUtil;
 import xyz.upperlevel.uppercore.util.PluginUtil;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static java.util.Collections.emptyList;
@@ -90,8 +87,10 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
         ScalarNode node = (ScalarNode) rawNode;
         Enchantment res = null;
         if (node.getTag() == Tag.STR) {
-            NamespacedKey key = parseConfigNamespacedKey(node.getValue().replace(' ', '_').toLowerCase(Locale.ENGLISH), node);
-            res = Enchantment.getByKey(key);
+            NamespacedKey key = NamespacedKey.fromString(node.getValue().replace(' ', '_').toLowerCase(Locale.ENGLISH));
+            if (key != null) {
+                res = Registry.ENCHANTMENT.get(key);
+            }
         }
         if (res == null) {
             throw new WrongValueConfigException(node, node.getValue(), "Enchantment");
@@ -121,9 +120,11 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
 
     @ConfigConstructor(inlineable = true)
     private PatternType parsePatternType(String id) {
-        PatternType res = PatternType.getByIdentifier(id);
-        if (res != null) {
-            return res;
+        // It can either be an identifier or a default name, try identifier first
+        var key = NamespacedKey.fromString(id, null);
+        var pattern = key != null ? Registry.BANNER_PATTERN.get(key) : null;
+        if (pattern != null) {
+            return pattern;
         }
         return PatternType.valueOf(id.replace(" ", "_").toUpperCase(Locale.ENGLISH));
     }
@@ -158,9 +159,9 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
 
     @ConfigConstructor
     public static PotionEffectType parsePotionEffectType(Node rawNode) {
-        checkTag(rawNode, Arrays.asList(Tag.STR));
+        checkTag(rawNode, Collections.singletonList(Tag.STR));
         ScalarNode node = (ScalarNode) rawNode;
-        PotionEffectType res = PotionEffectType.getByName(node.getValue().replace(' ', '_').toUpperCase(Locale.ENGLISH));
+        PotionEffectType res = Registry.EFFECT.match(node.getValue());
         if (res == null) {
             throw new WrongValueConfigException(node, node.getValue(), "PotionEffectType");
         }
@@ -250,17 +251,5 @@ public class StandardExternalDeclarator implements ConfigExternalDeclarator {
     @ConfigConstructor
     public static Config config(Node raw) {
         return new TrackingConfig(raw);
-    }
-
-    public static NamespacedKey parseConfigNamespacedKey(String val, Node node) {
-        try {
-            return parseNamespacedKey(val);
-        } catch (IllegalArgumentException e) {
-            throw new ConfigException(e.getMessage(), node.getStartMark());
-        }
-    }
-
-    public static NamespacedKey parseNamespacedKey(String raw) {
-        return PluginUtil.parseNamespacedKey(raw);
     }
 }

@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -26,7 +28,12 @@ public class SpigotUpdateChecker extends UpdateChecker {
     
     @Override
     public String fetchVersion() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(API_URL + resId).openConnection();
+        HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) new URI(API_URL + resId).toURL().openConnection();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Error creating URL", e);
+        }
         connection.setDoOutput(true);
         connection.setRequestMethod("GET");
         return (new BufferedReader(new InputStreamReader(connection.getInputStream()))).readLine();

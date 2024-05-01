@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -75,8 +77,8 @@ public class DynLib {
     public static Pool from(List<String> urls) {
         return new Pool(urls.stream().map(url -> {
             try {
-                return new DynLib(new URL(url));
-            } catch (MalformedURLException e) {
+                return new DynLib(new URI(url).toURL());
+            } catch (URISyntaxException | MalformedURLException e) {
                 throw new IllegalArgumentException(e);
             }
         }).collect(Collectors.toList()));

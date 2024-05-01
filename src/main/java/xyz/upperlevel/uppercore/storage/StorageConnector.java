@@ -9,6 +9,9 @@ import xyz.upperlevel.uppercore.util.ExternalJarUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,11 +69,11 @@ public abstract class StorageConnector {
         }
     }
 
-    private File[] downloadRequiredFiles(Path folder) throws IOException {
+    private File[] downloadRequiredFiles(Path folder) throws IOException, URISyntaxException {
         String[] downloadLinks = getDownloadLinks();
         File[] downloaded = new File[downloadLinks.length];
         for (int i = 0; i < downloadLinks.length; i++) {
-            URL url = new URL(downloadLinks[i]);
+            URL url = new URI(downloadLinks[i]).toURL();
             Path out = folder.resolve(getFilenameByUrl(url.getFile()));
             download(url, out);
             downloaded[i] = out.toFile();

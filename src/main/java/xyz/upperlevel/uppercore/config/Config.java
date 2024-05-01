@@ -35,7 +35,7 @@ import static xyz.upperlevel.uppercore.config.ConfigUtil.legacyAwareMaterialPars
 
 @SuppressWarnings({"unchecked"}) // -_-
 public abstract class Config {
-    private static Representer yamlRepresenter = new YamlRepresenter();
+    private final static Representer yamlRepresenter = new YamlRepresenter(new DumperOptions());
 
     public abstract Object get(String key);
 

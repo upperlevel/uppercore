@@ -1,9 +1,6 @@
 package xyz.upperlevel.uppercore.command.functional.parameter;
 
-import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.util.Vector;
 import xyz.upperlevel.uppercore.config.ConfigUtil;
@@ -14,7 +11,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static xyz.upperlevel.uppercore.util.PluginUtil.parseNamespacedKey;
 
 public final class BukkitParameterHandler {
     private BukkitParameterHandler() {
@@ -37,7 +33,11 @@ public final class BukkitParameterHandler {
                 Collections.singletonList(Enchantment.class),
                 args -> {
                     String arg = args.take().toLowerCase(Locale.ENGLISH);
-                    Enchantment result = Enchantment.getByKey(parseNamespacedKey(arg));
+                    var key = NamespacedKey.fromString(arg);
+                    if (key == null) {
+                        throw args.areWrong();
+                    }
+                    Enchantment result = Registry.ENCHANTMENT.get(key);
                     if (result == null) {
                         throw args.areWrong();
                     }
@@ -48,8 +48,7 @@ public final class BukkitParameterHandler {
                     if (args.remaining() > 1)
                         return Collections.emptyList();
                     String arg = args.take().toLowerCase(Locale.ENGLISH);
-                    return Arrays
-                            .stream(Enchantment.values())
+                    return Registry.ENCHANTMENT.stream()
                             .map(Enchantment::getKey)
                             .filter(name -> name.getKey().startsWith(arg) || name.getNamespace().startsWith(arg))
                             .map(NamespacedKey::toString)

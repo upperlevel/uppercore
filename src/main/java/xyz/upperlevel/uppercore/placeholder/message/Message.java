@@ -3,6 +3,7 @@ package xyz.upperlevel.uppercore.placeholder.message;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.nodes.Node;
@@ -241,10 +242,10 @@ public class Message {
     public void setSign(Sign sign, Player player, PlaceholderRegistry<?> placeholders) {
         int i = 0;
         for (; i < Math.min(4, lines.size()); i++) {
-            sign.setLine(i, lines.get(i).resolve(player, placeholders));
+            sign.getSide(Side.FRONT).setLine(i, lines.get(i).resolve(player, placeholders));
         }
         for (; i < 4; i++) {
-            sign.setLine(i, "");
+            sign.getSide(Side.FRONT).setLine(i, "");
         }
         sign.update();
     }

@@ -6,9 +6,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +43,16 @@ public class SpigetUpdateChecker extends DownloadableUpdateChecker {
         return res == null ? null : (String) res.get(0).get("name");
     }
 
+    private URL parseUrl(String str) throws IOException {
+        try {
+            return new URI(str).toURL();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Failed to create URI", e);
+        }
+    }
+
     public Object jsonQuery(String postfix) throws IOException {
-        URL url = new URL(SITE_PREFIX + spigetId + postfix);
+        URL url = parseUrl(SITE_PREFIX + spigetId + postfix);
         URLConnection conn = url.openConnection();
         conn.setRequestProperty("User-Agent", USER_AGENT);
         if(((HttpURLConnection)conn).getResponseCode() == 404)
@@ -55,7 +61,7 @@ public class SpigetUpdateChecker extends DownloadableUpdateChecker {
     }
 
     public URLConnection fileQuery(String postfix) throws IOException {
-        URL url = new URL(SITE_PREFIX + spigetId + postfix);
+        URL url = parseUrl(SITE_PREFIX + spigetId + postfix);
         URLConnection conn = url.openConnection();
         conn.setRequestProperty("User-Agent", USER_AGENT);
         if(((HttpURLConnection)conn).getResponseCode() == 404)

@@ -13,6 +13,7 @@ public interface RegistryLoader<T> {
 
     static <T> RegistryLoader<T> fromClass(Class<T> clazz) {
         ConfigParser parser = Uppercore.parsers().getFor(clazz);
+        //noinspection unchecked
         return (parent, id, in) -> (T)parser.parse(in);
     }
 }
