@@ -14,19 +14,27 @@ public class EconomyManager {
     private static Economy economy;
 
     public static void enable() {
-        Uppercore.logger().info("Disabling economy until vault load");
-        enabled = false;
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            onVaultLoaded();
+        } else {
+            Uppercore.logger().info("Disabling economy until vault load");
+            enabled = false;
 
-        PluginUtil.onPluginLoaded("Vault", p -> {
-            RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
-            if (rsp == null) {
-                Uppercore.logger().severe("Cannot find any economy service, economy not supported");
-                enabled = false;
-                return;
-            }
-            enabled = true;
-            economy = rsp.getProvider();
-        });
+            PluginUtil.onPluginLoaded("Vault", p -> {
+                onVaultLoaded();
+            });
+        }
+    }
+
+    private static void onVaultLoaded() {
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            Uppercore.logger().severe("Cannot find any economy service, economy not supported");
+            enabled = false;
+            return;
+        }
+        enabled = true;
+        economy = rsp.getProvider();
     }
 
     public static Economy getEconomy() {

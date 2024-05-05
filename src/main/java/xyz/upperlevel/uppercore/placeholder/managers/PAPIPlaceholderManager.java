@@ -3,22 +3,29 @@ package xyz.upperlevel.uppercore.placeholder.managers;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.PlaceholderHook;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.clip.placeholderapi.expansion.manager.LocalExpansionManager;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
 import java.lang.reflect.Field;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * PlaceholderManager that hooks into PlaceholderAPI (Papi) and works with it.
  */
 public class PAPIPlaceholderManager extends BasePlaceholderManager {
     @Getter
-    private final PapiPlaceholderRegistry registry = new PapiPlaceholderRegistry();
+    private final PapiPlaceholderRegistry registry = new PapiPlaceholderRegistry(this);
+
+    @Getter
+    private final LocalExpansionManager expansionManager = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager();
 
     @Override
     public void register(Plugin plugin, Placeholder placeholder) {
@@ -26,7 +33,10 @@ public class PAPIPlaceholderManager extends BasePlaceholderManager {
     }
 
     public Map<String, PlaceholderHook> getPlaceholders() {
-        return PlaceholderAPI.getPlaceholders();
+        return expansionManager
+                .getExpansions()
+                .stream()
+                .collect(Collectors.toMap(PlaceholderExpansion::getIdentifier, (ex) -> ex));
     }
 
     public Placeholder find(String id) {
@@ -111,6 +121,12 @@ public class PAPIPlaceholderManager extends BasePlaceholderManager {
     }
 
     private class PapiPlaceholderRegistry implements PlaceholderRegistry<PapiPlaceholderRegistry> {
+        private final PAPIPlaceholderManager parent;
+
+        private PapiPlaceholderRegistry(PAPIPlaceholderManager parent) {
+            this.parent = parent;
+        }
+
         public PlaceholderRegistry<?> getParent() {
             return null;
         }
@@ -120,12 +136,12 @@ public class PAPIPlaceholderManager extends BasePlaceholderManager {
         }
 
         public Placeholder getLocal(String key) {
-            PlaceholderHook hook = getPlaceholders().get(key);
+            var hook = parent.expansionManager.getExpansion(key.toLowerCase(Locale.ENGLISH));
             return hook == null ? null : new PlaceholderHookWrapper(key, hook);
         }
 
         public Placeholder get(String key) {
-            PlaceholderHook hook = getPlaceholders().get(key);
+            var hook = parent.expansionManager.getExpansion(key.toLowerCase(Locale.ENGLISH));
             return hook == null ? null : new PlaceholderHookWrapper(key, hook);
         }
 

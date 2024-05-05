@@ -7,7 +7,6 @@ import org.bukkit.generator.ChunkGenerator;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 public final class WorldUtil {
 
@@ -19,10 +18,6 @@ public final class WorldUtil {
         creator.environment(World.Environment.NORMAL);
         creator.generateStructures(false);
         creator.generator(new ChunkGenerator() {
-            @Override
-            public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
-                return createChunkData(world);
-            }
         });
 
         World world = creator.createWorld();
@@ -34,8 +29,7 @@ public final class WorldUtil {
         world.setWeatherDuration(Integer.MAX_VALUE);
         world.setAutoSave(false);
         world.setKeepSpawnInMemory(false);
-        world.setTicksPerAnimalSpawns(1);
-        world.setTicksPerMonsterSpawns(1);
+        world.setSpawnFlags(false, false);
 
         world.setGameRule(GameRule.KEEP_INVENTORY, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);

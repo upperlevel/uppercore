@@ -223,8 +223,14 @@ public class Arena {
 
     // ------------------------------------------------------------------------------------------------ Serialization
 
+    public List<String> checkProblems() {
+        var problems = new ArrayList<String>();
+        if (lobby == null) problems.add("Lobby not set");
+        return problems;
+    }
+
     public boolean isReady() {
-        return lobby != null;
+        return checkProblems().isEmpty();
     }
 
     public Map<String, Object> serialize() {
@@ -272,7 +278,7 @@ public class Arena {
      */
     public void setEnabled(boolean enabled) {
         if (!isReady()) {
-            throw new IllegalStateException("Arena can't be enabled, without it's ready.");
+            throw new IllegalStateException("Arena can't be enabled, without it being ready.");
         }
         this.enabled = enabled;
         if (enabled) {

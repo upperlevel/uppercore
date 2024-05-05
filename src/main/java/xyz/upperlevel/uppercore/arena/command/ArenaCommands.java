@@ -32,6 +32,18 @@ public class ArenaCommands {
         this.arenaClass = arenaClass;
     }
 
+    private boolean reportArenaProblems(Arena arena, Player player) {
+        var problems = arena.checkProblems();
+        if (problems.isEmpty()) return true;
+
+
+        player.sendMessage(RED + "This arena isn't ready yet.");
+        for (var problem : problems) {
+            player.sendMessage(RED + "- " + problem);
+        }
+        return false;
+    }
+
     // ================================================================================
     // arena create
     // ================================================================================
@@ -96,8 +108,8 @@ public class ArenaCommands {
             return;
         }
 
-        if (!arena.isReady()) {
-            player.sendMessage(RED + "This arena isn't ready yet.");
+
+        if (!reportArenaProblems(arena, player)) {
             return;
         }
 
@@ -111,8 +123,7 @@ public class ArenaCommands {
 
     @AsCommand(description = "Saves an arena.")
     public void save(Player player, Arena arena) {
-        if (!arena.isReady()) {
-            player.sendMessage(RED + "This arena isn't ready yet.");
+        if (!reportArenaProblems(arena, player)) {
             return;
         }
         try {
