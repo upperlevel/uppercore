@@ -2,17 +2,17 @@ package xyz.upperlevel.uppercore.placeholder.managers;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.PlaceholderHook;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.clip.placeholderapi.expansion.manager.LocalExpansionManager;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.placeholder.Placeholder;
 import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 
-import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,13 +23,20 @@ import java.util.stream.Collectors;
 public class PAPIPlaceholderManager extends BasePlaceholderManager {
     @Getter
     private final PapiPlaceholderRegistry registry = new PapiPlaceholderRegistry(this);
+    private Map<String, Placeholder> placeholders = new HashMap<>();
 
     @Getter
     private final LocalExpansionManager expansionManager = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager();
 
+    public PAPIPlaceholderManager() {
+        if (!new OfficialPlaceholderAdapter().register()) {
+            Uppercore.logger().severe("Could not register PAPI adapter");
+        }
+    }
+
     @Override
     public void register(Plugin plugin, Placeholder placeholder) {
-        new OfficialPlaceholderAdapter(plugin, placeholder).register();
+        placeholders.put(placeholder.getId(), placeholder);
     }
 
     public Map<String, PlaceholderHook> getPlaceholders() {
@@ -55,33 +62,27 @@ public class PAPIPlaceholderManager extends BasePlaceholderManager {
     }
 
 
-    private static class OfficialPlaceholderAdapter extends PlaceholderExpansion {
-        private final Placeholder placeholder;
-        private final Plugin plugin;
-
-        public OfficialPlaceholderAdapter(Plugin plugin, Placeholder placeholder) {
-            this.plugin = plugin;
-            this.placeholder = placeholder;
-        }
+    private class OfficialPlaceholderAdapter extends PlaceholderExpansion {
 
         @Override
         public String onPlaceholderRequest(Player player, String identifier) {
-            return placeholder.resolve(player, identifier);
+            Uppercore.logger().severe("Resolving " + identifier);
+            return BasePlaceholderManager.exec(player, identifier, x -> placeholders.get(x));
         }
 
         @Override
         public String getIdentifier() {
-            return placeholder.getId();
+            return Uppercore.plugin().getName().toLowerCase();
         }
 
         @Override
         public String getAuthor() {
-            return String.join(", ", plugin.getDescription().getAuthors());
+            return String.join(", ", Uppercore.plugin().getDescription().getAuthors());
         }
 
         @Override
         public String getVersion() {
-            return plugin.getDescription().getVersion();
+            return Uppercore.plugin().getDescription().getVersion();
         }
 
         /**

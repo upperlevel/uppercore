@@ -8,6 +8,7 @@ import xyz.upperlevel.uppercore.placeholder.PlaceholderRegistry;
 import xyz.upperlevel.uppercore.placeholder.managers.customs.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class CustomPlaceholderManager extends BasePlaceholderManager {
@@ -23,7 +24,7 @@ public class CustomPlaceholderManager extends BasePlaceholderManager {
 
     @Override
     public void register(Plugin plugin, Placeholder placeholder) {
-        placeholders.put(placeholder.getId(), placeholder);
+        placeholders.put(plugin.getName().toLowerCase(Locale.ENGLISH) + "_" + placeholder.getId(), placeholder);
     }
 
     @Override
