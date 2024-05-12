@@ -23,7 +23,7 @@ public final class EnchantUtil {
     }
 
     public static ItemMeta glow(ItemMeta meta) {
-        meta.addEnchant(Enchantment.FORTUNE, 1, true);
+        meta.addEnchant(Enchantment.LUCK, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         return meta;
     }

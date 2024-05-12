@@ -18,7 +18,7 @@ java {
 }
 
 project.ext {
-    mcVersion = "1.20.4"
+    mcVersion = "1.20.4-R0.1-SNAPSHOT"
 }
 
 test {
