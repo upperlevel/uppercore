@@ -1,13 +1,5 @@
 package xyz.upperlevel.uppercore.arena;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.FieldAccessException;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -16,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.yaml.snakeyaml.Yaml;
 import xyz.upperlevel.uppercore.Uppercore;
 import xyz.upperlevel.uppercore.arena.event.ArenaJoinEvent;
@@ -86,8 +77,6 @@ public class Arena {
     @Getter
     private final Map<Player, Long> joinedAtByPlayer = new HashMap<>();
 
-    private PacketAdapter playerListHandler;
-
     public Arena(String id) {
         this.id = id.toLowerCase(ENGLISH);
         this.signature = getSignature(id);
@@ -100,8 +89,6 @@ public class Arena {
             throw new IllegalStateException("Arena's world isn't loaded, or doesn't exist: " + signature);
         }
         this.placeholders = createPlaceholders();
-
-        handlePlayerList();
     }
 
     @ConfigConstructor
@@ -190,35 +177,6 @@ public class Arena {
      */
     public Collection<Sign> getJoinSigns() {
         return joinSignByBlock.values();
-    }
-
-    // ------------------------------------------------------------------------------------------------ Player list
-
-    public void handlePlayerList() {
-        this.playerListHandler = new PacketAdapter(getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                if (!players.contains(event.getPlayer()))
-                    return; // The player hasn't join the arena, do not interfere with player list.
-                try {
-                    PacketContainer packet = event.getPacket();
-
-                    List<PlayerInfoData> result = packet.getPlayerInfoDataLists().read(0)
-                            .stream()
-                            .filter(info -> players.stream()
-                                    // If the tab player is contained in the arena then his name can be displayed in tab.
-                                    .anyMatch(player -> player.getName().equals(info.getProfile().getName())))
-                            .collect(Collectors.toList());
-
-                    packet.getPlayerInfoDataLists().write(0, result);
-                } catch (FieldAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        // FIX-ME sometimes hiding players from all the server (not only in tab list).
-        //ProtocolLibrary.getProtocolManager().addPacketListener(this.playerListHandler);
     }
 
     // ------------------------------------------------------------------------------------------------ Serialization
@@ -328,7 +286,6 @@ public class Arena {
         unload();
         WorldUtil.deleteWorld(world);
         new File(ArenaManager.ARENAS_FOLDER, id + ".yml").delete();
-        //ProtocolLibrary.getProtocolManager().removePacketListener(playerListHandler);
     }
 
     public static String getSignature(String id) {

@@ -62,9 +62,6 @@ repositories {
     maven {
         url "https://repo.extendedclip.com/content/repositories/placeholderapi/" // PlaceholderAPI
     }
-    maven {
-        url "https://repo.dmulloy2.net/nexus/repository/public/" // ProtocolLib
-    }
 }
 
 dependencies {
@@ -93,7 +90,6 @@ dependencies {
     compileOnly "me.clip:placeholderapi:2.10.9" // placeholder-api
     integrationTestCompileOnly "me.clip:placeholderapi:2.11.5" // placeholder-api
     compileOnly "com.github.MilkBowl:VaultAPI:1.7" // vault
-    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.5.0"; // ProtocolLib
 
     api "org.bstats:bstats-bukkit:1.7" // metrics
 
