@@ -1,6 +1,7 @@
 package xyz.upperlevel.uppercore.arena;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -25,12 +26,19 @@ import xyz.upperlevel.uppercore.Uppercore;
 public class Phase implements Listener {
     @Getter
     private final String id;
+    @Getter
+    private final String name;
 
     @Getter
     private PhaseManager phaseManager;
 
-    public Phase(String id) {
+    public Phase(String id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public Phase(String id) {
+        this(id, StringUtils.capitalize(id).replace('-', ' '));
     }
 
     void setPhaseManager(PhaseManager phaseManager) {

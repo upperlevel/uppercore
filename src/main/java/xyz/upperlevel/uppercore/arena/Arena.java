@@ -54,6 +54,10 @@ public class Arena {
     private final String id;
 
     @Getter
+    @Setter
+    private String name;
+
+    @Getter
     private final String signature;
 
     @Getter
@@ -79,6 +83,7 @@ public class Arena {
 
     public Arena(String id) {
         this.id = id.toLowerCase(ENGLISH);
+        this.name = id;
         this.signature = getSignature(id);
         this.world = Bukkit.getWorld(signature);
 
@@ -94,9 +99,11 @@ public class Arena {
     @ConfigConstructor
     public Arena(
             @ConfigProperty("id") String id,
+            @ConfigProperty("name") Optional<String> name,
             @ConfigProperty("lobby") Location lobby,
             @ConfigProperty("join-signs") List<Location> joinSigns) {
         this(id);
+        name.ifPresent(s -> this.name = s);
         this.lobby = lobby;
         for (Location sign : joinSigns) {
             Block block = sign.getBlock();
@@ -109,14 +116,6 @@ public class Arena {
     }
 
     /**
-     * Gets the arena name.
-     * Currently it's just an alias to <code>getId()</code>.
-     */
-    public String getName() {
-        return id;
-    }
-
-    /**
      * Creates the placeholders for this arena.
      */
     protected PlaceholderRegistry<?> createPlaceholders() {
@@ -124,6 +123,7 @@ public class Arena {
                 .set("arena_id", () -> id)
                 .set("arena_name", this::getName)
                 .set("arena_signature", () -> signature)
+                .set("arena_phase", () -> this.getPhaseManager().getPhaseName())
                 .set("players", () -> Integer.toString(players.size()));
     }
 
@@ -194,6 +194,7 @@ public class Arena {
     public Map<String, Object> serialize() {
         return new HashMap<String, Object>() {{
             put("id", id);
+            put("name", name);
             put("lobby", LocUtil.serialize(lobby));
             put("join-signs", joinSignByBlock.keySet().stream()
                     .map(sign -> LocUtil.serialize(sign.getLocation()))

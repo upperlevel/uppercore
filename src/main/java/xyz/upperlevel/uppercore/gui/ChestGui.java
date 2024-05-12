@@ -320,6 +320,7 @@ public class ChestGui implements Gui, RegistryTraceable {
     @Override
     public void onClick(InventoryClickEvent event) {
         Dbg.pf("%s clicked the inventory at slot %d", event.getWhoClicked().getName(), event.getSlot());
+        if (event.getSlot() >= icons.length) return;
         ConfigIcon icon = icons[event.getSlot()];
         if (icon != null)
             icon.onClick(event);

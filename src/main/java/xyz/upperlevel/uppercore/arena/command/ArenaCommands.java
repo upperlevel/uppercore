@@ -1,5 +1,6 @@
 package xyz.upperlevel.uppercore.arena.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -232,10 +233,21 @@ public class ArenaCommands {
     // sethub
     // ================================================================================
 
-    @AsCommand(description = "Shows information about the specified arena.")
+    @AsCommand(description = "Sets the hub of the current arena to the player location.")
     public void setHub(Player player) {
         OnQuitHandler.Local.setHub(player.getLocation());
         player.sendMessage(GREEN + "Hub set to your current position.");
+    }
+
+    // ================================================================================
+    // setname
+    // ================================================================================
+
+    @AsCommand(description = "Shows information about the specified arena.")
+    public void setName(Player player, Arena arena, String[] name) {
+        var rname = StringUtils.join(name, ' ');
+        arena.setName(rname);
+        player.sendMessage(YELLOW + arena.getId() + GREEN + " name set to " + LIGHT_PURPLE + rname + GREEN + ".");
     }
 
     // ================================================================================

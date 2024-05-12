@@ -34,9 +34,15 @@ arenas:
     playable-arena:
       type: 'GREEN_STAINED_GLASS_PANE'
       name: '&a%arena_name%'
+      lore:
+        - '&fPlayers: &e%players%/%max_players%'
+        - '&fStatus: &a%arena_phase%'
     ingame-arena:
       type: 'RED_STAINED_GLASS_PANE'
       name: '&c%arena_name%'
+      lore:
+        - '&fPlayers: &e%players%/%max_players%'
+        - '&fStatus: &c%arena_phase%'
 
 # A spigot bug re-clicks a slot twice if there is too much lag, this behaviour might cause the
 # lobby-leave hotbar button to press instantly after joining. This is a cooldown that prevents

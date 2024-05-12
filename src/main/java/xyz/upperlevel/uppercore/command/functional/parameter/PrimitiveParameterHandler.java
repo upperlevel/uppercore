@@ -96,7 +96,7 @@ public final class PrimitiveParameterHandler {
         // String[]
         ParameterHandler.register(
                 Collections.singletonList(String[].class),
-                ParameterHandler.ArgsTracker::takeAll
+                args -> args.takeAll().toArray(new String[0])
         );
     }
 }

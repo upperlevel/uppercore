@@ -26,6 +26,11 @@ public class PhaseManager extends Phase {
         }
     }
 
+    public String getPhaseName() {
+        if (this.phase == null) return "None";
+        return this.phase.getName();
+    }
+
     @Override
     public void onDisable(Phase next) {
         if (phase != null) {
